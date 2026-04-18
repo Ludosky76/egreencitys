@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EGREENCITY'S — Bornes de Recharge Électrique en Guyane</title>
+  <meta name="description" content="EGREENCITY'S — Fourniture, installation et maintenance de bornes de recharge électrique en Guyane. Projet de réseau inter-communal en préparation (dossier ADVENIR). Particuliers, entreprises, collectivités.">
+  <meta name="author" content="EGREENCITY'S SAS">
+  <meta name="robots" content="index, follow">
+  <!-- Sécurité : en-têtes recommandés (à doubler côté serveur via HTTP headers) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), payment=()">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green:       #33CC00;
+      --green-dark:  #28a800;
+      --green-deep:  #0a4800;
+      --blue:        #2B4DB5;
+      --blue-light:  #4a6fd8;
+      --white:       #ffffff;
+      --off:         #f4fff0;
+      --dark:        #081a00;
+      --text:        #1a3a00;
+      --muted:       #4a6a40;
+      --shadow:      rgba(0,80,0,0.12);
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Poppins',system-ui,sans-serif;color:var(--dark);background:#fff;overflow-x:hidden;}
+
+    /* ── NAV ─────────────────────────────────────────── */
+    nav{
+      position:fixed;top:0;width:100%;z-index:1000;
+      padding:1rem 3rem;
+      display:flex;align-items:center;justify-content:space-between;
+      background:rgba(255,255,255,.95);backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(51,204,0,.12);
+      transition:padding .3s,box-shadow .3s;
+    }
+    nav.scrolled{padding:.65rem 3rem;box-shadow:0 2px 24px var(--shadow);}
+    .nav-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;}
+    .logo-name{font-size:1.25rem;font-weight:800;color:var(--green);letter-spacing:-.5px;line-height:1;}
+    .logo-tag{font-size:.48rem;color:var(--blue);font-weight:600;letter-spacing:.6px;text-transform:uppercase;display:block;}
+    .nav-links{display:flex;gap:1.8rem;list-style:none;align-items:center;}
+    .nav-links a{text-decoration:none;color:var(--text);font-size:.82rem;font-weight:500;transition:color .2s;}
+    .nav-links a:hover{color:var(--green);}
+    .btn-nav{background:var(--green);color:#fff!important;padding:.5rem 1.3rem;border-radius:50px;font-weight:700!important;transition:background .2s,transform .2s!important;}
+    .btn-nav:hover{background:var(--green-dark)!important;transform:translateY(-1px);}
+
+    /* ── HERO ────────────────────────────────────────── */
+    .hero{
+      min-height:100vh;
+      background:linear-gradient(140deg,#041000 0%,#0b3300 45%,#0a2800 75%,#030e00 100%);
+      display:flex;align-items:center;justify-content:center;
+      position:relative;overflow:hidden;padding:7rem 3rem 3rem;
+    }
+    .hero::before{
+      content:'';position:absolute;inset:0;
+      background-image:radial-gradient(circle at 20% 80%, rgba(51,204,0,.06) 0%, transparent 50%),
+                       radial-gradient(circle at 80% 20%, rgba(43,77,181,.08) 0%, transparent 50%);
+    }
+    /* animated rings */
+    .rings{position:absolute;top:50%;right:5%;transform:translateY(-50%);}
+    .ring{
+      position:absolute;border-radius:50%;
+      border:1px solid rgba(51,204,0,.12);
+      animation:ringpulse 5s ease-in-out infinite;
+      top:50%;left:50%;transform:translate(-50%,-50%);
+    }
+    .ring:nth-child(1){width:280px;height:280px;animation-delay:0s;}
+    .ring:nth-child(2){width:480px;height:480px;animation-delay:.6s;}
+    .ring:nth-child(3){width:680px;height:680px;animation-delay:1.2s;}
+    .ring:nth-child(4){width:880px;height:880px;animation-delay:1.8s;}
+    @keyframes ringpulse{0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1);}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.04);}}
+
+    .hero-inner{position:relative;z-index:2;max-width:1200px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+    .hero-badge{
+      display:inline-flex;align-items:center;gap:.5rem;
+      background:rgba(51,204,0,.12);border:1px solid rgba(51,204,0,.28);
+      color:var(--green);padding:.38rem 1rem;border-radius:50px;
+      font-size:.72rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;margin-bottom:1.5rem;
+    }
+    .badge-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.5s ease-in-out infinite;}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+    .hero h1{font-size:clamp(2.1rem,4vw,3.4rem);font-weight:800;color:#fff;line-height:1.13;margin-bottom:1.5rem;}
+    .hero h1 em{color:var(--green);font-style:normal;}
+    .hero-sub{font-size:.96rem;color:rgba(255,255,255,.68);line-height:1.75;margin-bottom:2.5rem;max-width:490px;}
+    .hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+    .btn-primary{
+      background:var(--green);color:#fff;padding:.85rem 2rem;border-radius:50px;
+      font-size:.88rem;font-weight:700;text-decoration:none;
+      transition:background .25s,transform .25s,box-shadow .25s;
+      display:inline-flex;align-items:center;gap:.4rem;
+    }
+    .btn-primary:hover{background:var(--green-dark);transform:translateY(-2px);box-shadow:0 10px 28px rgba(51,204,0,.38);}
+    .btn-ghost{
+      background:transparent;color:#fff;padding:.85rem 2rem;border-radius:50px;
+      border:1px solid rgba(255,255,255,.25);font-size:.88rem;font-weight:500;
+      text-decoration:none;transition:border-color .25s,color .25s,transform .25s;
+    }
+    .btn-ghost:hover{border-color:var(--green);color:var(--green);transform:translateY(-2px);}
+
+    /* hero map svg */
+    .hero-map{width:100%;max-width:440px;filter:drop-shadow(0 0 40px rgba(51,204,0,.28));animation:float 6s ease-in-out infinite;}
+    @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+
+    /* ── STATS BAR ───────────────────────────────────── */
+    .stats{background:var(--green);padding:2rem 3rem;}
+    .stats-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;}
+    .stat{text-align:center;color:#fff;}
+    .stat-n{font-size:2.3rem;font-weight:800;line-height:1;display:block;}
+    .stat-l{font-size:.78rem;opacity:.88;margin-top:.25rem;}
+
+    /* ── SECTIONS ────────────────────────────────────── */
+    section{padding:5.5rem 3rem;}
+    .section-inner{max-width:1200px;margin:0 auto;}
+    .badge{display:inline-block;background:rgba(51,204,0,.1);color:var(--green-deep);padding:.28rem .9rem;border-radius:50px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.9rem;}
+    .title{font-size:clamp(1.8rem,2.8vw,2.5rem);font-weight:700;color:var(--dark);margin-bottom:1rem;line-height:1.2;}
+    .sub{font-size:.94rem;color:var(--muted);max-width:580px;line-height:1.75;}
+
+    /* ── MISSION ─────────────────────────────────────── */
+    .mission{background:var(--off);}
+    .mission-grid{display:grid;grid-template-columns:1fr 1.8fr;gap:4rem;align-items:start;margin-top:3rem;}
+    .pillars{display:flex;flex-direction:column;gap:1.2rem;}
+    .pillar{background:#fff;border-radius:14px;padding:1.3rem 1.5rem;border-left:4px solid var(--green);box-shadow:0 2px 12px var(--shadow);transition:transform .2s;}
+    .pillar:hover{transform:translateX(6px);}
+    .pillar h3{font-size:.92rem;font-weight:700;color:var(--dark);margin-bottom:.4rem;display:flex;align-items:center;gap:.6rem;}
+    .pico{width:28px;height:28px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+    .pillar p{font-size:.8rem;color:var(--muted);line-height:1.6;}
+    .mission-text h2{font-size:1.75rem;font-weight:700;color:var(--dark);margin-bottom:1.3rem;line-height:1.3;}
+    .mission-text p{font-size:.92rem;color:var(--muted);line-height:1.8;margin-bottom:1.1rem;}
+    .avantages{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1.8rem;}
+    .av{display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:rgba(51,204,0,.05);border-radius:9px;border:1px solid rgba(51,204,0,.13);}
+    .av span{font-size:.82rem;font-weight:500;color:var(--text);}
+    .chk{width:19px;height:19px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:.6rem;font-weight:800;}
+
+    /* ── PRODUCTS ────────────────────────────────────── */
+    .products{background:#fff;}
+    .prod-header{text-align:center;margin-bottom:2.5rem;}
+    .tabs{display:flex;justify-content:center;gap:.5rem;margin-bottom:3rem;flex-wrap:wrap;}
+    .tab{padding:.55rem 1.4rem;border-radius:50px;border:2px solid #ddd;background:#fff;color:var(--muted);font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;}
+    .tab.on,.tab:hover{border-color:var(--green);color:var(--green);background:rgba(51,204,0,.05);}
+    .tcontent{display:none;}
+    .tcontent.on{display:block;}
+    .prod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;}
+    .pcard{
+      background:var(--off);border-radius:18px;padding:1.8rem;
+      border:1px solid rgba(51,204,0,.08);
+      transition:transform .3s,box-shadow .3s;position:relative;overflow:hidden;
+    }
+    .pcard::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green);transform:scaleX(0);transition:transform .3s;transform-origin:left;}
+    .pcard:hover{transform:translateY(-6px);box-shadow:0 18px 45px var(--shadow);}
+    .pcard:hover::after{transform:scaleX(1);}
+    .pico2{width:54px;height:54px;background:linear-gradient(135deg,var(--green),var(--green-dark));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1.1rem;}
+    .pcard h3{font-size:1.05rem;font-weight:700;color:var(--dark);margin-bottom:.45rem;}
+    .pcard p{font-size:.8rem;color:var(--muted);line-height:1.65;margin-bottom:1rem;}
+    .specs{list-style:none;display:flex;flex-direction:column;gap:.42rem;}
+    .specs li{display:flex;align-items:center;gap:.45rem;font-size:.78rem;color:var(--text);}
+    .specs li::before{content:'→';color:var(--green);font-weight:800;}
+    .warranty{margin-top:1.1rem;padding:.32rem .75rem;background:rgba(51,204,0,.1);border-radius:50px;font-size:.72rem;font-weight:700;color:var(--green-deep);display:inline-block;}
+
+    /* ── ECONOMICS ───────────────────────────────────── */
+    .economics{background:linear-gradient(140deg,#040f00 0%,#0d3500 50%,#040f00 100%);color:#fff;}
+    .economics .badge{background:rgba(51,204,0,.18);color:var(--green);}
+    .economics .title{color:#fff;}
+    .economics .sub{color:rgba(255,255,255,.65);}
+    .econ-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-top:3rem;}
+    .comp-table{background:rgba(255,255,255,.04);border-radius:14px;overflow:hidden;border:1px solid rgba(51,204,0,.18);}
+    .comp-head{display:grid;grid-template-columns:2fr 1fr 1fr;background:rgba(51,204,0,.12);padding:.9rem 1.4rem;font-size:.7rem;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;}
+    .comp-row{display:grid;grid-template-columns:2fr 1fr 1fr;padding:.9rem 1.4rem;border-bottom:1px solid rgba(255,255,255,.04);align-items:center;}
+    .comp-row.hl{background:rgba(51,204,0,.1);border-color:rgba(51,204,0,.15);}
+    .comp-row:hover{background:rgba(255,255,255,.03);}
+    .fuel{display:flex;align-items:center;gap:.5rem;font-size:.88rem;font-weight:600;}
+    .dot{width:8px;height:8px;border-radius:50%;}
+    .dot.g{background:var(--green);}
+    .dot.o{background:#ff9500;}
+    .dot.r{background:#ff4040;}
+    .cost{font-size:.88rem;font-weight:600;}
+    .comp-row.hl .cost{color:var(--green);}
+    .save{font-size:.8rem;}
+    .save.pos{color:var(--green);font-weight:700;}
+    .save.neg{color:#ff7070;}
+    .econ-note{margin-top:.9rem;font-size:.7rem;color:rgba(255,255,255,.35);line-height:1.6;}
+    .econ-pts{display:flex;flex-direction:column;gap:1.6rem;}
+    .econ-pt{display:flex;align-items:flex-start;gap:.9rem;}
+    .eico{width:46px;height:46px;background:rgba(51,204,0,.12);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+    .eico-text h4{font-size:.92rem;font-weight:700;color:#fff;margin-bottom:.28rem;}
+    .eico-text p{font-size:.8rem;color:rgba(255,255,255,.58);line-height:1.65;}
+
+    /* ── RÉSEAU ──────────────────────────────────────── */
+    .reseau{background:var(--off);}
+    .reseau-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;margin-top:3rem;}
+    .communes{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;}
+    .commune{
+      display:flex;align-items:center;gap:.5rem;
+      padding:.55rem .8rem;background:#fff;border-radius:8px;
+      border:1px solid rgba(51,204,0,.13);font-size:.78rem;font-weight:500;color:var(--text);
+      transition:border-color .2s,transform .2s;cursor:default;
+    }
+    .commune:hover{border-color:var(--green);transform:translateX(3px);}
+    .cdot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;}
+    .commune.cap .cdot{background:var(--blue);box-shadow:0 0 6px rgba(43,77,181,.6);}
+    .demarche{background:#fff;border-radius:18px;padding:2.2rem;box-shadow:0 4px 28px var(--shadow);}
+    .demarche h3{font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:1.5rem;}
+    .step{display:flex;gap:.9rem;align-items:flex-start;margin-bottom:1.3rem;}
+    .step-n{width:30px;height:30px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.72rem;font-weight:800;flex-shrink:0;}
+    .step-t strong{display:block;font-size:.88rem;font-weight:700;color:var(--dark);margin-bottom:.2rem;}
+    .step-t p{font-size:.78rem;color:var(--muted);line-height:1.65;}
+
+    /* ── INVESTISSEURS ───────────────────────────────── */
+    .invest{background:#fff;}
+    .invest-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;margin-top:3rem;}
+    .icard{background:var(--off);border-radius:18px;padding:2rem;border:1px solid rgba(51,204,0,.08);text-align:center;transition:all .3s;}
+    .icard:hover{transform:translateY(-5px);box-shadow:0 15px 40px var(--shadow);border-color:var(--green);}
+    .inum{font-size:2.4rem;font-weight:800;color:var(--green);display:block;margin-bottom:.4rem;}
+    .ilabel{font-size:.9rem;font-weight:700;color:var(--dark);margin-bottom:.65rem;}
+    .idesc{font-size:.78rem;color:var(--muted);line-height:1.65;}
+    .icta{
+      background:linear-gradient(135deg,var(--green-deep),#0b5500);
+      border-radius:18px;padding:2.8rem 3rem;margin-top:2.5rem;
+      display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap;
+    }
+    .icta h3{font-size:1.45rem;font-weight:700;color:#fff;margin-bottom:.4rem;}
+    .icta p{font-size:.87rem;color:rgba(255,255,255,.68);max-width:520px;line-height:1.7;}
+    .advenir{
+      display:inline-flex;align-items:center;gap:.4rem;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
+      padding:.35rem .8rem;border-radius:8px;font-size:.7rem;color:rgba(255,255,255,.72);margin-top:.8rem;
+    }
+
+    /* ── CONTACT ─────────────────────────────────────── */
+    .contact{background:var(--off);}
+    .contact-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:4rem;margin-top:3rem;}
+    .cinfo h3{font-size:1.05rem;font-weight:700;color:var(--dark);margin-bottom:1.5rem;}
+    .citem{display:flex;align-items:flex-start;gap:.9rem;margin-bottom:1.3rem;}
+    .cicon{width:38px;height:38px;background:var(--green);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
+    .citem-t strong{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.18rem;}
+    .citem-t span{font-size:.9rem;font-weight:500;color:var(--dark);}
+    .cform{background:#fff;border-radius:18px;padding:2.3rem;box-shadow:0 4px 28px var(--shadow);}
+    .cform h3{font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:1.4rem;}
+    .frow{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
+    .fg{margin-bottom:1.1rem;}
+    .fg label{display:block;font-size:.72rem;font-weight:700;color:var(--text);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.4px;}
+    .fg input,.fg select,.fg textarea{
+      width:100%;padding:.7rem .95rem;border:1.5px solid #e0e0e0;border-radius:9px;
+      font-family:inherit;font-size:.88rem;color:var(--dark);
+      outline:none;background:var(--off);transition:border-color .2s;
+    }
+    .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--green);}
+    .fg textarea{height:110px;resize:vertical;}
+    .btn-send{
+      width:100%;background:var(--green);color:#fff;border:none;
+      padding:.95rem;border-radius:50px;font-family:inherit;font-size:.92rem;font-weight:700;
+      cursor:pointer;transition:background .2s,transform .2s,box-shadow .2s;
+    }
+    .btn-send:hover{background:var(--green-dark);transform:translateY(-2px);box-shadow:0 8px 22px rgba(51,204,0,.3);}
+
+    /* ── FOOTER ──────────────────────────────────────── */
+    footer{background:var(--dark);color:rgba(255,255,255,.6);padding:3rem 3rem 1.8rem;}
+    .foot-inner{max-width:1200px;margin:0 auto;}
+    .foot-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem;}
+    .fbrand .logo-name{font-size:1.35rem;color:var(--green);font-weight:800;}
+    .fbrand .logo-tag{color:rgba(255,255,255,.4);margin-bottom:1rem;}
+    .fbrand p{font-size:.8rem;line-height:1.7;color:rgba(255,255,255,.42);}
+    .fcol h4{font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.35);margin-bottom:.9rem;}
+    .fcol ul{list-style:none;display:flex;flex-direction:column;gap:.45rem;}
+    .fcol ul a{text-decoration:none;font-size:.82rem;color:rgba(255,255,255,.55);transition:color .2s;}
+    .fcol ul a:hover{color:var(--green);}
+    .foot-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:1.4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem;font-size:.75rem;}
+    .foot-rcs{font-size:.68rem;color:rgba(255,255,255,.25);}
+
+    /* ── REVEAL ──────────────────────────────────────── */
+    .rv{opacity:0;transform:translateY(28px);transition:opacity .6s ease,transform .6s ease;}
+    .rv.in{opacity:1;transform:translateY(0);}
+    .rv.d1{transition-delay:.1s;}
+    .rv.d2{transition-delay:.2s;}
+    .rv.d3{transition-delay:.3s;}
+
+    /* ── TOAST ───────────────────────────────────────── */
+    #toast{
+      position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);
+      background:var(--green-deep);color:#fff;padding:.8rem 1.8rem;border-radius:50px;
+      font-size:.85rem;font-weight:600;z-index:9999;
+      transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;
+    }
+    #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+    /* ── RESPONSIVE ──────────────────────────────────── */
+    @media(max-width:960px){
+      nav{padding:1rem 1.5rem;}
+      nav.scrolled{padding:.65rem 1.5rem;}
+      .nav-links{display:none;}
+      section{padding:4rem 1.5rem;}
+      .stats{padding:1.5rem;}
+      .hero-inner{grid-template-columns:1fr;}
+      .hero-map-wrap{display:none;}
+      .stats-inner{grid-template-columns:repeat(2,1fr);}
+      .mission-grid,.econ-grid,.reseau-grid,.contact-grid{grid-template-columns:1fr;}
+      .prod-grid{grid-template-columns:1fr 1fr;}
+      .invest-grid{grid-template-columns:1fr 1fr;}
+      .foot-top{grid-template-columns:1fr 1fr;}
+    }
+    @media(max-width:600px){
+      .hero{padding:6rem 1.5rem 2rem;}
+      .stats-inner{grid-template-columns:1fr 1fr;}
+      .prod-grid{grid-template-columns:1fr;}
+      .invest-grid{grid-template-columns:1fr;}
+      .communes{grid-template-columns:1fr;}
+      .avantages{grid-template-columns:1fr;}
+      .frow{grid-template-columns:1fr;}
+      .foot-top{grid-template-columns:1fr;}
+      .icta{flex-direction:column;align-items:flex-start;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════ NAVIGATION ════════════════ -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <img src="logo.png" alt="EGREENCITY'S — Borne De Rechagement" style="height:44px;width:auto;object-fit:contain;">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#mission">Mission</a></li>
+    <li><a href="#produits">Produits</a></li>
+    <li><a href="#economie">Économies</a></li>
+    <li><a href="#reseau">Réseau</a></li>
+    <li><a href="#investisseurs">Investisseurs</a></li>
+    <li><a href="#contact" class="btn-nav">Nous contacter</a></li>
+  </ul>
+</nav>
+
+<!-- ════════════════ HERO ════════════════ -->
+<section class="hero" id="accueil">
+  <div class="rings">
+    <div class="ring"></div><div class="ring"></div>
+    <div class="ring"></div><div class="ring"></div>
+  </div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge"><span class="badge-dot"></span> Guyane — Mobilité Électrique</div>
+      <h1>
+        La <em>Guyane</em> mérite<br>
+        un réseau de recharge<br>
+        <em>dans chaque commune</em>
+      </h1>
+      <p class="hero-sub">
+        EGREENCITY'S porte le projet d'un réseau de bornes de recharge publiques inter-communal sur le littoral guyanais —
+        de Saint-Laurent-du-Maroni à Saint-Georges-de-l'Oyapock. Nous fournissons, installons et maintenons les bornes pour
+        mairies, collectivités et entreprises.
+      </p>
+      <div class="hero-btns">
+        <a href="#reseau" class="btn-primary">Découvrir le projet →</a>
+        <a href="#investisseurs" class="btn-ghost">Investir dans le projet</a>
+      </div>
+    </div>
+    <div class="hero-map-wrap" style="display:flex;justify-content:center;">
+      <!-- Guyane stylisée + réseau de bornes -->
+      <svg class="hero-map" viewBox="0 0 380 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Territoire Guyane simplifié -->
+        <path d="M55 90 L85 45 L160 28 L230 48 L295 42 L348 90 L362 165 L350 245 L308 320 L285 400 L248 448 L200 462 L158 448 L118 415 L78 345 L42 248 L28 168 Z"
+              fill="rgba(51,204,0,.05)" stroke="rgba(51,204,0,.25)" stroke-width="1.5"/>
+        <text x="55" y="460" fill="rgba(51,204,0,.35)" font-size="8.5" font-family="Poppins,sans-serif" font-weight="500">Océan Atlantique →</text>
+
+        <!-- Lignes réseau animées -->
+        <path d="M75 140 L115 158 L152 172 L186 196 L222 228 L262 266 L284 240 L304 262 L342 250" stroke="rgba(51,204,0,.22)" stroke-width="1.2" stroke-dasharray="5,4" fill="none"/>
+
+        <!-- Cayenne (capitale) -->
+        <circle cx="284" cy="238" r="9" fill="#2B4DB5" opacity=".9"/>
+        <circle cx="284" cy="238" r="17" fill="rgba(43,77,181,.18)"/>
+        <circle cx="284" cy="238" r="25" fill="rgba(43,77,181,.07)"/>
+        <text x="298" y="242" fill="rgba(255,255,255,.85)" font-size="9" font-family="Poppins,sans-serif" font-weight="700">Cayenne ★</text>
+
+        <!-- Bornes communes principales -->
+        <g fill="#33CC00" opacity=".9">
+          <circle cx="75" cy="132" r="5.5"/><text x="84" y="136" fill="rgba(255,255,255,.7)" font-size="7.5" font-family="Poppins,sans-serif">St-Laurent</text>
+          <circle cx="112" cy="155" r="4.5"/><text x="120" y="158" fill="rgba(255,255,255,.65)" font-size="7" font-family="Poppins,sans-serif">Mana</text>
+          <circle cx="150" cy="168" r="6" fill="#33CC00" opacity="1"/><circle cx="150" cy="168" r="10" fill="rgba(51,204,0,.2)"/><text x="159" y="172" fill="rgba(255,255,255,.9)" font-size="7.5" font-family="Poppins,sans-serif" font-weight="700">Iracoubo ⚡</text>
+          <circle cx="220" cy="208" r="5"/><text x="228" y="212" fill="rgba(255,255,255,.7)" font-size="7.5" font-family="Poppins,sans-serif">Kourou</text>
+          <circle cx="258" cy="248" r="4.5"/><text x="265" y="252" fill="rgba(255,255,255,.65)" font-size="7" font-family="Poppins,sans-serif">Macouria</text>
+          <circle cx="262" cy="270" r="4.5"/><text x="270" y="273" fill="rgba(255,255,255,.65)" font-size="7" font-family="Poppins,sans-serif">Matoury</text>
+          <circle cx="302" cy="264" r="4.5"/><text x="310" y="268" fill="rgba(255,255,255,.65)" font-size="7" font-family="Poppins,sans-serif">Rémire</text>
+          <circle cx="342" cy="250" r="4.5"/><text x="349" y="254" fill="rgba(255,255,255,.65)" font-size="7" font-family="Poppins,sans-serif">St-Georges</text>
+        </g>
+
+        <!-- Icône borne de recharge -->
+        <g transform="translate(224,188)" opacity=".75">
+          <rect x="-7" y="-11" width="14" height="18" rx="3" fill="rgba(51,204,0,.25)" stroke="rgba(51,204,0,.45)" stroke-width="1"/>
+          <path d="M0,-13 L0,-7" stroke="#33CC00" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M2,-2 L-2,5 L1,5 L-1,11 L3,2 L0,2 Z" fill="#33CC00"/>
+        </g>
+
+        <!-- Légende -->
+        <circle cx="42" cy="410" r="5" fill="#2B4DB5"/>
+        <text x="52" y="414" fill="rgba(255,255,255,.55)" font-size="7.5" font-family="Poppins,sans-serif">Préfecture</text>
+        <circle cx="42" cy="428" r="4" fill="#33CC00"/>
+        <text x="52" y="432" fill="rgba(255,255,255,.55)" font-size="7.5" font-family="Poppins,sans-serif">Site prévu — Phase 1</text>
+        <line x1="38" y1="446" x2="52" y2="446" stroke="rgba(51,204,0,.45)" stroke-width="1.2" stroke-dasharray="4,3"/>
+        <text x="56" y="450" fill="rgba(255,255,255,.55)" font-size="7.5" font-family="Poppins,sans-serif">Réseau électrique</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ STATS ════════════════ -->
+<div class="stats">
+  <div class="stats-inner">
+    <div class="stat rv"><span class="stat-n">20</span><span class="stat-l">PDC prévus — Phase 1</span></div>
+    <div class="stat rv d1"><span class="stat-n">8</span><span class="stat-l">communes cibles</span></div>
+    <div class="stat rv d2"><span class="stat-n">440 kW</span><span class="stat-l">puissance AC projetée</span></div>
+    <div class="stat rv d3"><span class="stat-n">64 %</span><span class="stat-l">visés via ADVENIR</span></div>
+  </div>
+</div>
+
+<!-- ════════════════ MISSION ════════════════ -->
+<section class="mission" id="mission">
+  <div class="section-inner">
+    <div class="mission-grid rv">
+      <div class="pillars">
+        <div class="pillar">
+          <h3><div class="pico">🌿</div> Environnement</h3>
+          <p>Réduire les émissions de CO₂ et particules fines en Guyane en démocratisant les transports zéro émission.</p>
+        </div>
+        <div class="pillar">
+          <h3><div class="pico">💰</div> Économies</h3>
+          <p>Jusqu'à 1 804 €/an économisés versus l'essence pour 30 000 km — l'électricité coûte 3× moins cher.</p>
+        </div>
+        <div class="pillar">
+          <h3><div class="pico">🗺️</div> Accessibilité</h3>
+          <p>Un réseau dans chaque commune guyanaise pour permettre les déplacements inter-communaux en VE.</p>
+        </div>
+        <div class="pillar">
+          <h3><div class="pico">🏗️</div> Emploi local</h3>
+          <p>Création d'emplois locaux, partenariats mairies/collectivités, structuration d'une filière IRVE en Guyane.</p>
+        </div>
+      </div>
+      <div class="mission-text">
+        <div class="badge">Notre Mission</div>
+        <h2>Équiper la Guyane en bornes de recharge pour véhicules électriques</h2>
+        <p>
+          EGREENCITY'S part d'un constat : la Guyane ne dispose d'aucun réseau de recharge public inter-communal structuré.
+          Les conducteurs de VE sont aujourd'hui limités à leur commune. Notre ambition : accompagner mairies, collectivités
+          et entreprises dans la mise en place des infrastructures qui rendront la mobilité électrique accessible à tous.
+        </p>
+        <p>
+          Nous proposons la <strong>fourniture, l'installation et la maintenance</strong> de bornes de recharge
+          (AC 2×22 kW et DC rapide 120 kW), en partenariat avec le fabricant français <strong>E-TOTEM</strong>
+          et dans le respect des exigences du programme <strong>ADVENIR</strong> (AVERE-France).
+        </p>
+        <p>
+          Société par actions simplifiée au capital de 250 €, immatriculée au RCS de Cayenne
+          (<strong>SIREN 878 682 854</strong>). Nos prestations : vente d'équipements IRVE, étude
+          d'implantation, raccordement EDF SEI, supervision OCPP 1.6J et montage des dossiers de subvention.
+        </p>
+        <div class="avantages">
+          <div class="av"><div class="chk">✓</div><span>Bonus écologique 2026 jusqu'à 4 000 €</span></div>
+          <div class="av"><div class="chk">✓</div><span>Recharge à faible coût</span></div>
+          <div class="av"><div class="chk">✓</div><span>Peu d'entretien</span></div>
+          <div class="av"><div class="chk">✓</div><span>Zéro émission CO₂</span></div>
+          <div class="av"><div class="chk">✓</div><span>Assurance moins chère</span></div>
+          <div class="av"><div class="chk">✓</div><span>Norme ADVENIR certifiée</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ PRODUITS ════════════════ -->
+<section class="products" id="produits">
+  <div class="section-inner">
+    <div class="prod-header rv">
+      <div class="badge">Nos Produits</div>
+      <h2 class="title">Une gamme pour chaque usage</h2>
+      <p class="sub">De la borne résidentielle à la borne publique haute puissance — à l'achat ou en location, avec maintenance incluse.</p>
+    </div>
+    <div class="tabs rv">
+      <button class="tab on" onclick="switchTab('part',this)">🏠 Particuliers</button>
+      <button class="tab" onclick="switchTab('entr',this)">🏢 Entreprises</button>
+      <button class="tab" onclick="switchTab('coll',this)">🏛️ Collectivités</button>
+    </div>
+
+    <!-- Particuliers -->
+    <div class="tcontent on" id="t-part">
+      <div class="prod-grid">
+        <div class="pcard rv"><div class="pico2">⚡</div>
+          <h3>E-WALLBOX Monophasé</h3>
+          <p>Borne murale intérieur/extérieur pour recharge quotidienne à domicile. Boîtier INOX robuste, indicateur LED intégré.</p>
+          <ul class="specs">
+            <li>Puissance : 3 / 7 / 11 / 22 kW</li>
+            <li>Prise T2 ou câble attaché 5 m</li>
+            <li>INOX 304 peinture Epoxy — IP55 IK10</li>
+            <li>−20°C à +50°C · Poids 6,5 kg</li>
+            <li>Mode de charge 3</li>
+          </ul>
+          <span class="warranty">Garantie 24 mois</span>
+        </div>
+        <div class="pcard rv d1"><div class="pico2">🔌</div>
+          <h3>E-WALLBOX Triphasé</h3>
+          <p>Recharge plus rapide avec branchement triphasé. Anti-vol câble, connexion Ethernet + GPRS, identification RFID/NFC.</p>
+          <ul class="specs">
+            <li>Jusqu'à 22 kW triphasé</li>
+            <li>Prise T2S ou type E (optionnel)</li>
+            <li>Câble fixe 5 ou 8 m (option)</li>
+            <li>Anti-vol : câble verrouillé</li>
+            <li>RFID NFC · Plug & Charge LED</li>
+          </ul>
+          <span class="warranty">Garantie 24 mois</span>
+        </div>
+        <div class="pcard rv d2"><div class="pico2">📋</div>
+          <h3>Offre Complète</h3>
+          <p>Étude d'installation personnalisée, pose par électricien agréé, contrat de maintenance 36 mois. Achat ou location.</p>
+          <ul class="specs">
+            <li>Étude d'éligibilité offerte</li>
+            <li>Installation certifiée Qualifelec</li>
+            <li>Contrat maintenance 36 mois</li>
+            <li>Support technique dédié</li>
+            <li>Formule achat ou location</li>
+          </ul>
+          <span class="warranty">Accompagnement intégral</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entreprises -->
+    <div class="tcontent" id="t-entr">
+      <div class="prod-grid">
+        <div class="pcard rv"><div class="pico2">🏢</div>
+          <h3>City Borne Standard</h3>
+          <p>Borne compacte murale ou sur pied pour parking d'entreprise. Gestion de flotte professionnelle simplifiée.</p>
+          <ul class="specs">
+            <li>3 à 22 kW — Solo ou Duo (2 prises)</li>
+            <li>RFID, digicode ou bouton</li>
+            <li>IP55 IK10 · −25°C à +55°C</li>
+            <li>Ethernet ou Modem 3G</li>
+            <li>Compteur EV Ready intégré</li>
+          </ul>
+          <span class="warranty">Garantie 24 mois</span>
+        </div>
+        <div class="pcard rv d1"><div class="pico2">⚙️</div>
+          <h3>E-TWIN 2×22 kW</h3>
+          <p>2 points de charge simultanés. Écran tactile 10", accès RFID/NFC/QR code, gestion dynamique de l'énergie.</p>
+          <ul class="specs">
+            <li>2 VE en simultané — 3 à 22 kW</li>
+            <li>RFID / NFC / SMS / QR code</li>
+            <li>Écran tactile 10" (option)</li>
+            <li>Norme ZE Ready · OCPP</li>
+            <li>TPE paiement sans contact (option)</li>
+          </ul>
+          <span class="warranty">Garantie 24 mois</span>
+        </div>
+        <div class="pcard rv d2"><div class="pico2">⚡</div>
+          <h3>Quickcharger 50 kW DC</h3>
+          <p>Recharge rapide courant continu. Charge complète en ~30 min. Pour stations service, grandes surfaces et parkings publics.</p>
+          <ul class="specs">
+            <li>50 kW DC — Combo2 & CHAdeMO</li>
+            <li>Simultané AC + DC</li>
+            <li>Écran tactile anti-vandale 7"</li>
+            <li>RFID / NFC / SMS · OCPP 1.6</li>
+            <li>Supervision à distance</li>
+          </ul>
+          <span class="warranty">Garantie 24 mois</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Collectivités -->
+    <div class="tcontent" id="t-coll">
+      <div class="prod-grid">
+        <div class="pcard rv"><div class="pico2">🏛️</div>
+          <h3>City Borne Voirie</h3>
+          <p>4 prises, 2 points de charge. Pour voirie publique et parkings collectifs. Accessible PMR, résistante et connectée.</p>
+          <ul class="specs">
+            <li>4 prises — 3 à 22 kW par point</li>
+            <li>RFID badge transport · NFC option</li>
+            <li>Modem 3G/4G · Écran 10" option</li>
+            <li>IP54 IK10 · Acier inoxydable</li>
+            <li>Socle béton · Délai install. 4 mois</li>
+          </ul>
+          <span class="warranty">Garantie 24 mois</span>
+        </div>
+        <div class="pcard rv d1"><div class="pico2">🔑</div>
+          <h3>Abonnement Public</h3>
+          <p>Badge mensuel à accès illimité sur le réseau de bornes publiques. Supervision GIREVE, données publiées sur DATA.GOUV.</p>
+          <ul class="specs">
+            <li>Badge accès illimité aux bornes</li>
+            <li>Abonnement mensuel / véhicule</li>
+            <li>Connexion plateforme GIREVE</li>
+            <li>Données open data DATA.GOUV</li>
+            <li>Rapport mensuel consommation</li>
+          </ul>
+          <span class="warranty">Sur abonnement</span>
+        </div>
+        <div class="pcard rv d2"><div class="pico2">🔧</div>
+          <h3>Maintenance ADVENIR</h3>
+          <p>Contrat 36 mois obligatoire pour les subventions ADVENIR. Techniciens certifiés Qualifelec et AFNOR.</p>
+          <ul class="specs">
+            <li>Contrat 36 mois (norme ADVENIR)</li>
+            <li>Contrôle annuel obligatoire</li>
+            <li>Certifications Qualifelec / AFNOR</li>
+            <li>Remplacement immédiat si panne</li>
+            <li>Signalétique sol + panneau inclus</li>
+          </ul>
+          <span class="warranty">36 mois inclus</span>
+        </div>
+
+        <!-- ── E-PREMIUM AC 2×22 kW ── -->
+        <div class="pcard rv pcard-new" style="border-color:rgba(51,204,0,.38);box-shadow:0 0 0 2px rgba(51,204,0,.10);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+            <div class="pico2" style="background:linear-gradient(135deg,var(--green),var(--green-dark));">⚡</div>
+            <span style="background:var(--green);color:#fff;font-size:.65rem;font-weight:800;padding:.25rem .65rem;border-radius:50px;letter-spacing:.5px;text-transform:uppercase;">Disponible</span>
+          </div>
+          <h3>e-Premium AC — Pied 2×22 kW</h3>
+          <p>Borne publique AC haute puissance pour voirie et parkings collectifs. 2 véhicules simultanément, inox 316L tropical, supervision OCPP 1.6J intégrée.</p>
+          <ul class="specs">
+            <li>2 × 22 kW AC — Type 2 + Prise E domestique</li>
+            <li>Inox 316L · Anti-graffiti · IP 54 · IEC 61851-22</li>
+            <li>Écran tactile 10" multilingue FR/EN/ES/PT/NL</li>
+            <li>RFID + CB sans contact + App mobile</li>
+            <li>2 compteurs MID certifiés · Modem 4G · OCPP 1.6J</li>
+            <li>Parafoudre Type 2 · Disjoncteur différentiel</li>
+            <li>Signalétique ADVENIR incluse</li>
+          </ul>
+          <div style="margin-top:1.2rem;border-top:1px solid rgba(51,204,0,.15);padding-top:1rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.55rem .85rem;background:rgba(51,204,0,.09);border-radius:9px;border:1px solid rgba(51,204,0,.2);">
+              <span style="font-size:.8rem;font-weight:700;color:var(--green-deep);">Prix unitaire HT</span>
+              <span style="font-size:1.1rem;font-weight:800;color:var(--green);">8 123 €</span>
+            </div>
+            <p style="margin:.55rem 0 0;font-size:.7rem;opacity:.6;font-style:italic;">Frais de livraison non inclus</p>
+          </div>
+          <span class="warranty" style="margin-top:.8rem;display:inline-block;">Garantie 24 mois</span>
+        </div>
+
+        <!-- ── E-FAST S120-2 ── -->
+        <div class="pcard rv pcard-new" style="border-color:rgba(51,204,0,.3);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+            <div class="pico2" style="background:linear-gradient(135deg,#0a4800,#1a8000);">⚡</div>
+            <span style="background:var(--green);color:#fff;font-size:.65rem;font-weight:800;padding:.25rem .65rem;border-radius:50px;letter-spacing:.5px;text-transform:uppercase;">Nouvelle gamme</span>
+          </div>
+          <h3>E-Fast Stand Alone S120-2</h3>
+          <p>Borne de recharge ultra-rapide DC 120 kW pour stations publiques. 2 véhicules simultanément, upgradable jusqu'à 360 kW.</p>
+          <ul class="specs">
+            <li>120 kW DC — 2 câbles CCS2 (5 m)</li>
+            <li>Tension 400 à 800 V</li>
+            <li>Lecteur RFID · Compteur MID</li>
+            <li>Écran tactile 10" · Borne inox</li>
+            <li>Modem 4G inclus</li>
+            <li>TPE paiement CB sans contact (option)</li>
+            <li>Upgradable jusqu'à 360 kW</li>
+          </ul>
+          <div style="margin-top:1.2rem;border-top:1px solid rgba(51,204,0,.15);padding-top:1rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.55rem .85rem;background:rgba(51,204,0,.09);border-radius:9px;border:1px solid rgba(51,204,0,.2);">
+              <span style="font-size:.8rem;font-weight:700;color:var(--green-deep);">Prix unitaire HT</span>
+              <span style="font-size:1.1rem;font-weight:800;color:var(--green);">50 868 €</span>
+            </div>
+            <p style="margin:.55rem 0 0;font-size:.7rem;opacity:.6;font-style:italic;">Frais de livraison non inclus</p>
+          </div>
+        </div>
+
+        <!-- ── E-CITY TOTEM 5 DÉPARTS — CARTE ÉTENDUE ── -->
+        <div class="pcard rv pcard-new" style="border-color:rgba(43,77,181,.3);grid-column:span 3;">
+          <!-- En-tête -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:.75rem;">
+            <div style="display:flex;align-items:center;gap:.9rem;">
+              <div class="pico2" style="background:linear-gradient(135deg,var(--blue),var(--blue-light));flex-shrink:0;">🏙️</div>
+              <div>
+                <h3 style="margin:0 0 .2rem;">Gamme e-City — Collectivités &amp; Syndicats</h3>
+                <p style="margin:0;font-size:.85rem;opacity:.7;">Bornes inox pour voirie publique, parkings et espaces urbains · Tarif installateurs 2025</p>
+              </div>
+            </div>
+            <span style="background:var(--blue);color:#fff;font-size:.65rem;font-weight:800;padding:.3rem .8rem;border-radius:50px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;">Nouvelle gamme</span>
+          </div>
+
+          <!-- Grille 2 colonnes : Produit vedette | Gamme complète + Options -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;">
+
+            <!-- Colonne gauche : Totem vedette -->
+            <div>
+              <div style="background:rgba(43,77,181,.08);border:1px solid rgba(43,77,181,.25);border-radius:12px;padding:1.1rem 1.2rem;">
+                <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem;">
+                  <span style="background:var(--blue);color:#fff;font-size:.6rem;font-weight:800;padding:.2rem .55rem;border-radius:50px;text-transform:uppercase;letter-spacing:.4px;">Produit vedette</span>
+                </div>
+                <h4 style="margin:0 0 .7rem;font-size:1rem;color:var(--blue);">Totem de Service — 5 départs 80 A<br>110 kVa Tarif Jaune</h4>
+                <ul class="specs" style="margin:0 0 .9rem;">
+                  <li>5 départs 80 A — 110 kVa Tarif Jaune</li>
+                  <li>TPE paiement CB sans contact inclus</li>
+                  <li>Écran 10" couleur inclus</li>
+                  <li>Logement coffret CIBE intégré</li>
+                  <li>Borne Inox · Prises T2S verrouillables</li>
+                  <li>RFID · Compteur MID</li>
+                </ul>
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem;padding-top:.8rem;border-top:1px solid rgba(43,77,181,.2);">
+                  <span class="warranty">Prix unitaire HT</span>
+                  <span style="font-size:1.1rem;font-weight:800;color:var(--blue);">11 368 €</span>
+                </div>
+                <p style="margin:.55rem 0 0;font-size:.7rem;opacity:.6;font-style:italic;">Frais de livraison non inclus</p>
+              </div>
+
+              <!-- Totem 3 départs (autre Totem) -->
+              <div style="margin-top:1rem;background:rgba(43,77,181,.04);border:1px solid rgba(43,77,181,.15);border-radius:10px;padding:.9rem 1rem;">
+                <h4 style="margin:0 0 .5rem;font-size:.9rem;color:var(--blue);">Totem de Service — 3 départs<br>36 kVa Tarif Bleu</h4>
+                <ul class="specs" style="margin:0 0 .7rem;">
+                  <li>TPE paiement CB sans contact inclus</li>
+                  <li>Écran 10" couleur inclus</li>
+                  <li>Logement coffret CIBE intégré</li>
+                </ul>
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <span class="warranty">Prix unitaire HT</span>
+                  <span style="font-size:.95rem;font-weight:700;color:var(--blue);">10 584 €</span>
+                </div>
+                <p style="margin:.45rem 0 0;font-size:.68rem;opacity:.6;font-style:italic;">Frais de livraison non inclus</p>
+              </div>
+            </div>
+
+            <!-- Colonne droite : Gamme complète + Options -->
+            <div>
+              <!-- Tableau gamme e-City -->
+              <h4 style="margin:0 0 .75rem;font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.7;">Gamme complète e-City</h4>
+              <div style="border:1px solid rgba(43,77,181,.2);border-radius:10px;overflow:hidden;margin-bottom:1.5rem;">
+                <div style="display:grid;grid-template-columns:1fr auto auto;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;opacity:.6;padding:.5rem .8rem;background:rgba(43,77,181,.08);">
+                  <span>Modèle</span><span>Puissance</span><span style="text-align:right;">Prix HT</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto auto;font-size:.8rem;padding:.55rem .8rem;border-top:1px solid rgba(43,77,181,.1);">
+                  <span>Pied solo</span><span style="opacity:.7;padding:0 .8rem;">1×7 kW</span><span style="text-align:right;font-weight:700;">3 626 €</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto auto;font-size:.8rem;padding:.55rem .8rem;border-top:1px solid rgba(43,77,181,.1);background:rgba(43,77,181,.03);">
+                  <span>Pied double</span><span style="opacity:.7;padding:0 .8rem;">2×7 kW</span><span style="text-align:right;font-weight:700;">4 704 €</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto auto;font-size:.8rem;padding:.55rem .8rem;border-top:1px solid rgba(43,77,181,.1);">
+                  <span>Pied solo</span><span style="opacity:.7;padding:0 .8rem;">1×22 kW</span><span style="text-align:right;font-weight:700;">3 920 €</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto auto;font-size:.8rem;padding:.55rem .8rem;border-top:1px solid rgba(43,77,181,.1);background:rgba(43,77,181,.03);">
+                  <span>Pied double</span><span style="opacity:.7;padding:0 .8rem;">2×22 kW</span><span style="text-align:right;font-weight:700;">5 292 €</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto auto;font-size:.8rem;padding:.55rem .8rem;border-top:1px solid rgba(43,77,181,.1);">
+                  <span>Totem 3 départs</span><span style="opacity:.7;padding:0 .8rem;">36 kVa</span><span style="text-align:right;font-weight:700;">10 584 €</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto auto;font-size:.8rem;padding:.55rem .8rem;border-top:1px solid rgba(43,77,181,.1);background:rgba(43,77,181,.08);">
+                  <span style="font-weight:700;color:var(--blue);">⭐ Totem 5 départs</span><span style="opacity:.7;padding:0 .8rem;">110 kVa</span><span style="text-align:right;font-weight:800;color:var(--blue);">11 368 €</span>
+                </div>
+              </div>
+
+              <!-- Options gamme e-City -->
+              <h4 style="margin:0 0 .75rem;font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.7;">Options gamme e-City</h4>
+              <div style="border:1px solid rgba(43,77,181,.2);border-radius:10px;overflow:hidden;">
+                <div style="display:grid;grid-template-columns:1fr auto;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;opacity:.6;padding:.5rem .8rem;background:rgba(43,77,181,.08);">
+                  <span>Option</span><span>Prix HT</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto;font-size:.79rem;padding:.5rem .8rem;border-top:1px solid rgba(43,77,181,.1);">
+                  <span>Borne Maître <span style="opacity:.55;font-size:.72rem;">(solo 7 &amp; 22 kW)</span></span><span style="font-weight:700;">538 €</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto;font-size:.79rem;padding:.5rem .8rem;border-top:1px solid rgba(43,77,181,.1);background:rgba(43,77,181,.03);">
+                  <span>Modem 4G sans carte SIM <span style="opacity:.55;font-size:.72rem;">(avec borne maître)</span></span><span style="font-weight:700;">108 €</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto;font-size:.79rem;padding:.5rem .8rem;border-top:1px solid rgba(43,77,181,.1);">
+                  <span>Prise domestique <span style="opacity:.55;font-size:.72rem;">(solo &amp; Totem)</span></span><span style="font-weight:700;">225 €</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto;font-size:.79rem;padding:.5rem .8rem;border-top:1px solid rgba(43,77,181,.1);background:rgba(43,77,181,.03);">
+                  <span>Afficheur couleur 4,3" <span style="opacity:.55;font-size:.72rem;">(non tactile)</span></span><span style="font-weight:700;">392 €</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto;font-size:.79rem;padding:.5rem .8rem;border-top:1px solid rgba(43,77,181,.1);">
+                  <span>Boitier Maître e-Master <span style="opacity:.55;font-size:.72rem;">(armoire existante)</span></span><span style="font-weight:700;">689 €</span>
+                </div>
+              </div>
+              <p style="margin:.7rem 0 0;font-size:.72rem;opacity:.55;font-style:italic;">Toutes les bornes e-City incluent Borne Inox, Prises T2S verrouillables, Lecteur RFID, Compteur MID, Protections différentielles. <strong>Frais de livraison non inclus.</strong></p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ ÉCONOMIES ════════════════ -->
+<section class="economics" id="economie">
+  <div class="section-inner">
+    <div class="badge rv">Avantages Économiques</div>
+    <h2 class="title rv">Jusqu'à <span id="eco-max">3 262</span> € économisés par an</h2>
+    <p class="sub rv">Sur 30 000 km/an en Guyane, le véhicule électrique coûte jusqu'à <span id="eco-ratio-e">6,4</span>× moins cher que l'essence et <span id="eco-ratio-d">5,2</span>× moins que le diesel.</p>
+    <div class="econ-grid">
+      <div class="rv">
+        <div class="comp-table">
+          <div class="comp-head"><span>Énergie</span><span>Coût / 100 km</span><span>Économie / an</span></div>
+          <div class="comp-row hl">
+            <span class="fuel"><span class="dot g"></span> Électrique</span>
+            <span class="cost" id="cost-e">2,00 €</span>
+            <span class="save pos">Référence</span>
+          </div>
+          <div class="comp-row">
+            <span class="fuel"><span class="dot o"></span> Gazole (Diesel)</span>
+            <span class="cost" id="cost-d">10,35 €</span>
+            <span class="save neg" id="save-d">−2 506 €/an</span>
+          </div>
+          <div class="comp-row">
+            <span class="fuel"><span class="dot r"></span> Essence SP95</span>
+            <span class="cost" id="cost-s">12,87 €</span>
+            <span class="save neg" id="save-s">−3 262 €/an</span>
+          </div>
+        </div>
+        <p class="econ-note">
+          Base : 30 000 km/an · EDF SEI 0,146 €/kWh · VE 13,67 kWh/100 km · Diesel 5,2 L/100 km · Essence 6,5 L/100 km<br>
+          <strong>Tarifs carburants Guyane — <span id="fuel-month">avril 2026</span></strong> :
+          SP95 <span id="fuel-sp95">1,98</span> €/L · Gazole <span id="fuel-gaz">1,99</span> €/L
+          (<a href="https://www.guyane.gouv.fr/Actualites/Prix-des-carburants-en-Guyane" target="_blank" rel="noopener noreferrer" style="color:var(--green-deep);">Arrêté préfectoral — Préfecture de Guyane</a>)
+        </p>
+      </div>
+      <div class="econ-pts rv d1">
+        <div class="econ-pt">
+          <div class="eico">💡</div>
+          <div class="eico-text">
+            <h4>Recharge nocturne à domicile</h4>
+            <p>Chargez la nuit avec votre WallBox, profitez des heures creuses EDF — votre budget carburant divisé par 3.</p>
+          </div>
+        </div>
+        <div class="econ-pt">
+          <div class="eico">🅿️</div>
+          <div class="eico-text">
+            <h4>Réseau public inter-communal (projet)</h4>
+            <p>Notre projet : permettre demain à chaque conducteur de VE d'accéder à des bornes publiques dans chaque commune du littoral guyanais, via un badge unique.</p>
+          </div>
+        </div>
+        <div class="econ-pt">
+          <div class="eico">🏦</div>
+          <div class="eico-text">
+            <h4>Bonus écologique 2026 — jusqu'à 4 000 €</h4>
+            <p>Bonus État pour VE neuf &lt; 47 000 € TTC : 4 000 € (revenu fiscal ≤ 16 300 €/part) · 3 000 € (≤ 26 200 €) · 2 000 € au-delà. Cumulable avec prime à la conversion et fiscalité pro avantageuse.</p>
+          </div>
+        </div>
+        <div class="econ-pt">
+          <div class="eico">🔧</div>
+          <div class="eico-text">
+            <h4>Entretien quasi nul</h4>
+            <p>95% moins de pièces mécaniques qu'un thermique. Pas de vidange, pas de courroie, pas d'embrayage.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ RÉSEAU ════════════════ -->
+<section class="reseau" id="reseau">
+  <div class="section-inner">
+    <div class="badge rv">Projet de Réseau</div>
+    <h2 class="title rv">Projet — 10 bornes AC dans 8 communes (Phase 1)</h2>
+    <p class="sub rv">Projet de déploiement de 20 Points De Charge publics sur l'axe côtier guyanais — du Grand Cayenne à Saint-Laurent-du-Maroni, avec un relais AC à Iracoubo sur la RN1. Démarrage des travaux après notification ADVENIR et conventions mairies.</p>
+    <div class="reseau-grid">
+      <div class="rv">
+        <h3 style="font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:1.2rem;">Communes cibles — Phase 1 (8 communes · 20 PDC prévus)</h3>
+        <div class="communes">
+          <div class="commune cap"><div class="cdot"></div>Cayenne ★ — 2 bornes prévues</div>
+          <div class="commune"><div class="cdot"></div>Matoury</div>
+          <div class="commune"><div class="cdot"></div>Rémire-Montjoly</div>
+          <div class="commune"><div class="cdot"></div>Macouria-Tonate</div>
+          <div class="commune"><div class="cdot"></div>Kourou</div>
+          <div class="commune" style="border-color:rgba(51,204,0,.35);background:rgba(51,204,0,.04);"><div class="cdot" style="background:var(--green);box-shadow:0 0 5px rgba(51,204,0,.5);"></div>Iracoubo ⚡ — 4 PDC · Relais RN1 prévu</div>
+          <div class="commune"><div class="cdot"></div>Saint-Laurent-du-Maroni</div>
+          <div class="commune"><div class="cdot"></div>Mana</div>
+        </div>
+        <p style="margin-top:1.3rem;font-size:.8rem;color:var(--muted);line-height:1.75;">
+          Projet à implanter sur domaine public, sous réserve de la signature de conventions d'occupation avec chaque mairie.
+          Raccordements EDF SEI à coordonner site par site. Supervision OCPP 24/7 prévue en exploitation.
+        </p>
+      </div>
+      <div class="demarche rv d1">
+        <h3>Notre démarche en 4 étapes</h3>
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-t">
+            <strong>Demandes auprès des mairies</strong>
+            <p>Sélection d'emplacements stratégiques : administrations, écoles, centres commerciaux, parkings publics et privés.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-t">
+            <strong>Coordination avec EDF & voirie</strong>
+            <p>Raccordement électrique par organisme agréé EDF. Délai d'installation : 4 mois maximum après réception du matériel.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-t">
+            <strong>Installation & signalétique</strong>
+            <p>Bornes sur socle béton, logo dessiné au sol, panneau de signalisation. Techniciens certifiés Qualifelec / AFNOR.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <div class="step-t">
+            <strong>Mise en service & abonnements</strong>
+            <p>Délivrance des badges d'accès, supervision via plateforme GIREVE, données publiées en open data sur DATA.GOUV.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ INVESTISSEURS ════════════════ -->
+<section class="invest" id="investisseurs">
+  <div class="section-inner">
+    <div class="badge rv">Investisseurs</div>
+    <h2 class="title rv">Rejoignez l'aventure EGREENCITY'S</h2>
+    <p class="sub rv">La mobilité électrique en Guyane est un marché vierge en plein essor. Soyez parmi les premiers à investir dans l'infrastructure de demain.</p>
+    <div class="invest-grid">
+      <div class="icard rv">
+        <span class="inum">290 000</span>
+        <div class="ilabel">Habitants en Guyane</div>
+        <p class="idesc">Un territoire de 83 500 km² avec une population en forte croissance (+2,5%/an), actuellement sans infrastructure VE publique.</p>
+      </div>
+      <div class="icard rv d1">
+        <span class="inum">0</span>
+        <div class="ilabel">Réseau public existant</div>
+        <p class="idesc">Aucun opérateur ne propose à ce jour de réseau public inter-communal en Guyane. EGREENCITY'S se positionne pour devenir le pionnier du secteur.</p>
+      </div>
+      <div class="icard rv d2">
+        <span class="inum">ADVENIR</span>
+        <div class="ilabel">Subventions éligibles</div>
+        <p class="idesc">Installations éligibles au programme national ADVENIR et aux aides régionales pour infrastructures de recharge (IRVE).</p>
+      </div>
+    </div>
+    <div class="icta rv">
+      <div>
+        <h3>Intéressé par notre projet ?</h3>
+        <p>Nous cherchons des investisseurs, partenaires institutionnels et collectivités pour concrétiser le projet de réseau guyanais. Plan d'investissement et prévisionnel financier disponibles sur demande.</p>
+        <div class="advenir">✓ 37 200 € ADVENIR visés &nbsp;·&nbsp; ✓ 20 PDC en projet (Phase 1) &nbsp;·&nbsp; ✓ RCS Cayenne 878 682 854</div>
+      </div>
+      <a href="#contact" class="btn-primary" style="white-space:nowrap;flex-shrink:0;">Nous contacter →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ CONTACT ════════════════ -->
+<section class="contact" id="contact">
+  <div class="section-inner">
+    <div class="badge rv">Contact</div>
+    <h2 class="title rv">Parlons de votre projet</h2>
+    <p class="sub rv">Particulier, entreprise, collectivité ou investisseur — notre équipe vous répond sous 48 h.</p>
+    <div class="contact-grid">
+      <div class="rv">
+        <div class="cinfo">
+          <h3>Nos coordonnées</h3>
+          <div class="citem">
+            <div class="cicon">📧</div>
+            <div class="citem-t"><strong>Email</strong><span>egreencitys@gmail.com</span></div>
+          </div>
+          <div class="citem">
+            <div class="cicon">📞</div>
+            <div class="citem-t"><strong>Téléphone</strong><span>06 51 14 11 18</span></div>
+          </div>
+          <div class="citem">
+            <div class="cicon">📍</div>
+            <div class="citem-t"><strong>Siège Social</strong><span>1, rue Anangosi — Rés. La Rougerie<br>97355 Macouria-Tonate, Guyane</span></div>
+          </div>
+          <div class="citem">
+            <div class="cicon">🏢</div>
+            <div class="citem-t"><strong>Immatriculation</strong><span>SAS · RCS Cayenne 878 682 854<br>Capital 250 € · Imm. 15/11/2019</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="cform rv d1">
+        <h3>Envoyer un message</h3>
+        <form id="contactForm" onsubmit="handleForm(event)">
+          <div class="frow">
+            <div class="fg"><label>Prénom</label><input type="text" placeholder="Votre prénom" required></div>
+            <div class="fg"><label>Nom</label><input type="text" placeholder="Votre nom" required></div>
+          </div>
+          <div class="fg"><label>Email</label><input type="email" placeholder="votre@email.com" required></div>
+          <div class="fg">
+            <label>Je suis</label>
+            <select>
+              <option>Particulier</option>
+              <option>Entreprise</option>
+              <option>Collectivité / Mairie</option>
+              <option>Investisseur</option>
+              <option>Autre</option>
+            </select>
+          </div>
+          <div class="fg"><label>Message</label><textarea placeholder="Décrivez votre projet ou votre demande..." required></textarea></div>
+          <div class="fg" style="flex-direction:row;align-items:flex-start;gap:.6rem;">
+            <input type="checkbox" id="rgpdConsent" required style="margin-top:.3rem;flex-shrink:0;width:auto;">
+            <label for="rgpdConsent" style="font-size:.78rem;line-height:1.4;font-weight:400;">
+              J'accepte que mes données (nom, prénom, email) soient traitées par EGREENCITY'S dans le seul but de répondre à ma demande. Les données sont conservées 3 ans maximum. Conformément au RGPD, je dispose d'un droit d'accès, de rectification et d'effacement via <a href="mailto:egreencitys@gmail.com" style="color:var(--green-deep);">egreencitys@gmail.com</a>. Voir <a href="#confidentialite" style="color:var(--green-deep);">politique de confidentialité</a>. *
+            </label>
+          </div>
+          <button class="btn-send" type="submit">Envoyer le message ✉️</button>
+          <p style="font-size:.7rem;opacity:.6;margin:.5rem 0 0;">* Champ obligatoire. Aucune donnée n'est transmise à des tiers.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ MENTIONS LÉGALES / RGPD ════════════════ -->
+<section id="mentions-legales" style="padding:4rem 0 2rem;background:#f7f9f6;">
+  <div class="container" style="max-width:900px;">
+    <h2 style="color:var(--green-deep);margin-bottom:1.5rem;">Mentions légales</h2>
+    <div style="font-size:.9rem;line-height:1.7;color:#222;">
+      <h3 style="color:var(--green-deep);margin-top:1.2rem;">Éditeur du site</h3>
+      <p><strong>EGREENCITY'S</strong> — Société par Actions Simplifiée (SAS)<br>
+      Capital social : 250 €<br>
+      RCS Cayenne : 878 682 854 · SIREN 878 682 854<br>
+      Siège social : 1 rue Akangoue — Résidence La Rougerie — 97355 Macouria-Tonate, Guyane française<br>
+      Directeur de la publication : Loic Yvon LUDOSKY, Président<br>
+      Contact : <a href="mailto:egreencitys@gmail.com" style="color:var(--green-deep);">egreencitys@gmail.com</a> · 06 51 14 11 18</p>
+
+      <h3 style="color:var(--green-deep);margin-top:1.2rem;">Hébergement</h3>
+      <p><strong>GitHub, Inc.</strong> (service GitHub Pages)<br>
+      88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis<br>
+      Support : <a href="https://support.github.com" target="_blank" rel="noopener noreferrer" style="color:var(--green-deep);">support.github.com</a><br>
+      Téléphone : +1 (877) 448-4820<br>
+      <em>Données hébergées sur l'infrastructure GitHub Pages (CDN mondial). Aucun transfert de données personnelles de visiteurs n'a lieu puisque le site est statique et ne collecte aucune donnée côté serveur. Les soumissions du formulaire de contact sont traitées par EGREENCITY'S (responsable de traitement, voir politique de confidentialité).</em></p>
+
+      <h3 style="color:var(--green-deep);margin-top:1.2rem;">Propriété intellectuelle</h3>
+      <p>L'ensemble des contenus (textes, images, logos, graphismes, photos, vidéos) présents sur ce site sont la propriété exclusive d'EGREENCITY'S ou de ses partenaires. Toute reproduction, représentation, diffusion ou rediffusion, totale ou partielle, sans autorisation écrite préalable est interdite (art. L.122-4 du Code de la propriété intellectuelle).</p>
+
+      <h3 style="color:var(--green-deep);margin-top:1.2rem;">Marques citées</h3>
+      <p>E-TOTEM® et les références de produits (e-Premium AC, e-Fast, gamme e-City) sont des marques déposées appartenant à E-TOTEM SAS. ADVENIR est un programme de l'AVERE-France.</p>
+
+      <h3 style="color:var(--green-deep);margin-top:1.2rem;">Responsabilité</h3>
+      <p>Les informations diffusées sur ce site sont données à titre indicatif. Les tarifs affichés sont HT, hors frais de livraison et hors installation. Toute commande fait l'objet d'un devis formel préalable. EGREENCITY'S se réserve le droit de modifier à tout moment le contenu du site sans préavis.</p>
+    </div>
+
+    <h2 id="confidentialite" style="color:var(--green-deep);margin:3rem 0 1.5rem;">Politique de confidentialité (RGPD)</h2>
+    <div style="font-size:.9rem;line-height:1.7;color:#222;">
+      <h3 style="color:var(--green-deep);margin-top:1.2rem;">Responsable du traitement</h3>
+      <p>EGREENCITY'S SAS — SIREN 878 682 854 — <a href="mailto:egreencitys@gmail.com" style="color:var(--green-deep);">egreencitys@gmail.com</a></p>
+
+      <h3 style="color:var(--green-deep);margin-top:1.2rem;">Données collectées et finalité</h3>
+      <p>Via le formulaire de contact, nous collectons : prénom, nom, adresse email, catégorie d'usager (particulier, entreprise, collectivité, investisseur) et contenu du message. Ces données sont utilisées <strong>exclusivement</strong> pour répondre à votre demande commerciale ou informationnelle. Aucun profilage, aucune prospection automatisée.</p>
+
+      <h3 style="color:var(--green-deep);margin-top:1.2rem;">Base légale</h3>
+      <p>Consentement explicite de l'utilisateur (art. 6.1.a du RGPD) matérialisé par la case à cocher du formulaire.</p>
+
+      <h3 style="color:var(--green-deep);margin-top:1.2rem;">Durée de conservation</h3>
+      <p>Les données du formulaire sont conservées <strong>3 ans maximum</strong> à compter du dernier contact, puis supprimées.</p>
+
+      <h3 style="color:var(--green-deep);margin-top:1.2rem;">Destinataires</h3>
+      <p>Seuls les collaborateurs autorisés d'EGREENCITY'S accèdent aux données. <strong>Aucune transmission à des tiers</strong>, aucun transfert hors Union Européenne.</p>
+
+      <h3 style="color:var(--green-deep);margin-top:1.2rem;">Vos droits</h3>
+      <p>Conformément au RGPD (règlement UE 2016/679) et à la loi Informatique et Libertés, vous disposez des droits suivants : accès, rectification, effacement, limitation, portabilité, opposition. Pour les exercer : <a href="mailto:egreencitys@gmail.com" style="color:var(--green-deep);">egreencitys@gmail.com</a>.</p>
+      <p>En cas de différend, vous pouvez introduire une réclamation auprès de la <strong>CNIL</strong> — 3 place de Fontenoy, 75007 Paris — <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" style="color:var(--green-deep);">www.cnil.fr</a>.</p>
+    </div>
+
+    <h2 id="cookies" style="color:var(--green-deep);margin:3rem 0 1.5rem;">Gestion des cookies</h2>
+    <div style="font-size:.9rem;line-height:1.7;color:#222;">
+      <p>Ce site <strong>n'utilise aucun cookie de traçage</strong>, aucun outil d'analyse tiers (Google Analytics, Meta Pixel, etc.), aucun cookie publicitaire. Seules les polices Google Fonts sont chargées via CDN (sans dépôt de cookie sur votre navigateur grâce à la configuration <code>display=swap</code>).</p>
+      <p>Aucune bannière de consentement n'est donc requise au sens de la délibération CNIL n° 2020-091 du 17 septembre 2020.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ FOOTER ════════════════ -->
+<footer>
+  <div class="foot-inner">
+    <div class="foot-top">
+      <div class="fbrand">
+        <div class="logo-name">EGREENCITY'S</div>
+        <span class="logo-tag">Borne De Recharge Électrique · Guyane</span>
+        <p>Projet de réseau de bornes de recharge en Guyane. Fourniture, installation et maintenance pour particuliers, entreprises et collectivités. Dossier ADVENIR en préparation.</p>
+      </div>
+      <div class="fcol">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#mission">Notre Mission</a></li>
+          <li><a href="#produits">Produits</a></li>
+          <li><a href="#economie">Économies</a></li>
+          <li><a href="#reseau">Le Réseau</a></li>
+          <li><a href="#investisseurs">Investisseurs</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h4>Produits</h4>
+        <ul>
+          <li><a href="#produits">WallBox Particuliers</a></li>
+          <li><a href="#produits">City Borne Entreprises</a></li>
+          <li><a href="#produits">Borne Voirie Publique</a></li>
+          <li><a href="#produits">Quickcharger 50 kW</a></li>
+          <li><a href="#produits">Maintenance ADVENIR</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:egreencitys@gmail.com">egreencitys@gmail.com</a></li>
+          <li><a href="tel:0651141118">06 51 14 11 18</a></li>
+          <li><a href="#investisseurs">Investisseurs</a></li>
+          <li><a href="#contact">Nous écrire</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 EGREENCITY'S — Tous droits réservés</span>
+      <span class="foot-rcs">SAS · RCS Cayenne 878 682 854 · Capital 250 € · 97355 Macouria-Tonate, Guyane</span>
+      <span class="foot-legal" style="display:flex;gap:1rem;flex-wrap:wrap;">
+        <a href="#mentions-legales" style="color:inherit;opacity:.85;">Mentions légales</a>
+        <a href="#confidentialite" style="color:inherit;opacity:.85;">Politique de confidentialité</a>
+        <a href="#cookies" style="color:inherit;opacity:.85;">Cookies</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<div id="toast">Message envoyé — nous vous répondrons sous 48 h !</div>
+
+<script>
+  // Navbar scroll shadow
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 60), {passive:true});
+
+  // Product tabs
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tcontent').forEach(t => t.classList.remove('on'));
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+    document.getElementById('t-' + id).classList.add('on');
+    btn.classList.add('on');
+  }
+
+  // Scroll reveal
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, {threshold: 0.1});
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+  // Counter animation
+  const cio = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target, target = +el.dataset.count;
+      if (!target) return;
+      let cur = 0;
+      const step = target / 45;
+      const t = setInterval(() => {
+        cur = Math.min(cur + step, target);
+        el.textContent = Math.floor(cur);
+        if (cur >= target) clearInterval(t);
+      }, 35);
+      cio.unobserve(el);
+    });
+  }, {threshold: 0.5});
+  document.querySelectorAll('[data-count]').forEach(el => cio.observe(el));
+
+  // Form toast
+  function handleForm(e) {
+    e.preventDefault();
+    const consent = document.getElementById('rgpdConsent');
+    if (consent && !consent.checked) {
+      alert('Merci de cocher la case de consentement RGPD avant d\x27envoyer votre demande.');
+      return;
+    }
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    e.target.reset();
+    setTimeout(() => toast.classList.remove('show'), 3500);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // Calcul dynamique des avantages économiques VE vs thermique — Guyane
+  // Source tarifs : Arrêté préfectoral mensuel — Préfecture de Guyane
+  // Mise à jour à effectuer chaque mois (1er du mois)
+  // ═══════════════════════════════════════════════════════════════════
+  const GUYANE_FUEL = {
+    month: "avril 2026",          // Mois de l'arrêté préfectoral
+    sp95:  1.98,                  // €/L — SP95 sans plomb
+    gazole:1.99,                  // €/L — gazole routier
+    sourceUrl: "https://www.guyane.gouv.fr/Actualites/Prix-des-carburants-en-Guyane"
+  };
+  const CONSO = {
+    kmPerYear:   30000,           // km/an de référence
+    ev_kwh_100:  13.67,           // kWh / 100 km (moyenne VE)
+    edf_kwh:     0.146,           // €/kWh — EDF SEI Guyane tarif bleu HC
+    diesel_l_100:5.2,             // L / 100 km (moyenne diesel)
+    essence_l_100:6.5             // L / 100 km (moyenne essence)
+  };
+  function fmtEur(n){ return n.toLocaleString('fr-FR', {maximumFractionDigits:0}) + ' €'; }
+  function fmtDec(n, d){ return n.toLocaleString('fr-FR', {minimumFractionDigits:d, maximumFractionDigits:d}); }
+  function updateEconomics(){
+    const c_ev  = CONSO.ev_kwh_100   * CONSO.edf_kwh;        // €/100 km électrique
+    const c_d   = CONSO.diesel_l_100 * GUYANE_FUEL.gazole;   // €/100 km diesel
+    const c_s   = CONSO.essence_l_100* GUYANE_FUEL.sp95;     // €/100 km essence
+    const save_d= (c_d - c_ev) * (CONSO.kmPerYear / 100);
+    const save_s= (c_s - c_ev) * (CONSO.kmPerYear / 100);
+    const ratio_s = c_s / c_ev;
+    const ratio_d = c_d / c_ev;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('cost-e',  fmtDec(c_ev, 2) + ' €');
+    set('cost-d',  fmtDec(c_d,  2) + ' €');
+    set('cost-s',  fmtDec(c_s,  2) + ' €');
+    set('save-d',  '−' + fmtEur(save_d) + '/an');
+    set('save-s',  '−' + fmtEur(save_s) + '/an');
+    set('eco-max', fmtEur(Math.max(save_d, save_s)).replace(' €',''));
+    set('eco-ratio-e', fmtDec(ratio_s, 1));
+    set('eco-ratio-d', fmtDec(ratio_d, 1));
+    set('fuel-month', GUYANE_FUEL.month);
+    set('fuel-sp95',  fmtDec(GUYANE_FUEL.sp95,  2));
+    set('fuel-gaz',   fmtDec(GUYANE_FUEL.gazole,2));
+  }
+  updateEconomics();
+</script>
+</body>
+</html>

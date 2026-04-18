@@ -1,0 +1,220 @@
+═══════════════════════════════════════════════════════════════════════════════
+MODÈLE — LETTRE D'INTENTION DE PARTENARIAT IRVE
+Destinataire : Monsieur/Madame le Maire de [COMMUNE]
+═══════════════════════════════════════════════════════════════════════════════
+
+INSTRUCTIONS D'UTILISATION :
+  1. Remplacer [COMMUNE] par le nom de la commune
+  2. Remplacer [TITRE] par "Monsieur le Maire" ou "Madame la Maire"
+  3. Remplacer [NOM_MAIRE] par le nom complet du maire
+  4. Remplacer [ADRESSE_SITE] par l'adresse exacte du site proposé
+  5. Remplacer [DESCRIPTION_SITE] par ex. "Place de la Mairie" ou "Parking communal"
+  6. Compléter la date et le numéro LRAR
+  7. Imprimer, signer en ORIGINAL — envoyer par LRAR + copie par email mairie
+
+COMMUNES CIBLES (9) :
+  S01/S02 → Mairie de Cayenne
+  S03     → Mairie de Matoury
+  S04     → Mairie de Rémire-Montjoly
+  S05     → Mairie de Macouria
+  S06/S07 → Mairie de Kourou
+  S08     → Mairie de Sinnamary
+  S09     → Mairie de Saint-Laurent-du-Maroni
+  S10     → Mairie de Mana
+  S11     → Mairie de Roura
+
+═══════════════════════════════════════════════════════════════════════════════
+
+
+                                              EGREENCITY'S
+                                              SAS au capital de 250 €
+                                              1 rue Akangoue
+                                              Résidence La Rougerie
+                                              97355 MACOURIA-TONATE
+
+                                              RCS Cayenne 878 682 854
+                                              N° Gestion 2019 B 816
+                                              Tél   : 07 [à compléter]
+                                              Email : contact@egreencity.fr
+
+
+                                              Mairie de [COMMUNE]
+                                              Service Domaine Public / Voirie
+                                              [Adresse mairie]
+                                              [Code postal] [COMMUNE]
+
+
+                                              Macouria-Tonate, le ___/___/2026
+
+                                              LRAR n° _______________________
+
+
+Objet : Lettre d'intention de partenariat — Déploiement de bornes de recharge
+        pour véhicules électriques sur voirie publique — Programme ADVENIR
+        Site envisagé : [ADRESSE_SITE] — [DESCRIPTION_SITE]
+
+
+[TITRE],
+
+J'ai l'honneur de solliciter votre accord de principe pour l'installation
+d'une **borne de recharge pour véhicules électriques** sur le domaine public
+de la commune de [COMMUNE], dans le cadre du programme national ADVENIR.
+
+── 1. PRÉSENTATION DE LA SOCIÉTÉ ────────────────────────────────────────────
+
+EGREENCITY'S est une société guyanaise (SAS — SIREN 878 682 854, siège à
+Macouria-Tonate) spécialisée dans la vente, l'installation et la maintenance
+de bornes de rechargement pour véhicules électriques, immatriculée depuis
+novembre 2019.
+
+── 2. LE PROJET ─────────────────────────────────────────────────────────────
+
+EGREENCITY'S déploie, avec le soutien financier du programme national ADVENIR
+(dispositif AVERE-France, labellisé par l'État), un réseau de **22 Points De
+Charge (PDC)** répartis sur **9 communes de Guyane**, dont [COMMUNE].
+
+Pour votre commune, nous proposons l'installation de :
+
+  ┌──────────────────────────────────────────────────────────────────┐
+  │  BORNE e-Premium AC — Pied 2×22 kW                               │
+  │  Fabricant : E-TOTEM (Saint-Étienne, France)                    │
+  │                                                                  │
+  │  • 2 Points De Charge (2 véhicules simultanément)               │
+  │  • Puissance : 44 kW AC (22 kW par prise)                       │
+  │  • Connecteurs : Type 2 (standard européen) + Prise domestique  │
+  │  • Authentification : RFID + CB sans contact + app mobile       │
+  │  • Accès public 24/7 — aucun abonnement requis                  │
+  │  • Protocole OCPP 1.6J — supervision à distance 24/7            │
+  │  • Structure Inox 316L — résistance clima tropicale             │
+  │                                                                  │
+  │  Site proposé : [ADRESSE_SITE]                                   │
+  └──────────────────────────────────────────────────────────────────┘
+
+── 3. AVANTAGES POUR LA COMMUNE ─────────────────────────────────────────────
+
+  ✓  Installation entièrement à la charge d'EGREENCITY'S
+     (aucune dépense pour la commune)
+
+  ✓  Cofinancement par le programme ADVENIR (1 860 €/PDC)
+     → Bornes labellisées par l'État
+
+  ✓  Maintenance, supervision et exploitation gérées par EGREENCITY'S
+     (aucune charge opérationnelle pour les services municipaux)
+
+  ✓  Service public de recharge 24/7, gratuit pour les usagers
+     (hors coût de l'énergie consommée)
+
+  ✓  Création d'un service de mobilité électrique de proximité pour
+     vos administrés, en lien avec la stratégie de mobilité décarbonée
+     de la Collectivité Territoriale de Guyane (CTG)
+
+  ✓  Valorisation de l'image de la commune dans la transition écologique
+     (affichage programme ADVENIR / État)
+
+── 4. MODALITÉS D'INSTALLATION ──────────────────────────────────────────────
+
+  •  Site envisagé      : [ADRESSE_SITE]
+  •  Emprise au sol     : environ 2 m² (socle de borne)
+  •  Raccordement       : par EDF SEI Guyane — démarche pilotée par EGREENCITY'S
+  •  Travaux voirie     : tranchée légère — remise en état après travaux incluse
+  •  Durée installation : 2 à 3 jours (une fois le raccordement EDF réalisé)
+  •  Aucune dépréciation de voirie : la borne est installée en limite
+     de chaussée sur trottoir ou parking, avec marquage au sol conforme
+
+── 5. CONVENTION D'OCCUPATION DU DOMAINE PUBLIC ─────────────────────────────
+
+Le déploiement de la borne implique la signature d'une **Convention
+d'Occupation du Domaine Public (CODP)** entre la commune de [COMMUNE]
+et EGREENCITY'S, précisant :
+
+  • Les coordonnées exactes et la superficie occupée
+  • La durée : 5 ans (conformité ADVENIR) — renouvelable
+  • La redevance : à définir ensemble (possibilité de redevance symbolique
+    compte tenu du caractère d'intérêt général du projet)
+  • Les modalités de maintenance et de contrôle
+
+EGREENCITY'S mettra à disposition de la commune un **modèle de convention**
+prêt à signer, rédigé conformément au Code Général de la Propriété des
+Personnes Publiques (CG3P).
+
+── 6. CALENDRIER ────────────────────────────────────────────────────────────
+
+  •  Réception de votre accord de principe    : dès retour du présent courrier
+  •  Dépôt dossier ADVENIR (avec votre LOI)   : courant 2026
+  •  Instruction AVERE-France                 : 4 à 8 semaines
+  •  Commande matériel E-TOTEM               : après notification ADVENIR
+  •  Installation et mise en service          : dans les 6 mois suivant l'accord
+
+── 7. DEMANDE ────────────────────────────────────────────────────────────────
+
+Par le présent courrier, je vous prie de bien vouloir :
+
+  1. Manifester l'accord de principe de votre commune pour l'implantation
+     d'une borne de recharge sur le site de [ADRESSE_SITE] ;
+
+  2. M'autoriser à faire mention de cet accord dans le dossier de demande
+     de subvention ADVENIR soumis à AVERE-France ;
+
+  3. Convenir d'un rendez-vous avec vos services techniques pour préciser
+     l'implantation exacte et préparer la convention d'occupation.
+
+Je reste à votre entière disposition pour vous rencontrer et vous présenter
+le projet en détail. Vous pouvez me contacter :
+
+  • Par téléphone : 07 [à compléter]
+  • Par email     : contact@egreencity.fr
+  • À notre siège : 1 rue Akangoue — Résidence La Rougerie — 97355 Macouria-Tonate
+
+Je vous adresse, [TITRE], l'expression de mes salutations les plus respectueuses.
+
+
+                                              Loic Yvon LUDOSKY
+                                              Président — EGREENCITY'S
+
+
+                                              Signature :
+
+
+
+
+═══════════════════════════════════════════════════════════════════════════════
+CADRE RÉPONSE (à retourner par courrier ou email à contact@egreencity.fr)
+═══════════════════════════════════════════════════════════════════════════════
+
+Je soussigné(e), [NOM_MAIRE], Maire de [COMMUNE] :
+
+  ☐  DONNE MON ACCORD DE PRINCIPE pour l'installation d'une borne de
+     recharge EGREENCITY'S sur le site de [ADRESSE_SITE]
+
+  ☐  SOUHAITE UN RENDEZ-VUS avant de me prononcer
+     Disponibilités : _______________________________________________
+
+  ☐  REFUSE — Motif : ____________________________________________
+
+
+Fait à [COMMUNE], le ___/___/2026
+
+Signature du Maire et cachet :
+
+
+
+
+═══════════════════════════════════════════════════════════════════════════════
+PROCÉDURE D'ENVOI :
+  • LRAR — Lettre Recommandée avec Accusé de Réception
+  • Destinataire : "Monsieur/Madame le Maire — Service Domaine Public"
+  • CONSERVER l'accusé de réception (pièce D1 du dossier ADVENIR)
+  • Envoyer une copie par email à l'adresse connue de la mairie
+  • En cas de non-réponse à 3 semaines : relance téléphonique (standard mairie)
+
+CONTACTS MAIRIES (à compléter) :
+  Mairie de Cayenne       : 05 94 29 91 00
+  Mairie de Matoury       : 05 94 35 81 81
+  Mairie de Rémire        : 05 94 38 48 00
+  Mairie de Macouria      : 05 94 38 17 00
+  Mairie de Kourou        : 05 94 32 82 82
+  Mairie de Sinnamary     : 05 94 34 51 00
+  Mairie de SLM           : 05 94 34 13 00
+  Mairie de Mana          : 05 94 34 80 05
+  Mairie de Roura         : 05 94 45 60 08
+═══════════════════════════════════════════════════════════════════════════════

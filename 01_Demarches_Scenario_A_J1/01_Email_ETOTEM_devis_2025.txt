@@ -1,0 +1,95 @@
+═══════════════════════════════════════════════════════════════════════════════
+EMAIL N°1 — DEMANDE DE DEVIS 2025 À E-TOTEM
+═══════════════════════════════════════════════════════════════════════════════
+
+À       : Aurore Comte <a.comte@e-totem.fr>    (à confirmer — téléphone : 07 88 29 92 23)
+Cc      : commercial@e-totem.fr
+De      : Loic Ludosky <contact@egreencity.fr>
+Objet   : Demande de devis 2025 — Déploiement 22 PDC Guyane — EGREENCITY'S
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Bonjour Madame Comte,
+
+Je me permets de revenir vers vous dans le cadre du projet de déploiement
+d'infrastructures de recharge pour véhicules électriques qu'EGREENCITY'S
+(SAS au capital de 250 €, RCS Cayenne 878 682 854) pilote actuellement sur
+le territoire de la Guyane française.
+
+Nous sommes en phase finale de montage financier (Scénario Court terme 0-3 mois :
+ADVENIR + Bonus Mobilité + OPCO + BPI Prêt Amorçage DROM + Exonération Octroi
+de Mer) et souhaitons vous adresser une commande ferme sous 4 semaines.
+
+── CONFIGURATION SOUHAITÉE ──────────────────────────────────────────────────
+
+LOT 1 — e-Premium AC  ×10 unités
+  • Borne Inox 2×22 kW (2 prises T2 + 2 prises E, RFID, 2 MID, diff., parafoudre T2)
+  • Option écran tactile 10" couleur 5 langues
+  • Option pied pouvant intégrer coffret CIBE
+  • Option Modem 4G (sans carte SIM)
+  • Option anti-graffiti
+
+LOT 2 — e-Fast S Stand Alone S120-2  ×1 unité  (120 kW DC)
+  • 2 câbles CCS2 5 m, RFID, compteur MID, écran tactile 10"
+  • Option Modem 4G
+  • Option TPE paiement bancaire CB sans contact
+
+LOT 3 — Forfait Supervision & Services
+  (Référence devis DEV17000172-6)
+  • Application smartphone iOS + Android
+  • Interface Homme Machine multimédia + licences 22 bornes
+  • Maintenance annuelle + Hotline niveau 2 (22 PDC)
+
+── DEMANDES ─────────────────────────────────────────────────────────────────
+
+Pourriez-vous me faire parvenir :
+
+  1. Un devis actualisé 2025 pour l'ensemble des lots ci-dessus
+     (nos références tarifaires sont celles de « Offre installateurs 2025 »).
+
+  2. Les fiches techniques officielles (au format PDF) des bornes e-Premium AC
+     et e-Fast S — nécessaires au dépôt du dossier ADVENIR auprès d'AVERE-France.
+     Merci de préciser explicitement :
+       • La puissance nominale par PDC
+       • Le protocole OCPP (1.6J minimum pour ADVENIR)
+       • Les certifications (MID, NF, IEC 61851)
+
+  3. Un devis **transport fret Guyane** pour l'e-Fast S
+     (le catalogue précise « transport non inclus »).
+     Livraison à notre établissement principal :
+       1 rue Akangoue — Résidence La Rougerie
+       97355 MACOURIA-TONATE — Guyane française
+     Merci d'indiquer :
+       • Port de départ et compagnie maritime
+       • Délai d'acheminement (Saint-Étienne → Cayenne)
+       • Conditionnement et masse brute
+
+  4. Votre attestation en tant que **fournisseur agréé ADVENIR**
+     (dispositif AVERE-France voirie publique).
+
+  5. Les conditions de garantie et SAV applicables aux DROM (Guyane).
+
+── CALENDRIER VISÉ ──────────────────────────────────────────────────────────
+
+  • Semaine 4   : Commande ferme + acompte
+  • Semaine 6-10: Production + fret Guyane
+  • Semaine 10-12: Livraison + installation + mise en service
+
+Je reste à votre disposition pour un point téléphonique.
+
+Cordialement,
+
+Loic LUDOSKY
+Président
+EGREENCITY'S — SAS au capital de 250 €
+Siège : 1 rue Akangoue — Résidence La Rougerie — 97355 MACOURIA-TONATE
+RCS Cayenne 878 682 854 — N° Gestion 2019 B 816
+Tél : 07 [à compléter]
+Email : contact@egreencity.fr
+
+═══════════════════════════════════════════════════════════════════════════════
+PIÈCES JOINTES À PRÉPARER AVANT ENVOI :
+  [ ] Plan d'implantation prévisionnel (22 points, communes cibles)
+  [ ] Convention-type d'occupation domaine public (si déjà signée)
+  [ ] K-bis EGREENCITY'S (15/11/2019)
+═══════════════════════════════════════════════════════════════════════════════
