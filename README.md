@@ -15,7 +15,8 @@ Site vitrine statique d'EGREENCITY'S (SAS — SIREN 878 682 854) — fourniture,
 
 Le site est déployé automatiquement via GitHub Pages depuis la branche `main`.
 
-URL publique : https://ludosky76.github.io/egreencitys/
+URL publique : https://egreencitys.fr (custom domain via GitHub Pages)
+URL de secours : https://ludosky76.github.io/egreencitys/
 
 ## Conformité
 
