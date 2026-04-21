@@ -37,12 +37,8 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://egreencitys.com/#mentions-legales</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://egreencitys.com/#confidentialite</loc>
+    <loc>https://egreencitys.com/mentions-legales.html</loc>
+    <lastmod>2026-04-21</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
