@@ -7,3 +7,10 @@ Thumbs.db
 *.xlsx~$*
 .vscode/
 .idea/
+
+# Scripts contenant des secrets — ne JAMAIS commiter
+_ovh_dns.py
+*.secret
+*.key
+.env
+.env.*

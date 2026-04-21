@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Pas de zones privées sur le site vitrine
+Disallow: /_ovh_dns.py
+
+Sitemap: https://egreencitys.com/sitemap.xml
