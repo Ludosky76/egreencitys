@@ -12,7 +12,9 @@
   <!-- Bing Webmaster Tools — verification (optionnel) -->
   <!-- <meta name="msvalidate.01" content="VALEUR_BING"> -->
   <!-- Sécurité : en-têtes recommandés (à doubler côté serveur via HTTP headers) -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self' https://formsubmit.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;">
+  <!-- Application du theme avant le rendu pour eviter le flash -->
+  <script>(function(){var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');})();</script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com https://*.clarity.ms; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://*.clarity.ms; connect-src 'self' https://formsubmit.co https://www.google-analytics.com https://*.google-analytics.com https://*.clarity.ms https://c.bing.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), payment=()">
@@ -44,9 +46,29 @@
   <meta name="twitter:description" content="Fourniture, installation et maintenance de bornes de recharge électrique en Guyane.">
   <meta name="twitter:image" content="https://egreencitys.com/logo.png">
 
-  <!-- Favicons -->
+  <!-- Favicons & PWA -->
   <link rel="icon" type="image/png" href="/logo.png">
   <link rel="apple-touch-icon" href="/logo.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4800">
+
+  <!-- Schema.org FAQPage (rich snippets Google pour les questions fréquentes) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type":"Question","name":"Quel est le prix d'une borne de recharge en Guyane ?","acceptedAnswer":{"@type":"Answer","text":"Les prix varient selon la puissance : WallBox 7 kW particulier à partir de 1 200 € HT, e-City 22 kW entreprise à partir de 3 500 € HT, e-Twin 2x22 kW voirie à partir de 8 500 € HT, Quickcharger DC 50 kW à partir de 25 000 € HT. Les subventions ADVENIR peuvent couvrir jusqu'à 50 % du coût pour les entreprises et 960 € pour les particuliers en copropriété."}},
+      {"@type":"Question","name":"Est-ce éligible au crédit d'impôt en Guyane ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Les particuliers bénéficient du crédit d'impôt transition énergétique (CITE) à hauteur de 75 % du coût, plafonné à 300 € par système de charge, porté à 600 € pour les bornes pilotables. Le programme ADVENIR Résidentiel Collectif subventionne 50 % du coût plafonné à 960 € HT pour les copropriétés."}},
+      {"@type":"Question","name":"Combien de temps pour installer une WallBox ?","acceptedAnswer":{"@type":"Answer","text":"Pour un particulier : étude préalable 1 à 2 jours, délai devis signé à installation 2 à 4 semaines, pose et mise en service 4 à 6 heures sur site. Pour une borne publique ou entreprise : délai standard de 3 à 4 mois incluant démarches EDF SEI, génie civil, pose et mise en service."}},
+      {"@type":"Question","name":"Peut-on installer une borne en copropriété ?","acceptedAnswer":{"@type":"Answer","text":"Oui absolument. Depuis la loi LOM de 2019, tout copropriétaire bénéficie du droit à la prise : il peut demander l'installation d'une borne à ses frais sur sa place de parking sans l'accord préalable de la copropriété. Nous gérons la notification au syndic, l'étude technique et le montage du dossier ADVENIR."}},
+      {"@type":"Question","name":"ADVENIR prend-il en charge les particuliers ?","acceptedAnswer":{"@type":"Answer","text":"Oui partiellement. Le programme ADVENIR 2024-2027 subventionne les particuliers en copropriété à 50 % plafonné à 960 € HT. Pour les particuliers en maison individuelle, il n'y a pas de prime ADVENIR directe mais un crédit d'impôt de 75 % jusqu'à 600 €. Les entreprises et collectivités ont 25 à 50 % selon type de parking, la voirie publique jusqu'à 9 000 € HT par point de charge."}},
+      {"@type":"Question","name":"Quelle puissance choisir pour mon véhicule électrique ?","acceptedAnswer":{"@type":"Answer","text":"Règle basée sur la batterie du véhicule : petite batterie (40 kWh ou moins, comme Zoé ou Leaf) 3,7 kW suffit. Batterie moyenne (40 à 60 kWh, comme Kona ou ID.3) 7,4 kW monophasé. Grande batterie (70 kWh et plus, comme Tesla ou Ioniq 5) 11 ou 22 kW triphasé. Pour une entreprise ou flotte toujours 22 kW triphasé minimum."}},
+      {"@type":"Question","name":"Quelle est la garantie et la maintenance ?","acceptedAnswer":{"@type":"Answer","text":"Matériel neuf : 2 ans constructeur E-TOTEM plus 1 an main d'œuvre. Installation : garantie décennale de l'installateur agréé. Maintenance : contrat 36 mois obligatoire pour obtenir la subvention ADVENIR incluant visite annuelle obligatoire, télésurveillance OCPP, intervention sous 72 h en cas de panne, mise à jour firmware."}},
+      {"@type":"Question","name":"Couvrez-vous toute la Guyane ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Notre zone d'intervention couvre tout le littoral guyanais : Cayenne, Rémire-Montjoly, Matoury, Macouria, Tonate, Montsinéry, Kourou, Sinnamary, Iracoubo, Mana, Saint-Laurent-du-Maroni, Awala-Yalimapo, Roura, Régina, Saint-Georges-de-l'Oyapock. Les communes de l'intérieur comme Maripasoula font l'objet d'études spécifiques selon l'accessibilité EDF SEI."}}
+    ]
+  }
+  </script>
 
   <!-- Schema.org LocalBusiness (référencement local Google) -->
   <script type="application/ld+json">
@@ -401,6 +423,57 @@
       .foot-top{grid-template-columns:1fr;}
       .icta{flex-direction:column;align-items:flex-start;}
     }
+
+    /* ════════ DARK MODE ════════ */
+    html[data-theme="dark"]{color-scheme:dark;}
+    html[data-theme="dark"] body{background:#0a1a05;color:#e8f5e0;}
+    html[data-theme="dark"] nav{background:rgba(10,26,5,.92) !important;border-bottom-color:rgba(51,204,0,.25);}
+    html[data-theme="dark"] .nav-links a{color:#e8f5e0;}
+    html[data-theme="dark"] .partners,
+    html[data-theme="dark"] .faq-section,
+    html[data-theme="dark"] .testimonials,
+    html[data-theme="dark"] .roi-calc,
+    html[data-theme="dark"] .video-section,
+    html[data-theme="dark"] .mission,
+    html[data-theme="dark"] .economics,
+    html[data-theme="dark"] .contact{background:#0a1a05 !important;color:#e8f5e0;}
+    html[data-theme="dark"] .faq-item{background:#122910;border-color:rgba(51,204,0,.2);}
+    html[data-theme="dark"] .faq-item[open]{background:#1a3d15;}
+    html[data-theme="dark"] .faq-body{color:#d0e8c0;}
+    html[data-theme="dark"] .partner-card,
+    html[data-theme="dark"] .testi-card{background:#122910 !important;border-color:rgba(51,204,0,.2);color:#e8f5e0;}
+    html[data-theme="dark"] .testi-text{color:#d0e8c0;}
+    html[data-theme="dark"] .roi-grid{background:linear-gradient(135deg,#0f2408,#122910) !important;border-color:rgba(51,204,0,.25);}
+    html[data-theme="dark"] input,html[data-theme="dark"] textarea,html[data-theme="dark"] select{background:#1a3d15;color:#e8f5e0;border-color:rgba(51,204,0,.3);}
+    html[data-theme="dark"] #cookie-banner{background:#122910;color:#e8f5e0;}
+    html[data-theme="dark"] footer{background:#050e02;}
+    #theme-toggle:hover{background:rgba(51,204,0,.15);}
+
+    /* ════════ Bouton WhatsApp flottant ════════ */
+    .whatsapp-float{
+      position:fixed;bottom:24px;right:24px;z-index:9999;
+      width:64px;height:64px;border-radius:50%;
+      background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;
+      box-shadow:0 8px 24px rgba(37,211,102,.45),0 2px 8px rgba(0,0,0,.15);
+      text-decoration:none;transition:.25s;animation:wappulse 2s infinite;
+    }
+    .whatsapp-float:hover{transform:scale(1.08);box-shadow:0 12px 32px rgba(37,211,102,.55);}
+    .whatsapp-float svg{width:34px;height:34px;fill:#fff;}
+    .whatsapp-float::before{
+      content:attr(data-tooltip);position:absolute;right:74px;top:50%;transform:translateY(-50%);
+      background:#222;color:#fff;padding:.5rem .9rem;border-radius:8px;font-size:.82rem;
+      font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:.2s;
+    }
+    .whatsapp-float:hover::before{opacity:1;}
+    @keyframes wappulse{
+      0%,100%{box-shadow:0 8px 24px rgba(37,211,102,.45),0 0 0 0 rgba(37,211,102,.6);}
+      50%{box-shadow:0 8px 24px rgba(37,211,102,.45),0 0 0 14px rgba(37,211,102,0);}
+    }
+    @media(max-width:600px){
+      .whatsapp-float{width:56px;height:56px;bottom:18px;right:18px;}
+      .whatsapp-float svg{width:28px;height:28px;}
+      .whatsapp-float::before{display:none;}
+    }
   </style>
 </head>
 <body>
@@ -416,6 +489,8 @@
     <li><a href="#economie">Économies</a></li>
     <li><a href="/reseau.html">Réseau</a></li>
     <li><a href="/investisseurs.html">Investisseurs</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><button id="theme-toggle" onclick="toggleTheme()" aria-label="Basculer clair/sombre" title="Basculer thème clair/sombre" style="background:none;border:none;cursor:pointer;font-size:1.25rem;padding:.35rem .5rem;border-radius:8px;transition:.2s;">🌙</button></li>
     <li><a href="#contact" class="btn-nav">Nous contacter</a></li>
   </ul>
 </nav>
@@ -624,8 +699,297 @@
   </div>
 </section>
 
+<!-- ════════════════ TÉMOIGNAGES / CAS CLIENTS ════════════════ -->
+<section class="testimonials" id="temoignages" style="padding:5rem 2rem;background:linear-gradient(180deg,#fff,var(--off));">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:3rem;">
+      <div class="badge rv" style="display:inline-block;padding:.35rem .9rem;background:rgba(43,77,181,.1);color:var(--blue);border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem;">Ils nous font confiance</div>
+      <h2 class="rv" style="font-size:2.2rem;font-weight:800;color:var(--green-deep);line-height:1.2;">Premiers retours<br><em style="color:var(--green);font-style:normal;">de nos partenaires</em></h2>
+    </div>
 
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;">
+      <!-- Carte témoignage type — à personnaliser dès les premiers clients livrés -->
+      <div class="testi-card rv">
+        <div class="quote">"</div>
+        <p class="testi-text">Projet en cours d'instruction. Les premiers témoignages clients apparaîtront ici dès livraison des premières bornes en Guyane.</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,var(--green-deep),var(--green));">👤</div>
+          <div>
+            <div class="testi-name">Votre nom ici</div>
+            <div class="testi-role">Particulier / Entreprise · Commune</div>
+          </div>
+        </div>
+        <div class="testi-stars">★★★★★</div>
+      </div>
 
+      <div class="testi-card rv">
+        <div class="quote">"</div>
+        <p class="testi-text">EGREENCITY'S est en phase de pré-lancement commercial sur le territoire guyanais. Votre projet peut être notre premier cas client référent.</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,var(--blue),#4a6fd8);">🏢</div>
+          <div>
+            <div class="testi-name">Votre entreprise</div>
+            <div class="testi-role">Collectivité / Flotte pro · Commune</div>
+          </div>
+        </div>
+        <div class="testi-stars">★★★★★</div>
+      </div>
+
+      <div class="testi-card rv">
+        <div class="quote">"</div>
+        <p class="testi-text">Dossier ADVENIR en préparation pour 20 points de charge sur le littoral. Les premiers partenariats publics seront communiqués prochainement.</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#8B4513,#D2691E);">🏛️</div>
+          <div>
+            <div class="testi-name">Collectivité pilote</div>
+            <div class="testi-role">Mairie / EPCI · Guyane</div>
+          </div>
+        </div>
+        <div class="testi-stars">★★★★★</div>
+      </div>
+    </div>
+
+    <p style="text-align:center;margin-top:2.5rem;font-size:.85rem;color:var(--muted);">
+      Rejoignez notre programme <strong style="color:var(--green-deep);">Early Adopter</strong> : tarif préférentiel et accompagnement renforcé pour les 10 premiers clients.
+      <a href="#contact" style="color:var(--green);font-weight:700;">Postuler →</a>
+    </p>
+  </div>
+</section>
+<style>
+.testi-card{background:#fff;padding:2rem;border-radius:16px;box-shadow:0 4px 20px rgba(0,80,0,.06);border:1px solid rgba(51,204,0,.1);position:relative;transition:.25s;}
+.testi-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,80,0,.12);border-color:rgba(51,204,0,.3);}
+.testi-card .quote{position:absolute;top:-.5rem;left:1.5rem;font-size:5rem;color:var(--green);opacity:.2;font-family:Georgia,serif;line-height:1;font-weight:900;}
+.testi-text{color:var(--text);line-height:1.7;font-size:.92rem;margin-bottom:1.5rem;font-style:italic;}
+.testi-author{display:flex;align-items:center;gap:.9rem;margin-bottom:.8rem;}
+.testi-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#fff;flex-shrink:0;}
+.testi-name{font-weight:700;color:var(--green-deep);font-size:.95rem;}
+.testi-role{font-size:.78rem;color:var(--muted);}
+.testi-stars{color:#FFB800;font-size:1.1rem;letter-spacing:2px;}
+</style>
+
+<!-- ════════════════ CALCULATEUR ROI ════════════════ -->
+<section class="roi-calc" id="calculateur" style="padding:5rem 2rem;background:#fff;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:3rem;">
+      <div class="badge rv" style="display:inline-block;padding:.35rem .9rem;background:rgba(51,204,0,.1);color:var(--green-deep);border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem;">Calculateur personnalisé</div>
+      <h2 class="rv" style="font-size:2.2rem;font-weight:800;color:var(--green-deep);line-height:1.2;">Combien <em style="color:var(--green);font-style:normal;">économisez-vous</em> ?</h2>
+      <p class="rv" style="margin-top:1rem;color:var(--muted);font-size:1rem;">Saisissez vos données — le calcul se fait en direct avec les tarifs Guyane d'avril 2026.</p>
+    </div>
+
+    <div class="roi-grid" style="display:grid;grid-template-columns:1fr 1.2fr;gap:2.5rem;align-items:start;background:linear-gradient(135deg,var(--off),#fff);padding:2.5rem;border-radius:20px;box-shadow:0 8px 32px rgba(0,80,0,.08);border:1px solid rgba(51,204,0,.15);">
+      <!-- Inputs -->
+      <div>
+        <h3 style="font-size:1.1rem;font-weight:700;color:var(--green-deep);margin-bottom:1.5rem;">Vos paramètres</h3>
+
+        <label style="display:block;margin-bottom:1.2rem;">
+          <span style="display:block;font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:.4rem;">Kilomètres par an</span>
+          <input type="range" id="roi-km" min="5000" max="50000" step="1000" value="15000" style="width:100%;accent-color:var(--green);">
+          <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-top:.3rem;">
+            <span>5 000</span><span id="roi-km-val" style="font-weight:700;color:var(--green-deep);font-size:1rem;">15 000 km</span><span>50 000</span>
+          </div>
+        </label>
+
+        <label style="display:block;margin-bottom:1.2rem;">
+          <span style="display:block;font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:.4rem;">Véhicule actuel</span>
+          <select id="roi-vehicle" style="width:100%;padding:.75rem;border:2px solid rgba(51,204,0,.2);border-radius:10px;font-family:inherit;font-weight:500;color:var(--text);background:#fff;">
+            <option value="essence_peti">Citadine essence (5,5 L/100km)</option>
+            <option value="essence_moy" selected>Berline essence (6,5 L/100km)</option>
+            <option value="essence_suv">SUV essence (8,0 L/100km)</option>
+            <option value="diesel_peti">Citadine diesel (4,5 L/100km)</option>
+            <option value="diesel_moy">Berline diesel (5,2 L/100km)</option>
+            <option value="diesel_suv">SUV diesel (6,5 L/100km)</option>
+            <option value="hybrid">Hybride (4,5 L/100km)</option>
+          </select>
+        </label>
+
+        <label style="display:block;margin-bottom:1rem;">
+          <span style="display:block;font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:.4rem;">Véhicule électrique envisagé</span>
+          <select id="roi-ev" style="width:100%;padding:.75rem;border:2px solid rgba(51,204,0,.2);border-radius:10px;font-family:inherit;font-weight:500;color:var(--text);background:#fff;">
+            <option value="11">Compacte (11 kWh/100km — ex. Zoé, e-208)</option>
+            <option value="14" selected>Berline moyenne (14 kWh/100km — ex. Model 3, Kona)</option>
+            <option value="18">SUV électrique (18 kWh/100km — ex. Model Y, Ioniq 5)</option>
+            <option value="22">Gros SUV (22 kWh/100km — ex. e-Tron, EQC)</option>
+          </select>
+        </label>
+
+        <label style="display:flex;align-items:center;gap:.6rem;font-size:.85rem;color:var(--text);font-weight:500;cursor:pointer;">
+          <input type="checkbox" id="roi-hphc" style="accent-color:var(--green);width:18px;height:18px;">
+          Je recharge en heures creuses (-30% sur le kWh)
+        </label>
+      </div>
+
+      <!-- Résultats -->
+      <div>
+        <h3 style="font-size:1.1rem;font-weight:700;color:var(--green-deep);margin-bottom:1.5rem;">Vos économies estimées</h3>
+
+        <div style="background:linear-gradient(135deg,var(--green-deep),var(--green));color:#fff;padding:2rem;border-radius:16px;margin-bottom:1rem;text-align:center;box-shadow:0 8px 24px rgba(51,204,0,.25);">
+          <div style="font-size:.78rem;text-transform:uppercase;letter-spacing:1.5px;opacity:.9;margin-bottom:.5rem;">Économies par an</div>
+          <div id="roi-save-year" style="font-size:2.8rem;font-weight:900;line-height:1;">— €</div>
+          <div id="roi-save-month" style="font-size:.85rem;opacity:.9;margin-top:.5rem;">soit <strong>— €/mois</strong></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1rem;">
+          <div style="background:#fff;padding:1rem;border-radius:12px;border:1px solid rgba(51,204,0,.15);text-align:center;">
+            <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Carburant thermique</div>
+            <div id="roi-cost-fuel" style="font-size:1.3rem;font-weight:800;color:#c23;margin-top:.2rem;">— €/an</div>
+          </div>
+          <div style="background:#fff;padding:1rem;border-radius:12px;border:1px solid rgba(51,204,0,.15);text-align:center;">
+            <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Électricité borne</div>
+            <div id="roi-cost-ev" style="font-size:1.3rem;font-weight:800;color:var(--green);margin-top:.2rem;">— €/an</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(43,77,181,.06);padding:1rem 1.2rem;border-left:3px solid var(--blue);border-radius:8px;font-size:.82rem;color:var(--text);line-height:1.5;">
+          <strong style="color:var(--blue);">💡 Sur 10 ans</strong> :
+          <span id="roi-10y" style="font-weight:700;color:var(--green-deep);">— €</span> d'économies = <span id="roi-wb-ratio">—</span> WallBox 7 kW financées.
+        </div>
+
+        <a href="#contact" style="display:block;text-align:center;margin-top:1.2rem;padding:.9rem;background:var(--blue);color:#fff;border-radius:50px;font-weight:700;text-decoration:none;font-size:.88rem;transition:.25s;">Demander un devis pour mon installation →</a>
+      </div>
+    </div>
+
+    <p style="text-align:center;margin-top:1.5rem;font-size:.72rem;color:var(--muted);font-style:italic;">
+      Tarifs Guyane avril 2026 — SP95 1,98 €/L · Gazole 1,99 €/L · EDF SEI kWh 0,146 € (tarif bleu) · 0,102 € (heures creuses). Source : <a href="https://www.guyane.gouv.fr/Actualites/Prix-des-carburants-en-Guyane" target="_blank" rel="noopener" style="color:var(--muted);">Préfecture de Guyane</a>.
+    </p>
+  </div>
+</section>
+<style>
+@media(max-width:800px){
+  .roi-grid{grid-template-columns:1fr !important;padding:1.5rem !important;}
+}
+input[type="range"]{-webkit-appearance:none;appearance:none;height:6px;background:linear-gradient(to right,var(--green-deep),var(--green));border-radius:3px;outline:none;}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;background:#fff;border:3px solid var(--green);border-radius:50%;cursor:pointer;box-shadow:0 2px 8px rgba(51,204,0,.4);}
+input[type="range"]::-moz-range-thumb{width:22px;height:22px;background:#fff;border:3px solid var(--green);border-radius:50%;cursor:pointer;}
+</style>
+
+<script>
+(function(){
+  // Tarifs Guyane avril 2026
+  var GUYANE = { sp95:1.98, gazole:1.99, kwh:0.146, kwh_hc:0.102 };
+  var VEHICLES = {
+    essence_peti:{fuel:'sp95', conso:5.5}, essence_moy:{fuel:'sp95', conso:6.5}, essence_suv:{fuel:'sp95', conso:8.0},
+    diesel_peti:{fuel:'gazole', conso:4.5}, diesel_moy:{fuel:'gazole', conso:5.2}, diesel_suv:{fuel:'gazole', conso:6.5},
+    hybrid:{fuel:'sp95', conso:4.5}
+  };
+  var $ = function(id){return document.getElementById(id);};
+  function fmt(n){return Math.round(n).toLocaleString('fr-FR')+' \u20ac';}
+
+  function compute(){
+    var km = parseInt($('roi-km').value, 10);
+    var vehKey = $('roi-vehicle').value;
+    var evKwh100 = parseFloat($('roi-ev').value);
+    var hphc = $('roi-hphc').checked;
+    var veh = VEHICLES[vehKey];
+    var fuelPrice = GUYANE[veh.fuel];
+    var kwhPrice = hphc ? GUYANE.kwh_hc : GUYANE.kwh;
+
+    var costFuel = (km/100) * veh.conso * fuelPrice;
+    var costEV   = (km/100) * evKwh100 * kwhPrice;
+    var saveY = costFuel - costEV;
+    var save10 = saveY * 10;
+    var wbRatio = save10 / 1200; // 1 WallBox = 1200 EUR HT
+
+    $('roi-km-val').textContent = km.toLocaleString('fr-FR')+' km';
+    $('roi-cost-fuel').textContent = fmt(costFuel)+'/an';
+    $('roi-cost-ev').textContent   = fmt(costEV)+'/an';
+    $('roi-save-year').textContent = fmt(saveY);
+    $('roi-save-month').innerHTML  = 'soit <strong>'+fmt(saveY/12)+'/mois</strong>';
+    $('roi-10y').textContent       = fmt(save10);
+    $('roi-wb-ratio').textContent  = wbRatio.toFixed(1).replace('.',',');
+  }
+
+  ['roi-km','roi-vehicle','roi-ev','roi-hphc'].forEach(function(id){
+    var el = $(id);
+    if (el) el.addEventListener('input', compute);
+  });
+  // Calcul initial quand la page est prete
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', compute);
+  } else compute();
+})();
+</script>
+
+<!-- ════════════════ VIDEO PRÉSENTATION ════════════════ -->
+<section class="video-section" id="video" style="padding:5rem 2rem;background:linear-gradient(180deg,var(--off),#fff);">
+  <div style="max-width:900px;margin:0 auto;text-align:center;">
+    <div class="badge rv" style="display:inline-block;padding:.35rem .9rem;background:rgba(43,77,181,.1);color:var(--blue);border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem;">Découvrir en vidéo</div>
+    <h2 class="rv" style="font-size:2.2rem;font-weight:800;color:var(--green-deep);line-height:1.2;margin-bottom:2rem;">Le projet EGREENCITY'S<br><em style="color:var(--green);font-style:normal;">en 2 minutes</em></h2>
+    <div class="video-wrap" style="position:relative;padding-bottom:56.25%;height:0;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,80,0,.2);background:linear-gradient(135deg,#0a2800,#041000);">
+      <!-- Placeholder video (a remplacer par iframe YouTube quand dispo) -->
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;">
+        <div style="width:90px;height:90px;border-radius:50%;background:rgba(51,204,0,.2);display:flex;align-items:center;justify-content:center;border:3px solid rgba(51,204,0,.5);margin-bottom:1rem;">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="#33CC00" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <p style="font-size:1rem;font-weight:600;opacity:.9;margin-bottom:.5rem;">Vidéo de présentation — Bientôt disponible</p>
+        <p style="font-size:.8rem;opacity:.6;">En attendant, découvrez <a href="/produits.html" style="color:#33CC00;">notre catalogue</a> ou <a href="#contact" style="color:#33CC00;">contactez-nous</a></p>
+      </div>
+      <!-- Remplacer le bloc ci-dessus par :
+      <iframe src="https://www.youtube.com/embed/VIDEO_ID" title="EGREENCITY'S - Présentation" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>
+      -->
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ FAQ ════════════════ -->
+<section class="faq-section" id="faq" style="padding:5rem 2rem;background:#fff;">
+  <div style="max-width:900px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:3rem;">
+      <div class="badge rv" style="display:inline-block;padding:.35rem .9rem;background:rgba(51,204,0,.1);color:var(--green-deep);border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem;">Questions fréquentes</div>
+      <h2 class="rv" style="font-size:2.2rem;font-weight:800;color:var(--green-deep);line-height:1.2;">On vous répond<br><em style="color:var(--green);font-style:normal;">en toute transparence</em></h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item"><summary>💰 Quel est le prix d'une borne de recharge en Guyane ?</summary><div class="faq-body"><p>Les prix varient selon la puissance et l'usage :</p><ul><li><strong>WallBox 7 kW</strong> (particulier) : à partir de <strong>1 200 € HT</strong> hors installation</li><li><strong>e-City 22 kW</strong> (entreprise) : à partir de <strong>3 500 € HT</strong></li><li><strong>e-Twin 2×22 kW</strong> (voirie publique) : à partir de <strong>8 500 € HT</strong></li><li><strong>Quickcharger DC 50 kW</strong> : à partir de <strong>25 000 € HT</strong></li></ul><p>Les subventions <strong>ADVENIR</strong> peuvent couvrir jusqu'à <strong>50 %</strong> du coût pour les entreprises et <strong>960 €</strong> pour les particuliers en copropriété. <a href="/#contact">Demandez un devis gratuit</a> pour une estimation personnalisée.</p></div></details>
+      <details class="faq-item"><summary>🏠 Est-ce éligible au crédit d'impôt en Guyane ?</summary><div class="faq-body"><p>Oui. Les <strong>particuliers</strong> propriétaires ou locataires bénéficient du <strong>crédit d'impôt transition énergétique (CITE)</strong> à hauteur de <strong>75 %</strong> du coût (plafonné à 300 € par système de charge, porté à 600 € pour les bornes pilotables).</p><p>En complément, le programme <strong>ADVENIR Résidentiel Collectif</strong> subventionne 50 % du coût (plafonné à 960 € HT) pour les copropriétés.</p><p>Nous vous accompagnons dans le montage du dossier.</p></div></details>
+      <details class="faq-item"><summary>⏱️ Combien de temps pour installer une WallBox ?</summary><div class="faq-body"><p><strong>Pour un particulier</strong> (maison individuelle) :</p><ul><li><strong>Étude préalable</strong> : 1 à 2 jours (visite technique gratuite)</li><li><strong>Devis signé → installation</strong> : 2 à 4 semaines selon disponibilité</li><li><strong>Pose + mise en service</strong> : 4 à 6 heures sur site</li></ul><p><strong>Pour une borne publique/entreprise</strong> : délai standard de <strong>3 à 4 mois</strong> incluant démarches EDF SEI, génie civil, pose et mise en service.</p></div></details>
+      <details class="faq-item"><summary>🏢 Peut-on installer une borne en copropriété ?</summary><div class="faq-body"><p><strong>Oui, absolument.</strong> Depuis la loi LOM (Loi d'Orientation des Mobilités) de 2019 et le décret de 2020, tout copropriétaire bénéficie du <strong>« droit à la prise »</strong> : il peut demander l'installation d'une borne à ses frais sur sa place de parking sans l'accord préalable de la copropriété.</p><p>Nous gérons l'intégralité du dossier :</p><ul><li>Notification au syndic (préavis 3 mois)</li><li>Étude technique du tableau électrique</li><li>Installation conforme NF C 15-100</li><li>Montage du dossier ADVENIR Résidentiel Collectif</li></ul></div></details>
+      <details class="faq-item"><summary>🏛️ ADVENIR prend-il en charge les particuliers ?</summary><div class="faq-body"><p><strong>Oui, partiellement.</strong> Le programme ADVENIR 2024-2027 subventionne :</p><ul><li><strong>Particulier en copropriété</strong> : 50 % plafonné à 960 € HT</li><li><strong>Particulier en maison individuelle</strong> : pas de prime ADVENIR directe, mais crédit d'impôt de 75 % jusqu'à 600 €</li><li><strong>Entreprise/collectivité</strong> : 25 à 50 % selon type de parking</li><li><strong>Voirie publique</strong> : jusqu'à 9 000 € HT par point de charge</li></ul></div></details>
+      <details class="faq-item"><summary>🔌 Quelle puissance choisir pour mon véhicule ?</summary><div class="faq-body"><p>Règle simple basée sur la <strong>batterie de votre VE</strong> :</p><ul><li><strong>Petite batterie</strong> (≤ 40 kWh, ex : Zoé, Leaf) → <strong>3,7 kW</strong> (nuit complète suffit)</li><li><strong>Batterie moyenne</strong> (40-60 kWh, ex : Kona, ID.3) → <strong>7,4 kW monophasé</strong></li><li><strong>Grande batterie</strong> (70+ kWh, ex : Tesla, e-tron, Ioniq 5) → <strong>11 ou 22 kW triphasé</strong></li><li><strong>Entreprise/flotte</strong> : toujours <strong>22 kW triphasé</strong> minimum</li></ul><p>Nous vérifions systématiquement la compatibilité avec votre tableau électrique lors de la visite.</p></div></details>
+      <details class="faq-item"><summary>🔧 Quelle est la garantie et la maintenance ?</summary><div class="faq-body"><p><strong>Garanties EGREENCITY'S :</strong></p><ul><li><strong>Matériel neuf</strong> : 2 ans constructeur (E-TOTEM) + 1 an main d'œuvre</li><li><strong>Installation</strong> : garantie décennale de l'installateur agréé</li><li><strong>Maintenance</strong> : contrat 36 mois obligatoire pour obtenir la subvention ADVENIR</li></ul><p>Le contrat de maintenance inclut : visite annuelle obligatoire, télésurveillance OCPP, intervention sous 72 h en cas de panne, mise à jour firmware.</p></div></details>
+      <details class="faq-item"><summary>🌍 Couvrez-vous toute la Guyane ?</summary><div class="faq-body"><p><strong>Oui.</strong> Notre zone d'intervention couvre tout le <strong>littoral guyanais</strong> :</p><ul><li>Cayenne, Rémire-Montjoly, Matoury</li><li>Macouria, Tonate, Montsinéry</li><li>Kourou, Sinnamary, Iracoubo</li><li>Mana, Saint-Laurent-du-Maroni, Awala-Yalimapo</li><li>Roura, Régina, Saint-Georges-de-l'Oyapock</li></ul><p>Les communes de l'intérieur (Maripasoula, Camopi) font l'objet d'études spécifiques selon l'accessibilité EDF SEI.</p></div></details>
+    </div>
+    <p style="text-align:center;margin-top:2.5rem;font-size:.9rem;color:var(--muted);">Une autre question ? <a href="#contact" style="color:var(--green);font-weight:600;">Contactez-nous</a> ou appelez le <a href="tel:0651141118" style="color:var(--green);font-weight:600;">06 51 14 11 18</a>.</p>
+  </div>
+</section>
+<style>
+.faq-item{background:var(--off);border-radius:12px;margin-bottom:.8rem;border:1px solid rgba(51,204,0,.1);overflow:hidden;transition:.2s;}
+.faq-item[open]{background:#fff;box-shadow:0 4px 18px rgba(0,80,0,.08);border-color:rgba(51,204,0,.3);}
+.faq-item summary{padding:1.2rem 1.5rem;cursor:pointer;font-weight:600;color:var(--green-deep);font-size:1rem;list-style:none;display:flex;justify-content:space-between;align-items:center;transition:.2s;}
+.faq-item summary::-webkit-details-marker{display:none;}
+.faq-item summary::after{content:'+';font-size:1.6rem;font-weight:300;color:var(--green);transition:transform .25s;flex-shrink:0;margin-left:1rem;}
+.faq-item[open] summary::after{transform:rotate(45deg);}
+.faq-item summary:hover{color:var(--green);}
+.faq-body{padding:0 1.5rem 1.4rem;color:var(--dark);line-height:1.7;font-size:.92rem;}
+.faq-body p{margin-bottom:.8rem;}
+.faq-body ul{padding-left:1.2rem;margin-bottom:.8rem;}
+.faq-body li{margin-bottom:.3rem;}
+.faq-body a{color:var(--green);font-weight:600;}
+</style>
+
+<!-- ════════════════ PARTENAIRES ════════════════ -->
+<section class="partners" id="partenaires" style="padding:4rem 2rem 3rem;background:linear-gradient(180deg,#fff,var(--off));">
+  <div style="max-width:1100px;margin:0 auto;text-align:center;">
+    <p style="font-size:.78rem;letter-spacing:2px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:2rem;">
+      Nos partenaires & programmes
+    </p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2rem;align-items:center;">
+      <div class="partner-card"><div class="pn-title" style="color:var(--green-deep);">E-TOTEM</div><div class="pn-sub">Fournisseur officiel<br>bornes AC/DC</div></div>
+      <div class="partner-card"><div class="pn-title" style="color:var(--blue);">ADVENIR</div><div class="pn-sub">Programme de<br>subvention d'État</div></div>
+      <div class="partner-card"><div class="pn-title" style="color:var(--green-deep);">AVERE France</div><div class="pn-sub">Association<br>mobilité électrique</div></div>
+      <div class="partner-card"><div class="pn-title" style="color:var(--blue);">EDF SEI</div><div class="pn-sub">Distributeur<br>électrique Guyane</div></div>
+      <div class="partner-card" style="opacity:.7;"><div class="pn-title" style="color:var(--green-deep);">Qualifelec IRVE</div><div class="pn-sub">Certification<br>(en cours)</div></div>
+      <div class="partner-card" style="opacity:.7;"><div class="pn-title" style="color:var(--green-deep);">AFNOR</div><div class="pn-sub">Normalisation<br>(en cours)</div></div>
+    </div>
+    <p style="margin-top:2rem;font-size:.75rem;color:var(--muted);font-style:italic;">
+      E-TOTEM® et références produits sont des marques déposées d'E-TOTEM SAS. ADVENIR est un programme de l'AVERE-France.
+    </p>
+  </div>
+</section>
+<style>
+.partner-card{padding:1.2rem;background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,80,0,.06);border:1px solid rgba(51,204,0,.12);transition:.25s;}
+.partner-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,80,0,.12);}
+.partner-card .pn-title{font-weight:800;font-size:1.15rem;margin-bottom:.3rem;}
+.partner-card .pn-sub{font-size:.7rem;color:var(--muted);font-weight:500;line-height:1.4;}
+</style>
 
 
 <!-- ════════════════ CONTACT ════════════════ -->
@@ -756,6 +1120,27 @@
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 60), {passive:true});
 
+  // Dark mode toggle
+  function toggleTheme(){
+    var h = document.documentElement;
+    var current = h.getAttribute('data-theme');
+    var next = current === 'dark' ? 'light' : 'dark';
+    if (next === 'dark') h.setAttribute('data-theme', 'dark');
+    else h.removeAttribute('data-theme');
+    localStorage.setItem('theme', next);
+    updateThemeIcon();
+  }
+  function updateThemeIcon(){
+    var btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    btn.textContent = isDark ? '☀️' : '🌙';
+    btn.setAttribute('title', isDark ? 'Passer en thème clair' : 'Passer en thème sombre');
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateThemeIcon);
+  } else updateThemeIcon();
+
   // Product tabs
   function switchTab(id, btn) {
     document.querySelectorAll('.tcontent').forEach(t => t.classList.remove('on'));
@@ -884,5 +1269,109 @@
   }
   updateEconomics();
 </script>
+
+<!-- ════════════════ BANNIÈRE COOKIES RGPD/CNIL ════════════════ -->
+<div id="cookie-banner" role="dialog" aria-live="polite" aria-label="Gestion des cookies" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9998;background:#fff;box-shadow:0 -4px 28px rgba(0,0,0,.15);padding:1.5rem 2rem;border-top:3px solid var(--green);">
+  <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+    <div>
+      <h3 style="color:var(--green-deep);font-size:1.05rem;font-weight:700;margin-bottom:.4rem;">🍪 Respect de votre vie privée</h3>
+      <p style="color:var(--dark);font-size:.85rem;line-height:1.55;">
+        Ce site utilise uniquement des cookies de <strong>mesure d'audience anonymisée</strong> (Google Analytics / Microsoft Clarity) pour améliorer l'expérience utilisateur. <strong>Aucun cookie publicitaire</strong>, aucun traçage tiers, aucun transfert hors UE non autorisé. Conformément au RGPD, vous pouvez accepter, refuser ou paramétrer votre choix à tout moment.
+        <a href="/mentions-legales.html#cookies" style="color:var(--green);font-weight:600;">En savoir plus</a>
+      </p>
+    </div>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;justify-content:flex-end;">
+      <button onclick="cookieChoice('refuse')" style="padding:.7rem 1.3rem;background:#fff;color:var(--text);border:2px solid #ddd;border-radius:50px;font-weight:600;cursor:pointer;font-size:.85rem;transition:.2s;">Tout refuser</button>
+      <button onclick="cookieChoice('accept')" style="padding:.7rem 1.6rem;background:linear-gradient(135deg,var(--green-deep),var(--green));color:#fff;border:none;border-radius:50px;font-weight:700;cursor:pointer;font-size:.85rem;transition:.2s;box-shadow:0 4px 12px rgba(51,204,0,.3);">Tout accepter ✓</button>
+    </div>
+  </div>
+</div>
+<style>
+@media(max-width:700px){
+  #cookie-banner > div{grid-template-columns:1fr !important;}
+  #cookie-banner > div > div:last-child{justify-content:stretch !important;}
+  #cookie-banner button{flex:1;}
+}
+</style>
+
+<script>
+// ════════════════ COOKIES CONSENT + ANALYTICS CONDITIONNELS ════════════════
+(function(){
+  // Affiche la banniere sauf si un choix a deja ete fait
+  var saved = localStorage.getItem('cookieConsent');
+  if (!saved) {
+    setTimeout(function(){
+      var b = document.getElementById('cookie-banner');
+      if (b) b.style.display = 'block';
+    }, 800);
+  } else if (saved === 'accept') {
+    loadAnalytics();
+  }
+
+  window.cookieChoice = function(choice){
+    localStorage.setItem('cookieConsent', choice);
+    localStorage.setItem('cookieConsentDate', new Date().toISOString());
+    var b = document.getElementById('cookie-banner');
+    if (b) b.style.display = 'none';
+    if (choice === 'accept') loadAnalytics();
+  };
+
+  function loadAnalytics(){
+    // Eviter double chargement
+    if (window.__analyticsLoaded) return;
+    window.__analyticsLoaded = true;
+
+    // ==== Google Analytics 4 ====
+    // TODO: Remplacer 'G-XXXXXXXXXX' par votre ID GA4 reel apres creation de la propriete
+    var GA_ID = 'G-XXXXXXXXXX';
+    if (GA_ID && GA_ID !== 'G-XXXXXXXXXX') {
+      var gaScript = document.createElement('script');
+      gaScript.async = true;
+      gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(gaScript);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', GA_ID, { anonymize_ip: true });
+    }
+
+    // ==== Microsoft Clarity (heatmap + replay) ====
+    // TODO: Remplacer 'XXXXXXXXXX' par votre ID Clarity apres creation du projet
+    var CLARITY_ID = 'XXXXXXXXXX';
+    if (CLARITY_ID && CLARITY_ID !== 'XXXXXXXXXX') {
+      (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, 'clarity', 'script', CLARITY_ID);
+    }
+  }
+
+  // Permettre de reinitialiser depuis la page mentions-legales
+  window.resetCookieConsent = function(){
+    localStorage.removeItem('cookieConsent');
+    localStorage.removeItem('cookieConsentDate');
+    location.reload();
+  };
+})();
+</script>
+
+<!-- WhatsApp flottant -->
+<a href="https://wa.me/594651141118?text=Bonjour%20EGREENCITY%27S%2C%20je%20vous%20contacte%20depuis%20votre%20site%20web%20pour..." class="whatsapp-float" target="_blank" rel="noopener" aria-label="Contactez-nous sur WhatsApp" data-tooltip="Discutons sur WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+</a>
+
+<!-- PWA Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function (err) {
+        console.warn('SW registration failed:', err);
+      });
+    });
+  }
+</script>
+
 </body>
 </html>

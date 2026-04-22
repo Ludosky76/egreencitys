@@ -1,0 +1,23 @@
+{
+  "name": "EGREENCITY'S — Mobilité verte en Guyane",
+  "short_name": "EGREENCITY'S",
+  "description": "Bornes de recharge VE en Guyane française — installation, maintenance, supervision OCPP.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0a4800",
+  "background_color": "#ffffff",
+  "lang": "fr-FR",
+  "categories": ["business", "utilities", "productivity"],
+  "icons": [
+    { "src": "/logo.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/google-business/logo-carre-720.png", "sizes": "720x720", "type": "image/png", "purpose": "any" },
+    { "src": "/google-business/logo-carre-transparent-720.png", "sizes": "720x720", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Nos produits", "url": "/produits.html" },
+    { "name": "Notre réseau", "url": "/reseau.html" },
+    { "name": "Contact", "url": "/#contact" }
+  ]
+}
