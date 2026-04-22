@@ -7,8 +7,12 @@
   <meta name="description" content="EGREENCITY'S — Fourniture, installation et maintenance de bornes de recharge électrique en Guyane. Projet de réseau inter-communal en préparation (dossier ADVENIR). Particuliers, entreprises, collectivités.">
   <meta name="author" content="EGREENCITY'S SAS">
   <meta name="robots" content="index, follow">
+  <!-- Google Search Console — verification (remplace VALEUR_A_COMPLETER apres creation de la propriete) -->
+  <meta name="google-site-verification" content="VALEUR_A_COMPLETER">
+  <!-- Bing Webmaster Tools — verification (optionnel) -->
+  <!-- <meta name="msvalidate.01" content="VALEUR_BING"> -->
   <!-- Sécurité : en-têtes recommandés (à doubler côté serveur via HTTP headers) -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self' https://formsubmit.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), payment=()">
@@ -1048,15 +1052,21 @@
       </div>
       <div class="cform rv d1">
         <h3>Envoyer un message</h3>
-        <form id="contactForm" onsubmit="handleForm(event)">
+        <form id="contactForm" onsubmit="handleForm(event)" action="https://formsubmit.co/egreencitys@gmail.com" method="POST">
+          <!-- Formsubmit : options anti-spam + sujet personnalisé -->
+          <input type="hidden" name="_subject" value="Nouveau message — egreencitys.com">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="true">
+          <input type="hidden" name="_next" value="https://egreencitys.com/#contact">
+          <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
           <div class="frow">
-            <div class="fg"><label>Prénom</label><input type="text" placeholder="Votre prénom" required></div>
-            <div class="fg"><label>Nom</label><input type="text" placeholder="Votre nom" required></div>
+            <div class="fg"><label>Prénom</label><input type="text" name="prenom" placeholder="Votre prénom" required></div>
+            <div class="fg"><label>Nom</label><input type="text" name="nom" placeholder="Votre nom" required></div>
           </div>
-          <div class="fg"><label>Email</label><input type="email" placeholder="votre@email.com" required></div>
+          <div class="fg"><label>Email</label><input type="email" name="email" placeholder="votre@email.com" required></div>
           <div class="fg">
             <label>Je suis</label>
-            <select>
+            <select name="categorie">
               <option>Particulier</option>
               <option>Entreprise</option>
               <option>Collectivité / Mairie</option>
@@ -1064,7 +1074,7 @@
               <option>Autre</option>
             </select>
           </div>
-          <div class="fg"><label>Message</label><textarea placeholder="Décrivez votre projet ou votre demande..." required></textarea></div>
+          <div class="fg"><label>Message</label><textarea name="message" placeholder="Décrivez votre projet ou votre demande..." required></textarea></div>
           <div class="fg" style="flex-direction:row;align-items:flex-start;gap:.6rem;">
             <input type="checkbox" id="rgpdConsent" required style="margin-top:.3rem;flex-shrink:0;width:auto;">
             <label for="rgpdConsent" style="font-size:.78rem;line-height:1.4;font-weight:400;">
@@ -1169,18 +1179,44 @@
   }, {threshold: 0.5});
   document.querySelectorAll('[data-count]').forEach(el => cio.observe(el));
 
-  // Form toast
+  // Form — envoi reel via Formsubmit.co (AJAX, sans redirection)
   function handleForm(e) {
     e.preventDefault();
+    const form = e.target;
     const consent = document.getElementById('rgpdConsent');
     if (consent && !consent.checked) {
       alert('Merci de cocher la case de consentement RGPD avant d\x27envoyer votre demande.');
       return;
     }
-    const toast = document.getElementById('toast');
-    toast.classList.add('show');
-    e.target.reset();
-    setTimeout(() => toast.classList.remove('show'), 3500);
+    const btn = form.querySelector('button[type="submit"]');
+    const btnOriginalText = btn ? btn.innerHTML : '';
+    if (btn) { btn.disabled = true; btn.innerHTML = 'Envoi en cours...'; }
+
+    const data = new FormData(form);
+    fetch('https://formsubmit.co/ajax/egreencitys@gmail.com', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: data
+    })
+    .then(r => r.json())
+    .then(res => {
+      if (res && (res.success === 'true' || res.success === true)) {
+        const toast = document.getElementById('toast');
+        if (toast) {
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+        form.reset();
+      } else {
+        alert('Un souci technique empeche l\x27envoi. Merci de nous ecrire directement a egreencitys@gmail.com');
+      }
+    })
+    .catch(() => {
+      alert('Connexion indisponible. Merci de nous ecrire directement a egreencitys@gmail.com');
+    })
+    .finally(() => {
+      if (btn) { btn.disabled = false; btn.innerHTML = btnOriginalText; }
+    });
   }
 
   // ═══════════════════════════════════════════════════════════════════
