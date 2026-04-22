@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Egreencity",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "5900", "--directory", "C:/projet/Egreencity"],
+      "port": 5900
+    }
+  ]
+}
