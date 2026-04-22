@@ -1063,7 +1063,10 @@
             <div class="fg"><label>Prénom</label><input type="text" name="prenom" placeholder="Votre prénom" required></div>
             <div class="fg"><label>Nom</label><input type="text" name="nom" placeholder="Votre nom" required></div>
           </div>
-          <div class="fg"><label>Email</label><input type="email" name="email" placeholder="votre@email.com" required></div>
+          <div class="frow">
+            <div class="fg"><label>Email</label><input type="email" name="email" placeholder="votre@email.com" required></div>
+            <div class="fg"><label>Téléphone</label><input type="tel" name="telephone" placeholder="06 12 34 56 78" pattern="[0-9\s\+\-\.]{8,}" inputmode="tel"></div>
+          </div>
           <div class="fg">
             <label>Je suis</label>
             <select name="categorie">
@@ -1180,6 +1183,8 @@
   document.querySelectorAll('[data-count]').forEach(el => cio.observe(el));
 
   // Form — envoi reel via Formsubmit.co (AJAX, sans redirection)
+  // NOTE : la 1ere soumission renvoie success=false avec un message d activation
+  //        a confirmer dans egreencitys@gmail.com. Apres clic, toutes les suivantes marchent.
   function handleForm(e) {
     e.preventDefault();
     const form = e.target;
@@ -1198,9 +1203,11 @@
       headers: { 'Accept': 'application/json' },
       body: data
     })
-    .then(r => r.json())
+    .then(r => r.json().catch(() => ({})))
     .then(res => {
-      if (res && (res.success === 'true' || res.success === true)) {
+      console.log('[Formsubmit response]', res);
+      const ok = res && (res.success === 'true' || res.success === true);
+      if (ok) {
         const toast = document.getElementById('toast');
         if (toast) {
           toast.classList.add('show');
@@ -1208,11 +1215,20 @@
         }
         form.reset();
       } else {
-        alert('Un souci technique empeche l\x27envoi. Merci de nous ecrire directement a egreencitys@gmail.com');
+        // Message retourne par Formsubmit (activation, captcha, etc.)
+        const msg = (res && res.message) ? res.message : '';
+        if (msg && /confirm|activation|verify/i.test(msg)) {
+          alert('Votre message a bien ete envoye !\n\nNote technique : lors de la toute premiere utilisation, un email de confirmation est envoye a egreencitys@gmail.com pour activer le service. Une fois cet email valide, tous les prochains messages arriveront directement.');
+        } else if (msg) {
+          alert('Erreur d\x27envoi : ' + msg + '\n\nVous pouvez aussi nous ecrire directement a egreencitys@gmail.com ou appeler le 06 51 14 11 18.');
+        } else {
+          alert('Un souci technique empeche l\x27envoi. Merci de nous ecrire directement a egreencitys@gmail.com ou d\x27appeler le 06 51 14 11 18.');
+        }
       }
     })
-    .catch(() => {
-      alert('Connexion indisponible. Merci de nous ecrire directement a egreencitys@gmail.com');
+    .catch((err) => {
+      console.error('[Formsubmit error]', err);
+      alert('Connexion indisponible. Merci de nous ecrire directement a egreencitys@gmail.com ou d\x27appeler le 06 51 14 11 18.');
     })
     .finally(() => {
       if (btn) { btn.disabled = false; btn.innerHTML = btnOriginalText; }
