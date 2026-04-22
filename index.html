@@ -765,36 +765,26 @@
   <div style="max-width:900px;margin:0 auto;text-align:center;">
     <div class="badge rv" style="display:inline-block;padding:.35rem .9rem;background:rgba(43,77,181,.1);color:var(--blue);border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem;">Découvrir en vidéo</div>
     <h2 class="rv" style="font-size:2.2rem;font-weight:800;color:var(--green-deep);line-height:1.2;margin-bottom:2rem;">Le projet EGREENCITY'S<br><em style="color:var(--green);font-style:normal;">en 2 minutes</em></h2>
-    <div class="video-wrap" id="videoWrap" style="position:relative;padding-bottom:56.25%;height:0;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,80,0,.2);background:linear-gradient(135deg,#0a2800,#041000);cursor:pointer;">
-      <!-- Poster (affiché avant clic — pas d'autoplay pour respecter le bandeau audio des navigateurs) -->
-      <div id="videoPoster" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;background:radial-gradient(circle at center,#0a5f3b 0%,#062b1b 60%,#020806 100%);transition:opacity .4s;">
+    <div class="video-wrap" id="videoWrap" role="button" tabindex="0" aria-label="Lancer la vidéo de présentation en plein écran" style="position:relative;padding-bottom:56.25%;height:0;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,80,0,.2);background:linear-gradient(135deg,#0a2800,#041000);cursor:pointer;">
+      <div id="videoPoster" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;background:radial-gradient(circle at center,#0a5f3b 0%,#062b1b 60%,#020806 100%);">
         <div style="width:110px;height:110px;border-radius:50%;background:rgba(51,204,0,.25);display:flex;align-items:center;justify-content:center;border:4px solid rgba(51,204,0,.7);margin-bottom:1.2rem;box-shadow:0 0 40px rgba(51,204,0,.5);animation:pulse-play 2s ease-in-out infinite;">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="#33CC00" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
         </div>
         <p style="font-size:1.2rem;font-weight:700;margin-bottom:.3rem;letter-spacing:.02em;">Lancer la présentation — 2 min</p>
         <p style="font-size:.85rem;opacity:.7;">🎬 Motion design · 🔊 Voix off · 📝 Sous-titres</p>
       </div>
-      <!-- Iframe injecté au clic pour économiser la bande passante + éviter autoplay bloqué -->
-      <iframe id="videoFrame" src="about:blank" title="EGREENCITY'S — Le projet en 2 minutes" allow="autoplay; fullscreen; speech-synthesis" allowfullscreen loading="lazy" referrerpolicy="same-origin" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;display:none;background:#0e1a14;"></iframe>
     </div>
     <p style="margin-top:1rem;font-size:.85rem;color:var(--muted);">
-      🎬 Problème de lecture ? <a href="video-presentation.html" target="_blank" rel="noopener" style="color:var(--green);font-weight:700;text-decoration:underline;">Ouvrir la vidéo en plein écran</a> · Format vertical Reels ? <a href="video-presentation-9x16.html" target="_blank" rel="noopener" style="color:var(--green);font-weight:700;text-decoration:underline;">Version 9:16</a>
+      📱 Format vertical Reels / TikTok ? <a href="video-presentation-9x16.html" target="_blank" rel="noopener" style="color:var(--green);font-weight:700;text-decoration:underline;">Version 9:16</a>
     </p>
     <style>@keyframes pulse-play{0%,100%{transform:scale(1);box-shadow:0 0 40px rgba(51,204,0,.5)}50%{transform:scale(1.08);box-shadow:0 0 60px rgba(51,204,0,.75)}}</style>
     <script>
     (function(){
-      var wrap=document.getElementById('videoWrap'),poster=document.getElementById('videoPoster'),frame=document.getElementById('videoFrame');
-      if(!wrap||!frame)return;
-      var loaded=false;
-      wrap.addEventListener('click',function(){
-        if(loaded)return;
-        loaded=true;
-        // Chemin relatif : fonctionne en file://, localhost et production
-        frame.setAttribute('src','video-presentation.html');
-        frame.style.display='block';
-        poster.style.opacity='0';
-        setTimeout(function(){poster.style.display='none'},400);
-      });
+      var wrap=document.getElementById('videoWrap');
+      if(!wrap)return;
+      function go(){ window.location.assign('video-presentation.html'); }
+      wrap.addEventListener('click',go);
+      wrap.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});
     })();
     // Force reload du service worker pour charger la nouvelle version
     if('serviceWorker' in navigator){
