@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EGREENCITY'S — Le projet en 2 minutes</title>
+<style>
+:root{
+  --green:#2ecc71;--green-dark:#27ae60;--green-light:#58d68d;
+  --ink:#0e1a14;--ink-soft:#1a2b22;--paper:#f8fdf9;--accent:#f5a623;--red:#e74c3c;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif}
+html,body{width:100%;height:100%;background:#000;color:var(--paper);overflow:hidden}
+.stage{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at center, #0e1a14 0%, #000 100%);
+  overflow:hidden;
+}
+.scene{
+  position:absolute;inset:0;opacity:0;transition:opacity .6s ease;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:4vh 6vw;
+}
+.scene.active{opacity:1}
+.scene .bg{position:absolute;inset:0;z-index:0;opacity:.35;background-size:cover;background-position:center;background-repeat:no-repeat}
+.scene.has-photo .bg{opacity:.55}
+.scene.has-photo::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(14,26,20,.75) 100%);pointer-events:none}
+.scene .fg{position:relative;z-index:2;width:100%;max-width:1400px;text-align:center}
+
+/* Typography */
+h1{font-size:clamp(2.4rem,5.5vw,5.8rem);font-weight:900;letter-spacing:-.02em;line-height:1.05;margin-bottom:2vh;text-shadow:0 4px 24px rgba(0,0,0,.55)}
+h2{font-size:clamp(1.6rem,3.2vw,3rem);font-weight:700;color:var(--green-light);margin-bottom:1.5vh}
+p.lead{font-size:clamp(1.2rem,2vw,1.9rem);max-width:1100px;margin:0 auto 2vh;line-height:1.35;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.big-num{font-size:clamp(4rem,12vw,13rem);font-weight:900;color:var(--green);line-height:.9;letter-spacing:-.04em;text-shadow:0 8px 40px rgba(46,204,113,.4)}
+.big-num.alert{color:var(--red);animation:pulseRed 1.2s ease-in-out infinite}
+.sub{font-size:clamp(1rem,1.6vw,1.4rem);color:#b7e3c4;margin-top:1vh;letter-spacing:.04em;text-transform:uppercase}
+
+/* Scene 1 — Drone over Guyane */
+.scene-1 .bg{background:linear-gradient(135deg,#062b1b 0%,#0a5f3b 45%,#1a8a5a 75%,#f5a623 100%);animation:skyShift 8s ease-in-out infinite alternate}
+.scene-1::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(ellipse at 50% 90%, rgba(14,26,20,.9) 20%, transparent 70%),
+  radial-gradient(ellipse at 50% 10%, rgba(245,166,35,.35) 0%, transparent 60%);
+  z-index:1;pointer-events:none}
+
+/* Stats panel */
+.stats{display:flex;gap:4vw;justify-content:center;flex-wrap:wrap;margin-top:3vh}
+.stat{display:flex;flex-direction:column;align-items:center;opacity:0;transform:translateY(24px);transition:all .8s cubic-bezier(.2,.8,.2,1)}
+.stat.show{opacity:1;transform:none}
+.stat .n{font-size:clamp(2.4rem,6vw,5rem);font-weight:900;color:var(--green-light);line-height:1}
+.stat .l{font-size:clamp(.9rem,1.3vw,1.1rem);text-transform:uppercase;letter-spacing:.15em;color:#e3f5ea;margin-top:.6vh}
+.stat.alert .n{color:var(--red);animation:pulseRed 1.2s ease-in-out infinite}
+
+/* Logo animation */
+.logo-wrap{display:flex;flex-direction:column;align-items:center;gap:2vh}
+.logo{
+  position:relative;width:clamp(180px,22vw,340px);height:clamp(180px,22vw,340px);
+  border-radius:50%;background:radial-gradient(circle,#0e1a14 40%,#111 100%);
+  box-shadow:0 0 0 4px var(--green),0 20px 80px rgba(46,204,113,.6);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.logo::before{
+  content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--green) 0%,var(--green-dark) 100%);
+  transform:translateY(100%);animation:fillUp 2.2s ease-out forwards;
+}
+.logo span{position:relative;z-index:2;font-size:clamp(2rem,4.5vw,3.8rem);font-weight:900;color:#fff;letter-spacing:-.02em}
+
+/* Product showcase */
+.product{display:flex;gap:4vw;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:2vh}
+.product-visual{
+  width:clamp(220px,28vw,400px);aspect-ratio:2/3;border-radius:16px;
+  background:linear-gradient(160deg,#d4d8dc 0%,#8a9098 45%,#5a636a 100%);
+  position:relative;box-shadow:0 30px 60px rgba(0,0,0,.55),inset 0 0 0 6px rgba(255,255,255,.1);
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  padding:18px 0;
+}
+.product-visual::before{
+  content:"";position:absolute;top:16%;left:50%;transform:translateX(-50%);width:68%;height:22%;
+  background:linear-gradient(180deg,#0e1a14,#1a2b22);border-radius:10px;
+  box-shadow:inset 0 0 0 2px var(--green-light),0 0 24px rgba(46,204,113,.4)
+}
+.product-visual::after{
+  content:"e-City";position:absolute;top:42%;left:50%;transform:translateX(-50%);
+  color:var(--green-light);font-weight:900;font-size:clamp(1rem,1.8vw,1.8rem);letter-spacing:.1em
+}
+.product-visual .plugs{position:absolute;bottom:14%;left:50%;transform:translateX(-50%);display:flex;gap:10px}
+.product-visual .plugs i{width:18px;height:18px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);animation:blink 1.4s ease-in-out infinite}
+.product-visual .plugs i:nth-child(2){animation-delay:.25s}
+.product-visual .plugs i:nth-child(3){animation-delay:.5s}
+
+.features{text-align:left;max-width:520px}
+.features li{
+  display:flex;align-items:flex-start;gap:12px;font-size:clamp(1rem,1.5vw,1.3rem);padding:10px 0;
+  opacity:0;transform:translateX(-20px);transition:all .5s cubic-bezier(.2,.8,.2,1);
+}
+.features li.show{opacity:1;transform:none}
+.features li::before{content:"✓";color:var(--green);font-weight:900;font-size:1.4em;flex-shrink:0}
+
+/* Map scene */
+.map{
+  position:relative;width:min(80vw,900px);aspect-ratio:4/3;margin:2vh auto 0;
+  background:linear-gradient(135deg,#0a1f15,#1a3a28);border-radius:24px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6),inset 0 0 0 2px rgba(46,204,113,.25);
+  overflow:hidden;
+}
+.map::before{
+  content:"GUYANE";position:absolute;top:14px;left:20px;font-size:.8rem;letter-spacing:.3em;color:#5a8a6b;font-weight:700;
+}
+.city{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 var(--green);opacity:0;transform:scale(0);transition:all .5s}
+.city.on{opacity:1;transform:scale(1);animation:cityPulse 1.8s ease-out infinite}
+.city label{position:absolute;top:18px;left:50%;transform:translateX(-50%);font-size:.85rem;font-weight:700;white-space:nowrap;color:#e3f5ea;text-shadow:0 2px 6px #000}
+.road{position:absolute;height:3px;background:linear-gradient(to right,transparent,var(--green-light),transparent);transform-origin:left;opacity:0;transition:opacity .6s}
+.road.on{opacity:.8}
+
+/* Grid of audiences */
+.audience-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:3vh 4vw;max-width:1100px;margin:2vh auto 0}
+.aud{
+  background:rgba(46,204,113,.08);border:2px solid rgba(46,204,113,.3);border-radius:20px;padding:3vh 2vw;
+  opacity:0;transform:translateY(24px);transition:all .6s cubic-bezier(.2,.8,.2,1);
+}
+.aud.show{opacity:1;transform:none}
+.aud .icon{font-size:clamp(2.5rem,5vw,4rem);display:block;margin-bottom:1vh}
+.aud h3{font-size:clamp(1.2rem,1.9vw,1.7rem);color:var(--green-light);margin-bottom:.8vh}
+.aud p{font-size:clamp(.85rem,1.3vw,1.05rem);color:#d2e7db;line-height:1.4}
+
+/* Final CTA */
+.cta{display:flex;gap:1.5vw;flex-wrap:wrap;justify-content:center;margin-top:3vh}
+.cta a{
+  background:var(--green);color:#0e1a14;padding:1.4vh 2.5vw;border-radius:999px;font-weight:800;text-decoration:none;
+  font-size:clamp(1rem,1.5vw,1.3rem);box-shadow:0 12px 30px rgba(46,204,113,.4);
+  transition:transform .3s;
+}
+.cta a:hover{transform:translateY(-3px) scale(1.03)}
+.url{font-size:clamp(1.5rem,3vw,2.6rem);color:#fff;margin-top:2vh;letter-spacing:.05em;font-weight:800}
+.contact{font-size:clamp(.95rem,1.4vw,1.2rem);color:#b7e3c4;margin-top:1vh}
+
+/* Flags */
+.flags{margin-top:2vh;font-size:clamp(1.4rem,2.5vw,2rem)}
+
+/* Progress bar */
+.progress{position:fixed;bottom:0;left:0;height:5px;background:var(--green);width:0;z-index:100;box-shadow:0 0 12px var(--green)}
+.timecode{position:fixed;top:14px;right:18px;font-family:'Courier New',monospace;font-size:.9rem;color:rgba(255,255,255,.4);z-index:100}
+.scene-tag{position:fixed;top:14px;left:18px;font-family:'Courier New',monospace;font-size:.9rem;color:rgba(255,255,255,.4);z-index:100}
+
+/* Start screen */
+.start-screen{
+  position:fixed;inset:0;background:#0e1a14;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:200;gap:3vh;text-align:center;padding:4vh 4vw;
+}
+.start-screen.hidden{display:none}
+.start-screen h1{color:var(--green)}
+.start-screen .btn{
+  background:var(--green);color:#0e1a14;padding:1.8vh 4vw;border-radius:999px;font-weight:900;border:0;cursor:pointer;
+  font-size:clamp(1.1rem,1.8vw,1.5rem);box-shadow:0 12px 30px rgba(46,204,113,.5);
+  transition:transform .25s;
+}
+.start-screen .btn:hover{transform:translateY(-3px) scale(1.03)}
+.start-screen .note{color:#8aa99b;font-size:.95rem;max-width:600px;line-height:1.5}
+.start-screen .opts{display:flex;gap:2vw;align-items:center;color:#d2e7db;font-size:1rem;flex-wrap:wrap;justify-content:center}
+.start-screen .opts label{display:flex;align-items:center;gap:.5vw;cursor:pointer}
+
+/* Animations */
+@keyframes skyShift{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(-15deg) brightness(1.1)}}
+@keyframes fillUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes pulseRed{0%,100%{transform:scale(1)}50%{transform:scale(1.06);filter:brightness(1.2)}}
+@keyframes cityPulse{0%{box-shadow:0 0 0 0 rgba(46,204,113,.8)}70%{box-shadow:0 0 0 20px rgba(46,204,113,0)}100%{box-shadow:0 0 0 0 rgba(46,204,113,0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes slideInUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes zoomIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+
+.animate-up{animation:slideInUp .8s cubic-bezier(.2,.8,.2,1) both}
+.animate-zoom{animation:zoomIn .8s cubic-bezier(.2,.8,.2,1) both}
+
+/* Subtitles */
+.subtitle{
+  position:fixed;bottom:6vh;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.78);color:#fff;padding:1.2vh 2.5vw;border-radius:10px;
+  font-size:clamp(.95rem,1.5vw,1.3rem);max-width:80vw;text-align:center;z-index:50;
+  border-left:4px solid var(--green);font-weight:500;line-height:1.4;
+  opacity:0;transition:opacity .4s;pointer-events:none;
+}
+.subtitle.show{opacity:1}
+
+/* Watermark logo */
+.wm{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:100;color:var(--green);font-weight:900;letter-spacing:.3em;font-size:.85rem;opacity:.5}
+</style>
+</head>
+<body>
+
+<div class="start-screen" id="start">
+  <h1>EGREENCITY'S</h1>
+  <h2 style="color:#b7e3c4">Le projet en 2 minutes</h2>
+  <p class="note">Cliquez sur Démarrer pour lancer la présentation vidéo (2:00).<br>Pour enregistrer une version MP4 : utilisez <b>OBS Studio</b> ou <b>Clipchamp</b> (capture écran 1920×1080).</p>
+  <div class="opts">
+    <label><input type="checkbox" id="voiceOn" checked> 🔊 Voix off (synthèse FR)</label>
+    <label><input type="checkbox" id="subsOn" checked> 📝 Sous-titres</label>
+  </div>
+  <button class="btn" onclick="startVideo()">▶ Démarrer la vidéo</button>
+  <p class="note">Ratio recommandé : plein écran (touche F11).</p>
+</div>
+
+<div class="stage">
+  <!-- SCENE 1 : 0-15s -->
+  <div class="scene scene-1" id="s1" data-photo="assets/video/scene1">
+    <div class="bg"></div>
+    <div class="fg">
+      <h2 class="s1-title" style="opacity:0">GUYANE FRANÇAISE · 2026</h2>
+      <h1 class="s1-main" style="opacity:0">La Guyane de demain<br>se prépare <span style="color:var(--green-light)">aujourd'hui</span>.</h1>
+      <div class="stats">
+        <div class="stat" id="st1"><div class="n">290 000</div><div class="l">habitants</div></div>
+        <div class="stat" id="st2"><div class="n">400 km</div><div class="l">de littoral</div></div>
+        <div class="stat alert" id="st3"><div class="n">0</div><div class="l">réseau public de recharge</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 2 : 15-30s -->
+  <div class="scene" id="s2" data-photo="assets/video/scene2">
+    <div class="bg"></div>
+    <div class="fg">
+      <div class="logo-wrap">
+        <div class="logo"><span>EGC</span></div>
+        <h1 style="margin-top:3vh">EGREENCITY'S</h1>
+        <p class="sub">Opérateur 100 % guyanais de la mobilité électrique</p>
+        <h2 class="s2-msg" style="opacity:0;margin-top:4vh">6 communes · 1 réseau · 1 badge</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 3 : 30-50s -->
+  <div class="scene" id="s3" data-photo="assets/video/scene3">
+    <div class="bg"></div>
+    <div class="fg">
+      <h2>Gamme e-City — Totem de service</h2>
+      <h1>3 départs · 36 kVA</h1>
+      <div class="product">
+        <div class="product-visual">
+          <div class="plugs"><i></i><i></i><i></i></div>
+        </div>
+        <ul class="features" id="feat3">
+          <li>3 points de charge simultanés</li>
+          <li>Paiement CB sans contact</li>
+          <li>Écran tactile 10" — 5 langues</li>
+          <li>Supervision OCPP 24/7</li>
+          <li>Coffret inox — anti-corrosion tropicale</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 4 : 50-70s -->
+  <div class="scene" id="s4" data-photo="assets/video/scene4">
+    <div class="bg"></div>
+    <div class="fg">
+      <h2>Gamme e-Premium AC</h2>
+      <h1>Borne double · 2×22 kW</h1>
+      <div class="product">
+        <div class="product-visual" style="background:linear-gradient(160deg,#e8ebed 0%,#a8afb5 45%,#6a727a 100%)">
+          <div class="plugs"><i></i><i></i></div>
+        </div>
+        <ul class="features" id="feat4">
+          <li>Inox 304 — classe IP54</li>
+          <li>2 × T2 voitures + 2 prises domestiques</li>
+          <li>Parafoudre type 2 intégré</li>
+          <li>Résistante cyclones & humidité tropicale</li>
+          <li>RAL sur mesure + option anti-graffiti</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 5 : 70-90s -->
+  <div class="scene" id="s5" data-photo="assets/video/scene5">
+    <div class="bg"></div>
+    <div class="fg">
+      <h2>Le réseau littoral</h2>
+      <h1>6 stations · 1 corridor RN1</h1>
+      <div class="map" id="map">
+        <!-- Cities positioned approximately along Guyane coast -->
+        <div class="road" style="top:62%;left:12%;width:76%"></div>
+        <div class="city" style="top:60%;left:10%"><label>Saint-Laurent</label></div>
+        <div class="city" style="top:58%;left:32%"><label>Kourou</label></div>
+        <div class="city" style="top:62%;left:52%"><label>Macouria</label></div>
+        <div class="city" style="top:65%;left:68%"><label>Cayenne</label></div>
+        <div class="city" style="top:68%;left:78%"><label>Rémire</label></div>
+        <div class="city" style="top:70%;left:86%"><label>Matoury</label></div>
+      </div>
+      <p class="sub" style="margin-top:2vh">Programme ADVENIR · jusqu'à <b style="color:var(--green-light)">9 000 €</b> / point de charge</p>
+    </div>
+  </div>
+
+  <!-- SCENE 6 : 90-105s -->
+  <div class="scene" id="s6" data-photo="assets/video/scene6">
+    <div class="bg"></div>
+    <div class="fg">
+      <h2>Pour qui ?</h2>
+      <h1>Chaque cas d'usage</h1>
+      <div class="audience-grid" id="audGrid">
+        <div class="aud"><span class="icon">🏠</span><h3>Particulier</h3><p>WallBox 7 kW — dès 1 200 € HT</p></div>
+        <div class="aud"><span class="icon">🏢</span><h3>Entreprise</h3><p>Flotte & parking — ADVENIR jusqu'à 50 %</p></div>
+        <div class="aud"><span class="icon">🏛️</span><h3>Collectivité</h3><p>Voirie publique — jusqu'à 9 000 €/point</p></div>
+        <div class="aud"><span class="icon">🏬</span><h3>Commerce</h3><p>Parking client — +12 % de CA*</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 7 : 105-120s -->
+  <div class="scene" id="s7" data-photo="assets/video/scene7">
+    <div class="bg"></div>
+    <div class="fg">
+      <div class="logo" style="margin:0 auto 3vh;width:clamp(140px,16vw,220px);height:clamp(140px,16vw,220px)"><span style="font-size:clamp(1.4rem,3vw,2.4rem)">EGC</span></div>
+      <h1>La mobilité verte<br>est <span style="color:var(--green-light)">déjà là</span>. En Guyane.</h1>
+      <div class="cta">
+        <a>🧮 Calculez vos économies</a>
+        <a>📞 Prendre rendez-vous</a>
+        <a>💬 WhatsApp</a>
+      </div>
+      <div class="url">egreencitys.com</div>
+      <div class="contact">📞 06 51 14 11 18 · ✉️ egreencitys@gmail.com</div>
+      <div class="flags">🇫🇷 🇬🇫 Made in Guyane</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="wm">EGREENCITY'S</div>
+<div class="scene-tag" id="tag">SCÈNE 1</div>
+<div class="timecode" id="tc">00:00 / 02:00</div>
+<div class="subtitle" id="sub"></div>
+<div class="progress" id="prog"></div>
+
+<script>
+// ============ SCRIPT TIMING (seconds) ============
+const scenes = [
+  {id:'s1', start:0,   end:15,  tag:'SCÈNE 1 · Constat'},
+  {id:'s2', start:15,  end:30,  tag:'SCÈNE 2 · EGREENCITY\'S'},
+  {id:'s3', start:30,  end:50,  tag:'SCÈNE 3 · Gamme e-City'},
+  {id:'s4', start:50,  end:70,  tag:'SCÈNE 4 · Gamme e-Premium AC'},
+  {id:'s5', start:70,  end:90,  tag:'SCÈNE 5 · Réseau littoral'},
+  {id:'s6', start:90,  end:105, tag:'SCÈNE 6 · Cibles'},
+  {id:'s7', start:105, end:120, tag:'SCÈNE 7 · Appel à l\'action'}
+];
+
+// Voice-over script (text + start time in s)
+const vo = [
+  {t:0.5,  txt:"La Guyane est le plus vaste département français."},
+  {t:4.5,  txt:"290 000 habitants. 400 km de littoral."},
+  {t:9.5,  txt:"Et pourtant, en 2026 : pas un seul réseau public de recharge électrique ouvert à tous."},
+  {t:15.5, txt:"EGREENCITY'S, c'est l'opérateur 100 % guyanais de la mobilité électrique."},
+  {t:21,   txt:"Notre mission : connecter les six communes du littoral avec un réseau de bornes de recharge intelligentes, accessibles à tous, 24 heures sur 24."},
+  {t:30.5, txt:"Pour les parkings de mairies, centres-villes et zones commerciales : la borne e-City 3 départs."},
+  {t:37,   txt:"Trois véhicules rechargent en même temps. Paiement par carte bancaire sans contact."},
+  {t:43,   txt:"Écran tactile 10 pouces, 5 langues. Tarif bleu 36 kVA, jusqu'à 3 fois 22 kW."},
+  {t:50.5, txt:"Pour les collectivités et les syndicats d'énergie : la e-Premium AC."},
+  {t:56,   txt:"Borne double en inox 304, résistante aux cyclones et à l'humidité tropicale."},
+  {t:61,   txt:"Deux prises pour voitures, deux prises domestiques pour scooters et vélos électriques."},
+  {t:70.5, txt:"Notre projet : déployer six stations connectées le long de la RN1."},
+  {t:77,   txt:"De Saint-Laurent-du-Maroni à Matoury, pour traverser la Guyane en véhicule électrique sans rupture de charge."},
+  {t:84,   txt:"Premier jalon : 2026-2027, dans le cadre du programme national ADVENIR."},
+  {t:90.5, txt:"Particulier, entreprise, collectivité, commerce : nous équipons chaque cas d'usage."},
+  {t:97,   txt:"De la WallBox domestique à la station 50 kW, avec accompagnement ADVENIR et maintenance 5 ans garantie."},
+  {t:105.5,txt:"Découvrez combien vous économisez avec notre calculateur personnalisé."},
+  {t:111,  txt:"Contactez-nous pour une étude gratuite."},
+  {t:115,  txt:"EGREENCITY'S — la mobilité verte est déjà là. En Guyane."}
+];
+
+// ============ STATE ============
+let startTime=0, rafId=null, spoken=new Set(), useVoice=true, useSubs=true;
+
+function fmt(s){const m=Math.floor(s/60),x=Math.floor(s%60);return `${String(m).padStart(2,'0')}:${String(x).padStart(2,'0')}`}
+
+function activateScene(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  el.classList.add('active');
+  triggerSceneAnims(id);
+}
+
+function triggerSceneAnims(id){
+  if(id==='s1'){
+    setTimeout(()=>document.querySelector('.s1-title').style.animation='slideInUp .8s both',100);
+    setTimeout(()=>document.querySelector('.s1-main').style.animation='slideInUp .8s both',600);
+    setTimeout(()=>document.getElementById('st1').classList.add('show'),3000);
+    setTimeout(()=>document.getElementById('st2').classList.add('show'),6000);
+    setTimeout(()=>document.getElementById('st3').classList.add('show'),10000);
+  }
+  if(id==='s2'){
+    setTimeout(()=>{const m=document.querySelector('.s2-msg');m.style.opacity=1;m.style.animation='slideInUp .8s both'},9000);
+  }
+  if(id==='s3'){
+    const lis=document.querySelectorAll('#feat3 li');
+    lis.forEach((li,i)=>setTimeout(()=>li.classList.add('show'),i*1500+1500));
+  }
+  if(id==='s4'){
+    const lis=document.querySelectorAll('#feat4 li');
+    lis.forEach((li,i)=>setTimeout(()=>li.classList.add('show'),i*1500+1500));
+  }
+  if(id==='s5'){
+    const cities=document.querySelectorAll('#map .city');
+    cities.forEach((c,i)=>setTimeout(()=>c.classList.add('on'),i*1800+800));
+    setTimeout(()=>document.querySelector('#map .road').classList.add('on'),cities.length*1800+400);
+  }
+  if(id==='s6'){
+    const auds=document.querySelectorAll('#audGrid .aud');
+    auds.forEach((a,i)=>setTimeout(()=>a.classList.add('show'),i*1200+500));
+  }
+}
+
+function speak(text){
+  if(!useVoice) return;
+  if(!('speechSynthesis' in window)) return;
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='fr-FR';u.rate=1.02;u.pitch=1.0;u.volume=1;
+  const voices=speechSynthesis.getVoices();
+  const fr=voices.find(v=>v.lang.startsWith('fr') && v.name.match(/homme|male|thomas|henri|paul|renaud/i)) || voices.find(v=>v.lang.startsWith('fr'));
+  if(fr) u.voice=fr;
+  speechSynthesis.speak(u);
+}
+
+function showSub(text){
+  if(!useSubs) return;
+  const el=document.getElementById('sub');
+  el.textContent=text;
+  el.classList.add('show');
+  clearTimeout(showSub._t);
+  showSub._t=setTimeout(()=>el.classList.remove('show'),5500);
+}
+
+function tick(){
+  const t=(performance.now()-startTime)/1000;
+  if(t>=120){
+    document.getElementById('prog').style.width='100%';
+    document.getElementById('tc').textContent='02:00 / 02:00';
+    document.getElementById('sub').classList.remove('show');
+    return;
+  }
+  document.getElementById('prog').style.width=(t/120*100)+'%';
+  document.getElementById('tc').textContent=`${fmt(t)} / 02:00`;
+
+  const cur=scenes.find(s=>t>=s.start && t<s.end);
+  if(cur){
+    const el=document.getElementById(cur.id);
+    if(!el.classList.contains('active')){
+      activateScene(cur.id);
+      document.getElementById('tag').textContent=cur.tag;
+    }
+  }
+  vo.forEach(v=>{
+    if(t>=v.t && !spoken.has(v.t)){
+      spoken.add(v.t);speak(v.txt);showSub(v.txt);
+    }
+  });
+  rafId=requestAnimationFrame(tick);
+}
+
+function startVideo(){
+  useVoice=document.getElementById('voiceOn').checked;
+  useSubs=document.getElementById('subsOn').checked;
+  document.getElementById('start').classList.add('hidden');
+  // Prime voices (Chrome lazy load)
+  if('speechSynthesis' in window){speechSynthesis.getVoices();speechSynthesis.cancel();}
+  // Try fullscreen
+  try{document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}catch(e){}
+  startTime=performance.now();
+  tick();
+}
+
+// Prime voices ASAP
+if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();speechSynthesis.getVoices();}
+
+// ===== AUTO-LOAD PHOTOS / VIDEOS =====
+// If assets/video/sceneN.jpg (or .png / .mp4) exists, inject it as background. Silent fallback if 404.
+document.querySelectorAll('.scene[data-photo]').forEach(scene=>{
+  const base=scene.dataset.photo;
+  const bg=scene.querySelector('.bg');
+  if(!bg) return;
+  ['.mp4','.webm','.jpg','.jpeg','.png','.webp'].forEach(ext=>{
+    // Try fetch to see if file exists
+    fetch(base+ext,{method:'HEAD'}).then(r=>{
+      if(!r.ok) return;
+      if(ext==='.mp4'||ext==='.webm'){
+        const v=document.createElement('video');
+        v.src=base+ext;v.autoplay=true;v.loop=true;v.muted=true;v.playsInline=true;
+        v.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:.55';
+        bg.replaceWith(v);
+        scene.classList.add('has-photo');
+      }else{
+        bg.style.backgroundImage=`url('${base+ext}')`;
+        scene.classList.add('has-photo');
+      }
+    }).catch(()=>{});
+  });
+});
+
+// Keyboard: Esc to stop
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){cancelAnimationFrame(rafId);speechSynthesis.cancel();location.reload()}
+});
+</script>
+
+</body>
+</html>
