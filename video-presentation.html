@@ -416,8 +416,8 @@ function speak(text){
              || voices.find(v=>v.lang.startsWith('fr') && /female|femme/i.test(v.name))
              || voices.find(v=>v.lang==='fr-FR')
              || voices.find(v=>v.lang.startsWith('fr'));
-  // Transcription phonétique FR pour rester sur une seule voix douce
-  const phon = text.replace(/EGREENCITY'?S/gi, "Igrine Citiz");
+  // Transcription phonétique FR — "Egreen Cities" : le 'e' final force le /z/
+  const phon = text.replace(/EGREENCITY'?S/gi, "Igrine Citize");
   const u=new SpeechSynthesisUtterance(phon);
   u.lang='fr-FR';u.rate=0.96;u.pitch=1.18;u.volume=1;
   if(frFem) u.voice=frFem;

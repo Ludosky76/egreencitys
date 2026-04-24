@@ -1069,9 +1069,10 @@
              || voices.find(function(v){return v.lang.indexOf('fr')===0 && /female|femme/i.test(v.name)})
              || voices.find(function(v){return v.lang==='fr-FR'})
              || voices.find(function(v){return v.lang.indexOf('fr')===0});
-    // Transcription phonétique FR de "EGREENCITY'S" pour rester sur une seule voix douce.
-    // "Igrine Citiz" se lit /igʁin sitiz/ → sonne comme "ee-green see-teez".
-    var phon = text.replace(/EGREENCITY'?S/gi, "Igrine Citiz");
+    // Transcription phonétique FR de "EGREENCITY'S" — prononcé "Egreen Cities".
+    // "Igrine Citize" se lit /igʁin si.tiz/ → sonne "ee-green see-teez".
+    // Le 'e' final muet force le TTS FR à prononcer le /z/ (comme "valise", "cuisine").
+    var phon = text.replace(/EGREENCITY'?S/gi, "Igrine Citize");
     var u=new SpeechSynthesisUtterance(phon);
     u.lang='fr-FR';u.rate=0.96;u.pitch=1.18;u.volume=1;
     if(frFem) u.voice=frFem;
