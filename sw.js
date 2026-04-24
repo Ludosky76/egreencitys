@@ -1,5 +1,5 @@
-/* EGREENCITY'S — Service Worker v1.1 (2026-04) */
-const CACHE = 'egreencitys-v3';
+/* EGREENCITY'S — Service Worker v1.2 (2026-04) */
+const CACHE = 'egreencitys-v4';
 const ASSETS = [
   '/',
   '/index.html',
