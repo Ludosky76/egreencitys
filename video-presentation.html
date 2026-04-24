@@ -223,7 +223,7 @@ p.lead{font-size:clamp(1.2rem,2vw,1.9rem);max-width:1100px;margin:0 auto 2vh;lin
         <div class="logo"><span>EGC</span></div>
         <h1 style="margin-top:3vh">EGREENCITY'S</h1>
         <p class="sub">Opérateur 100 % guyanais de la mobilité électrique</p>
-        <h2 class="s2-msg" style="opacity:0;margin-top:4vh">6 communes · 1 réseau · 1 badge</h2>
+        <h2 class="s2-msg" style="opacity:0;margin-top:4vh">7 communes · 1 réseau · 1 badge</h2>
       </div>
     </div>
   </div>
@@ -275,12 +275,13 @@ p.lead{font-size:clamp(1.2rem,2vw,1.9rem);max-width:1100px;margin:0 auto 2vh;lin
     <div class="bg"></div>
     <div class="fg">
       <h2>Le réseau littoral</h2>
-      <h1>6 stations · 1 corridor RN1</h1>
+      <h1>7 stations · 1 corridor RN1</h1>
       <div class="map" id="map">
         <!-- Cities positioned approximately along Guyane coast -->
         <div class="road" style="top:62%;left:12%;width:76%"></div>
         <div class="city" style="top:60%;left:10%"><label>Saint-Laurent</label></div>
-        <div class="city" style="top:58%;left:32%"><label>Kourou</label></div>
+        <div class="city" style="top:59%;left:21%"><label>Iracoubo</label></div>
+        <div class="city" style="top:58%;left:34%"><label>Kourou</label></div>
         <div class="city" style="top:62%;left:52%"><label>Macouria</label></div>
         <div class="city" style="top:65%;left:68%"><label>Cayenne</label></div>
         <div class="city" style="top:68%;left:78%"><label>Rémire</label></div>
@@ -348,15 +349,15 @@ const vo = [
   {t:4.5,  txt:"290 000 habitants. 400 km de littoral."},
   {t:9.5,  txt:"Et pourtant, en 2026 : pas un seul réseau public de recharge électrique ouvert à tous."},
   {t:15.5, txt:"EGREENCITY'S, c'est l'opérateur 100 % guyanais de la mobilité électrique."},
-  {t:21,   txt:"Notre mission : connecter les six communes du littoral avec un réseau de bornes de recharge intelligentes, accessibles à tous, 24 heures sur 24."},
+  {t:21,   txt:"Notre mission : connecter les sept communes du littoral avec un réseau de bornes de recharge intelligentes, accessibles à tous, 24 heures sur 24."},
   {t:30.5, txt:"Pour les parkings de mairies, centres-villes et zones commerciales : la borne e-City 3 départs."},
   {t:37,   txt:"Trois véhicules rechargent en même temps. Paiement par carte bancaire sans contact."},
   {t:43,   txt:"Écran tactile 10 pouces, 5 langues. Tarif bleu 36 kVA, jusqu'à 3 fois 22 kW."},
   {t:50.5, txt:"Pour les collectivités et les syndicats d'énergie : la e-Premium AC."},
   {t:56,   txt:"Borne double en inox 304, résistante aux cyclones et à l'humidité tropicale."},
   {t:61,   txt:"Deux prises pour voitures, deux prises domestiques pour scooters et vélos électriques."},
-  {t:70.5, txt:"Notre projet : déployer six stations connectées le long de la RN1."},
-  {t:77,   txt:"De Saint-Laurent-du-Maroni à Matoury, pour traverser la Guyane en véhicule électrique sans rupture de charge."},
+  {t:70.5, txt:"Notre projet : déployer sept stations connectées le long de la RN1."},
+  {t:77,   txt:"De Saint-Laurent-du-Maroni à Matoury, en passant par Iracoubo, point stratégique à mi-parcours, pour traverser la Guyane sans rupture de charge."},
   {t:84,   txt:"Premier jalon : 2026-2027, dans le cadre du programme national ADVENIR."},
   {t:90.5, txt:"Particulier, entreprise, collectivité, commerce : nous équipons chaque cas d'usage."},
   {t:97,   txt:"De la WallBox domestique à la station 50 kW, avec accompagnement ADVENIR et maintenance 5 ans garantie."},
@@ -410,12 +411,26 @@ function triggerSceneAnims(id){
 function speak(text){
   if(!useVoice) return;
   if(!('speechSynthesis' in window)) return;
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang='fr-FR';u.rate=1.02;u.pitch=1.0;u.volume=1;
   const voices=speechSynthesis.getVoices();
-  const fr=voices.find(v=>v.lang.startsWith('fr') && v.name.match(/homme|male|thomas|henri|paul|renaud/i)) || voices.find(v=>v.lang.startsWith('fr'));
-  if(fr) u.voice=fr;
-  speechSynthesis.speak(u);
+  const frFem = voices.find(v=>v.lang.startsWith('fr') && /hortense|julie|virginie|amélie|amelie|céline|celine|audrey|marie|léa|lea/i.test(v.name))
+             || voices.find(v=>v.lang.startsWith('fr') && /female|femme/i.test(v.name))
+             || voices.find(v=>v.lang==='fr-FR')
+             || voices.find(v=>v.lang.startsWith('fr'));
+  const enFem = voices.find(v=>v.lang.startsWith('en') && /zira|samantha|moira|tessa|susan|karen|fiona|female|ava|allison/i.test(v.name))
+             || voices.find(v=>v.lang.startsWith('en'));
+  const parts = text.split(/(EGREENCITY'?S)/gi);
+  parts.forEach(p=>{
+    if(!p) return;
+    const u=new SpeechSynthesisUtterance(p);
+    if(/^EGREENCITY'?S$/i.test(p)){
+      u.lang='en-US';u.rate=0.95;u.pitch=1.1;u.volume=1;
+      if(enFem) u.voice=enFem;
+    } else {
+      u.lang='fr-FR';u.rate=0.96;u.pitch=1.18;u.volume=1;
+      if(frFem) u.voice=frFem;
+    }
+    speechSynthesis.speak(u);
+  });
 }
 
 function showSub(text){
