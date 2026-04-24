@@ -416,21 +416,12 @@ function speak(text){
              || voices.find(v=>v.lang.startsWith('fr') && /female|femme/i.test(v.name))
              || voices.find(v=>v.lang==='fr-FR')
              || voices.find(v=>v.lang.startsWith('fr'));
-  const enFem = voices.find(v=>v.lang.startsWith('en') && /zira|samantha|moira|tessa|susan|karen|fiona|female|ava|allison/i.test(v.name))
-             || voices.find(v=>v.lang.startsWith('en'));
-  const parts = text.split(/(EGREENCITY'?S)/gi);
-  parts.forEach(p=>{
-    if(!p) return;
-    const u=new SpeechSynthesisUtterance(p);
-    if(/^EGREENCITY'?S$/i.test(p)){
-      u.lang='en-US';u.rate=0.95;u.pitch=1.1;u.volume=1;
-      if(enFem) u.voice=enFem;
-    } else {
-      u.lang='fr-FR';u.rate=0.96;u.pitch=1.18;u.volume=1;
-      if(frFem) u.voice=frFem;
-    }
-    speechSynthesis.speak(u);
-  });
+  // Transcription phonétique FR pour rester sur une seule voix douce
+  const phon = text.replace(/EGREENCITY'?S/gi, "Igrine Citiz");
+  const u=new SpeechSynthesisUtterance(phon);
+  u.lang='fr-FR';u.rate=0.96;u.pitch=1.18;u.volume=1;
+  if(frFem) u.voice=frFem;
+  speechSynthesis.speak(u);
 }
 
 function showSub(text){

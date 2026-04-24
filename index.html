@@ -857,6 +857,9 @@
 #vp-modal .vp-subtitle.vp-show{opacity:1}
 #vp-modal .vp-wm{position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:100;color:#2ecc71;font-weight:900;letter-spacing:.25em;font-size:.6rem;opacity:.5}
 #vp-modal .vp-close{position:absolute;top:8px;left:10px;z-index:300;background:rgba(14,26,20,.85);color:#58d68d;padding:.35rem .7rem;border-radius:999px;font-size:.7rem;font-weight:700;border:1px solid rgba(88,214,141,.4);cursor:pointer}
+#vp-modal .vp-pause{position:absolute;top:8px;left:90px;z-index:300;background:rgba(14,26,20,.85);color:#58d68d;padding:.35rem .7rem;border-radius:999px;font-size:.7rem;font-weight:700;border:1px solid rgba(88,214,141,.4);cursor:pointer;min-width:72px;display:none}
+#vp-modal.vp-active .vp-pause{display:inline-block}
+#vp-modal .vp-pause.vp-is-paused{background:rgba(46,204,113,.9);color:#0e1a14}
 #vp-modal .vp-big-num{font-size:clamp(2rem,10cqw,6rem);font-weight:900;color:#2ecc71;line-height:.9;letter-spacing:-.04em;text-shadow:0 8px 30px rgba(46,204,113,.4)}
 @keyframes vpSkyShift{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(-15deg) brightness(1.1)}}
 @keyframes vpFillUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -867,6 +870,7 @@
 </style>
 
 <button class="vp-close" type="button" aria-label="Fermer la vidéo" onclick="vpStopVideo()">✕ Fermer</button>
+<button class="vp-pause" id="vp-pause" type="button" aria-label="Pause / Reprendre" onclick="vpTogglePause()">⏸ Pause</button>
 
 <div class="vp-start" id="vp-start">
   <h1 class="vp-h1">EGREENCITY'S</h1>
@@ -1032,7 +1036,7 @@
     {t:111,txt:"Contactez-nous pour une étude gratuite."},
     {t:115,txt:"EGREENCITY'S — la mobilité verte est déjà là. En Guyane."}
   ];
-  var vpStart=0, vpRaf=null, vpSpoken=new Set(), vpUseVoice=true, vpUseSubs=true, vpTimers=[];
+  var vpStart=0, vpRaf=null, vpSpoken=new Set(), vpUseVoice=true, vpUseSubs=true, vpTimers=[], vpPaused=false, vpPauseAt=0;
 
   function vpFmt(s){var m=Math.floor(s/60),x=Math.floor(s%60);return (m<10?'0':'')+m+':'+(x<10?'0':'')+x;}
   function vpT(fn,ms){var id=setTimeout(fn,ms);vpTimers.push(id);return id;}
@@ -1061,28 +1065,17 @@
     if(!vpUseVoice) return;
     if(!('speechSynthesis' in window)) return;
     var voices=speechSynthesis.getVoices();
-    // Voix FR féminine douce (ordre de préférence Windows/macOS/Android)
     var frFem = voices.find(function(v){return v.lang.indexOf('fr')===0 && /hortense|julie|virginie|amélie|amelie|céline|celine|audrey|marie|léa|lea/i.test(v.name)})
              || voices.find(function(v){return v.lang.indexOf('fr')===0 && /female|femme/i.test(v.name)})
              || voices.find(function(v){return v.lang==='fr-FR'})
              || voices.find(function(v){return v.lang.indexOf('fr')===0});
-    // Voix EN féminine pour "EGREENCITY'S" prononcé à l'anglaise
-    var enFem = voices.find(function(v){return v.lang.indexOf('en')===0 && /zira|samantha|moira|tessa|susan|karen|fiona|female|ava|allison/i.test(v.name)})
-             || voices.find(function(v){return v.lang.indexOf('en')===0});
-    // Découpe sur "EGREENCITY'S" pour lire le nom en anglais
-    var parts = text.split(/(EGREENCITY'?S)/gi);
-    parts.forEach(function(p){
-      if(!p) return;
-      var u=new SpeechSynthesisUtterance(p);
-      if(/^EGREENCITY'?S$/i.test(p)){
-        u.lang='en-US';u.rate=0.95;u.pitch=1.1;u.volume=1;
-        if(enFem) u.voice=enFem;
-      } else {
-        u.lang='fr-FR';u.rate=0.96;u.pitch=1.18;u.volume=1;
-        if(frFem) u.voice=frFem;
-      }
-      speechSynthesis.speak(u);
-    });
+    // Transcription phonétique FR de "EGREENCITY'S" pour rester sur une seule voix douce.
+    // "Igrine Citiz" se lit /igʁin sitiz/ → sonne comme "ee-green see-teez".
+    var phon = text.replace(/EGREENCITY'?S/gi, "Igrine Citiz");
+    var u=new SpeechSynthesisUtterance(phon);
+    u.lang='fr-FR';u.rate=0.96;u.pitch=1.18;u.volume=1;
+    if(frFem) u.voice=frFem;
+    speechSynthesis.speak(u);
   }
   function vpShowSub(text){
     if(!vpUseSubs) return;
@@ -1092,6 +1085,7 @@
     vpShowSub._t=setTimeout(function(){el.classList.remove('vp-show')},5500);
   }
   function vpTick(){
+    if(vpPaused) return;
     var t=(performance.now()-vpStart)/1000;
     if(t>=120){
       document.getElementById('vp-prog').style.width='100%';
@@ -1119,6 +1113,8 @@
     try{speechSynthesis.cancel()}catch(e){}
     vpClearTimers();
     vpSpoken=new Set();
+    vpPaused=false;vpStart=0;
+    var pb=document.getElementById('vp-pause');if(pb){pb.textContent='⏸ Pause';pb.classList.remove('vp-is-paused');}
     modal.querySelectorAll('.vp-scene').forEach(function(s){s.classList.remove('vp-act')});
     modal.querySelectorAll('.vp-stat').forEach(function(s){s.classList.remove('vp-show')});
     modal.querySelectorAll('.vp-features li').forEach(function(s){s.classList.remove('vp-show')});
@@ -1140,12 +1136,33 @@
     if('speechSynthesis' in window){speechSynthesis.getVoices();speechSynthesis.cancel();}
     vpStart=performance.now();
     vpSpoken=new Set();
+    vpPaused=false;
+    var pb=document.getElementById('vp-pause');if(pb){pb.textContent='⏸ Pause';pb.classList.remove('vp-is-paused');}
     vpTick();
   };
   window.vpStopVideo=function(){
     vpReset();
     modal.classList.remove('vp-active');
     modal.setAttribute('aria-hidden','true');
+  };
+  window.vpTogglePause=function(){
+    if(!vpStart) return; // pas lancée
+    var pb=document.getElementById('vp-pause');
+    if(vpPaused){
+      // Reprendre
+      vpStart += performance.now()-vpPauseAt;
+      vpPaused=false;
+      try{speechSynthesis.resume()}catch(e){}
+      if(pb){pb.textContent='⏸ Pause';pb.classList.remove('vp-is-paused');}
+      vpTick();
+    } else {
+      // Mettre en pause
+      vpPaused=true;
+      vpPauseAt=performance.now();
+      if(vpRaf){cancelAnimationFrame(vpRaf);vpRaf=null;}
+      try{speechSynthesis.pause()}catch(e){}
+      if(pb){pb.textContent='▶ Reprendre';pb.classList.add('vp-is-paused');}
+    }
   };
   function vpOpen(){
     modal.classList.add('vp-active');
@@ -1154,7 +1171,15 @@
   wrap.addEventListener('click',vpOpen);
   wrap.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();vpOpen();}});
   document.addEventListener('keydown',function(e){
-    if(e.key==='Escape' && modal.classList.contains('vp-active')) window.vpStopVideo();
+    if(!modal.classList.contains('vp-active')) return;
+    if(e.key==='Escape') window.vpStopVideo();
+    else if(e.key===' '||e.code==='Space'||e.key==='k'||e.key==='K'){
+      // Ne pas capturer l'espace si l'utilisateur est dans un input/checkbox
+      var tag=(e.target&&e.target.tagName||'').toLowerCase();
+      if(tag==='input'||tag==='textarea'||tag==='button') return;
+      e.preventDefault();
+      window.vpTogglePause();
+    }
   });
 
   // Prime voices early (Chrome)
