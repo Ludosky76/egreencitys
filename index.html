@@ -790,7 +790,10 @@
 #vp-modal{position:absolute;inset:0;background:#000;z-index:10;display:none;overflow:hidden;border-radius:inherit;font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;container-type:size}
 #vp-modal.vp-active{display:block}
 #vp-modal *{margin:0;padding:0;box-sizing:border-box}
-#vp-modal .vp-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,#0e1a14 0%,#000 100%);overflow:hidden;color:#f8fdf9}
+#vp-modal .vp-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,#0e1a14 0%,#000 100%);overflow:hidden;color:#f8fdf9;cursor:pointer}
+#vp-modal .vp-stage:hover{cursor:pointer}
+#vp-modal .vp-play-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.6);width:64px;height:64px;border-radius:50%;background:rgba(46,204,113,.92);display:flex;align-items:center;justify-content:center;color:#0e1a14;font-size:1.8rem;font-weight:900;z-index:150;opacity:0;pointer-events:none;box-shadow:0 8px 30px rgba(46,204,113,.6);transition:opacity .3s,transform .3s}
+#vp-modal .vp-play-hint.vp-show{opacity:.92;transform:translate(-50%,-50%) scale(1)}
 #vp-modal .vp-scene{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4cqh 6cqw}
 #vp-modal .vp-scene.vp-act{opacity:1}
 #vp-modal .vp-scene .vp-bg{position:absolute;inset:0;z-index:0;opacity:.35;background-size:cover;background-position:center;background-repeat:no-repeat}
@@ -1003,6 +1006,7 @@
 <div class="vp-tag" id="vp-tag">SCÈNE 1</div>
 <div class="vp-tc" id="vp-tc">00:00 / 02:00</div>
 <div class="vp-subtitle" id="vp-subtitle"></div>
+<div class="vp-play-hint" id="vp-play-hint" aria-hidden="true">▶</div>
 <div class="vp-progress" id="vp-prog"></div>
 <input type="range" class="vp-seek" id="vp-seek" min="0" max="120" step="0.1" value="0" aria-label="Position dans la vidéo — glisser pour avancer ou reculer">
 
@@ -1231,6 +1235,25 @@
     vpOpen();
   });
   wrap.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();vpOpen();}});
+  // Clic sur la scène → toggle pause (comme un lecteur vidéo)
+  var stage=modal.querySelector('.vp-stage');
+  if(stage){
+    stage.addEventListener('click',function(e){
+      // Ignore si la vidéo n'est pas lancée (on est sur l'écran Start)
+      if(!vpStart) return;
+      // Ignore si le clic vient d'un contrôle ou d'un lien CTA
+      if(e.target.closest('a,button,input,label,.vp-seek,.vp-close,.vp-pause,.vp-start')) return;
+      window.vpTogglePause();
+      // Feedback visuel bref : ▶ ou ⏸ au centre
+      var hint=document.getElementById('vp-play-hint');
+      if(hint){
+        hint.textContent = vpPaused ? '▶' : '⏸';
+        hint.classList.add('vp-show');
+        clearTimeout(hint._t);
+        hint._t=setTimeout(function(){hint.classList.remove('vp-show')},650);
+      }
+    });
+  }
   // Slider de progression (seek)
   var seek=document.getElementById('vp-seek');
   if(seek){
