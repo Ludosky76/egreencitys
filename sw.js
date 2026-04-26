@@ -1,18 +1,18 @@
-/* EGREENCITY'S — Service Worker v2.1 (2026-04) */
-const CACHE = 'egreencitys-v13';
+/* EGREENCITY'S — Service Worker v2.2 (2026-04) */
+const CACHE = 'egreencitys-v14';
 const ASSETS = [
   '/',
   '/index.html',
-  '/produits.html',
-  '/reseau.html',
-  '/investisseurs.html',
-  '/mentions-legales.html',
-  '/blog.html',
-  '/faq.html',
-  '/economies.html',
-  '/cgv.html',
-  '/video-presentation.html',
-  '/video-presentation-9x16.html',
+  '/pages/produits.html',
+  '/pages/reseau.html',
+  '/pages/investisseurs.html',
+  '/pages/legal/mentions-legales.html',
+  '/pages/blog.html',
+  '/pages/faq.html',
+  '/pages/economies.html',
+  '/pages/legal/cgv.html',
+  '/pages/video/video-presentation.html',
+  '/pages/video/video-presentation-9x16.html',
   '/logo.png',
   '/manifest.webmanifest'
 ];
