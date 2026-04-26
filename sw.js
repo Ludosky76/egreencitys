@@ -1,5 +1,5 @@
-/* EGREENCITY'S — Service Worker v2.2 (2026-04) */
-const CACHE = 'egreencitys-v14';
+/* EGREENCITY'S — Service Worker v2.3 (2026-04) */
+const CACHE = 'egreencitys-v15';
 const ASSETS = [
   '/',
   '/index.html',
@@ -13,6 +13,7 @@ const ASSETS = [
   '/pages/legal/cgv.html',
   '/pages/video/video-presentation.html',
   '/pages/video/video-presentation-9x16.html',
+  '/data/prices.json',
   '/logo.png',
   '/manifest.webmanifest'
 ];
