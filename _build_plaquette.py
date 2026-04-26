@@ -103,7 +103,7 @@ def std_bg(canv, doc):
     canv.rect(0, 12*mm, PAGE_W, 0.6*mm, fill=1, stroke=0)
     canv.setFillColor(white)
     canv.setFont("Helvetica", 8.5)
-    canv.drawString(MARGIN, 7*mm, "egreencitys.com  |  egreencitys@gmail.com  |  +594 (0)6 51 14 11 18")
+    canv.drawString(MARGIN, 7*mm, "egreencitys.com  |  egreencitys@gmail.com  |  +33 (0)6 51 14 11 18")
     canv.drawRightString(PAGE_W - MARGIN, 7*mm, "Macouria — Guyane française")
     canv.setFont("Helvetica", 7.5)
     canv.drawRightString(PAGE_W - MARGIN, 3.2*mm, f"— Page {doc.page} —")
@@ -176,7 +176,7 @@ story.append(Spacer(1, 8*mm))
 contact_tbl = Table([[
     Paragraph('<font color="#FFFFFF" size="10"><b>egreencitys.com</b></font>', CENTER),
     Paragraph('<font color="#FFFFFF" size="10"><b>egreencitys@gmail.com</b></font>', CENTER),
-    Paragraph('<font color="#FFFFFF" size="10"><b>+594 (0)6 51 14 11 18</b></font>', CENTER),
+    Paragraph('<font color="#FFFFFF" size="10"><b>+33 (0)6 51 14 11 18</b></font>', CENTER),
 ]], colWidths=[(PAGE_W - 2*MARGIN)/3]*3)
 contact_tbl.setStyle(TableStyle([
     ("ALIGN", (0,0), (-1,-1), "CENTER"),
@@ -936,7 +936,7 @@ contact_block = Table([
     [Paragraph('<font color="#FFFFFF" size="11"><b>E-MAIL</b></font>', CENTER),
      Paragraph('<font color="#FFFFFF" size="14"><b>egreencitys@gmail.com</b></font>', CENTER)],
     [Paragraph('<font color="#FFFFFF" size="11"><b>TÉLÉPHONE</b></font>', CENTER),
-     Paragraph('<font color="#FFFFFF" size="14"><b>+594 (0)6 51 14 11 18</b></font>', CENTER)],
+     Paragraph('<font color="#FFFFFF" size="14"><b>+33 (0)6 51 14 11 18</b></font>', CENTER)],
     [Paragraph('<font color="#FFFFFF" size="11"><b>SIÈGE</b></font>', CENTER),
      Paragraph('<font color="#FFFFFF" size="14"><b>Macouria — Guyane française (973)</b></font>', CENTER)],
 ], colWidths=[40*mm, 120*mm], hAlign="CENTER")
