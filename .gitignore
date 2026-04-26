@@ -10,6 +10,8 @@ Thumbs.db
 
 # Scripts contenant des secrets — ne JAMAIS commiter
 _ovh_dns.py
+_tools/_ovh_dns.py
+_archive/
 *.secret
 *.key
 .env

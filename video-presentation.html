@@ -505,5 +505,15 @@ document.addEventListener('keydown',e=>{
 });
 </script>
 
+
+<!-- PWA Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function(e){console.warn('SW failed',e);});
+    });
+  }
+</script>
+
 </body>
 </html>
