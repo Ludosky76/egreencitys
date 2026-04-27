@@ -16,3 +16,7 @@ _archive/
 *.key
 .env
 .env.*
+!.env.example
+
+# Log de publication automatique (peut contenir IDs de posts)
+_dossiers/_social_publisher.log

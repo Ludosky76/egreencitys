@@ -1,0 +1,69 @@
+{
+  "_comment": "Calendrier de posts EGREENCITY'S — modifiable a la main. Le script _social_publisher.py lit ce fichier.",
+  "_format": {
+    "id": "identifiant unique (utilise pour ne pas reposter)",
+    "platforms": "facebook, linkedin, both",
+    "publish_at": "ISO 8601 ou 'now' pour publier au prochain run",
+    "status": "pending | published | error (mis a jour par le script)",
+    "text": "contenu du post",
+    "image": "chemin relatif a la racine du projet (optionnel) — ex: logo.png"
+  },
+  "posts": [
+    {
+      "id": "fb-001-lancement",
+      "platforms": "facebook",
+      "publish_at": "now",
+      "status": "pending",
+      "text": "🚀 EGREENCITY'S est en ligne !\n\nPremière entreprise guyanaise dédiée à l'installation de bornes de recharge pour véhicules électriques.\n\n✓ Particuliers, entreprises, collectivités\n✓ Aide ADVENIR jusqu'à 60% du matériel\n✓ Pose certifiée IRVE Qualifelec\n✓ Devis gratuit sous 48 h\n\nDemandez votre étude personnalisée 👇\n🔗 https://egreencitys.com/pages/devis.html\n\n#guyane #cayenne #973 #mobilitéélectrique #IRVE #ADVENIR #véhiculeélectrique",
+      "image": "logo.png"
+    },
+    {
+      "id": "li-001-lancement",
+      "platforms": "linkedin",
+      "publish_at": "now",
+      "status": "pending",
+      "text": "🇬🇫 Le marché guyanais de la mobilité électrique entre dans une nouvelle phase.\n\nNous lançons EGREENCITY'S — premier opérateur intégré de bornes de recharge en Guyane française.\n\nNotre approche :\n🔹 Couverture territoriale homogène (10 communes ciblées)\n🔹 Conformité réglementaire complète (ADVENIR, AFIR, IRVE)\n🔹 Modèle économique mixte (vente + location + supervision)\n🔹 Maintenance industrielle 36 mois\n\nNous recherchons des partenaires :\n• Collectivités souhaitant équiper leur territoire\n• Bailleurs sociaux et copropriétés\n• Entreprises dotant leur flotte\n• Investisseurs souhaitant participer au projet\n\nDiscutons : https://egreencitys.com/pages/investisseurs.html\n\n#mobiliteelectrique #transitionenergetique #guyane #IRVE #ADVENIR #cleantech",
+      "image": "logo.png"
+    },
+    {
+      "id": "fb-002-advenir",
+      "platforms": "facebook",
+      "publish_at": "2026-05-04T12:30:00",
+      "status": "pending",
+      "text": "💰 Saviez-vous que l'État finance jusqu'à 60% de votre borne de recharge ?\n\nLe programme ADVENIR couvre :\n🏘️ Particuliers en copropriété : 600 €\n🏢 Entreprises (parking salariés) : jusqu'à 2 700 €/point\n🏛️ Voirie publique : jusqu'à 8 100 €/point\n\nNous calculons gratuitement votre éligibilité.\n👉 https://egreencitys.com/pages/devis.html\n\n#ADVENIR2026 #aidesfinancières #guyane #mobilitéélectrique",
+      "image": "logo.png"
+    },
+    {
+      "id": "fb-003-economies",
+      "platforms": "facebook",
+      "publish_at": "2026-05-11T12:30:00",
+      "status": "pending",
+      "text": "⚡ 100 km en véhicule électrique en Guyane, ça coûte combien ?\n\n🚗 Essence : ~9 €\n🚙 Diesel : ~7 €\n⚡ Électrique : ~3 €\n\nSoit 1 800 € d'économies par an pour 30 000 km/an.\nEt zéro émission de CO₂ dans nos rues guyanaises 🌴\n\nCalcul détaillé : https://egreencitys.com/pages/economies.html\n\n#économies #guyane #pouvoirdachat #VE",
+      "image": "logo.png"
+    },
+    {
+      "id": "fb-004-reseau",
+      "platforms": "facebook",
+      "publish_at": "2026-05-18T18:00:00",
+      "status": "pending",
+      "text": "📍 Notre réseau couvre toute la Guyane :\n\n✅ Cayenne · Kourou · Matoury\n✅ Macouria · Rémire-Montjoly\n✅ Saint-Laurent-du-Maroni\n✅ Mana · Iracoubo · Roura · Sinnamary\n\nChaque commune a sa page dédiée avec les solutions adaptées.\n🔗 https://egreencitys.com/pages/reseau.html\n\n#cayenne #kourou #saintlaurent #guyane #973",
+      "image": "logo.png"
+    },
+    {
+      "id": "li-002-collectivites",
+      "platforms": "linkedin",
+      "publish_at": "2026-05-12T09:00:00",
+      "status": "pending",
+      "text": "🏛️ Élus guyanais : la directive européenne AFIR 2024 vous impose désormais un point de recharge tous les 60 km sur les axes structurants.\n\nEGREENCITY'S vous accompagne sur l'intégralité du parcours :\n✓ Étude d'opportunité par commune\n✓ Dossier ADVENIR voirie (jusqu'à 8 100 € / point financés)\n✓ Coordination ENEDIS / EDF\n✓ Pose IRVE Qualifelec\n✓ Supervision OCPP + raccordement GIREVE\n✓ Maintenance 36 mois\n\nÉtude gratuite pour votre commune : 06 51 14 11 18\n\n#collectivites #elus #guyane #AFIR #ADVENIR #mobilite",
+      "image": "logo.png"
+    },
+    {
+      "id": "fb-005-cta",
+      "platforms": "both",
+      "publish_at": "2026-05-25T19:00:00",
+      "status": "pending",
+      "text": "🔌 Vous hésitez encore à passer à l'électrique en Guyane ?\n\n✓ 0 émission de CO₂\n✓ 70% d'économies sur le carburant\n✓ Recharge à domicile en 4 à 8 h\n✓ Aide ADVENIR jusqu'à 60%\n\nDevis 100 % gratuit et sans engagement.\n📞 06 51 14 11 18 · 💬 WhatsApp · 🌐 egreencitys.com\n\n#guyane #VE #mobilite #973",
+      "image": "logo.png"
+    }
+  ]
+}
