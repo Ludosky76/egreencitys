@@ -57,6 +57,7 @@
 | C5 | `05_Engagements_Operateur.md` | Engagement signalétique + disponibilité 5 ans + ouverture au public | ✅ |
 | C6 | `06_Modele_Lettre_Intention_Mairie.txt` | Modèle à adresser à chaque commune partenaire | ✅ |
 | C7 | `07_Budget_Detaille.md` | Décomposition du budget par station | ✅ |
+| C8 | `08_Lettre_Demande_ADVENIR.md` | Lettre formelle de demande à AVERE-France (à signer) | ✅ |
 
 ### D — Pièces partenaires (à collecter)
 
