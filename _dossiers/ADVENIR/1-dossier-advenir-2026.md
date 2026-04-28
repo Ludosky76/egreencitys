@@ -12,16 +12,21 @@
 
 ## 1. Synthèse exécutive
 
-EGREENCITY'S porte le premier projet structurant de **réseau inter-communal de bornes de recharge pour véhicules électriques en Guyane française**. Ce projet vise à équiper l'ensemble du littoral guyanais (10 communes ciblées) d'infrastructures de recharge publiques et semi-publiques, conformes aux exigences de la directive européenne **AFIR 2024** et aux standards techniques **ADVENIR / IRVE Qualifelec**.
+EGREENCITY'S porte le premier projet structurant de **réseau inter-communal de bornes de recharge pour véhicules électriques en Guyane française**. Ce projet vise à équiper le littoral guyanais (8 communes ciblées en phase 1) d'infrastructures de recharge publiques conformes aux exigences de la directive européenne **AFIR 2024** et aux standards techniques **ADVENIR / IRVE Qualifelec**.
 
 | Indicateur clé | Valeur |
 |---|---|
-| Nombre de points de recharge prévus | **48** (phase 1) + 60 (phase 2) |
-| Communes couvertes | 10 (Cayenne, Kourou, Saint-Laurent, Matoury, Macouria, Rémire-Montjoly, Mana, Iracoubo, Roura, Sinnamary) |
-| Investissement total HT (phase 1) | …………… € *(voir tableur)* |
-| Aide ADVENIR sollicitée (phase 1) | …………… € *(voir tableur)* |
-| Calendrier de déploiement | 18 mois à compter de la notification |
+| Nombre de stations | **10** |
+| Nombre de points de charge (PDC) | **20** (toutes en e-Premium AC 2x22 kW) |
+| Puissance installée | **440 kW** AC |
+| Communes couvertes (phase 1) | 8 (Cayenne, Matoury, Rémire-Montjoly, Macouria, Kourou, Iracoubo, Saint-Laurent-du-Maroni, Mana) |
+| Investissement total HT | **58 020 €** *(10 bornes × 5 802 € HT)* |
+| Aide ADVENIR sollicitée | **37 200 €** *(20 PDC × 1 860 €)* |
+| Taux de couverture ADVENIR | **64,1 %** du HT matériel |
+| Calendrier de déploiement | 12 mois à compter de la notification |
 | Mise en service première borne | T+3 mois |
+
+> Détail technique et chiffrage par site : **`02_Tableau_20_PDC.xlsx`** (document de référence ADVENIR).
 
 ---
 
@@ -77,13 +82,11 @@ La directive européenne AFIR impose un point de recharge **tous les 60 km** sur
 *(Détail chiffré dans le tableur joint : `2-chiffrage-advenir-bornes.xlsx`)*
 
 | Type | Puissance | Nombre | Cas d'usage |
-|---|---:|---:|---|
-| WallBox murale T2 | 7–22 kW AC | 12 | Résidentiel collectif |
-| Pied solo / double | 7–22 kW AC | 16 | Parking employeurs |
-| Totem 3 départs | 36 kVa | 8 | Voirie publique secondaire |
-| Totem 5 départs | 110 kVa | 8 | Voirie publique principale |
-| Borne rapide DC | 120 kW | 4 | Sites stratégiques (axes routiers) |
-| **Total phase 1** | | **48** | |
+|---|---|---|---|
+| e-Premium AC 2x22 kW (pied double) | 22 kW AC par PDC | 10 bornes (20 PDC) | Voirie publique communale |
+| **Total phase 1** | **440 kW** | **20 PDC** | Voirie publique |
+
+> Toutes les bornes sont identiques (modèle **e-Premium AC 2×22 kW**) afin de simplifier la maintenance, le stock de pièces détachées et la formation des techniciens. Chaque borne dessert deux véhicules simultanément (2 prises Type 2 + 1 prise E domestique).
 
 ### 4.2 Spécifications techniques (extrait)
 - **Connecteurs :** Type 2 (AC) + Combo CCS2 (DC)
@@ -104,24 +107,25 @@ La directive européenne AFIR impose un point de recharge **tous les 60 km** sur
 
 ---
 
-## 5. Plan de déploiement par commune
+## 5. Plan de déploiement par commune (phase 1 — 20 PDC)
 
-| Commune | Phase 1 (mois 1–9) | Phase 2 (mois 10–18) | Total points |
-|---|---:|---:|---:|
-| Cayenne (préfecture) | 12 | 14 | 26 |
-| Kourou (CSG) | 8 | 10 | 18 |
-| Saint-Laurent-du-Maroni | 6 | 8 | 14 |
-| Matoury | 4 | 6 | 10 |
-| Macouria | 4 | 6 | 10 |
-| Rémire-Montjoly | 4 | 6 | 10 |
-| Mana | 2 | 4 | 6 |
-| Iracoubo | 2 | 2 | 4 |
-| Roura | 2 | 2 | 4 |
-| Sinnamary | 4 | 2 | 6 |
-| **Total** | **48** | **60** | **108** |
+| Commune | Stations | PDC | Site proposé |
+|---|---|---|---|
+| Cayenne | 2 | 4 | Place des Palmistes + Zone commerciale Califourchon |
+| Matoury | 1 | 2 | Parking Géant Casino Matoury |
+| Rémire-Montjoly | 1 | 2 | Mairie de Rémire-Montjoly |
+| Macouria-Tonate | 1 | 2 | Mairie de Macouria *(siège opérateur — site pilote)* |
+| Kourou | 1 | 2 | Place Newton — centre-ville |
+| Iracoubo | 2 | 4 | Mairie + Aire de repos RN1 km 95 *(relais axe long)* |
+| Saint-Laurent-du-Maroni | 1 | 2 | Mairie de Saint-Laurent-du-Maroni |
+| Mana | 1 | 2 | Place de la Mairie |
+| **Total phase 1** | **10** | **20** | 8 communes |
 
-> Pages détaillées par commune disponibles sur :
-> https://egreencitys.com/pages/communes/
+> Le détail complet (références sites, prix HT, prime ADVENIR, observations) figure dans **`02_Tableau_20_PDC.xlsx`**.
+> Pages détaillées par commune disponibles sur https://egreencitys.com/pages/communes/
+
+### 5.1 Phase 2 (extension envisagée)
+À l'issue de la phase 1, une **phase 2** de 20 PDC supplémentaires (réseau cible 40 PDC) sera proposée. Elle ciblera le renforcement des stations existantes et l'ajout de Roura, Sinnamary et de nouveaux sites Cayenne / Saint-Laurent. Cette phase 2 fera l'objet d'un dossier ADVENIR distinct.
 
 ---
 
@@ -130,12 +134,15 @@ La directive européenne AFIR impose un point de recharge **tous les 60 km** sur
 | Mois | Étape |
 |---|---|
 | M0 | Notification favorable ADVENIR |
-| M1 | Conventions avec mairies (10) + EDF Guyane |
-| M2 | Commande matériel + études électriques |
-| M3 | **Première mise en service** (Cayenne) |
-| M4–M9 | Déploiement phase 1 (48 points) |
-| M10–M18 | Déploiement phase 2 (60 points) |
-| M19 | Mise en exploitation complète + supervision |
+| M1 | Conventions avec mairies (8) + EDF Guyane |
+| M2 | Commande matériel (10 bornes) + études électriques |
+| M3 | **Première mise en service** (Macouria — site pilote) |
+| M4 | Cayenne (2 stations) + Matoury |
+| M5 | Rémire-Montjoly + Kourou |
+| M6 | Iracoubo (2 stations — relais RN1) |
+| M7 | Saint-Laurent-du-Maroni + Mana |
+| M8 | **Mise en service complète des 20 PDC** + raccordement GIREVE |
+| M9–M12 | Phase d'exploitation et de retours d'usage |
 
 ---
 
@@ -150,8 +157,8 @@ La directive européenne AFIR impose un point de recharge **tous les 60 km** sur
 
 ### 7.2 Tarification utilisateur
 - **AC 22 kW** : 0,35 €/kWh + 0,02 €/min après 1 h
-- **DC 120 kW** : 0,55 €/kWh + 0,05 €/min après 30 min
 - **Abonnement mensuel** : 9,90 € (tarif réduit –30 %)
+- **Paiement** : RFID, CB sans contact, application mobile iOS/Android
 
 ### 7.3 Bénéficiaires finaux
 - Particuliers en copropriété et résidence
@@ -188,11 +195,12 @@ EGREENCITY'S s'engage formellement à respecter les **obligations communes** ADV
 4. ☐ Attestation Qualifelec IRVE (ou engagement de l'obtenir avant pose)
 5. ☐ Attestation d'assurance RC Pro + Décennale IRVE
 6. ☐ Attestation URSSAF / fiscale de régularité
-7. ☐ Tableur de chiffrage `2-chiffrage-advenir-bornes.xlsx`
+7. ☐ **Tableau des 20 PDC : `02_Tableau_20_PDC.xlsx`** *(document de référence)*
 8. ☐ Fiches techniques des bornes (plaquette EGREENCITY'S 2026)
-9. ☐ Lettres d'intention des communes partenaires
-10. ☐ Étude d'opportunité (si demandée par l'instructeur)
+9. ☐ Devis fournisseur E-TOTEM ref. DEV17000172-6 (5 802 € HT/borne)
+10. ☐ Lettres d'intention des 8 communes partenaires
 11. ☐ Plan de financement détaillé (apport + ADVENIR + autofinancement + emprunt)
+12. ☐ Étude d'opportunité (si demandée par l'instructeur)
 
 ---
 

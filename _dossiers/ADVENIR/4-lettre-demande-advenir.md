@@ -38,12 +38,13 @@ Notre société, créée en novembre 2019, a vocation à porter ce développemen
 
 EGREENCITY'S sollicite un financement pour la **phase 1** d'un programme structurant qui prévoit :
 
-- **48 points de recharge** déployés sur 18 mois,
-- **10 communes** couvertes (Cayenne, Kourou, Saint-Laurent-du-Maroni, Matoury, Macouria, Rémire-Montjoly, Mana, Iracoubo, Roura, Sinnamary),
-- une **mixité de cas d'usage** : voirie publique, parkings ouverts au public, parkings employeurs et résidentiel collectif,
-- des bornes conformes **OCPP 1.6J**, raccordées à la plateforme **GIREVE** et déclarées sur **DATA.GOUV.fr**.
+- **20 points de charge (PDC) répartis sur 10 stations** déployées en 8 mois,
+- **8 communes** couvertes : Cayenne (2 stations), Matoury, Rémire-Montjoly, Macouria-Tonate (siège opérateur — site pilote), Kourou, Iracoubo (2 stations dont relais RN1 km 95), Saint-Laurent-du-Maroni et Mana,
+- des bornes **e-Premium AC 2×22 kW** identiques (440 kW de puissance installée), connectées **OCPP 1.6J**, raccordées à la plateforme **GIREVE** et déclarées sur **DATA.GOUV.fr**,
+- un **investissement total de 58 020 € HT** (10 bornes × 5 802 € HT — devis E-TOTEM ref. DEV17000172-6),
+- une **aide ADVENIR sollicitée de 37 200 €** (20 PDC × 1 860 € au titre du dispositif voirie publique), soit un **taux de couverture de 64,1 %** du HT matériel.
 
-Le détail technique et financier figure dans le tableur de chiffrage et la note de cadrage joints au dossier.
+Le détail technique et financier site par site figure dans le **tableau des 20 PDC** (`02_Tableau_20_PDC.xlsx`) et dans la note de cadrage joints au dossier.
 
 ## Engagements
 
@@ -62,15 +63,17 @@ Conformément aux conditions du programme ADVENIR, EGREENCITY'S s'engage à :
 ## Pièces jointes
 
 - Note de présentation détaillée du projet
-- Tableur de chiffrage et de plan de financement
+- **Tableau des 20 PDC** (`02_Tableau_20_PDC.xlsx`) — document de référence site par site
+- Plan de financement détaillé
 - Extrait Kbis de moins de 3 mois
 - Statuts à jour de la SAS
 - RIB de l'entreprise
 - Attestations URSSAF et fiscale de régularité
-- Attestations de qualification (IRVE, assurances)
+- Attestations de qualification (IRVE Qualifelec, assurances)
 - Fiches techniques des bornes proposées (plaquette EGREENCITY'S 2026)
+- Devis fournisseur E-TOTEM ref. DEV17000172-6
 - Bilans et liasses fiscales des deux derniers exercices
-- Lettres d'intention des communes partenaires *(en cours)*
+- Lettres d'intention des 8 communes partenaires *(en cours)*
 - Lettre d'intention bancaire pour le prêt complémentaire
 
 ## Conclusion
