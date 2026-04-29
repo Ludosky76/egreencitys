@@ -39,11 +39,11 @@
 
 | # | Pièce | Fournisseur | Statut |
 |---|-------|-------------|--------|
-| B1 | Fiche technique e-Premium AC | E-TOTEM | ☐ |
-| B2 | Fiche technique e-Fast S S120-2 | E-TOTEM | ☐ |
+| B1 | Fiche technique e-Premium AC 2×22 kW | E-TOTEM | ☐ |
+| B2 | Devis E-TOTEM ref. DEV17000172-6 (10 bornes) | E-TOTEM | ☐ |
 | B3 | Attestation OCPP 1.6J (exigence ADVENIR) | E-TOTEM | ☐ |
 | B4 | Attestations MID (comptage énergie) | E-TOTEM | ☐ |
-| B5 | Certification NF / IEC 61851 | E-TOTEM | ☐ |
+| B5 | Certification NF / IEC 61851 / IEC 62196-2 | E-TOTEM | ☐ |
 | B6 | Attestation fournisseur agréé ADVENIR | E-TOTEM | ☐ |
 
 ### C — Pièces projet (préparées dans ce dossier)
@@ -63,7 +63,7 @@
 
 | # | Pièce | Source | Statut |
 |---|-------|--------|--------|
-| D1 | Lettres d'intention signées des maires | 9 communes cibles | ☐ |
+| D1 | Lettres d'intention signées des maires | 8 communes cibles | ☐ |
 | D2 | Conventions d'occupation domaine public | Communes | ☐ |
 | D3 | Arrêtés municipaux autorisant les stations | Communes | ☐ |
 | D4 | Plans de voirie des sites d'implantation | Services techniques mairies | ☐ |

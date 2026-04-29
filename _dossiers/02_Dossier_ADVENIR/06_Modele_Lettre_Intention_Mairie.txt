@@ -12,16 +12,15 @@ INSTRUCTIONS D'UTILISATION :
   6. Compléter la date et le numéro LRAR
   7. Imprimer, signer en ORIGINAL — envoyer par LRAR + copie par email mairie
 
-COMMUNES CIBLES (9) :
-  S01/S02 → Mairie de Cayenne
+COMMUNES CIBLES (8) :
+  S01/S02 → Mairie de Cayenne (2 stations)
   S03     → Mairie de Matoury
   S04     → Mairie de Rémire-Montjoly
-  S05     → Mairie de Macouria
-  S06/S07 → Mairie de Kourou
-  S08     → Mairie de Sinnamary
+  S05     → Mairie de Macouria-Tonate
+  S06     → Mairie de Kourou
+  S07/S08 → Mairie d'Iracoubo (2 stations — relais RN1)
   S09     → Mairie de Saint-Laurent-du-Maroni
   S10     → Mairie de Mana
-  S11     → Mairie de Roura
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -34,8 +33,9 @@ COMMUNES CIBLES (9) :
 
                                               RCS Cayenne 878 682 854
                                               N° Gestion 2019 B 816
-                                              Tél   : 07 [à compléter]
-                                              Email : contact@egreencity.fr
+                                              Tél   : +33 6 51 14 11 18
+                                              Email : egreencitys@gmail.com
+                                              Web   : https://egreencitys.com
 
 
                                               Mairie de [COMMUNE]
@@ -70,8 +70,8 @@ novembre 2019.
 ── 2. LE PROJET ─────────────────────────────────────────────────────────────
 
 EGREENCITY'S déploie, avec le soutien financier du programme national ADVENIR
-(dispositif AVERE-France, labellisé par l'État), un réseau de **22 Points De
-Charge (PDC)** répartis sur **9 communes de Guyane**, dont [COMMUNE].
+(dispositif AVERE-France, labellisé par l'État), un réseau de **20 Points De
+Charge (PDC)** répartis sur **8 communes de Guyane**, dont [COMMUNE].
 
 Pour votre commune, nous proposons l'installation de :
 
@@ -161,7 +161,7 @@ Par le présent courrier, je vous prie de bien vouloir :
 Je reste à votre entière disposition pour vous rencontrer et vous présenter
 le projet en détail. Vous pouvez me contacter :
 
-  • Par téléphone : 07 [à compléter]
+  • Par téléphone : +33 6 51 14 11 18
   • Par email     : contact@egreencity.fr
   • À notre siège : 1 rue Akangoue — Résidence La Rougerie — 97355 Macouria-Tonate
 
@@ -207,14 +207,13 @@ PROCÉDURE D'ENVOI :
   • Envoyer une copie par email à l'adresse connue de la mairie
   • En cas de non-réponse à 3 semaines : relance téléphonique (standard mairie)
 
-CONTACTS MAIRIES (à compléter) :
-  Mairie de Cayenne       : 05 94 29 91 00
-  Mairie de Matoury       : 05 94 35 81 81
-  Mairie de Rémire        : 05 94 38 48 00
-  Mairie de Macouria      : 05 94 38 17 00
-  Mairie de Kourou        : 05 94 32 82 82
-  Mairie de Sinnamary     : 05 94 34 51 00
-  Mairie de SLM           : 05 94 34 13 00
-  Mairie de Mana          : 05 94 34 80 05
-  Mairie de Roura         : 05 94 45 60 08
+CONTACTS MAIRIES (8 communes cibles) :
+  Mairie de Cayenne                : 05 94 29 91 00  (S01 + S02)
+  Mairie de Matoury                : 05 94 35 81 81  (S03)
+  Mairie de Rémire-Montjoly        : 05 94 38 48 00  (S04)
+  Mairie de Macouria-Tonate        : 05 94 38 17 00  (S05)
+  Mairie de Kourou                 : 05 94 32 82 82  (S06)
+  Mairie d'Iracoubo                : 05 94 34 51 39  (S07 + S08)
+  Mairie de Saint-Laurent-du-Maroni: 05 94 34 13 00  (S09)
+  Mairie de Mana                   : 05 94 34 80 05  (S10)
 ═══════════════════════════════════════════════════════════════════════════════

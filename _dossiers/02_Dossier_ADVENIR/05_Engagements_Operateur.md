@@ -92,7 +92,7 @@ ad hoc** ne nécessitant aucun abonnement préalable :
 | Mode | Dispositif | Bornes concernées |
 |------|-----------|-------------------|
 | Badge ADVENIR | RFID ISO 14443/15693 | Toutes (20 PDC) |
-| CB sans contact | NFC / TPE intégré | Station DC (S08) + option AC |
+| CB sans contact | NFC / TPE intégré | Toutes (20 PDC) |
 | Application mobile | iOS + Android | Toutes (20 PDC) |
 
 ### 3.2 Tarification transparente
@@ -170,7 +170,7 @@ s'engage à :
 
 ## 7. Engagements de partenariat territorial
 
-EGREENCITY'S s'engage envers les 9 communes partenaires à :
+EGREENCITY'S s'engage envers les 8 communes partenaires à :
 
 - Fournir **gratuitement 2 badges RFID EGREENCITY'S** à chaque mairie
   partenaire pour l'usage des agents municipaux
@@ -188,7 +188,7 @@ Je certifie avoir pris connaissance des conditions générales du programme
 ADVENIR et m'engage à respecter l'ensemble des obligations décrites dans
 le présent document.
 
-Fait à Macouria-Tonate, le ___/___/2026
+Fait à Macouria-Tonate, le 28 / 04 / 2026
 
 **Loic Yvon LUDOSKY**
 Président — EGREENCITY'S
