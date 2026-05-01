@@ -34,10 +34,11 @@ Collectivité Territoriale de Guyane (CTG).
 | Puissance AC installée | **440 kW (10 × 44 kW)** |
 | **Puissance totale** | **440 kW** |
 | Nombre de communes partenaires | 8 |
-| Investissement total HT matériel | 58 020 € |
-| Budget total TTC Guyane | ~110 540 € |
+| Investissement HT bornes nues | **49 480 €** *(devis DEV26000037 du 30/04/2026)* |
+| Investissement HT avec options DROM | 53 600 € *(modem 4G + pied PDL + peinture humide)* |
+| Budget total TTC Guyane (équipé) | ~93 700 € |
 | Subvention ADVENIR demandée | **37 200 €** |
-| Taux de couverture ADVENIR | **64,1 % du HT** |
+| Taux de couverture ADVENIR | **75,2 % du HT bornes nues** / 69,4 % avec options DROM |
 
 ## 3. Équipements déployés
 

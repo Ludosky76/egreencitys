@@ -47,8 +47,8 @@ EGREENCITY'S sollicite un financement pour la **phase 1** d'un programme structu
 - **10 stations / 20 PDC** déployées en 8 mois sur la voirie publique de **8 communes** : Cayenne (2 stations — Place des Palmistes et Zone commerciale Califourchon), Matoury, Rémire-Montjoly, Macouria-Tonate (siège opérateur — site pilote), Kourou, Iracoubo (2 stations dont relais RN1 km 95), Saint-Laurent-du-Maroni et Mana ;
 - des bornes **e-Premium AC 2×22 kW** identiques (E-TOTEM, fabricant français), conformes **OCPP 1.6J**, équipées de **compteurs MID** certifiés et d'une **authentification multi-canale** (RFID, CB sans contact, application mobile) ;
 - une **puissance installée de 440 kW AC** ;
-- un **investissement total de 58 020 € HT** matériel (10 bornes × 5 802 € HT — devis E-TOTEM ref. DEV17000172-6), soit un budget TTC Guyane d'environ 110 540 € (Octroi de Mer, fret DROM, installation et raccordement EDF SEI inclus) ;
-- une **subvention ADVENIR sollicitée de 37 200 €** (20 PDC × 1 860 €), soit un **taux de couverture exceptionnel de 64,1 %** du HT matériel.
+- un **investissement de 49 480 € HT** sur les bornes nues (10 × 4 948 € HT — devis E-TOTEM **ref. DEV26000037 du 30/04/2026**), porté à 53 600 € HT avec les options techniques d'adaptation au climat tropical (modem 4G, pied pré-équipé PDL Enedis, peinture zone humide), soit un budget TTC Guyane d'environ 103 750 € (Octroi de Mer, fret DROM, installation et raccordement EDF SEI inclus) ;
+- une **subvention ADVENIR sollicitée de 37 200 €** (20 PDC × 1 860 €), soit un **taux de couverture exceptionnel de 75,2 %** du HT matériel des bornes nues (69,4 % avec options techniques DROM).
 
 Le détail technique et financier site par site figure dans le **Tableau des 20 PDC** (`02_Tableau_20_PDC.xlsx`), pièce maîtresse du dossier.
 
@@ -87,7 +87,7 @@ L'ensemble de ces engagements est détaillé et signé dans le document `05_Enga
 - Statuts à jour de la SAS et RIB du compte professionnel ;
 - Attestations URSSAF et fiscale de régularité ;
 - Qualification IRVE Qualifelec de l'installateur ;
-- Devis fournisseur E-TOTEM ref. DEV17000172-6 ;
+- Devis fournisseur E-TOTEM **ref. DEV26000037 du 30 avril 2026** (validité 60 jours) ;
 - Lettres d'intention signées des 8 mairies partenaires ;
 - Bilans et liasses fiscales des deux derniers exercices ;
 - Lettre d'intention de la Banque Postale / BPI France pour le prêt complémentaire.

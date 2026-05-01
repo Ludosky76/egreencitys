@@ -36,27 +36,41 @@
 
 ### 2.1 Borne AC — e-Premium AC Pied 2×22 kW (×10)
 
+*Source : Fiche technique constructeur 2026 + Devis E-TOTEM DEV26000037 du 30/04/2026.*
+
 | Caractéristique | Valeur |
 |----------------|--------|
-| Fabricant | E-TOTEM (Saint-Étienne, Loire, France) |
+| **Fabricant** | E-TOTEM SAS (siège : Saint-Étienne 42, Loire, France) |
+| **Site de fabrication** | Aytré (Charente-Maritime 17), France |
 | Modèle | e-Premium AC — Pied 2×22 kW |
 | Quantité | **10 unités** |
-| Puissance par PDC | 22 kW AC (monophasé ou triphasé selon véhicule) |
-| Puissance par borne | 44 kW (2 PDC simultanés) |
-| Puissance totale installée | **440 kW AC** |
-| Connecteurs | 2 × Type 2 (IEC 62196-2) + 2 × Prise domestique type E |
-| Norme charge | IEC 61851-1, mode 3 |
-| Structure | Totem Inox 316L — résistance aux UV tropicaux et au vandalisme |
-| Traitement surface | Anti-graffiti + protection anti-corrosion (taux d'humidité Guyane) |
-| Comptage | 2 × compteurs MID certifiés (Directive 2014/32/UE) |
-| Protection | Disjoncteur différentiel 30 mA type A + parafoudre Type 2 (IEC 61643) |
-| Communication | Modem 4G LTE intégré (bande 700/800 MHz — couverture Guyane) |
-| Protocole | **OCPP 1.6J** (JSON over WebSocket, TLS 1.2) |
-| Authentification | RFID ISO 14443/15693 + badge ADVENIR + app mobile + CB sans contact |
-| Interface usager | Écran tactile couleur 10" — multilingue FR / EN / ES / PT / NL |
-| Indice protection | IP 54 — adapté climat équatorial |
-| Température service | -20°C à +55°C |
-| Certification | NF EN 61851-1 / IEC 62196-2 / CE |
+| **Tension nominale** | 400 VAC ±10% / 3P+N+PE / 50-60 Hz ±1% |
+| **Courant nominal** | 32 A par PDC |
+| **Puissance par PDC** | 22 kW AC (jusqu'à 25 kW évolutif) |
+| **Puissance par borne** | 44 kW (2 PDC simultanés) |
+| **Puissance totale installée** | **440 kW AC** |
+| **Régime de neutre** | TT et TN (compatible réseau EDF SEI Guyane) |
+| Connecteurs Mode 3 (AC) | 2 × Type 2 (T2S NF EN 62196-2) avec obturateurs |
+| Connecteurs Mode 2 (AC) | 2 × Prise E/F domestique 2,3 kW / 10 A *(option)* |
+| Section raccordement max | 16 mm² souple (avec embout) / 25 mm² rigide |
+| **Structure** | Coffret aluminium moulé peinture époxy + structure **Inox 304** + plastron en verre |
+| Couleur de base | RAL 7043 grain cuir brillant |
+| Traitement surface | Anti-graffiti *(option)* + peinture double couche zone humide *(retenue, climat tropical)* |
+| **Comptage** | 2 × compteurs **MID certifiés** par PDC (Directive 2014/32/UE) |
+| **Protections électriques** | Disjoncteur + Différentiel 30 mA **type B** par PDC + Parafoudre Type 2 (IEC 61643) — Icc 10 kA |
+| **Communication** | Liaison Ethernet filaire + Modem **3G/4G** LTE en option (sans carte SIM) |
+| **Protocole** | **OCPP 1.6J** natif et direct (JSON over WebSocket, TLS 1.2) — compatible OCPP 1.5 |
+| **Authentification** | Lecteur **RFID** (ISO 14443/15693) + CB sans contact (TPE option) + QR code |
+| Interface usager (IHM) | Écran tactile couleur 10" multilingue (FR/EN/ES/PT/NL) *(option retenue)* + LED de signalisation visibles à distance |
+| Indice de protection | **IP55 / IK10** — usage intensif extérieur |
+| Température de service | -30°C à +50°C, hygrométrie 5 à 95% |
+| Bruit | < 65 dB à 1 m |
+| **Conformité** | CE — IEC 61851-1 — IEC 61851-22 — IEC 62196-2 |
+| **Accessibilité PMR** | Oui (conforme normes accessibilité voirie publique) |
+| Smart Charging | Borne maître pour gestion jusqu'à 16 PDC + délestage entre les 2 PDC d'une même borne |
+| Dimensions (H × L × P) | ~165 × 60 × 40 cm (avec pied) |
+| Installation préconisée | Parking, voirie intérieure / extérieure, privée ou publique |
+| **Garantie** | 2 ans à compter de l'enlèvement usine (CGV E-TOTEM) |
 
 ### 2.2 Justification du choix 100 % AC
 

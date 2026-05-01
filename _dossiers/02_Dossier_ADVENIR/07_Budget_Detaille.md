@@ -6,20 +6,27 @@
 
 ## 1. Récapitulatif global
 
+*Sources : Devis E-TOTEM DEV26000037 du 30/04/2026 (prix base 2026) + estimations DROM*
+
 | Poste | HT (€) | Coeff. Guyane | TTC Guyane (€) | % du total TTC |
 |-------|--------|--------------|----------------|----------------|
-| LOT 1 — 10 × e-Premium AC 2×22 kW | 58 020 | ×1,670 | 96 870 | 87,7 % |
-| LOT 2 — Forfait supervision & services | — | — | 11 500 | 10,4 % |
-| Divers / contingence (2 %) | — | — | 2 170 | 2,0 % |
-| **TOTAL BUDGET** | **58 020** | — | **~110 540** | **100 %** |
-| _dont Subvention ADVENIR_ | — | — | _- 37 200_ | _- 33,7 %_ |
-| _dont Exonération OM (demandée)_ | — | — | _- 13 345_ | _- 12,1 %_ |
-| **RESTE À FINANCER** | — | — | **~60 000** | — |
+| LOT 1A — 10 × e-Premium AC 2×22 kW (bornes nues) | 49 480 | ×1,670 | 82 632 | 79,6 % |
+| LOT 1B — Options techniques DROM (×10) | 4 120 | ×1,670 | 6 880 | 6,6 % |
+| LOT 2 — Forfait supervision & services | — | — | 11 500 | 11,1 % |
+| Divers / contingence (2 %) | — | — | 2 740 | 2,7 % |
+| **TOTAL BUDGET** | **53 600** | — | **~103 750** | **100 %** |
+| _dont Subvention ADVENIR_ | — | — | _- 37 200_ | _- 35,9 %_ |
+| _dont Exonération OM (demandée)_ | — | — | _- 12 328_ | _- 11,9 %_ |
+| **RESTE À FINANCER** | — | — | **~54 220** | — |
 
-> **Coefficient Guyane ×1,670** = prix France HT × (1 + Octroi de Mer 23 %)
-> × (1 + fret maritime DROM 8 %) × (1 + installation/raccordement EDF)
+> **Détail LOT 1B** (options techniques retenues pour climat tropical / voirie publique) :
+> Modem 4G : 1 010 € | Pied pré-équipé PDL Enedis : 1 080 € | Peinture zone humide : 2 030 €
 >
-> **Taux de couverture ADVENIR : 37 200 / 58 020 = 64,1 %** — exceptionnel
+> **Coefficient Guyane ×1,670** = prix France HT × (1 + Octroi de Mer 23 %)
+> × (1 + fret maritime DROM 8 %) × (1 + installation/raccordement EDF SEI)
+>
+> **Taux de couverture ADVENIR : 37 200 / 49 480 = 75,2 %** *(bornes nues)*
+> **Taux de couverture ADVENIR : 37 200 / 53 600 = 69,4 %** *(avec options DROM)* — exceptionnel
 
 ---
 
@@ -27,39 +34,51 @@
 
 ### 2.1 Prix unitaire décomposé — e-Premium AC 2×22 kW
 
+*Prix officiels devis E-TOTEM DEV26000037 du 30/04/2026 (toutes options détaillées sont des références constructeur 2026)*
+
 | Composante | Montant HT (€) |
 |-----------|---------------|
-| Borne e-Premium AC 2×22 kW (fourniture) | 4 200 |
-| Options : prise E domestique ×2 | 180 |
-| Options : écran tactile 10" multilingue | 320 |
-| Options : NFC + badge ADVENIR intégré | 280 |
-| Options : traitement anti-graffiti tropical | 120 |
-| Options : protection foudre Type 2 renforcée | 150 |
-| Frais de port métropole → Guyane (fret maritime) | 352 |
-| **Sous-total fournisseur HT** | **5 802** |
+| **Borne e-Premium AC 2×22 kW** *(prestations incluses : trappes verrouillables, parafoudre, protections différentielles 30 mA type B, LED, Ethernet, 2 compteurs MID, RFID, OCPP natif, Inox 304, prises E/F + T2)* | **4 948** |
+| Modem 4G (sans carte SIM) | 101 |
+| Pied pré-équipé PDL Enedis (intégration coffret CIBE) | 108 |
+| Peinture spécifique zone humide (climat tropical Guyane) | 203 |
+| **Sous-total fournisseur HT (configuration DROM)** | **5 360** |
+| Transport métropole → Guyane (fret maritime DROM, ~8 %) | 429 |
 | Installation + raccordement EDF SEI BT (main d'œuvre) | 2 285 |
 | Mise en service OCPP + tests | 180 |
-| Signalétique ADVENIR (sérigraphie) | 50 |
-| **Prix TTC Guyane / borne** | **9 687** |
-| **× 10 bornes** | **96 870** |
+| Signalétique ADVENIR (sérigraphie + panneau IRVE) | 50 |
+| **Prix TTC Guyane / borne** | **~9 200** |
+| **× 10 bornes** | **~92 000** |
 
-> Source : devis E-TOTEM réf. DEV17000172-6 (2025)
+> Source : devis E-TOTEM réf. **DEV26000037 du 30/04/2026** (validité 60 j)
+> Suivi : Antoine Sonneville (E-TOTEM)
+> Délai livraison : 12 semaines après réception commande
+> Acompte : 30 % à la commande (clients garantis affacturage) ou 50 % sinon
+
+### 2.1.bis Options non retenues (auto-financement phase 2)
+
+| Option | Prix HT (€) | Justification report |
+|--------|-------------|---------------------|
+| Écran tactile 10" couleur (parcours usager 5 langues) | 648 / borne | Utile en zones touristiques (Cayenne, Kourou) — phase 2 |
+| TPE CB sans contact | 837 / borne | Activable plus tard — RFID + app mobile suffisent au démarrage |
 
 ### 2.2 Budget par station
 
+*Prix HT borne config DROM = 5 360 € (4 948 € borne + 412 € options techniques tropicales)*
+
 | Réf. | Commune | Site | HT borne (€) | TTC Guyane (€) | ADVENIR (€) | Net après ADVENIR (€) |
 |------|---------|------|-------------|----------------|-------------|----------------------|
-| S01-CAY-CTR | Cayenne | Place des Palmistes | 5 802 | 9 687 | 3 720 | 5 967 |
-| S02-CAY-EST | Cayenne | ZC Califourchon | 5 802 | 9 687 | 3 720 | 5 967 |
-| S03-MAT | Matoury | Casino Matoury | 5 802 | 9 687 | 3 720 | 5 967 |
-| S04-REM | Rémire-Montjoly | Mairie | 5 802 | 9 687 | 3 720 | 5 967 |
-| S05-MAC | Macouria-Tonate | Mairie | 5 802 | 9 687 | 3 720 | 5 967 |
-| S06-KOU | Kourou | Place Newton | 5 802 | 9 687 | 3 720 | 5 967 |
-| **S07-IRA-A** | **Iracoubo** | **Mairie d'Iracoubo** | **5 802** | **9 687** | **3 720** | **5 967** |
-| **S08-IRA-B** | **Iracoubo** | **Aire repos RN1 km 95** | **5 802** | **9 687** | **3 720** | **5 967** |
-| S09-SLM | Saint-Laurent | Mairie | 5 802 | 9 687 | 3 720 | 5 967 |
-| S10-MAN | Mana | Mairie | 5 802 | 9 687 | 3 720 | 5 967 |
-| **TOTAL LOT 1** | — | — | **58 020** | **96 870** | **37 200** | **59 670** |
+| S01-CAY-CTR | Cayenne | Place des Palmistes | 5 360 | 9 200 | 3 720 | 5 480 |
+| S02-CAY-EST | Cayenne | ZC Califourchon | 5 360 | 9 200 | 3 720 | 5 480 |
+| S03-MAT | Matoury | Casino Matoury | 5 360 | 9 200 | 3 720 | 5 480 |
+| S04-REM | Rémire-Montjoly | Mairie | 5 360 | 9 200 | 3 720 | 5 480 |
+| S05-MAC | Macouria-Tonate | Mairie | 5 360 | 9 200 | 3 720 | 5 480 |
+| S06-KOU | Kourou | Place Newton | 5 360 | 9 200 | 3 720 | 5 480 |
+| **S07-IRA-A** | **Iracoubo** | **Mairie d'Iracoubo** | **5 360** | **9 200** | **3 720** | **5 480** |
+| **S08-IRA-B** | **Iracoubo** | **Aire repos RN1 km 95** | **5 360** | **9 200** | **3 720** | **5 480** |
+| S09-SLM | Saint-Laurent | Mairie | 5 360 | 9 200 | 3 720 | 5 480 |
+| S10-MAN | Mana | Mairie | 5 360 | 9 200 | 3 720 | 5 480 |
+| **TOTAL LOT 1** | — | — | **53 600** | **92 000** | **37 200** | **54 800** |
 
 ---
 
@@ -83,16 +102,17 @@
 
 | Source de financement | Montant (€) | % du budget TTC | Conditions |
 |----------------------|-------------|-----------------|------------|
-| **Subvention ADVENIR** (AVERE-France) | 37 200 | 33,7 % | 20 PDC × 1 860 € — après mise en service |
-| **Exonération Octroi de Mer** (demandée CTG) | 13 345 | 12,1 % | 58 020 × 23 % — en cours |
-| **BPI France — Prêt Amorçage DROM** (0 %) | 25 000 | 22,6 % | Demande en cours — PME DROM < 5 ans |
-| **OPCO Commerce** (formation Qualiopi IRVE) | 6 500 | 5,9 % | Formation qualification IRVE |
-| **Bonus Mobilité Propre** (VU électrique) | 5 000 | 4,5 % | Véhicule utilitaire électrique opérateur |
-| **Apport fonds propres / emprunt bancaire** | 23 495 | 21,3 % | Solde à financer |
-| **TOTAL** | **110 540** | **100 %** | — |
+| **Subvention ADVENIR** (AVERE-France) | 37 200 | 35,9 % | 20 PDC × 1 860 € — après mise en service |
+| **Exonération Octroi de Mer** (demandée CTG) | 12 328 | 11,9 % | 53 600 × 23 % — en cours |
+| **BPI France — Prêt Amorçage DROM** (0 %) | 25 000 | 24,1 % | Demande en cours — PME DROM < 5 ans |
+| **OPCO Commerce** (formation Qualiopi IRVE) | 6 500 | 6,3 % | Formation qualification IRVE |
+| **Bonus Mobilité Propre** (VU électrique) | 5 000 | 4,8 % | Véhicule utilitaire électrique opérateur |
+| **Apport fonds propres / emprunt bancaire** | 17 722 | 17,1 % | Solde à financer |
+| **TOTAL** | **103 750** | **100 %** | — |
 
-> **Reste à financer réduit à ~23 500 €** — projet très accessible financièrement
-> grâce au taux de couverture ADVENIR de 64,1 % sur le matériel.
+> **Reste à financer réduit à ~17 700 €** *(vs 23 500 € avant baisse fournisseur 2026)*
+> grâce au nouveau prix fournisseur 2026 (4 948 € HT/borne au lieu de 5 802 €) et au
+> taux de couverture ADVENIR exceptionnel de 75,2 % sur les bornes nues.
 
 ---
 

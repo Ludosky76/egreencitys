@@ -16,8 +16,9 @@
 | **Nombre de PDC** | **20** |
 | **Prime unitaire** | 1 860 €/PDC |
 | **Prime totale demandée** | **37 200 €** |
-| **Investissement total (hors taxes Guyane)** | 58 020 € HT |
-| **Taux de couverture ADVENIR** | **64,1 % du HT** |
+| **Investissement total (hors taxes Guyane)** | 49 480 € HT *(10 bornes nues)* / 53 600 € HT *(avec options techniques DROM)* |
+| **Taux de couverture ADVENIR** | **75,2 % du HT** *(bornes nues)* / **69,4 % du HT** *(avec options DROM)* |
+| **Devis fournisseur** | E-TOTEM ref. **DEV26000037** du 30/04/2026 — validité 60 j |
 
 ---
 
@@ -40,7 +41,7 @@
 | # | Pièce | Fournisseur | Statut |
 |---|-------|-------------|--------|
 | B1 | Fiche technique e-Premium AC 2×22 kW | E-TOTEM | ☐ |
-| B2 | Devis E-TOTEM ref. DEV17000172-6 (10 bornes) | E-TOTEM | ☐ |
+| B2 | Devis E-TOTEM ref. **DEV26000037** du 30/04/2026 (10 bornes — base 2026) | E-TOTEM | ✅ |
 | B3 | Attestation OCPP 1.6J (exigence ADVENIR) | E-TOTEM | ☐ |
 | B4 | Attestations MID (comptage énergie) | E-TOTEM | ☐ |
 | B5 | Certification NF / IEC 61851 / IEC 62196-2 | E-TOTEM | ☐ |
@@ -58,6 +59,7 @@
 | C6 | `06_Modele_Lettre_Intention_Mairie.txt` | Modèle à adresser à chaque commune partenaire | ✅ |
 | C7 | `07_Budget_Detaille.md` | Décomposition du budget par station | ✅ |
 | C8 | `08_Lettre_Demande_ADVENIR.md` | Lettre formelle de demande à AVERE-France (à signer) | ✅ |
+| C9 | `09_Alignement_Avere_RUP.md` | Alignement du projet avec les recommandations Avere Outre-mer (avril 2026) | ✅ |
 
 ### D — Pièces partenaires (à collecter)
 
