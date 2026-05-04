@@ -77,8 +77,8 @@
 | S01-CAY-CTR | Cayenne | Place des Palmistes | 5 360 | 9 200 | 3 720 | 5 480 |
 | S02-CAY-EST | Cayenne | ZC Califourchon | 5 360 | 9 200 | 3 720 | 5 480 |
 | S03-MAT | Matoury | Casino Matoury | 5 360 | 9 200 | 3 720 | 5 480 |
-| S04-REM | Rémire-Montjoly | Mairie | 5 360 | 9 200 | 3 720 | 5 480 |
-| S05-MAC | Macouria-Tonate | Mairie | 5 360 | 9 200 | 3 720 | 5 480 |
+| S04-REM | Rémire-M. | Mairie de Rémire | 5 360 | 9 200 | 3 720 | 5 480 |
+| S05-MAC | Macouria | Mairie de Macouria | 5 360 | 9 200 | 3 720 | 5 480 |
 | S06-KOU | Kourou | Place Newton | 5 360 | 9 200 | 3 720 | 5 480 |
 | **S07-IRA-A** | **Iracoubo** | **Mairie d'Iracoubo** | **5 360** | **9 200** | **3 720** | **5 480** |
 | **S08-IRA-B** | **Iracoubo** | **Aire repos RN1 km 95** | **5 360** | **9 200** | **3 720** | **5 480** |
@@ -97,17 +97,17 @@
 
 ### 3.1 Smart Charging — matériel one-shot (catalogue installateurs E-TOTEM 2026)
 
-| Composant | Réf. catalogue | Quantité | Prix HT unit. (€) | Total HT (€) |
-|-----------|----------------|---------:|------------------:|-------------:|
-| **e-power FM** — Étude et paramétrage consigne fixe multi-stations | 913012 | 1 | 350 | 350 |
-| **e-Powerbox** — Boîtier e-Master + Configuration (gestion multi-stations) | 913018 | 1 | 600 | 600 |
-| **Modem 4G e-Powerbox** + abonnement carte SIM 100 Mo/mois + configuration | 913019 | 1 | 270 | 270 |
-| **Switch 8 ports** réseau (2× pour redondance Cayenne + Iracoubo) | 339097 | 2 | 99 | 198 |
-| **Smart Charging e-Allow CP** — Priorité par points de charge (priorisation site stratégique) | 913015 | 1 | 220 | 220 |
-| **E-meter 400A** (centrale mesure C4 Tarif Jaune — Iracoubo aire RN1) | 723323 | 1 | 518 | 518 |
-| **Sous-total Smart Charging matériel HT** | | | | **2 156** |
-| Coefficient Guyane ×1,670 (Octroi Mer + fret + installation) | | | | ×1,670 |
-| **Sous-total Smart Charging TTC Guyane** | | | | **3 600** |
+| Composant | Réf. | Qté | P.U. HT (€) | Total HT (€) |
+|-----------|------|----:|------------:|-------------:|
+| **e-power FM** — Étude + paramétrage consigne fixe multi-stations | 913012 | 1 | 350 | 350 |
+| **e-Powerbox** — Boîtier e-Master + configuration multi-stations | 913018 | 1 | 600 | 600 |
+| **Modem 4G e-Powerbox** + carte SIM 100 Mo/mois + config | 913019 | 1 | 270 | 270 |
+| **Switch 8 ports** (×2 pour Cayenne + Iracoubo) | 339097 | 2 | 99 | 198 |
+| **e-Allow CP** — Priorité par PDC (priorisation site stratégique) | 913015 | 1 | 220 | 220 |
+| **E-meter 400A** — centrale mesure C4 Tarif Jaune Iracoubo | 723323 | 1 | 518 | 518 |
+| **Sous-total Smart Charging matériel HT** | — | — | — | **2 156** |
+| Coefficient Guyane ×1,670 (Octroi Mer + fret + installation) | — | — | — | ×1,670 |
+| **Sous-total Smart Charging TTC Guyane** | — | — | — | **3 600** |
 
 ### 3.2 Supervision CSMS & services récurrents (5 ans)
 
@@ -271,5 +271,4 @@
 
 *Document à joindre au dossier ADVENIR — Pièce C7*
 *Source données : devis E-TOTEM DEV26000037 du 30/04/2026 (LOT 1, hors supervision) | Catalogue installateurs E-TOTEM 2026 (LOT 2 supervision) | APUR Guyane 2024 | hypothèses opérateur*
-*Version 3.0 — Mai 2026 — Intégration supervision OCPP/GIREVE + smart charging*
-*Version : 2.0 — Avril 2026 — Révision 100 % AC (suppression e-Fast S S120-2)*
+*Version 3.0 — Mai 2026 — Intégration supervision OCPP/GIREVE + smart charging + prix fournisseur 2026*

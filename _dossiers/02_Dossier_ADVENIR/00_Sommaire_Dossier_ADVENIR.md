@@ -102,10 +102,14 @@
 
 ## Argument fort Guyane
 
-> La Guyane est une **Région Ultrapériphérique (RUP)** de l'Union Européenne.
+> La Guyane est une **Région Ultrapériphérique (RUP)** de l'Union Européenne et une
+> **Zone Non Interconnectée (ZNI)** au réseau électrique continental européen.
 > À ce titre, les projets d'infrastructure énergétique y bénéficient d'une
-> éligibilité renforcée à ADVENIR et aux fonds FEDER (taux majoré 85 %).
+> éligibilité renforcée à ADVENIR et aux fonds FEDER (taux majoré jusqu'à 85 %).
+>
 > Le présent projet participe de la transition énergétique du territoire,
-> avec un maillage couvrant les 3 principales zones urbaines (île de
-> Cayenne, Kourou, Saint-Laurent-du-Maroni) + une station DC rapide
-> sur l'axe RN1 reliant les 3 pôles.
+> avec un maillage **100 % AC 22 kW** couvrant 8 communes guyanaises
+> (Cayenne ×2, Matoury, Rémire-Montjoly, Macouria, Kourou, Iracoubo ×2 dont
+> relais RN1 km 95, Saint-Laurent-du-Maroni, Mana). Le choix de la recharge
+> accélérée AC est explicitement aligné avec les recommandations Avere
+> Outre-mer (avril 2026) pour les territoires ZNI.

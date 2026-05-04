@@ -208,5 +208,5 @@ Le plan d'implantation repose sur **quatre critères** hiérarchisés :
 > à **> 50 PDC**, soit une **multiplication par 1,7** du réseau existant.
 >
 > Le choix 100 % AC (e-Premium 22 kW) simplifie la maintenance, réduit les coûts
-> d'infrastructure et permet un **taux de couverture ADVENIR exceptionnel de 64,1 %**
+> d'infrastructure et permet un **taux de couverture ADVENIR exceptionnel de 75,2 %**
 > du HT matériel.

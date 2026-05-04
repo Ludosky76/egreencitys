@@ -128,7 +128,7 @@ Ce projet s'inscrit dans :
 ## 8. Retombées attendues
 
 - **37 200 €** de subvention ADVENIR mobilisés en DROM
-- **Taux de couverture ADVENIR exceptionnel : 64,1 % du HT** (vs ~40 % national)
+- **Taux de couverture ADVENIR exceptionnel : 75,2 % du HT bornes nues** (vs ~40 % national) — 69,4 % avec options DROM
 - **Création d'emplois locaux** en Guyane (1 technicien + services)
 - **20 nouveaux PDC publics** (doublement du maillage actuel)
 - **Réduction CO₂ estimée** : ~95 tonnes/an (sur 5 ans = 475 t CO₂)

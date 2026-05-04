@@ -83,7 +83,7 @@ Le déploiement exclusivement en AC 22 kW est motivé par :
 | Raccordement EDF | 50 kVA / borne | 160 kVA / station |
 | Maintenance | Standard | Spécialisée |
 | Temps de recharge | 45–60 min (pause naturelle) | 20–30 min |
-| Taux couverture ADVENIR | **64,1 %** | ~43 % |
+| Taux couverture ADVENIR | **75,2 %** | ~43 % |
 | Adaptation usage Guyane | Optimal (trajets courts–moyens) | Overkill pour maillage urbain |
 
 > À Iracoubo (relais RN1), 2 bornes AC 22 kW (4 PDC) assurent la même
