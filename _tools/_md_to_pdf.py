@@ -291,6 +291,9 @@ CHAR_REPLACE = [
     ("💡", ""),
     ("🔍", ""),
     ("🎯", ""),
+    ("🌐", "Web :"),
+    ("✉️", "Email :"),
+    ("✉", "Email :"),
     ("🇫🇷", "FR"),
     ("🇬🇫", "GF"),
     # Indices (subscripts) Unicode -> chiffres normaux (CO2 etc.)

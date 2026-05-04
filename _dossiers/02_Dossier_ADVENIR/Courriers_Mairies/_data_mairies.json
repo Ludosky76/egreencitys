@@ -1,0 +1,190 @@
+{
+  "_comment": "Donnees personnalisation des courriers aux 8 mairies guyanaises - dossier ADVENIR",
+  "_version": "1.0 - 02/05/2026",
+  "_note": "Adresses des mairies a verifier sur l'annuaire officiel. Maires en fonction a verifier sur le site de la commune avant envoi.",
+  "operateur": {
+    "raison_sociale": "EGREENCITY'S",
+    "siren": "878 682 854",
+    "adresse": "1 rue Akangoue, Résidence La Rougerie",
+    "code_postal": "97355",
+    "ville": "Macouria-Tonate",
+    "telephone": "+33 6 51 14 11 18",
+    "email": "egreencitys@gmail.com",
+    "site_web": "https://egreencitys.com",
+    "president": "Loïc Yvon LUDOSKY",
+    "directeur_general": "Patrice Claude LUDOSKY"
+  },
+  "projet": {
+    "nb_stations_total": 10,
+    "nb_pdc_total": 20,
+    "puissance_totale_kw": 440,
+    "nb_communes": 8,
+    "modele_borne": "e-Premium AC 2x22 kW (E-TOTEM, fabrication Aytre 17, France)",
+    "investissement_ht": 49480,
+    "advenir_total": 37200,
+    "couverture_advenir_pct": 75.2,
+    "duree_engagement_ans": 5,
+    "devis_ref": "E-TOTEM DEV26000037 du 30/04/2026"
+  },
+  "investissement_propose_par_station": {
+    "montant_ht": 5000,
+    "rationale": "Apport financier symbolique = 5 000 EUR HT par station accueillie sur le domaine public communal",
+    "contreparties": [
+      "Co-promotion : logo de la commune en serigraphie sur les bornes (visibilite touristique permanente)",
+      "Tarif preferentiel agents municipaux : -50% sur la recharge (badge RFID dedie)",
+      "2 badges RFID EGREENCITY's gratuits par mairie",
+      "Reporting trimestriel de frequentation et donnees energetiques",
+      "Siege au comite de pilotage du projet (1 reunion/trimestre)",
+      "Acces prioritaire aux phases 2 et 3 du reseau (extension)",
+      "Quote-part proportionnelle au CA exploitation au-dela de la rentabilite seuil (an 4)"
+    ]
+  },
+  "mairies": [
+    {
+      "id": "S01-S02-CAY",
+      "commune": "Cayenne",
+      "code_postal": "97300",
+      "adresse_mairie": "Hôtel de Ville — 1 rue de Rémire",
+      "telephone": "05 94 29 91 00",
+      "email_generique": "mairie@ville-cayenne.fr",
+      "url": "https://www.ville-cayenne.fr",
+      "civilite_maire": "Madame le Maire",
+      "nb_stations": 2,
+      "nb_pdc": 4,
+      "sites_proposes": [
+        "Place des Palmistes (centre historique - flux pieton et touristique majeur)",
+        "Zone commerciale Califourchon (Route de la Rocade - acces RN1)"
+      ],
+      "argument_specifique": "Capitale guyanaise et premiere ville touristique : 2 stations strategiques pour le rayonnement et l'accueil des visiteurs en transit",
+      "investissement_propose_ht": 10000,
+      "priorite": "TRES HAUTE - Capitale guyanaise"
+    },
+    {
+      "id": "S03-MAT",
+      "commune": "Matoury",
+      "code_postal": "97351",
+      "adresse_mairie": "Hôtel de Ville — Boulevard Jean Cavelier",
+      "telephone": "05 94 35 81 81",
+      "email_generique": "mairie@matoury.fr",
+      "url": "https://www.matoury.fr",
+      "civilite_maire": "Monsieur le Maire",
+      "nb_stations": 1,
+      "nb_pdc": 2,
+      "sites_proposes": [
+        "Parking Géant Casino Matoury (zone commerciale a fort trafic hebdomadaire - 30 000 hab.)"
+      ],
+      "argument_specifique": "Commune en forte croissance demographique (>30 000 habitants) - banlieue dynamique de Cayenne, parc commercial regional",
+      "investissement_propose_ht": 5000,
+      "priorite": "HAUTE - Banlieue de Cayenne"
+    },
+    {
+      "id": "S04-REM",
+      "commune": "Rémire-Montjoly",
+      "code_postal": "97354",
+      "adresse_mairie": "Hôtel de Ville — Avenue du Général de Gaulle",
+      "telephone": "05 94 38 48 00",
+      "email_generique": "mairie@remire-montjoly.fr",
+      "url": "https://www.remire-montjoly.fr",
+      "civilite_maire": "Monsieur le Maire",
+      "nb_stations": 1,
+      "nb_pdc": 2,
+      "sites_proposes": [
+        "Parking de la Mairie de Rémire-Montjoly (Avenue du Général de Gaulle)"
+      ],
+      "argument_specifique": "Commune residentielle a fort potentiel de vehicules electriques (26 000 hab., revenu median eleve, premiere commune du parc VE en Guyane)",
+      "investissement_propose_ht": 5000,
+      "priorite": "HAUTE - Fort potentiel VE"
+    },
+    {
+      "id": "S05-MAC",
+      "commune": "Macouria-Tonate",
+      "code_postal": "97355",
+      "adresse_mairie": "Hôtel de Ville — Place centrale",
+      "telephone": "05 94 38 17 00",
+      "email_generique": "mairie@macouria.fr",
+      "url": "https://www.macouria.fr",
+      "civilite_maire": "Monsieur le Maire",
+      "nb_stations": 1,
+      "nb_pdc": 2,
+      "sites_proposes": [
+        "Parking de la Mairie de Macouria - SITE PILOTE EGREENCITY'S"
+      ],
+      "argument_specifique": "Siege social d'EGREENCITY'S - site pilote du reseau guyanais, suivi operationnel direct, vitrine du projet pour les autres communes partenaires",
+      "investissement_propose_ht": 5000,
+      "priorite": "STRATEGIQUE - Site pilote operateur"
+    },
+    {
+      "id": "S06-KOU",
+      "commune": "Kourou",
+      "code_postal": "97310",
+      "adresse_mairie": "Hôtel de Ville — Avenue de Gaulle",
+      "telephone": "05 94 32 82 82",
+      "email_generique": "mairie@ville-kourou.fr",
+      "url": "https://www.ville-kourou.fr",
+      "civilite_maire": "Monsieur le Maire",
+      "nb_stations": 1,
+      "nb_pdc": 2,
+      "sites_proposes": [
+        "Place Newton - Centre-ville Kourou (cour vis-a-vis CSG)"
+      ],
+      "argument_specifique": "Deuxieme pole economique de Guyane : Centre Spatial Guyanais (CNES, ESA, ArianeGroup), tourisme spatial, image internationale - une station IRVE alignee avec l'identite techno-innovation de Kourou",
+      "investissement_propose_ht": 5000,
+      "priorite": "HAUTE - 2e pole economique"
+    },
+    {
+      "id": "S07-S08-IRA",
+      "commune": "Iracoubo",
+      "code_postal": "97350",
+      "adresse_mairie": "Hôtel de Ville — Place de la Mairie",
+      "telephone": "05 94 34 51 39",
+      "email_generique": "mairie-iracoubo@orange.fr",
+      "url": "https://www.iracoubo.fr",
+      "civilite_maire": "Monsieur le Maire",
+      "nb_stations": 2,
+      "nb_pdc": 4,
+      "sites_proposes": [
+        "Place de la Mairie d'Iracoubo (point d'appui institutionnel)",
+        "Aire de repos RN1 - km 95 (relais strategique sur l'axe Cayenne-SLM)"
+      ],
+      "argument_specifique": "Position strategique unique : Iracoubo est le SEUL bourg avec equipements publics entre Kourou et SLM (135 km a l'Ouest). 4 PDC AC permettent a votre commune de devenir le hub IRVE de l'axe RN1 - retombees economiques directes (cafes, restaurants, commerces) lors des arrets recharge de 45-60 min",
+      "investissement_propose_ht": 10000,
+      "priorite": "TRES HAUTE - Relais RN1 km 95 unique"
+    },
+    {
+      "id": "S09-SLM",
+      "commune": "Saint-Laurent-du-Maroni",
+      "code_postal": "97320",
+      "adresse_mairie": "Hôtel de Ville — Place du General de Gaulle",
+      "telephone": "05 94 34 13 00",
+      "email_generique": "mairie@saintlaurentdumaroni.fr",
+      "url": "https://www.saintlaurentdumaroni.fr",
+      "civilite_maire": "Madame le Maire",
+      "nb_stations": 1,
+      "nb_pdc": 2,
+      "sites_proposes": [
+        "Place de la Mairie de Saint-Laurent-du-Maroni"
+      ],
+      "argument_specifique": "Troisieme pole urbain de Guyane (48 000 hab. en forte croissance), terminus de fait de l'axe RN1, enjeu politique fort de desenclavement du Maroni - une station IRVE pour symboliser le rattrapage avec le littoral",
+      "investissement_propose_ht": 5000,
+      "priorite": "HAUTE - 3e pole + desenclavement"
+    },
+    {
+      "id": "S10-MAN",
+      "commune": "Mana",
+      "code_postal": "97318",
+      "adresse_mairie": "Hôtel de Ville — Place de la Mairie",
+      "telephone": "05 94 34 80 05",
+      "email_generique": "mairie@mana.fr",
+      "url": "https://www.mana.fr",
+      "civilite_maire": "Monsieur le Maire",
+      "nb_stations": 1,
+      "nb_pdc": 2,
+      "sites_proposes": [
+        "Place de la Mairie de Mana"
+      ],
+      "argument_specifique": "Premiere borne IRVE publique de votre commune et porte d'entree des communes littorales Ouest (Mana - Awala-Yalimapo). Acces aux villages amerindiens et au site touristique des plages aux tortues marines",
+      "investissement_propose_ht": 5000,
+      "priorite": "MOYENNE - Desserte Ouest"
+    }
+  ]
+}
