@@ -27,14 +27,18 @@ Dans ce contexte, l'Avere-France recommande, dans sa note du 4ᵉ trimestre 2025
 
 > *« Systématiser le pilotage intelligent de la recharge dans les zones non interconnectées, afin de limiter les appels de puissance en période de pointe. »*
 
-**Notre dispositif :**
+**Notre dispositif (déployé dans le LOT 2 du budget) :**
 - **OCPP 1.6J natif** sur l'ensemble des 20 PDC ;
-- **Délestage statique** entre les 2 PDC d'une même borne (technologie e-Premium AC) ;
-- **Borne maître** capable de gérer jusqu'à 16 PDC en smart charging (option e-Power FM disponible) ;
-- Possibilité d'évolution future vers e-Power VS / DYS pour pilotage variable et dynamique en lien avec la production solaire ;
+- **Délestage entre les 2 PDC d'une même borne** (technologie e-Premium AC native) ;
+- **e-Powerbox + e-Master** capable de gérer jusqu'à 16 PDC en smart charging multi-stations ;
+- **e-power FM** (consigne fixe multi-stations) — déployé dès la phase 1 ;
+- **e-Allow CP** (priorisation par PDC) — pour le relais Iracoubo (RN1) ;
+- **E-meter 400 A** pour mesure dynamique et évolution future vers e-Power DYM (consigne dynamique) ;
+- **Plateforme CSMS** multi-tenant + **connexion GIREVE** + reporting AVERE-France ;
+- Évolution phase 2 : e-Power VS / DYM pour pilotage dynamique en lien avec la production solaire ;
 - Coordination avec **EDF SEI Guyane** pour modélisation des appels de puissance.
 
-✅ Pleinement conforme à la recommandation Avere n° 1.
+✅ Pleinement conforme à la recommandation Avere n° 1 — **smart charging déployé dès la phase 1** (et pas seulement en option future).
 
 ---
 

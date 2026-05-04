@@ -16,9 +16,13 @@
 | **Nombre de PDC** | **20** |
 | **Prime unitaire** | 1 860 €/PDC |
 | **Prime totale demandée** | **37 200 €** |
-| **Investissement total (hors taxes Guyane)** | 49 480 € HT *(10 bornes nues)* / 53 600 € HT *(avec options techniques DROM)* |
-| **Taux de couverture ADVENIR** | **75,2 % du HT** *(bornes nues)* / **69,4 % du HT** *(avec options DROM)* |
-| **Devis fournisseur** | E-TOTEM ref. **DEV26000037** du 30/04/2026 — validité 60 j |
+| **Investissement matériel borne (LOT 1)** | 49 480 € HT *(bornes nues)* / 53 600 € HT *(avec options DROM)* |
+| **Smart Charging + Supervision (LOT 2 — 5 ans)** | 17 545 € HT *(matériel + plateforme CSMS + maintenance)* |
+| **Formation IRVE Qualifelec (LOT 3)** | 2 420 € HT *(financée par OPCO Commerce)* |
+| **Budget total TTC Guyane (5 ans)** | ~135 400 € *(matériel + supervision + maintenance)* |
+| **Taux de couverture ADVENIR (base bornes)** | **75,2 % du HT** *(bornes nues)* / **69,4 % du HT** *(avec options DROM)* |
+| **Devis fournisseur (LOT 1)** | E-TOTEM ref. **DEV26000037** du 30/04/2026 — validité 60 j (**hors supervision**) |
+| **Source LOT 2 supervision** | Catalogue installateurs E-TOTEM 2026 (smart charging + CSMS) |
 
 ---
 

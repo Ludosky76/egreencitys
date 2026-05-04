@@ -128,6 +128,76 @@ Le programme ADVENIR impose que **toutes les bornes soient conformes OCPP 1.6 ou
 
 ---
 
+## 3.bis Architecture de supervision & smart charging
+
+### 3.bis.1 Composants déployés (catalogue installateurs E-TOTEM 2026)
+
+| Composant | Réf. | Quantité | Rôle |
+|-----------|------|---------:|------|
+| **e-power FM** (étude + paramétrage consigne fixe multi-stations) | 913012 | 1 | Solution de pilotage IRVE pour les 10 stations |
+| **e-Powerbox** (boîtier e-Master + configuration) | 913018 | 1 | Boîtier de gestion smart charging multi-stations |
+| **Modem 4G e-Powerbox** (avec carte SIM 100 Mo/mois + config) | 913019 | 1 | Liaison du boîtier au CSMS |
+| **Switch 8 ports** | 339097 | 2 | Interconnexion réseau locale (Cayenne + Iracoubo) |
+| **e-Allow CP** (allocation puissance avec priorité PDC) | 913015 | 1 | Priorisation des sites stratégiques |
+| **E-meter 400 A** (centrale de mesure C4 Tarif Jaune) | 723323 | 1 | Mesure dynamique pour Iracoubo Aire RN1 |
+
+### 3.bis.2 Plateforme CSMS (Charging Station Management System)
+
+EGREENCITY'S déploie une plateforme de supervision OCPP 1.6J multi-tenant intégrant :
+
+- **Supervision temps réel** des 20 PDC : statuts (Available / Charging / Faulted), incidents, taux de disponibilité
+- **Gestion des transactions** : authentification (RFID, app, CB), démarrage/arrêt à distance, facturation
+- **Reporting AVERE-France** : export annuel des données de session, taux de disponibilité, énergie délivrée
+- **Connexion GIREVE** : interopérabilité avec les eMSP nationaux (Chargemap, Plugsurfing, etc.)
+- **Téléopération** vers DATA.GOUV.fr : enregistrement des données statiques par PDC
+- **Application mobile** marque blanche EGREENCITY'S (iOS + Android)
+- **Hotline opérateur niveau 2** disponible 24/7 via partenaire E-TOTEM
+
+### 3.bis.3 Algorithmie smart charging (cohérence Avere ZNI)
+
+Le système e-power FM avec e-Allow CP applique en temps réel les consignes suivantes :
+
+1. **Consigne fixe par station** : limitation de la puissance totale appelée à 36 kVA (TJ Cayenne) ou C5 Tarif Bleu (autres communes), évitant tout dépassement contractuel EDF SEI ;
+2. **Délestage entre les 2 PDC d'une même borne** : si 2 véhicules chargent simultanément sur la même borne, la puissance est partagée (2×11 kW au lieu de 2×22 kW lorsque la limite est atteinte) ;
+3. **Priorité par PDC** (e-Allow CP) : sur Iracoubo (relais RN1), priorité aux PDC accueillant les véhicules en transit (temps de pause limité) plutôt qu'aux PDC en stationnement long ;
+4. **Évolution phase 2 (e-Power DYM)** : passage à un pilotage dynamique avec mesure instantanée via E-meter — la station IRVE adapte sa consommation en fonction de la consommation totale du site (Mairie d'Iracoubo = bâtiment communal partagé).
+
+> **Conformité Avere Outre-mer (avril 2026)** : ce dispositif répond intégralement à la
+> recommandation n° 1 « Systématiser le pilotage intelligent de la recharge dans les zones non
+> interconnectées, afin de limiter les appels de puissance en période de pointe ».
+
+### 3.bis.4 Schéma logique
+
+```
+                ┌─────────────────────────────────────────────┐
+                │            PLATEFORME CSMS OCPP 1.6J        │
+                │  (Supervision + Reporting + Interop GIREVE) │
+                └─────────────────────────────────────────────┘
+                          ▲                       ▲
+                          │ OCPP 1.6J            │ API REST
+                          │ (TLS 1.2)            │
+                          │                       │
+        ┌─────────────────┼─────────────────┐    ▼
+        │                 │                 │   ┌───────────────┐
+        │                 │                 │   │  GIREVE       │
+        │     Modem 4G    │                 │   │  (eMSP)       │
+        │                 │                 │   └───────────────┘
+        │  ┌──────────────▼──────────────┐  │
+        │  │    e-Powerbox (e-Master)    │  │
+        │  │   Smart Charging Controller │  │
+        │  └─────────────┬───────────────┘  │
+        │                │                   │
+        │   ┌────────────┼────────────┐     │
+        │   │            │            │     │
+        │   ▼            ▼            ▼     │
+        │ Borne 1     Borne 2 ...  Borne 10 │
+        │ (2 PDC)    (2 PDC)      (2 PDC)   │
+        └───────────────────────────────────┘
+              Réseau local (switches × 2)
+```
+
+---
+
 ## 4. Connectivité en Guyane
 
 ### 4.1 Modem 4G intégré

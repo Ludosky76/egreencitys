@@ -50,6 +50,13 @@ EGREENCITY'S sollicite un financement pour la **phase 1** d'un programme structu
 - un **investissement de 49 480 € HT** sur les bornes nues (10 × 4 948 € HT — devis E-TOTEM **ref. DEV26000037 du 30/04/2026**), porté à 53 600 € HT avec les options techniques d'adaptation au climat tropical (modem 4G, pied pré-équipé PDL Enedis, peinture zone humide), soit un budget TTC Guyane d'environ 103 750 € (Octroi de Mer, fret DROM, installation et raccordement EDF SEI inclus) ;
 - une **subvention ADVENIR sollicitée de 37 200 €** (20 PDC × 1 860 €), soit un **taux de couverture exceptionnel de 75,2 %** du HT matériel des bornes nues (69,4 % avec options techniques DROM).
 
+À ces investissements s'ajoutent, pour répondre aux exigences ADVENIR voirie publique et aux recommandations Avere-France pour les ZNI :
+
+- une **architecture de supervision OCPP 1.6J** complète (LOT 2, ~29 300 € TTC sur 5 ans) comprenant : un boîtier e-Powerbox (Smart Charging multi-stations), une plateforme CSMS multi-tenant, la connexion à **GIREVE** (interopérabilité), le reporting AVERE-France, l'application mobile EGREENCITY'S, la hotline 24/7 et la maintenance préventive obligatoire (1 visite/an pendant 5 ans) ;
+- une **formation IRVE Qualifelec** des dirigeants et techniciens (LOT 3, 2 420 € HT, intégralement financée par l'OPCO Commerce dans le cadre du dispositif Qualiopi).
+
+L'ensemble de ces lots porte le **budget total du projet à ~135 400 € TTC sur 5 ans**, dont environ **56 % seront couverts par des aides publiques** (ADVENIR, Octroi de Mer, OPCO, FEDER Guyane 2021-2027 OS2 Mobilité, Bonus Mobilité Propre).
+
 Le détail technique et financier site par site figure dans le **Tableau des 20 PDC** (`02_Tableau_20_PDC.xlsx`), pièce maîtresse du dossier.
 
 ## 3. Engagements
