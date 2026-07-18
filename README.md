@@ -1,4 +1,4 @@
-# EGREENCITY'S — Site vitrine
+﻿# EGREENCITY'S — Site vitrine
 
 Site vitrine statique d'EGREENCITY'S (SAS — SIREN 878 682 854) — fourniture, installation et maintenance de bornes de recharge électrique en Guyane française.
 
@@ -27,5 +27,5 @@ URL de secours : https://ludosky76.github.io/egreencitys/
 
 ## Contact
 
-EGREENCITY'S — 1 rue Akangoue, 97355 Macouria-Tonate, Guyane<br>
+EGREENCITY'S — 1 rue Anangosi, 97355 MACOURIA, Guyane<br>
 egreencitys@gmail.com · +33 (0)6 51 14 11 18

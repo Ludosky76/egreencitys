@@ -1,4 +1,4 @@
-# Démarches Jour 1 — Scénario A (Court terme 0-3 mois)
+﻿# Démarches Jour 1 — Scénario A (Court terme 0-3 mois)
 
 ## Projet
 EGREENCITY'S — Déploiement 22 PDC en Guyane
@@ -16,8 +16,8 @@ EGREENCITY'S — Déploiement 22 PDC en Guyane
 | SIREN | **878 682 854** |
 | RCS | CAYENNE TMC 878 682 854 |
 | N° Gestion | 2019 B 816 |
-| Siège social | 1 rue Akangoue — Résidence La Rougerie — 97355 MACOURIA-TONATE |
-| Président | Loic Yvon LUDOSKY |
+| Siège social | 1 rue Anangosi — Résidence La Rougerie — 97355 MACOURIA |
+| Président | Loic Yves LUDOSKY |
 | Directeur Général | Patrice Claude LUDOSKY |
 | Activité | Vente, installation et maintenance de borne de rechargement |
 

@@ -1,0 +1,466 @@
+/* ==========================================================================
+   EGREENCITY'S — Refonte visuelle v1.0
+   ==========================================================================
+   Fichier de POLISH par-dessus les styles inline existants.
+   N'ecrase JAMAIS un style — ne fait qu'ajouter ou ameliorer.
+   A inclure APRES tous les <style> inline via :
+     <link rel="stylesheet" href="/assets/css/refonte.css?v=1">
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES ETENDUES (nouvelle palette premium)
+   -------------------------------------------------------------------------- */
+:root {
+  --shadow-xs:   0 1px 2px rgba(10, 72, 0, 0.06);
+  --shadow-sm:   0 2px 8px rgba(10, 72, 0, 0.08);
+  --shadow-md:   0 6px 20px rgba(10, 72, 0, 0.10);
+  --shadow-lg:   0 14px 40px rgba(10, 72, 0, 0.14);
+  --shadow-xl:   0 24px 60px rgba(10, 72, 0, 0.18);
+  --shadow-glow: 0 0 24px rgba(51, 204, 0, 0.28);
+
+  --radius-sm:   6px;
+  --radius-md:   12px;
+  --radius-lg:   20px;
+  --radius-xl:   32px;
+  --radius-pill: 999px;
+
+  --transition-fast:   150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-med:    260ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:   500ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  --ease-bounce:       cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* --------------------------------------------------------------------------
+   2. TYPOGRAPHIE — hierarchie plus classe
+   -------------------------------------------------------------------------- */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.015em;
+  font-feature-settings: "ss01" 1, "ss02" 1;
+}
+
+h1 { letter-spacing: -0.03em; }
+h2 { letter-spacing: -0.025em; }
+
+/* Selection texte branded */
+::selection { background: var(--green, #33CC00); color: #fff; }
+::-moz-selection { background: var(--green, #33CC00); color: #fff; }
+
+/* --------------------------------------------------------------------------
+   3. SCROLLBAR PREMIUM
+   -------------------------------------------------------------------------- */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: #f4fff0; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #33CC00 0%, #28a800 100%);
+  border-radius: 999px;
+  border: 3px solid #f4fff0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #28a800 0%, #1e8800 100%);
+}
+html { scrollbar-color: #33CC00 #f4fff0; scrollbar-width: thin; }
+
+/* --------------------------------------------------------------------------
+   4. FOCUS STATES (accessibilite WCAG AA)
+   -------------------------------------------------------------------------- */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid rgba(51, 204, 0, 0.55);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+:focus:not(:focus-visible) { outline: none; }
+
+/* --------------------------------------------------------------------------
+   5. NAV — plus premium avec glass renforce
+   -------------------------------------------------------------------------- */
+nav {
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-bottom: 1px solid rgba(10, 72, 0, 0.06) !important;
+}
+nav.scrolled {
+  background: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 4px 30px rgba(10, 72, 0, 0.08) !important;
+}
+.nav-links a {
+  position: relative;
+  padding: 6px 2px;
+}
+.nav-links a:not(.btn-nav):after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #33CC00, #28a800);
+  border-radius: 2px;
+  transition: width 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-links a:not(.btn-nav):hover:after { width: 100%; }
+.btn-nav {
+  box-shadow: 0 4px 14px rgba(51, 204, 0, 0.35) !important;
+  transition: all 260ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.btn-nav:hover {
+  box-shadow: 0 8px 22px rgba(51, 204, 0, 0.5) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. BOUTONS — micro-interactions premium
+   -------------------------------------------------------------------------- */
+.btn-primary,
+.btn-secondary,
+button[class*="btn"],
+a[class*="btn"] {
+  transition: all 260ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Effet ripple sur boutons primaires */
+.btn-primary::before,
+button.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transform: translate(-50%, -50%);
+  transition: width 500ms cubic-bezier(0.4, 0, 0.2, 1),
+              height 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.btn-primary:hover::before {
+  width: 260px;
+  height: 260px;
+}
+.btn-primary {
+  box-shadow: 0 8px 20px rgba(51, 204, 0, 0.28) !important;
+}
+.btn-primary:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 14px 30px rgba(51, 204, 0, 0.42) !important;
+}
+.btn-primary:active {
+  transform: translateY(-1px) !important;
+}
+
+.btn-secondary {
+  transition: all 260ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.btn-secondary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(10, 72, 0, 0.15) !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. CARTES — polissage premium
+   -------------------------------------------------------------------------- */
+.card,
+[class*="card"],
+.stat-card,
+.feature-card,
+.pricing-card,
+.commune-card {
+  transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 320ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 320ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.card:hover,
+[class*="card"]:hover,
+.feature-card:hover,
+.commune-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 50px rgba(10, 72, 0, 0.15) !important;
+}
+
+/* --------------------------------------------------------------------------
+   8. IMAGES & MEDIA — hover subtil
+   -------------------------------------------------------------------------- */
+img {
+  max-width: 100%;
+  height: auto;
+}
+.zoom-hover,
+.card img,
+.feature img {
+  transition: transform 500ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.zoom-hover:hover,
+.card:hover img,
+.feature:hover img {
+  transform: scale(1.04);
+}
+
+/* --------------------------------------------------------------------------
+   9. LIENS INLINE
+   -------------------------------------------------------------------------- */
+main a:not([class]) {
+  color: #28a800;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(51, 204, 0, 0.35);
+  transition: color 180ms ease, border-color 180ms ease;
+}
+main a:not([class]):hover {
+  color: #0a4800;
+  border-bottom-color: #0a4800;
+}
+
+/* --------------------------------------------------------------------------
+   10. FORMULAIRES — inputs premium
+   -------------------------------------------------------------------------- */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+input[type="number"],
+input[type="date"],
+input[type="search"],
+textarea,
+select {
+  transition: border-color 200ms ease, box-shadow 200ms ease, background 200ms ease !important;
+  border-radius: 8px !important;
+}
+input[type="text"]:hover,
+input[type="email"]:hover,
+input[type="tel"]:hover,
+textarea:hover,
+select:hover {
+  border-color: rgba(51, 204, 0, 0.45) !important;
+}
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="search"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #33CC00 !important;
+  box-shadow: 0 0 0 3px rgba(51, 204, 0, 0.15) !important;
+  outline: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   11. SECTIONS — respiration verticale harmonisée
+   -------------------------------------------------------------------------- */
+section {
+  scroll-margin-top: 80px; /* pour scroll-to avec nav fixe */
+}
+
+/* Ombres douces sur les blocs principaux */
+.section-block,
+.info-block,
+.card-block {
+  box-shadow: 0 4px 24px rgba(10, 72, 0, 0.06);
+}
+
+/* --------------------------------------------------------------------------
+   12. LOGO — animation subtile
+   -------------------------------------------------------------------------- */
+.nav-logo img {
+  transition: transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.nav-logo:hover img {
+  transform: scale(1.06) rotate(-2deg);
+}
+
+/* --------------------------------------------------------------------------
+   13. REVEAL ON SCROLL — style
+   -------------------------------------------------------------------------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 700ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* --------------------------------------------------------------------------
+   14. BADGES ET PILLS
+   -------------------------------------------------------------------------- */
+.hero-badge {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(51, 204, 0, 0.15);
+}
+
+/* --------------------------------------------------------------------------
+   15. FOOTER — polish
+   -------------------------------------------------------------------------- */
+footer {
+  position: relative;
+}
+footer a {
+  transition: color 200ms ease, transform 200ms ease;
+  display: inline-block;
+}
+footer a:hover {
+  transform: translateX(4px);
+}
+
+/* --------------------------------------------------------------------------
+   16. TABLES — plus lisibles
+   -------------------------------------------------------------------------- */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+table tr {
+  transition: background 180ms ease;
+}
+table tbody tr:hover {
+  background: rgba(51, 204, 0, 0.04) !important;
+}
+
+/* --------------------------------------------------------------------------
+   17. BOUTON FLOTTANT SCROLL TO TOP (optionnel — JS ajoute .visible)
+   -------------------------------------------------------------------------- */
+.scroll-top {
+  position: fixed;
+  bottom: 96px !important; /* au-dessus du bouton WhatsApp flottant */
+  right: 26px !important;
+  width: 44px;
+  height: 44px;
+  z-index: 1050 !important; /* au-dessus du WhatsApp button */
+  border-radius: 50%;
+  background: linear-gradient(135deg, #33CC00 0%, #28a800 100%);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 6px 20px rgba(51, 204, 0, 0.35);
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: opacity 260ms ease, transform 260ms ease, box-shadow 260ms ease;
+  z-index: 999;
+}
+.scroll-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.scroll-top:hover {
+  box-shadow: 0 10px 28px rgba(51, 204, 0, 0.55);
+  transform: translateY(-4px);
+}
+
+/* --------------------------------------------------------------------------
+   18. CURSOR ON INTERACTIVE
+   -------------------------------------------------------------------------- */
+button, a, [role="button"], .clickable { cursor: pointer; }
+
+/* --------------------------------------------------------------------------
+   19. MOBILE POLISH
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  nav { padding: 0.85rem 1.2rem !important; }
+  nav.scrolled { padding: 0.6rem 1.2rem !important; }
+
+  .hero { padding: 6rem 1.2rem 2rem !important; }
+  .hero-inner {
+    grid-template-columns: 1fr !important;
+    gap: 2.5rem !important;
+    text-align: left;
+  }
+
+  /* Tap targets 44x44 minimum (Apple HIG) */
+  button, a[class*="btn"], .nav-links a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Sections padding réduit */
+  section { padding: 3rem 1.2rem !important; }
+
+  /* Scrollbar fine sur mobile */
+  ::-webkit-scrollbar { width: 4px; }
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: clamp(1.8rem, 8vw, 2.4rem) !important; }
+  h2 { font-size: clamp(1.5rem, 6vw, 2rem) !important; }
+
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   20. DARK MODE — subtile amélioration si active
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] {
+  --shadow-xs:   0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-md:   0 6px 20px rgba(0, 0, 0, 0.55);
+  --shadow-lg:   0 14px 40px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track { background: #0a1a00; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  border-color: #0a1a00;
+}
+
+/* --------------------------------------------------------------------------
+   21. IMPRESSION — clean sans bandeaux ni pubs
+   -------------------------------------------------------------------------- */
+@media print {
+  nav, footer, .scroll-top, .cta-block, .btn-primary, .btn-secondary { display: none !important; }
+  body { color: #000; background: #fff; }
+  a { text-decoration: underline; color: #000; }
+  section { page-break-inside: avoid; }
+}
+
+/* --------------------------------------------------------------------------
+   22. UTILITAIRES
+   -------------------------------------------------------------------------- */
+.text-gradient {
+  background: linear-gradient(135deg, #33CC00 0%, #0a4800 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.shadow-glow { box-shadow: var(--shadow-glow); }
+.rounded-lg  { border-radius: var(--radius-lg); }
+.rounded-xl  { border-radius: var(--radius-xl); }
+
+/* Fin refonte.css v1.0 */

@@ -18,6 +18,7 @@ DEPENDANCES
 """
 from __future__ import annotations
 import sys
+import base64
 import argparse
 from pathlib import Path
 from datetime import date
@@ -27,6 +28,20 @@ from xhtml2pdf import pisa
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_TARGET = ROOT / "_dossiers" / "ADVENIR"
+LOGO_PATH = ROOT / "logo.png"
+
+
+def logo_data_uri() -> str:
+    """Encode le logo en base64 pour embed direct dans le HTML.
+    xhtml2pdf gere mal les file:// URIs sur Windows ; le base64 contourne ce
+    probleme de maniere universelle."""
+    if not LOGO_PATH.exists():
+        return ""
+    data = LOGO_PATH.read_bytes()
+    b64 = base64.b64encode(data).decode("ascii")
+    ext = LOGO_PATH.suffix.lower().lstrip(".")
+    mime = "image/png" if ext == "png" else f"image/{ext}"
+    return f"data:{mime};base64,{b64}"
 
 # ============================================================
 #  CSS — charte EGREENCITY'S
@@ -53,33 +68,37 @@ body {
 
 /* Titres */
 h1 {
-    color: #ffffff;
-    background-color: #0a4800;
-    padding: 14px 18px;
-    font-size: 18pt;
+    color: #0a4800;
+    font-size: 20pt;
     font-weight: bold;
-    margin: 0 0 18px 0;
+    margin: 6px 0 14px 0;
+    padding: 10px 14px;
+    background-color: #f4fff0;
     border-left: 6px solid #33CC00;
+    border-bottom: 2px solid #0a4800;
 }
 h2 {
     color: #0a4800;
     font-size: 14pt;
     font-weight: bold;
-    margin: 22px 0 8px 0;
-    padding-bottom: 4px;
-    border-bottom: 2px solid #33CC00;
+    margin: 20px 0 8px 0;
+    padding: 0 0 4px 8px;
+    border-left: 4px solid #33CC00;
+    border-bottom: 1px solid #c8e6c9;
 }
 h3 {
     color: #0a4800;
     font-size: 12pt;
     font-weight: bold;
-    margin: 16px 0 6px 0;
+    margin: 14px 0 6px 0;
+    padding-left: 8px;
+    border-left: 3px solid #33CC00;
 }
 h4 {
     color: #2B4DB5;
     font-size: 11pt;
     font-weight: bold;
-    margin: 12px 0 4px 0;
+    margin: 10px 0 4px 0;
 }
 
 /* Paragraphes & listes */
@@ -128,26 +147,48 @@ table tr:nth-child(even) td {
 /* Listes de définition (clé/valeur) — alternative aux tables 2-cols */
 dl.kvlist {
     margin: 10px 0 14px 0;
-    border: 1px solid #cccccc;
-    border-radius: 3px;
+    border: 1px solid #d8e6cc;
+    border-radius: 4px;
     padding: 0;
+    background-color: #ffffff;
 }
 dl.kvlist > div.kvrow {
-    border-bottom: 1px solid #e0e0e0;
-    padding: 6px 10px;
+    border-bottom: 1px solid #eef3e9;
+    padding: 5px 12px;
 }
 dl.kvlist > div.kvrow:last-child { border-bottom: none; }
-dl.kvlist > div.kvrow:nth-child(even) { background-color: #f4fff0; }
+dl.kvlist > div.kvrow:nth-child(even) { background-color: #fafffa; }
 dl.kvlist dt {
     font-weight: bold;
     color: #0a4800;
-    font-size: 9.5pt;
-    margin-bottom: 2px;
+    font-size: 9pt;
+    margin: 0 0 2px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 dl.kvlist dd {
-    margin: 0 0 0 8px;
-    font-size: 9.5pt;
+    margin: 0 0 0 0;
+    font-size: 10pt;
     color: #1a3a00;
+    padding-left: 4px;
+}
+
+/* Champ a remplir (remplace les longues series d'underscores) */
+.fillin {
+    display: inline-block;
+    border-bottom: 1px dotted #9aa3aa;
+    min-width: 220px;
+    height: 11pt;
+    vertical-align: bottom;
+    margin: 0 2px 0 0;
+}
+.fillin-short {
+    display: inline-block;
+    border-bottom: 1px dotted #9aa3aa;
+    min-width: 90px;
+    height: 11pt;
+    vertical-align: bottom;
+    margin: 0 2px 0 0;
 }
 
 /* Code & quotes */
@@ -190,20 +231,20 @@ hr {
 /* En-tete */
 .header {
     border-bottom: 3px solid #33CC00;
-    padding-bottom: 10px;
-    margin-bottom: 22px;
+    padding-bottom: 8px;
+    margin-bottom: 18px;
 }
-.brand {
-    font-size: 16pt;
-    font-weight: bold;
-    color: #33CC00;
-    letter-spacing: 1px;
+.header table { border: none; margin: 0; width: 100%; }
+.header table td { border: none; padding: 0; vertical-align: middle; }
+.header img {
+    height: 55px;
 }
 .tag {
     font-size: 8pt;
     color: #2B4DB5;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 1px;
+    text-align: right;
 }
 
 /* Pied de page */
@@ -226,8 +267,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <body>
 
 <div class="header">
-    <div class="brand">EGREENCITY'S</div>
-    <div class="tag">Borne de recharge electrique - Guyane francaise</div>
+    <table><tr>
+        <td style="width:55%"><img src="{logo_path}" alt="EGREENCITY'S" /></td>
+        <td style="width:45%" class="tag">Borne de recharge electrique<br/>Guyane francaise</td>
+    </tr></table>
 </div>
 
 {content}
@@ -375,9 +418,25 @@ def preprocess_md(text: str) -> str:
     1. Remplace les caracteres non rendus par xhtml2pdf
     2. Convertit les tables 2-colonnes (cle/valeur) en <dl> HTML pour eviter
        le bug d'affichage xhtml2pdf qui empile les caracteres verticalement
+    3. Remplace les longues sequences d'underscores par un pointille propre
+    4. Remplit les cellules de tableau vides ("| |" ou "||") avec un tiret
+       pour eviter le bug reportlab tables.py:440 (None heights)
     """
     for src, dst in CHAR_REPLACE:
         text = text.replace(src, dst)
+
+    # Cellules vides dans les tables -> tiret pour eviter le bug reportlab
+    # On boucle car une ligne peut avoir plusieurs cellules vides consecutives
+    for _ in range(5):
+        new_text = _re.sub(r"(\|)(\s{0,4})(\|)", r"\1 — \3", text)
+        if new_text == text:
+            break
+        text = new_text
+
+    # Remplacer les sequences d'underscores par des pointilles textuels
+    # (les <span> dans des cellules de tableau cassent le rendu reportlab)
+    text = _re.sub(r"_{12,}", "." * 30, text)
+    text = _re.sub(r"_{5,11}", "." * 12, text)
 
     # Detecter et convertir les tables 2-colonnes
     # Pattern : bloc commencant par | ... | et separateur |---|---|
@@ -441,6 +500,7 @@ def md_file_to_pdf(md_path: Path, out_path: Path | None = None) -> Path:
         title=title,
         css=CSS,
         content=html_body,
+        logo_path=logo_data_uri(),
     )
 
     if out_path is None:

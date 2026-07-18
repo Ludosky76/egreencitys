@@ -1,4 +1,4 @@
-# FICHE DE SAISIE — Dépôt sur advenir.mobi
+﻿# FICHE DE SAISIE — Dépôt sur advenir.mobi
 ## Guide pas-à-pas pour remplir le formulaire ADVENIR en ligne
 
 > **À utiliser avec votre navigateur (Edge + Claude side-bar, ou n'importe quel navigateur).**
@@ -49,7 +49,7 @@
 | **Capital social** | `250` |
 | **Date d'immatriculation** | `15/11/2019` |
 | **N° TVA intracommunautaire** | `FR00 878 682 854` |
-| **Adresse siège** | `1 rue Akangoue, Résidence La Rougerie` |
+| **Adresse siège** | `1 rue Anangosi, Résidence La Rougerie` |
 | **Code postal** | `97355` |
 | **Ville** | `Macouria-Tonate` |
 | **Région** | `Guyane (973)` |
@@ -60,7 +60,7 @@
 |---|---|
 | **Civilité** | `Monsieur` |
 | **Nom** | `LUDOSKY` |
-| **Prénom** | `Loïc Yvon` |
+| **Prénom** | `Loïc Yves` |
 | **Fonction** | `Président — Fondateur` |
 | **Email** | `egreencitys@gmail.com` |
 | **Téléphone** | `+33 6 51 14 11 18` |

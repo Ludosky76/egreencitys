@@ -1,4 +1,4 @@
-# Lettre de demande de financement ADVENIR
+﻿# Lettre de demande de financement ADVENIR
 
 > Document à imprimer sur papier en-tête EGREENCITY'S, signer manuscritement, et joindre au dépôt.
 
@@ -6,8 +6,8 @@
 
 **EGREENCITY'S**
 SAS au capital de 250 € · RCS Cayenne 878 682 854
-1 rue Akangoue, Résidence La Rougerie
-97355 Macouria-Tonate · Guyane française
+1 rue Anangosi, Résidence La Rougerie
+97355 MACOURIA · Guyane française
 egreencitys@gmail.com · +33 6 51 14 11 18
 
 À l'attention de
@@ -111,7 +111,7 @@ Vous remerciant par avance de l'examen attentif que vous voudrez bien réserver 
 
 Fait à Macouria-Tonate, le 28 avril 2026.
 
-**Loïc Yvon LUDOSKY**
+**Loïc Yves LUDOSKY**
 Président — Fondateur
 EGREENCITY'S SAS
 
@@ -119,7 +119,7 @@ EGREENCITY'S SAS
 
 ```
 ___________________________________
-Loïc Yvon LUDOSKY — Président
+Loïc Yves LUDOSKY — Président
 EGREENCITY'S
 ```
 

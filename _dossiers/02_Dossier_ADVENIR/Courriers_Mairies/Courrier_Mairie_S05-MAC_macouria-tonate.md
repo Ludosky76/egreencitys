@@ -1,19 +1,19 @@
-# Courrier — Proposition de partenariat avec co-investissement
+﻿# Courrier — Proposition de partenariat avec co-investissement
 ## Macouria-Tonate — Programme ADVENIR EGREENCITY'S
 
 ---
 
 **EGREENCITY'S**
 SAS au capital de 250 € · RCS Cayenne 878 682 854
-1 rue Akangoue, Résidence La Rougerie
-97355 Macouria-Tonate · Guyane française
+1 rue Anangosi, Résidence La Rougerie
+97355 MACOURIA · Guyane française
 +33 6 51 14 11 18 · egreencitys@gmail.com
 https://egreencitys.com
 
 **Monsieur le Maire**
 Mairie de Macouria-Tonate
 Hôtel de Ville — Place centrale
-97355 MACOURIA-TONATE
+97355 MACOURIA
 
 05 94 38 17 00
 mairie@macouria.fr
@@ -115,7 +115,7 @@ Je vous prie d'agréer, Monsieur le Maire, l'expression de mes salutations disti
 
 ---
 
-**Loïc Yvon LUDOSKY**
+**Loïc Yves LUDOSKY**
 Président — Fondateur
 EGREENCITY'S SAS
 
@@ -123,7 +123,7 @@ EGREENCITY'S SAS
 
 ```
 ___________________________________
-Loïc Yvon LUDOSKY — Président
+Loïc Yves LUDOSKY — Président
 EGREENCITY'S
 ```
 

@@ -1,4 +1,4 @@
-"""
+﻿"""
 Script one-shot : extrait les sections Produits / Reseau / Investisseurs
 d'index.html vers des pages dediees, met a jour index.html et le sitemap.
 """
@@ -106,7 +106,7 @@ footer_subpage = """<!-- Footer -->
     </div>
     <div class="foot-bottom">
       <span>© 2026 EGREENCITY'S — Tous droits réservés</span>
-      <span class="foot-rcs">SAS · RCS Cayenne 878 682 854 · Capital 250 € · 97355 Macouria-Tonate, Guyane</span>
+      <span class="foot-rcs">SAS · RCS Cayenne 878 682 854 · Capital 250 € · 97355 MACOURIA, Guyane</span>
       <span class="foot-legal" style="display:flex;gap:1rem;flex-wrap:wrap;">
         <a href="/mentions-legales.html" style="color:inherit;opacity:.85;">Mentions légales</a>
         <a href="/mentions-legales.html#confidentialite" style="color:inherit;opacity:.85;">Politique de confidentialité</a>

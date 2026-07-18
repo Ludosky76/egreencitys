@@ -1,4 +1,4 @@
-"""
+﻿"""
 Genere 8 emails personnalises pour les mairies cibles du dossier ADVENIR.
 
 Pour chaque mairie : 2 fichiers
@@ -120,7 +120,7 @@ ce projet structurant pour la Guyane,
 
 Cordialement,
 
-Loïc Yvon LUDOSKY
+Loïc Yves LUDOSKY
 Président — Fondateur
 EGREENCITY'S SAS
 
@@ -248,7 +248,7 @@ EMAIL_HTML = """<!DOCTYPE html>
 <table style="border-collapse: collapse; margin-top: 20px;">
   <tr>
     <td style="padding-right: 16px; vertical-align: top;">
-      <div style="font-size: 16px; font-weight: bold; color: #33CC00;">Loïc Yvon LUDOSKY</div>
+      <div style="font-size: 16px; font-weight: bold; color: #33CC00;">Loïc Yves LUDOSKY</div>
       <div style="font-size: 12px; color: #2B4DB5;">Président — Fondateur</div>
       <div style="font-size: 12px; color: #555; margin-top: 8px;">EGREENCITY'S SAS</div>
       <div style="font-size: 11px; color: #777;">SAS au capital de 250 € — RCS Cayenne 878 682 854</div>
@@ -259,7 +259,7 @@ EMAIL_HTML = """<!DOCTYPE html>
 <!-- Footer pro -->
 <div style="border-top: 2px solid #33CC00; padding-top: 10px; margin-top: 24px; font-size: 11px; color: #555;">
   <strong>EGREENCITY'S</strong> — Bornes de recharge électrique en Guyane française<br>
-  📍 1 rue Akangoue, Résidence La Rougerie · 97355 Macouria-Tonate<br>
+  📍 1 rue Anangosi, Résidence La Rougerie · 97355 MACOURIA<br>
   📞 +33 6 51 14 11 18 · ✉️ <a href="mailto:egreencitys@gmail.com" style="color: #0a4800;">egreencitys@gmail.com</a> · 🌐 <a href="https://egreencitys.com" style="color: #0a4800;">egreencitys.com</a><br>
   <br>
   <em>Programme ADVENIR : <a href="https://advenir.mobi" style="color: #0a4800;">advenir.mobi</a> · Référence devis : E-TOTEM DEV26000037 du 30/04/2026</em>

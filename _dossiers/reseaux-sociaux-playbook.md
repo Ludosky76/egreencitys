@@ -1,4 +1,4 @@
-# EGREENCITY'S — Playbook Réseaux Sociaux Guyane
+﻿# EGREENCITY'S — Playbook Réseaux Sociaux Guyane
 *À garder en local — utilisez les sections "Copier/Coller" lors de la création des comptes.*
 
 ---
@@ -12,7 +12,7 @@
 | Site | https://egreencitys.com |
 | Email | egreencitys@gmail.com |
 | Téléphone / WhatsApp | +33 6 51 14 11 18 |
-| Adresse | 1 rue Akangoue, Résidence La Rougerie · 97355 Macouria-Tonate · Guyane |
+| Adresse | 1 rue Anangosi, Résidence La Rougerie · 97355 MACOURIA · Guyane |
 | Catégorie | Énergie & Mobilité électrique / Installateur IRVE |
 | Mots-clés | borne recharge, IRVE, ADVENIR, Guyane, mobilité électrique, 973 |
 

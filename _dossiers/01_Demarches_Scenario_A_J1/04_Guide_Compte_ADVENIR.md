@@ -1,4 +1,4 @@
-# Guide — Création compte ADVENIR Aménageur
+﻿# Guide — Création compte ADVENIR Aménageur
 
 > **Enjeu** : 40 920 € de subvention (22 PDC × 1 860 €)
 > **Règle absolue** : Déposer le dossier AVANT la commande du matériel
@@ -16,9 +16,9 @@
    - Forme juridique : **SAS** (Société par actions simplifiée)
    - Capital : **250 €**
    - Date d'immatriculation : **15/11/2019**
-   - Adresse siège social : **1 rue Akangoue — Résidence La Rougerie — 97355 MACOURIA-TONATE**
+   - Adresse siège social : **1 rue Anangosi — Résidence La Rougerie — 97355 MACOURIA**
    - RCS : **Cayenne TMC 878 682 854 — N° Gestion 2019 B 816**
-   - Président : **Loic Yvon LUDOSKY**
+   - Président : **Loic Yves LUDOSKY**
    - Email dirigeant : contact@egreencity.fr
    - Téléphone : 07 [à compléter]
 5. Valider l'email de confirmation (vérifier les spams)
@@ -46,7 +46,7 @@
 
 - Nom du projet : **EGREENCITY'S — Déploiement Guyane Phase 1**
 - Porteur : **EGREENCITY'S — SIREN 878 682 854**
-- Siège : 1 rue Akangoue — Résidence La Rougerie — 97355 Macouria-Tonate
+- Siège : 1 rue Anangosi — Résidence La Rougerie — 97355 MACOURIA
 - Région : **Guyane** (DROM — Région Ultrapériphérique)
 - Nombre total de PDC : **22**
 - Nombre de stations : **11** (10 AC + 1 Fast)

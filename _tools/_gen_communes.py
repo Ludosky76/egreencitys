@@ -1,4 +1,4 @@
-"""
+﻿"""
 Generateur des 6 pages communes pour le SEO local Guyane.
 """
 import os
@@ -233,7 +233,7 @@ def build_commune_page(c):
 </main>
 
 <footer>
-  <p>© 2026 EGREENCITY'S — SAS · RCS Cayenne 878 682 854 · 97355 Macouria-Tonate, Guyane française</p>
+  <p>© 2026 EGREENCITY'S — SAS · RCS Cayenne 878 682 854 · 97355 MACOURIA, Guyane française</p>
   <p style="margin-top:.5rem;"><a href="/">egreencitys.com</a> · <a href="mailto:egreencitys@gmail.com">egreencitys@gmail.com</a> · <a href="tel:0651141118">06 51 14 11 18</a></p>
   <p style="margin-top:.8rem;font-size:.75rem;opacity:.85;">
     <a href="/mentions-legales.html">Mentions légales</a> ·

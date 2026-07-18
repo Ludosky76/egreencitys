@@ -1,4 +1,4 @@
-# FICHE PROJET — EGREENCITY'S
+﻿# FICHE PROJET — EGREENCITY'S
 ## Déploiement Phase 1 — 20 PDC en Guyane française
 
 ---
@@ -13,9 +13,9 @@
 | SIREN | 878 682 854 |
 | RCS | Cayenne TMC 878 682 854 — N° Gestion 2019 B 816 |
 | Date d'immatriculation | 15 novembre 2019 |
-| Siège social | 1 rue Akangoue — Résidence La Rougerie — 97355 Macouria-Tonate |
+| Siège social | 1 rue Anangosi — Résidence La Rougerie — 97355 MACOURIA |
 | Activité | Vente, installation et maintenance de borne de rechargement |
-| Président | Loic Yvon LUDOSKY |
+| Président | Loic Yves LUDOSKY |
 | Directeur Général | Patrice Claude LUDOSKY |
 
 ## 2. Synthèse du projet

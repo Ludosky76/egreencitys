@@ -1,12 +1,12 @@
-# ENGAGEMENTS DE L'OPÉRATEUR — EGREENCITY'S
+﻿# ENGAGEMENTS DE L'OPÉRATEUR — EGREENCITY'S
 ## Dossier ADVENIR — Voirie publique Guyane — 20 PDC
 
 ---
 
 ## Déclaration d'engagement
 
-Je soussigné, **Loic Yvon LUDOSKY**, Président de la société **EGREENCITY'S**
-(SAS — SIREN 878 682 854 — 1 rue Akangoue, Résidence La Rougerie, 97355 MACOURIA-TONATE),
+Je soussigné, **Loic Yves LUDOSKY**, Président de la société **EGREENCITY'S**
+(SAS — SIREN 878 682 854 — 1 rue Anangosi, Résidence La Rougerie, 97355 MACOURIA),
 déclare prendre les engagements suivants dans le cadre du Programme ADVENIR
 pour le projet de déploiement de **20 Points De Charge** sur la voirie publique
 des communes de Guyane française.
@@ -190,7 +190,7 @@ le présent document.
 
 Fait à Macouria-Tonate, le 28 / 04 / 2026
 
-**Loic Yvon LUDOSKY**
+**Loic Yves LUDOSKY**
 Président — EGREENCITY'S
 SAS au capital de 250 € — SIREN 878 682 854
 
@@ -199,7 +199,7 @@ Signature et cachet :
 
 ```
 ___________________________________
-Loic Yvon LUDOSKY — Président
+Loic Yves LUDOSKY — Président
 EGREENCITY'S
 ```
 

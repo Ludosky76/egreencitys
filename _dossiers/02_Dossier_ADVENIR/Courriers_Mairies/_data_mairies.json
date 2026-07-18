@@ -1,17 +1,17 @@
-{
+﻿{
   "_comment": "Donnees personnalisation des courriers aux 8 mairies guyanaises - dossier ADVENIR",
   "_version": "1.0 - 02/05/2026",
   "_note": "Adresses des mairies a verifier sur l'annuaire officiel. Maires en fonction a verifier sur le site de la commune avant envoi.",
   "operateur": {
     "raison_sociale": "EGREENCITY'S",
     "siren": "878 682 854",
-    "adresse": "1 rue Akangoue, Résidence La Rougerie",
+    "adresse": "1 rue Anangosi, Résidence La Rougerie",
     "code_postal": "97355",
-    "ville": "Macouria-Tonate",
+    "ville": "MACOURIA",
     "telephone": "+33 6 51 14 11 18",
     "email": "egreencitys@gmail.com",
     "site_web": "https://egreencitys.com",
-    "president": "Loïc Yvon LUDOSKY",
+    "president": "Loïc Yves LUDOSKY",
     "directeur_general": "Patrice Claude LUDOSKY"
   },
   "projet": {
