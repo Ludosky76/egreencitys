@@ -640,5 +640,16 @@ window.addEventListener('scroll', function(){
 </script>
 
 <script src="/assets/js/refonte.js?v=2" defer></script>
+
+<!-- Widget Alma — paiement 3× / 4× sans frais.
+     Actif dès que vous configurez ALMA_MERCHANT_ID dans alma-widget.js.
+     Guide complet : _dossiers/05_Dropshipping_WallBox/GUIDE_ACTIVATION_ALMA.md -->
+<script src="/assets/js/alma-widget.js?v=1" defer></script>
+
+<!-- Style pour le badge Alma généré dynamiquement -->
+<style>
+  .alma-badge { margin: -8px 0 12px; min-height: 22px; }
+  .alma-badge:empty { display: none; }
+</style>
 </body>
 </html>
