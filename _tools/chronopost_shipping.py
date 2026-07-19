@@ -14,10 +14,10 @@ CONFIGURATION
 Renseigner les credentials Chronopost dans le fichier :
     _config/chronopost.env (non versionne, cf .gitignore)
 
-Format .env :
+Format .env (NE JAMAIS commiter ce fichier) :
     CHRONOPOST_ACCOUNT=XXXXXX
     CHRONOPOST_PASSWORD=XXXXXX
-    CHRONOPOST_SUBACCOUNT=XXX
+    CHRONOPOST_SUBACCOUNT=
 
 Ces credentials sont fournis par Chronopost apres signature du contrat
 DOM Grands Comptes (contact : cdd@chronopost.fr).
