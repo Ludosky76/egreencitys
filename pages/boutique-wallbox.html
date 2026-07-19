@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Boutique WallBox — Achat direct 3×/4× en Guyane | EGREENCITY'S</title>
-  <meta name="description" content="Commandez votre borne de recharge WallBox en ligne. Livraison Guyane 5 à 10 jours, paiement en 3× ou 4× sans frais dès 200 €. Modèles 7 kW à 44 kW pour particuliers et pros.">
+  <title>Boutique WallBox — Commande en ligne 3×/4× | EGREENCITY'S</title>
+  <meta name="description" content="Catalogue complet de bornes de recharge E-TOTEM en Guyane. Gamme e-WallBox, e-Smart 7 kW et 22 kW. Configurateur d'options, paiement en 3× ou 4× sans frais, expédition Chronopost DOM.">
   <meta name="author" content="EGREENCITY'S SAS">
   <meta name="robots" content="index, follow">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
@@ -13,12 +13,12 @@
 
   <link rel="canonical" href="https://egreencitys.com/pages/boutique-wallbox.html">
   <meta name="geo.region" content="FR-GF">
-  <meta name="keywords" content="wallbox achat, borne de recharge particulier, borne 7 kW, borne 22 kW, dropshipping borne, paiement 3 fois, paiement 4 fois, Guyane, Cayenne, Kourou">
+  <meta name="keywords" content="wallbox achat, e-smart 7 kW, e-smart 22 kW, e-wallbox, e-totem Guyane, borne de recharge particulier, paiement 3 fois, paiement 4 fois, chronopost dom, Cayenne, Kourou">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="EGREENCITY'S">
-  <meta property="og:title" content="Boutique WallBox — Commandez votre borne en ligne | EGREENCITY'S">
-  <meta property="og:description" content="Achat direct de bornes de recharge WallBox en Guyane. Paiement en 3× ou 4× sans frais. Livraison rapide, garantie constructeur, marque française E-TOTEM.">
+  <meta property="og:title" content="Boutique WallBox — E-TOTEM en Guyane | EGREENCITY'S">
+  <meta property="og:description" content="Catalogue complet e-WallBox et e-Smart. Configurateur avec options, paiement 3×/4× sans frais, livraison Chronopost.">
   <meta property="og:url" content="https://egreencitys.com/pages/boutique-wallbox.html">
   <meta property="og:image" content="https://egreencitys.com/logo.png">
   <meta property="og:locale" content="fr_FR">
@@ -27,19 +27,6 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#0a4800">
   <link rel="stylesheet" href="/assets/css/refonte.css?v=2">
-
-  <!-- Schema.org : Product catalog -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "itemListElement": [
-      {"@type":"Product","name":"WallBox Résidentielle 7 kW","offers":{"@type":"Offer","price":"999","priceCurrency":"EUR","availability":"https://schema.org/InStock"}},
-      {"@type":"Product","name":"WallBox Confort 22 kW","offers":{"@type":"Offer","price":"1990","priceCurrency":"EUR","availability":"https://schema.org/InStock"}},
-      {"@type":"Product","name":"WallBox Premium 2×22 kW","offers":{"@type":"Offer","price":"3490","priceCurrency":"EUR","availability":"https://schema.org/InStock"}}
-    ]
-  }
-  </script>
 
   <style>
     :root {
@@ -52,154 +39,202 @@
     html{scroll-behavior:smooth;}
     body{font-family:'Poppins',system-ui,sans-serif;color:var(--text);background:#fff;overflow-x:hidden;}
 
-    /* NAV — reprend le pattern du site */
+    /* NAV */
     nav{
       position:fixed;top:0;width:100%;z-index:1000;
-      padding:1rem 3rem;display:flex;align-items:center;justify-content:space-between;
+      padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;
       background:rgba(255,255,255,.95);backdrop-filter:blur(12px);
       border-bottom:1px solid rgba(51,204,0,.12);
       transition:padding .3s,box-shadow .3s;
     }
-    nav.scrolled{padding:.65rem 3rem;box-shadow:0 2px 24px var(--shadow);}
-    .nav-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;}
-    .nav-logo img{height:44px;}
-    .logo-name{font-size:1.25rem;font-weight:800;color:var(--green);letter-spacing:-.5px;line-height:1;}
-    .logo-tag{font-size:.48rem;color:var(--blue);font-weight:600;letter-spacing:.6px;text-transform:uppercase;display:block;}
+    nav.scrolled{padding:.6rem 2.5rem;box-shadow:0 2px 24px var(--shadow);}
+    .nav-logo{display:flex;align-items:center;text-decoration:none;}
+    .nav-logo img{height:42px;}
     .nav-links{display:flex;gap:1.5rem;list-style:none;align-items:center;}
     .nav-links a{text-decoration:none;color:var(--text);font-size:.82rem;font-weight:500;transition:color .2s;}
     .nav-links a:hover{color:var(--green);}
     .btn-nav{background:var(--green);color:#fff!important;padding:.5rem 1.3rem;border-radius:50px;font-weight:700!important;}
 
+    /* CART PILL — flottant top-right */
+    .cart-pill{
+      position:fixed;top:14px;right:calc(2.5rem + 140px);z-index:1100;
+      display:flex;align-items:center;gap:.5rem;
+      background:var(--green-deep);color:#fff;padding:.5rem 1rem;border-radius:50px;
+      font-weight:700;font-size:.85rem;cursor:pointer;
+      box-shadow:0 6px 20px rgba(10,72,0,.3);
+      transition:all .25s;
+    }
+    .cart-pill:hover{background:var(--green-dark);transform:translateY(-2px);}
+    .cart-pill .cart-badge{background:var(--green);color:#fff;border-radius:50%;width:22px;height:22px;
+      display:flex;align-items:center;justify-content:center;font-size:.7rem;}
+
     /* HERO */
     .hero{
-      padding:9rem 3rem 4rem;
+      padding:8rem 2.5rem 3rem;
       background:linear-gradient(140deg,#041000 0%,#0b3300 45%,#0a2800 100%);
-      color:#fff;text-align:center;
+      color:#fff;text-align:center;position:relative;overflow:hidden;
     }
+    .hero::before{
+      content:'';position:absolute;inset:0;
+      background-image:radial-gradient(circle at 30% 70%, rgba(51,204,0,.08) 0%, transparent 50%),
+                       radial-gradient(circle at 70% 30%, rgba(43,77,181,.1) 0%, transparent 50%);
+    }
+    .hero > *{position:relative;z-index:2;}
     .hero-badge{
       display:inline-flex;align-items:center;gap:.5rem;
-      background:rgba(51,204,0,.14);border:1px solid rgba(51,204,0,.32);
+      background:rgba(51,204,0,.15);border:1px solid rgba(51,204,0,.35);
       color:var(--green);padding:.4rem 1.1rem;border-radius:50px;
-      font-size:.75rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
-      margin-bottom:1.5rem;
+      font-size:.72rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+      margin-bottom:1.5rem;backdrop-filter:blur(10px);
     }
     .dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:blink 1.4s ease-in-out infinite;}
     @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
-    .hero h1{font-size:clamp(2rem,4vw,3.2rem);font-weight:800;line-height:1.15;margin-bottom:1rem;max-width:900px;margin-inline:auto;}
+    .hero h1{font-size:clamp(2rem,4vw,3.4rem);font-weight:800;line-height:1.1;margin-bottom:1rem;max-width:960px;margin-inline:auto;letter-spacing:-.02em;}
     .hero h1 em{color:var(--green);font-style:normal;}
-    .hero-sub{font-size:1.05rem;color:rgba(255,255,255,.75);line-height:1.65;max-width:680px;margin:0 auto 2rem;}
-    .hero-perks{display:flex;justify-content:center;gap:1.8rem;flex-wrap:wrap;font-size:.85rem;color:rgba(255,255,255,.85);}
-    .hero-perks span{display:inline-flex;align-items:center;gap:.4rem;}
+    .hero-sub{font-size:1.05rem;color:rgba(255,255,255,.78);line-height:1.6;max-width:720px;margin:0 auto 2rem;}
+    .hero-perks{display:flex;justify-content:center;gap:1.6rem;flex-wrap:wrap;font-size:.85rem;color:rgba(255,255,255,.9);}
+    .hero-perks span{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.05);padding:.4rem .9rem;border-radius:50px;border:1px solid rgba(255,255,255,.1);}
     .hero-perks strong{color:var(--green);}
 
-    /* SECTIONS */
-    section{padding:5rem 3rem;}
-    .container{max-width:1200px;margin:0 auto;}
-    .section-title{text-align:center;font-size:2.2rem;font-weight:800;color:var(--green-deep);margin-bottom:.6rem;letter-spacing:-.02em;}
-    .section-sub{text-align:center;font-size:1rem;color:var(--muted);max-width:640px;margin:0 auto 3rem;line-height:1.6;}
+    /* TABS FILTRE GAMMES */
+    .tabs{background:#fff;padding:2.5rem 2rem 1rem;position:sticky;top:66px;z-index:900;border-bottom:1px solid #eef3e9;}
+    .tabs-wrap{max-width:1200px;margin:0 auto;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;}
+    .tab-btn{
+      background:#f4fff0;border:2px solid #d8e6cc;color:var(--green-deep);
+      padding:.75rem 1.4rem;border-radius:50px;font-family:inherit;font-weight:600;font-size:.85rem;
+      cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:.5rem;
+    }
+    .tab-btn:hover{border-color:var(--green);}
+    .tab-btn.active{background:var(--green-deep);color:#fff;border-color:var(--green-deep);box-shadow:0 4px 16px rgba(10,72,0,.25);}
+    .tab-btn .count{background:rgba(255,255,255,.2);color:currentColor;font-size:.7rem;padding:2px 8px;border-radius:12px;}
+    .tab-btn.active .count{background:rgba(255,255,255,.3);}
 
-    /* PAYMENT BANNER */
+    /* PAY BANNER */
     .pay-banner{
+      max-width:1000px;margin:2.5rem auto 3rem;
       background:linear-gradient(135deg,#fff9c4 0%,#fff3a0 100%);
       border-left:6px solid #f9a825;
-      padding:1.4rem 1.8rem;border-radius:12px;
+      padding:1.4rem 1.8rem;border-radius:14px;
       display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;
-      max-width:900px;margin:0 auto 3rem;
       box-shadow:0 6px 20px rgba(249,168,37,.15);
     }
-    .pay-banner .icon{font-size:2rem;flex-shrink:0;}
+    .pay-banner .icon{font-size:2.2rem;flex-shrink:0;}
     .pay-banner .txt{flex:1;min-width:240px;}
     .pay-banner strong{color:#5d4037;font-size:1.05rem;display:block;margin-bottom:.2rem;}
     .pay-banner p{color:#5d4037;font-size:.9rem;margin:0;line-height:1.5;}
+    .pay-badges{display:flex;gap:.5rem;}
+    .pay-badges span{background:#fff;color:#f57c00;padding:.4rem .8rem;border-radius:10px;font-size:.75rem;font-weight:800;border:1px solid #ffc107;}
 
-    /* PRODUITS GRID */
-    .products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.8rem;}
+    /* SECTIONS */
+    .container{max-width:1240px;margin:0 auto;padding:0 2rem;}
+    .gamme-block{padding:2.5rem 0;}
+    .gamme-block:not(:first-of-type){border-top:1px solid #eef3e9;}
+    .gamme-header{margin-bottom:2rem;text-align:center;}
+    .gamme-header .icon{font-size:2.4rem;margin-bottom:.5rem;display:block;}
+    .gamme-header h2{font-size:2rem;font-weight:800;color:var(--green-deep);margin-bottom:.3rem;letter-spacing:-.02em;}
+    .gamme-header .sub{font-size:.95rem;color:var(--muted);margin-bottom:.6rem;}
+    .gamme-header p{max-width:720px;margin:0 auto;font-size:.9rem;color:var(--text);line-height:1.6;}
+
+    /* PRODUCT GRID */
+    .products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;}
     .product-card{
       background:#fff;border:1px solid #e5f0dd;border-radius:20px;
-      padding:2rem 1.8rem;transition:all .3s;position:relative;overflow:hidden;
-      display:flex;flex-direction:column;
+      overflow:hidden;transition:all .3s;position:relative;display:flex;flex-direction:column;
     }
     .product-card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(10,72,0,.15);border-color:var(--green);}
-    .product-card.featured{border:2px solid var(--green);box-shadow:0 8px 32px rgba(51,204,0,.15);}
-    .product-card.featured::before{
-      content:'★ POPULAIRE';position:absolute;top:16px;right:-40px;
-      background:var(--green);color:#fff;font-size:.65rem;font-weight:700;
-      padding:.3rem 3rem;transform:rotate(35deg);letter-spacing:1px;
+    .product-card.featured{border:2px solid var(--green);}
+    .product-card .tag{
+      position:absolute;top:12px;left:12px;background:var(--green);color:#fff;
+      font-size:.65rem;font-weight:800;padding:.3rem .7rem;border-radius:50px;
+      z-index:2;letter-spacing:.5px;text-transform:uppercase;
     }
-    .product-icon{
-      width:64px;height:64px;border-radius:16px;
-      background:linear-gradient(135deg,var(--green) 0%,var(--green-deep) 100%);
-      color:#fff;display:flex;align-items:center;justify-content:center;
-      font-size:2rem;margin-bottom:1.2rem;
+    .product-img{
+      width:100%;height:200px;background:linear-gradient(135deg,#f4fff0 0%,#e8f5e9 100%);
+      display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;
     }
-    .product-name{font-size:1.35rem;font-weight:800;color:var(--green-deep);margin-bottom:.3rem;letter-spacing:-.01em;}
-    .product-spec{font-size:.85rem;color:var(--muted);margin-bottom:1.2rem;}
+    .product-img img{max-width:80%;max-height:180px;object-fit:contain;transition:transform .4s;}
+    .product-card:hover .product-img img{transform:scale(1.06);}
+    .product-body{padding:1.4rem 1.4rem 1.6rem;flex-grow:1;display:flex;flex-direction:column;}
+    .product-body h3{font-size:1.05rem;font-weight:800;color:var(--green-deep);margin-bottom:.3rem;letter-spacing:-.01em;}
+    .product-meta{font-size:.75rem;color:var(--muted);margin-bottom:.9rem;display:flex;gap:.6rem;flex-wrap:wrap;}
+    .product-meta span{background:#f4fff0;padding:.15rem .5rem;border-radius:10px;color:var(--green-deep);font-weight:600;}
     .product-price{margin-bottom:.4rem;}
-    .price-main{font-size:2.4rem;font-weight:800;color:var(--green-deep);line-height:1;}
-    .price-unit{font-size:.85rem;color:var(--muted);margin-left:.3rem;}
-    .price-split{font-size:.9rem;color:var(--green);font-weight:700;margin-bottom:1.5rem;}
-    .price-split .x{background:var(--green);color:#fff;padding:2px 8px;border-radius:6px;font-size:.78rem;margin:0 4px;}
-    .product-feats{list-style:none;padding:0;margin:0 0 1.8rem;flex-grow:1;}
-    .product-feats li{padding:6px 0;font-size:.88rem;color:var(--text);position:relative;padding-left:22px;}
-    .product-feats li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:700;}
-    .product-cta{
-      display:block;text-align:center;background:var(--green);color:#fff;
-      padding:.9rem 1.2rem;border-radius:50px;font-weight:700;
-      text-decoration:none;transition:all .25s;
-      box-shadow:0 6px 16px rgba(51,204,0,.28);
+    .price-main{font-size:1.7rem;font-weight:800;color:var(--green-deep);line-height:1;}
+    .price-unit{font-size:.75rem;color:var(--muted);margin-left:.2rem;}
+    .price-split{font-size:.75rem;color:var(--green-dark);font-weight:600;margin-bottom:.9rem;}
+    .price-split .x{background:var(--green);color:#fff;padding:1px 6px;border-radius:5px;font-size:.68rem;margin:0 3px;font-weight:800;}
+    .product-specs{list-style:none;padding:0;margin:.5rem 0 1.2rem;flex-grow:1;}
+    .product-specs li{padding:3px 0;font-size:.78rem;color:var(--text);position:relative;padding-left:16px;}
+    .product-specs li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:800;}
+    .product-actions{display:flex;gap:.5rem;}
+    .btn-add{
+      flex:1;background:var(--green);color:#fff;padding:.75rem;border:none;border-radius:12px;
+      font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .25s;
+      box-shadow:0 4px 12px rgba(51,204,0,.28);
     }
-    .product-cta:hover{background:var(--green-dark);transform:translateY(-2px);box-shadow:0 10px 24px rgba(51,204,0,.4);}
-    .product-cta.premium{background:var(--green-deep);}
-    .product-cta.premium:hover{background:#0e5c00;}
-
-    /* COMMENT CA MARCHE */
-    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.4rem;margin-top:2rem;}
-    .step{text-align:center;padding:1.4rem 1rem;background:#f4fff0;border-radius:16px;position:relative;}
-    .step-num{
-      width:44px;height:44px;background:var(--green);color:#fff;
-      border-radius:50%;display:flex;align-items:center;justify-content:center;
-      font-weight:800;font-size:1.15rem;margin:0 auto 1rem;
+    .btn-add:hover{background:var(--green-dark);transform:translateY(-2px);box-shadow:0 8px 20px rgba(51,204,0,.4);}
+    .btn-details{
+      background:#fff;color:var(--green-deep);padding:.75rem 1rem;border:1px solid #d8e6cc;
+      border-radius:12px;font-family:inherit;font-weight:600;font-size:.85rem;cursor:pointer;transition:all .2s;
     }
-    .step h3{font-size:1rem;color:var(--green-deep);margin-bottom:.4rem;font-weight:700;}
-    .step p{font-size:.82rem;color:var(--muted);line-height:1.5;}
+    .btn-details:hover{border-color:var(--green);color:var(--green);}
 
-    /* GARANTIES */
-    .garanties{background:#f4fff0;}
-    .garanties-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.4rem;}
-    .garantie{background:#fff;padding:1.6rem;border-radius:14px;text-align:center;border:1px solid #d8e6cc;}
-    .garantie .icon{font-size:2rem;margin-bottom:.6rem;}
-    .garantie h4{color:var(--green-deep);font-size:.95rem;margin-bottom:.4rem;font-weight:700;}
-    .garantie p{color:var(--muted);font-size:.83rem;line-height:1.5;}
-
-    /* FAQ */
-    .faq{max-width:820px;margin:0 auto;}
-    .faq details{background:#fff;border:1px solid #d8e6cc;border-radius:12px;margin-bottom:.8rem;padding:1.1rem 1.4rem;transition:all .2s;}
-    .faq details[open]{background:#f4fff0;box-shadow:0 4px 14px rgba(10,72,0,.08);}
-    .faq summary{cursor:pointer;font-weight:700;color:var(--green-deep);font-size:.95rem;list-style:none;position:relative;padding-right:2rem;}
-    .faq summary::-webkit-details-marker{display:none;}
-    .faq summary::after{content:'+';position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:1.3rem;color:var(--green);transition:transform .2s;}
-    .faq details[open] summary::after{content:'−';}
-    .faq details p{margin-top:.8rem;font-size:.9rem;color:var(--text);line-height:1.65;}
-
-    /* CTA COMMANDE */
-    .order-cta{background:linear-gradient(135deg,var(--green-deep) 0%,#052400 100%);color:#fff;padding:5rem 2rem;text-align:center;border-radius:28px;margin:4rem auto;max-width:1000px;}
-    .order-cta h2{color:#fff;font-size:2rem;margin-bottom:1rem;}
-    .order-cta p{font-size:1rem;color:rgba(255,255,255,.75);margin-bottom:2rem;max-width:600px;margin-inline:auto;}
-    .order-cta .cta-btn{
-      display:inline-block;background:var(--green);color:#fff;
-      padding:1.2rem 2.6rem;border-radius:50px;font-size:1rem;font-weight:700;
-      text-decoration:none;box-shadow:0 8px 24px rgba(51,204,0,.4);
-      transition:all .3s;
+    /* OPTIONS PANEL (drawer) */
+    .options-drawer{
+      position:fixed;top:0;right:-420px;width:400px;max-width:100vw;height:100vh;background:#fff;
+      z-index:2000;box-shadow:-4px 0 40px rgba(0,0,0,.15);
+      transition:right .35s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;
     }
-    .order-cta .cta-btn:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(51,204,0,.55);}
+    .options-drawer.open{right:0;}
+    .drawer-head{
+      padding:1.4rem 1.5rem;background:var(--green-deep);color:#fff;
+      display:flex;justify-content:space-between;align-items:center;
+    }
+    .drawer-head h3{font-size:1.05rem;font-weight:700;margin:0;}
+    .drawer-head button{background:transparent;border:none;color:#fff;font-size:1.5rem;cursor:pointer;line-height:1;}
+    .drawer-content{padding:1.5rem;overflow-y:auto;flex-grow:1;}
+    .drawer-summary{background:#f4fff0;padding:1rem;border-radius:12px;margin-bottom:1.2rem;border-left:4px solid var(--green);}
+    .drawer-summary .name{font-weight:700;color:var(--green-deep);font-size:.95rem;margin-bottom:.3rem;}
+    .drawer-summary .base-price{font-size:.8rem;color:var(--muted);}
+    .drawer-content h4{font-size:.85rem;color:var(--green-deep);margin:1.5rem 0 .8rem;letter-spacing:.5px;text-transform:uppercase;}
+    .opt-item{
+      display:flex;justify-content:space-between;align-items:center;padding:.7rem 0;
+      border-bottom:1px solid #eef3e9;
+    }
+    .opt-item label{display:flex;align-items:flex-start;gap:.6rem;cursor:pointer;flex:1;}
+    .opt-item input[type="checkbox"]{margin-top:2px;width:18px;height:18px;accent-color:var(--green);}
+    .opt-item .lbl{font-size:.85rem;color:var(--text);line-height:1.35;}
+    .opt-item .lbl-sub{font-size:.7rem;color:var(--muted);}
+    .opt-item .price{font-weight:700;color:var(--green-deep);font-size:.85rem;white-space:nowrap;margin-left:.5rem;}
+    .drawer-footer{padding:1.2rem 1.5rem;background:#f4fff0;border-top:1px solid #d8e6cc;}
+    .drawer-total{display:flex;justify-content:space-between;font-size:1.15rem;font-weight:800;color:var(--green-deep);margin-bottom:.4rem;}
+    .drawer-total-split{font-size:.75rem;color:var(--green-dark);margin-bottom:1rem;}
+    .btn-drawer{
+      width:100%;background:var(--green);color:#fff;padding:.9rem;border:none;border-radius:12px;
+      font-family:inherit;font-weight:700;font-size:.95rem;cursor:pointer;
+      box-shadow:0 6px 20px rgba(51,204,0,.35);transition:all .25s;
+    }
+    .btn-drawer:hover{background:var(--green-dark);transform:translateY(-2px);}
 
-    /* FORMULAIRE */
+    .drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:1900;opacity:0;pointer-events:none;transition:opacity .3s;}
+    .drawer-backdrop.visible{opacity:1;pointer-events:auto;}
+
+    /* CART DRAWER (identique struct) */
+    .cart-summary{background:#fff;border-radius:12px;padding:1rem;margin-bottom:1rem;border:1px solid #d8e6cc;}
+    .cart-item{display:flex;gap:.7rem;padding:.6rem 0;border-bottom:1px dashed #eef3e9;font-size:.82rem;}
+    .cart-item:last-child{border-bottom:none;}
+    .cart-item-name{flex:1;color:var(--text);}
+    .cart-item-price{color:var(--green-deep);font-weight:700;white-space:nowrap;}
+    .cart-item-rm{background:none;border:none;color:#c62828;cursor:pointer;font-size:1rem;padding:0 .3rem;line-height:1;}
+    .cart-empty{text-align:center;color:var(--muted);font-size:.85rem;padding:2rem 0;}
+
+    /* FORMULAIRE (commande finale) */
+    #commande{scroll-margin-top:100px;}
     .form-block{max-width:720px;margin:0 auto;background:#fff;padding:2.5rem 2rem;border-radius:20px;box-shadow:0 8px 32px rgba(10,72,0,.08);border:1px solid #e5f0dd;}
     .form-block label{display:block;font-weight:600;color:var(--green-deep);font-size:.85rem;margin-bottom:.4rem;margin-top:1rem;}
     .form-block input,.form-block select,.form-block textarea{
       width:100%;padding:.85rem 1rem;border:1px solid #d8e6cc;border-radius:10px;
-      font-family:inherit;font-size:.95rem;color:var(--text);background:#fafffa;
-      transition:all .2s;
+      font-family:inherit;font-size:.95rem;color:var(--text);background:#fafffa;transition:all .2s;
     }
     .form-block input:focus,.form-block select:focus,.form-block textarea:focus{
       outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(51,204,0,.15);background:#fff;
@@ -210,29 +245,60 @@
       padding:1rem;border:none;border-radius:50px;font-weight:700;font-size:1rem;
       cursor:pointer;transition:all .25s;box-shadow:0 6px 20px rgba(51,204,0,.32);
     }
-    .form-block button:hover{background:var(--green-dark);transform:translateY(-2px);box-shadow:0 10px 28px rgba(51,204,0,.45);}
-    .form-block .rgpd{margin-top:1.4rem;font-size:.75rem;color:var(--muted);line-height:1.5;}
+    .form-block button:hover{background:var(--green-dark);transform:translateY(-2px);}
+    .form-block .rgpd{margin-top:1.2rem;font-size:.75rem;color:var(--muted);line-height:1.5;}
     .form-block .rgpd input{width:auto;margin-right:.4rem;}
+    .order-summary-box{background:#f4fff0;padding:1rem;border-radius:12px;border-left:4px solid var(--green);margin-bottom:1rem;font-size:.85rem;}
+    .order-summary-box strong{color:var(--green-deep);}
 
     /* FOOTER */
     footer{background:var(--dark);color:#a8c9a0;padding:3rem 2rem 1.5rem;text-align:center;font-size:.85rem;}
-    footer p{margin:.4rem 0;}
+    footer p{margin:.35rem 0;}
     footer a{color:var(--green);text-decoration:none;}
-    footer .legal{font-size:.72rem;color:#5a7a52;margin-top:1rem;}
+    footer .legal{font-size:.72rem;color:#5a7a52;margin-top:.8rem;}
+
+    /* SECTIONS INFO */
+    section.info-section{padding:4rem 2rem;background:#fff;}
+    section.info-section.alt{background:#f4fff0;}
+    .info-block{max-width:1200px;margin:0 auto;}
+    .info-title{text-align:center;font-size:1.9rem;font-weight:800;color:var(--green-deep);margin-bottom:.6rem;letter-spacing:-.02em;}
+    .info-sub{text-align:center;font-size:.95rem;color:var(--muted);max-width:640px;margin:0 auto 2.5rem;}
+
+    /* STEPS */
+    .steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.4rem;}
+    .step-card{text-align:center;padding:1.6rem 1rem;background:#fff;border-radius:16px;position:relative;border:1px solid #e5f0dd;}
+    .step-card .num{width:44px;height:44px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.15rem;margin:0 auto .9rem;box-shadow:0 4px 12px rgba(51,204,0,.28);}
+    .step-card h4{font-size:.95rem;color:var(--green-deep);margin-bottom:.4rem;font-weight:700;}
+    .step-card p{font-size:.8rem;color:var(--muted);line-height:1.5;}
+
+    /* GARANTIES */
+    .gar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem;}
+    .gar-card{background:#fff;padding:1.5rem;border-radius:14px;text-align:center;border:1px solid #d8e6cc;transition:all .25s;}
+    .gar-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(10,72,0,.1);}
+    .gar-card .icon{font-size:1.9rem;margin-bottom:.5rem;}
+    .gar-card h5{color:var(--green-deep);font-size:.9rem;margin-bottom:.4rem;font-weight:700;}
+    .gar-card p{color:var(--muted);font-size:.78rem;line-height:1.5;}
 
     /* BREADCRUMB */
-    .breadcrumb{max-width:1200px;margin:6rem auto 0;padding:0 2rem;font-size:.82rem;color:var(--muted);}
+    .breadcrumb{max-width:1200px;margin:5rem auto 0;padding:.5rem 2rem;font-size:.78rem;color:var(--muted);}
     .breadcrumb a{color:var(--green-deep);text-decoration:none;}
     .breadcrumb a:hover{color:var(--green);}
 
     /* MOBILE */
     @media(max-width:768px){
-      nav{padding:.9rem 1.2rem;}
+      nav{padding:.85rem 1.2rem;}
       .nav-links{display:none;}
-      .hero{padding:7rem 1.2rem 3rem;}
-      section{padding:3rem 1.2rem;}
-      .pay-banner{flex-direction:column;text-align:center;}
+      .cart-pill{right:1.2rem;top:12px;}
+      .hero{padding:6rem 1.2rem 2.5rem;}
+      .tabs{padding:1.5rem 1rem .5rem;top:60px;}
+      .container{padding:0 1rem;}
       .form-block .row{grid-template-columns:1fr;}
+      .options-drawer{width:100%;right:-100%;}
+      .options-drawer.open{right:0;}
+    }
+    @media(max-width:480px){
+      .hero-perks{gap:.6rem;}
+      .hero-perks span{font-size:.75rem;padding:.35rem .7rem;}
     }
   </style>
 </head>
@@ -240,9 +306,7 @@
 
 <!-- NAV -->
 <nav>
-  <a href="/" class="nav-logo">
-    <img src="/logo.png" alt="EGREENCITY'S">
-  </a>
+  <a href="/" class="nav-logo"><img src="/logo.png" alt="EGREENCITY'S"></a>
   <ul class="nav-links">
     <li><a href="/">Accueil</a></li>
     <li><a href="/pages/produits.html">Produits</a></li>
@@ -253,6 +317,11 @@
   </ul>
 </nav>
 
+<!-- CART PILL flottant -->
+<div class="cart-pill" id="cartPill" onclick="openCart()">
+  🛒 <span>Panier</span> <span class="cart-badge" id="cartBadge">0</span>
+</div>
+
 <!-- BREADCRUMB -->
 <div class="breadcrumb">
   <a href="/">Accueil</a> / <a href="/pages/produits.html">Produits</a> / Boutique WallBox
@@ -260,396 +329,484 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge"><span class="dot"></span> COMMANDE EN LIGNE — GUYANE</div>
-  <h1>Votre <em>WallBox à domicile</em> — livrée en Guyane</h1>
+  <div class="hero-badge"><span class="dot"></span> Catalogue E-TOTEM 2026 · Guyane</div>
+  <h1>Toute la gamme <em>E-TOTEM</em><br>livrée chez vous en Guyane</h1>
   <p class="hero-sub">
-    Commandez votre borne de recharge en ligne, payez en <strong style="color:var(--green);">3× ou 4× sans frais</strong>,
-    recevez-la sous 5 à 10 jours. Marque française E-TOTEM, garantie 2 ans, SAV en Guyane.
+    e-WallBox résidentielles, e-Smart 7 kW et 22 kW pour professionnels, e-Premium AC voirie publique.
+    Configurez votre borne, payez en <strong style="color:var(--green);">3× ou 4× sans frais</strong>,
+    livraison Chronopost DOM sous 5 à 10 jours.
   </p>
   <div class="hero-perks">
-    <span>✓ Livraison <strong>5-10 j</strong></span>
-    <span>✓ Paiement <strong>3× / 4×</strong> sans frais</span>
-    <span>✓ Garantie <strong>2 ans</strong></span>
-    <span>✓ SAV <strong>local Guyane</strong></span>
+    <span>🇫🇷 Fabrication <strong>France</strong></span>
+    <span>🚚 Livraison <strong>Chronopost DOM</strong></span>
+    <span>💳 Paiement <strong>3× / 4×</strong> sans frais</span>
+    <span>🛡️ Garantie <strong>2 ans</strong></span>
+    <span>📍 SAV <strong>local Guyane</strong></span>
   </div>
 </section>
 
-<!-- BANDEAU PAIEMENT -->
-<section style="padding-top:3rem;padding-bottom:0;">
-  <div class="container">
-    <div class="pay-banner">
-      <div class="icon">💳</div>
-      <div class="txt">
-        <strong>Paiement en 3× ou 4× sans frais dès 200 €</strong>
-        <p>Financement via notre partenaire agréé (Alma / Cofidis Pay). Décision instantanée, sans dossier papier. Réponse en moins de 30 secondes lors de la commande.</p>
-      </div>
-    </div>
+<!-- BANNIÈRE PAIEMENT -->
+<div class="pay-banner">
+  <div class="icon">💳</div>
+  <div class="txt">
+    <strong>Paiement en 3× ou 4× sans frais dès 200 €</strong>
+    <p>Financement instantané via notre partenaire agréé Alma / Cofidis Pay. Décision en 30 s, sans dossier papier.</p>
   </div>
-</section>
-
-<!-- CATALOGUE -->
-<section>
-  <div class="container">
-    <h2 class="section-title">3 modèles pour tous les usages</h2>
-    <p class="section-sub">Toutes nos bornes sont conformes IRVE (Infrastructures de Recharge de Véhicules Électriques), homologuées CE, prêtes à installer.</p>
-
-    <div class="products-grid">
-
-      <!-- STARTER -->
-      <div class="product-card">
-        <div class="product-icon">🔌</div>
-        <h3 class="product-name">WallBox Résidentielle</h3>
-        <p class="product-spec">1 point de charge · 7 kW AC · monophasé 32A</p>
-        <div class="product-price">
-          <span class="price-main">999 €</span>
-          <span class="price-unit">TTC</span>
-        </div>
-        <div class="price-split">💳 <span class="x">3×</span> 333 € · ou <span class="x">4×</span> 250 € sans frais</div>
-        <ul class="product-feats">
-          <li>Recharge complète en 6-8h (VE standard)</li>
-          <li>Câble Type 2 attaché 5m</li>
-          <li>Installation murale intérieur / abri</li>
-          <li>Application mobile connectée Wi-Fi</li>
-          <li>Contrôle d'accès par badge RFID</li>
-          <li>Compteur d'énergie intégré</li>
-          <li>Idéale garage individuel</li>
-        </ul>
-        <a href="#commande?model=starter" class="product-cta">Commander →</a>
-      </div>
-
-      <!-- STANDARD - featured -->
-      <div class="product-card featured">
-        <div class="product-icon">⚡</div>
-        <h3 class="product-name">WallBox Confort</h3>
-        <p class="product-spec">1 point de charge · 22 kW AC · triphasé 32A</p>
-        <div class="product-price">
-          <span class="price-main">1 990 €</span>
-          <span class="price-unit">TTC</span>
-        </div>
-        <div class="price-split">💳 <span class="x">3×</span> 663 € · ou <span class="x">4×</span> 498 € sans frais</div>
-        <ul class="product-feats">
-          <li>Recharge complète en 1h à 2h (VE 22 kW)</li>
-          <li>Câble Type 2 attaché 5m</li>
-          <li>Boîtier robuste IP54 intérieur / extérieur</li>
-          <li>Application mobile + supervision OCPP</li>
-          <li>Compatible délestage dynamique (protège votre installation)</li>
-          <li>Éligible ADVENIR (jusqu'à 960 € de subvention)</li>
-          <li>Best-seller — recommandé maisons individuelles + PME</li>
-        </ul>
-        <a href="#commande?model=standard" class="product-cta">Commander →</a>
-      </div>
-
-      <!-- PREMIUM -->
-      <div class="product-card">
-        <div class="product-icon">🚗</div>
-        <h3 class="product-name">WallBox Premium</h3>
-        <p class="product-spec">2 points de charge · 2×22 kW AC · triphasé</p>
-        <div class="product-price">
-          <span class="price-main">3 490 €</span>
-          <span class="price-unit">TTC</span>
-        </div>
-        <div class="price-split">💳 <span class="x">3×</span> 1 163 € · ou <span class="x">4×</span> 873 € sans frais</div>
-        <ul class="product-feats">
-          <li>2 véhicules simultanément (44 kW total)</li>
-          <li>2 câbles Type 2 attachés 5m</li>
-          <li>Design premium sur pied ou mural</li>
-          <li>Application mobile utilisateurs</li>
-          <li>Écran couleur 10 pouces (option)</li>
-          <li>Éligible ADVENIR renforcé (couple pro)</li>
-          <li>Idéale copropriété, entreprise, gîte, hôtel</li>
-        </ul>
-        <a href="#commande?model=premium" class="product-cta premium">Commander →</a>
-      </div>
-
-    </div>
-
-    <p style="text-align:center;margin-top:2rem;font-size:.85rem;color:var(--muted);">
-      TVA Guyane 8,5 % incluse · Livraison offerte dès 999 € · Prix indicatifs — devis personnalisé pour commande ferme
-    </p>
+  <div class="pay-badges">
+    <span>3× SANS FRAIS</span>
+    <span>4× SANS FRAIS</span>
   </div>
-</section>
+</div>
 
-<!-- COMMENT CA MARCHE -->
-<section style="background:#fff;">
-  <div class="container">
-    <h2 class="section-title">Comment ça marche ?</h2>
-    <p class="section-sub">De la commande à la mise en service, 5 étapes simples avec accompagnement à chaque étape.</p>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <h3>Commande en ligne</h3>
-        <p>Choisissez votre modèle, remplissez le formulaire de commande. 2 minutes.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <h3>Paiement 3× / 4×</h3>
-        <p>Sélectionnez votre mode : CB, virement, ou paiement échelonné sans frais.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <h3>Livraison 5-10 j</h3>
-        <p>Expédition directe depuis notre partenaire E-TOTEM vers la Guyane. Suivi colis en temps réel.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <h3>Installation (option)</h3>
-        <p>Nos techniciens IRVE Qualifelec l'installent chez vous. Devis gratuit sur demande.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">5</div>
-        <h3>Mise en service</h3>
-        <p>Activation, paramétrage, formation à l'application. Garantie 2 ans + SAV local.</p>
-      </div>
+<!-- TABS FILTRE -->
+<div class="tabs">
+  <div class="tabs-wrap">
+    <button class="tab-btn active" data-filter="all">Tous <span class="count" id="cnt-all">0</span></button>
+    <button class="tab-btn" data-filter="wallbox">🏠 e-WallBox <span class="count" id="cnt-wallbox">0</span></button>
+    <button class="tab-btn" data-filter="smart7">⚡ e-Smart 7 kW <span class="count" id="cnt-smart7">0</span></button>
+    <button class="tab-btn" data-filter="smart22">⚡ e-Smart 22 kW <span class="count" id="cnt-smart22">0</span></button>
+    <button class="tab-btn" data-filter="premium">🏛️ e-Premium AC <span class="count" id="cnt-premium">0</span></button>
+  </div>
+</div>
+
+<!-- CATALOGUE (rendu dynamique) -->
+<main class="container" id="catalog-root" style="padding-top:1rem;padding-bottom:3rem;">
+  <!-- Injection dynamique via JS -->
+</main>
+
+<!-- COMMENT ÇA MARCHE -->
+<section class="info-section alt">
+  <div class="info-block">
+    <h2 class="info-title">Comment ça marche ?</h2>
+    <p class="info-sub">De la commande à la mise en service, un parcours en 5 étapes.</p>
+    <div class="steps-grid">
+      <div class="step-card"><div class="num">1</div><h4>Configurer</h4><p>Choisissez votre borne + les options qui vous conviennent (écran, TPE, modem 4G…).</p></div>
+      <div class="step-card"><div class="num">2</div><h4>Payer 3× / 4×</h4><p>Sélectionnez CB, virement ou paiement échelonné sans frais. Réponse en 30 s.</p></div>
+      <div class="step-card"><div class="num">3</div><h4>Livraison DOM</h4><p>Expédition Chronopost DROM sous 5 à 10 jours, suivi en temps réel.</p></div>
+      <div class="step-card"><div class="num">4</div><h4>Installation</h4><p>Option : nos techniciens IRVE Qualifelec l'installent chez vous (devis).</p></div>
+      <div class="step-card"><div class="num">5</div><h4>Mise en service</h4><p>Activation, paramétrage, formation à l'appli mobile. Garantie 2 ans + SAV local.</p></div>
     </div>
   </div>
 </section>
 
 <!-- GARANTIES -->
-<section class="garanties">
-  <div class="container">
-    <h2 class="section-title">Vos garanties EGREENCITY'S</h2>
-    <p class="section-sub">Un achat serein : nous sommes présents à chaque étape, avant, pendant et après.</p>
-    <div class="garanties-grid">
-      <div class="garantie">
-        <div class="icon">🛡️</div>
-        <h4>Garantie constructeur 2 ans</h4>
-        <p>Matériel E-TOTEM garanti 24 mois pièces + main d'œuvre — remplacement rapide en cas de défaut.</p>
-      </div>
-      <div class="garantie">
-        <div class="icon">🇫🇷</div>
-        <h4>Fabrication française</h4>
-        <p>Bornes conçues et assemblées à Aytré (17), homologuées CE, conformes normes IRVE.</p>
-      </div>
-      <div class="garantie">
-        <div class="icon">📍</div>
-        <h4>SAV local Guyane</h4>
-        <p>Équipe technique IRVE Qualifelec à Macouria. Intervention sur site sous 5 jours ouvrés.</p>
-      </div>
-      <div class="garantie">
-        <div class="icon">💰</div>
-        <h4>Éligible ADVENIR</h4>
-        <p>Jusqu'à 960 € de subvention pour les particuliers en copropriété. Nous vous aidons à monter le dossier.</p>
-      </div>
-      <div class="garantie">
-        <div class="icon">🔒</div>
-        <h4>Paiement 100% sécurisé</h4>
-        <p>Transactions cryptées SSL, partenaires bancaires certifiés (Alma, Cofidis Pay, Stripe).</p>
-      </div>
-      <div class="garantie">
-        <div class="icon">📞</div>
-        <h4>Assistance 5j/7</h4>
-        <p>Hotline technique du lundi au vendredi, 8h-18h. Support par téléphone, email, WhatsApp.</p>
-      </div>
+<section class="info-section">
+  <div class="info-block">
+    <h2 class="info-title">Vos garanties EGREENCITY'S</h2>
+    <p class="info-sub">Un achat serein : nous vous accompagnons de la commande au SAV.</p>
+    <div class="gar-grid">
+      <div class="gar-card"><div class="icon">🛡️</div><h5>Garantie constructeur 2 ans</h5><p>Matériel E-TOTEM garanti 24 mois pièces + main d'œuvre.</p></div>
+      <div class="gar-card"><div class="icon">🇫🇷</div><h5>Fabrication française</h5><p>Bornes conçues à Saint-Étienne (42), homologuées CE, IRVE.</p></div>
+      <div class="gar-card"><div class="icon">📍</div><h5>SAV local Guyane</h5><p>Équipe IRVE Qualifelec à Macouria, intervention 5 j ouvrés.</p></div>
+      <div class="gar-card"><div class="icon">💰</div><h5>Éligible ADVENIR</h5><p>Jusqu'à 2 700 € de subvention pour entreprises. On monte le dossier.</p></div>
+      <div class="gar-card"><div class="icon">🔒</div><h5>Paiement sécurisé</h5><p>SSL, PCI-DSS, partenaires Alma / Cofidis Pay / Stripe.</p></div>
+      <div class="gar-card"><div class="icon">📞</div><h5>Assistance 5j/7</h5><p>Hotline lundi-vendredi 8h-18h, par téléphone, email, WhatsApp.</p></div>
     </div>
   </div>
 </section>
 
-<!-- FAQ -->
-<section>
-  <div class="container">
-    <h2 class="section-title">Questions fréquentes</h2>
-    <p class="section-sub">Tout ce que vous devez savoir sur nos WallBox, le paiement en 3×/4× et la livraison en Guyane.</p>
-    <div class="faq">
-
-      <details>
-        <summary>Comment fonctionne le paiement en 3× ou 4× sans frais ?</summary>
-        <p>Au moment de la commande, vous choisissez « Paiement en 3× » ou « Paiement en 4× ». Notre partenaire (Alma ou Cofidis Pay) analyse votre demande en moins de 30 secondes et vous confirme l'accord immédiatement. Le premier prélèvement se fait à l'expédition de la borne, les suivants aux mêmes dates chaque mois. Aucun frais pour vous, aucun intérêt. Réservé aux commandes de 200 € à 3 000 € pour le 3× et jusqu'à 4 000 € pour le 4× (variable selon partenaire).</p>
-      </details>
-
-      <details>
-        <summary>Quels sont les délais de livraison en Guyane ?</summary>
-        <p>La livraison se fait en 5 à 10 jours ouvrés depuis nos entrepôts partenaires en métropole vers votre adresse en Guyane. Nous utilisons un transporteur spécialisé DROM (Colissimo Outre-mer ou DHL Express selon le poids). Vous recevrez un numéro de suivi dès l'expédition. Toutes les communes du littoral sont livrées (Cayenne, Kourou, Saint-Laurent, Macouria, etc.). Livraison offerte dès 999 € d'achat.</p>
-      </details>
-
-      <details>
-        <summary>L'installation est-elle incluse dans le prix ?</summary>
-        <p>Non, le prix affiché correspond uniquement à la borne. L'installation est optionnelle et sur devis. Nos techniciens IRVE Qualifelec basés en Guyane peuvent poser votre borne : compter entre 500 € et 1 500 € TTC selon la complexité (tableau électrique proche ou éloigné, tranchée à creuser, etc.). Vous pouvez aussi faire installer par votre électricien habituel (obligatoirement IRVE agréé pour l'éligibilité ADVENIR).</p>
-      </details>
-
-      <details>
-        <summary>Ma borne est-elle éligible à la subvention ADVENIR ?</summary>
-        <p>Oui, toutes nos bornes sont éligibles au programme ADVENIR sous conditions : borne de 3,7 à 22 kW, installation par électricien IRVE agréé, occupation résidentielle (particuliers en copropriété) ou entreprise. La subvention peut aller jusqu'à 960 € TTC pour un particulier en copropriété et jusqu'à 2 700 € pour une entreprise. Nous vous accompagnons dans le montage du dossier ADVENIR sans frais supplémentaire.</p>
-      </details>
-
-      <details>
-        <summary>Que se passe-t-il en cas de panne ?</summary>
-        <p>Les bornes E-TOTEM sont garanties 2 ans constructeur (pièces + main d'œuvre). En cas de panne, contactez notre SAV local : nous diagnostiquons à distance en 24-48h, puis intervenons sur site sous 5 jours ouvrés maximum. Si la panne est couverte par la garantie, aucun frais pour vous. Après la période de garantie, un contrat de maintenance annuel est proposé à partir de 60 €/an.</p>
-      </details>
-
-      <details>
-        <summary>Puis-je retourner la borne si elle ne me convient pas ?</summary>
-        <p>Oui, vous disposez d'un droit de rétractation de 14 jours à compter de la réception (article L.221-18 du Code de la consommation). Retour gratuit dans son emballage d'origine, non installée, non modifiée. Remboursement sous 14 jours après réception du retour. Ce droit s'exerce uniquement pour les commandes B2C (particuliers) — les commandes professionnelles ne sont pas concernées.</p>
-      </details>
-
-      <details>
-        <summary>Puis-je payer par virement ou carte bancaire classique ?</summary>
-        <p>Bien sûr. Nous acceptons : carte bancaire (Visa, Mastercard, CB), virement SEPA (sous 48h pour lancement de la commande), PayPal, et paiement échelonné 3× ou 4× sans frais. Pour les commandes professionnelles, nous acceptons aussi le paiement par chèque (à 30 jours fin de mois) sur validation dossier.</p>
-      </details>
-
-      <details>
-        <summary>Livrez-vous en dehors de la Guyane ?</summary>
-        <p>Actuellement, notre boutique en ligne est réservée à la Guyane française. Nous prévoyons une extension aux Antilles (Martinique, Guadeloupe) courant 2027. Si vous êtes en métropole ou dans un autre DOM, contactez-nous par email : nous pourrons vous rediriger vers un installateur E-TOTEM local.</p>
-      </details>
-
-    </div>
-  </div>
-</section>
-
-<!-- FORMULAIRE COMMANDE -->
-<section id="commande" style="background:#f4fff0;">
-  <div class="container">
-    <h2 class="section-title">Passer commande</h2>
-    <p class="section-sub">Remplissez ce formulaire, nous vous rappelons sous 24h avec le devis final et le lien de paiement 3× / 4× sécurisé.</p>
+<!-- FORMULAIRE COMMANDE FINALE -->
+<section class="info-section alt" id="commande">
+  <div class="info-block">
+    <h2 class="info-title">Finaliser votre commande</h2>
+    <p class="info-sub">Remplissez ce formulaire — nous vous rappelons sous 24 h avec le devis final + lien de paiement.</p>
 
     <div class="form-block">
+      <div id="order-summary" class="order-summary-box" style="display:none;"></div>
+
       <form action="https://formsubmit.co/egreencitys@gmail.com" method="POST">
-        <input type="hidden" name="_subject" value="🛒 Nouvelle commande WallBox — via boutique en ligne">
+        <input type="hidden" name="_subject" value="🛒 Nouvelle commande boutique WallBox">
         <input type="hidden" name="_captcha" value="true">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_next" value="https://egreencitys.com/pages/boutique-wallbox.html?ok=1">
+        <input type="hidden" name="commande_detail" id="hiddenCommande" value="">
+        <input type="hidden" name="commande_total_ttc" id="hiddenTotal" value="">
 
         <div class="row">
-          <div>
-            <label for="prenom">Prénom *</label>
-            <input type="text" id="prenom" name="prenom" required>
-          </div>
-          <div>
-            <label for="nom">Nom *</label>
-            <input type="text" id="nom" name="nom" required>
-          </div>
+          <div><label for="prenom">Prénom *</label><input type="text" id="prenom" name="prenom" required></div>
+          <div><label for="nom">Nom *</label><input type="text" id="nom" name="nom" required></div>
         </div>
-
         <div class="row">
-          <div>
-            <label for="email">Email *</label>
-            <input type="email" id="email" name="email" required>
-          </div>
-          <div>
-            <label for="tel">Téléphone *</label>
-            <input type="tel" id="tel" name="telephone" placeholder="+594 6 XX XX XX XX" required>
-          </div>
+          <div><label for="email">Email *</label><input type="email" id="email" name="email" required></div>
+          <div><label for="tel">Téléphone *</label><input type="tel" id="tel" name="telephone" placeholder="+594 6 XX XX XX XX" required></div>
         </div>
 
-        <label for="commune">Commune de livraison *</label>
-        <select id="commune" name="commune" required>
-          <option value="">— Sélectionnez —</option>
-          <option>Cayenne</option>
-          <option>Matoury</option>
-          <option>Rémire-Montjoly</option>
-          <option>Macouria</option>
-          <option>Kourou</option>
-          <option>Saint-Laurent-du-Maroni</option>
-          <option>Iracoubo</option>
-          <option>Mana</option>
-          <option>Autre commune de Guyane</option>
-        </select>
-
-        <label for="modele">Modèle souhaité *</label>
-        <select id="modele" name="modele" required>
-          <option value="">— Choisissez votre WallBox —</option>
-          <option>WallBox Résidentielle 7 kW — 999 € TTC</option>
-          <option>WallBox Confort 22 kW — 1 990 € TTC</option>
-          <option>WallBox Premium 2×22 kW — 3 490 € TTC</option>
-          <option>Je ne sais pas — conseillez-moi</option>
-        </select>
+        <label for="adresse">Adresse de livraison *</label>
+        <input type="text" id="adresse" name="adresse_livraison" placeholder="N° et rue" required>
+        <div class="row">
+          <div><label for="cp">Code postal *</label><input type="text" id="cp" name="code_postal" placeholder="97300" required></div>
+          <div>
+            <label for="commune">Commune *</label>
+            <select id="commune" name="commune" required>
+              <option value="">— Sélectionnez —</option>
+              <option>Cayenne</option><option>Matoury</option><option>Rémire-Montjoly</option>
+              <option>Macouria</option><option>Kourou</option>
+              <option>Saint-Laurent-du-Maroni</option><option>Iracoubo</option><option>Mana</option>
+              <option>Autre commune de Guyane</option>
+            </select>
+          </div>
+        </div>
 
         <label for="paiement">Mode de paiement préféré *</label>
         <select id="paiement" name="paiement" required>
           <option value="">— Choisissez —</option>
           <option>Comptant (CB / virement)</option>
-          <option>Paiement en 3× sans frais</option>
-          <option>Paiement en 4× sans frais</option>
-          <option>Devis pour financement ADVENIR</option>
+          <option>Paiement en 3× sans frais (Alma)</option>
+          <option>Paiement en 4× sans frais (Alma)</option>
+          <option>Devis financement (ADVENIR / crédit-bail)</option>
         </select>
 
-        <label for="installation">Souhaitez-vous l'installation par nos techniciens ?</label>
+        <label for="installation">Installation par nos techniciens IRVE ?</label>
         <select id="installation" name="installation">
           <option>Oui, devis d'installation svp</option>
           <option>Non, j'ai déjà mon installateur</option>
           <option>À voir plus tard</option>
         </select>
 
-        <label for="message">Message ou question complémentaire (optionnel)</label>
-        <textarea id="message" name="message" rows="3" placeholder="Précisions sur votre projet, type de véhicule, contraintes du site..."></textarea>
+        <label for="message">Précisions complémentaires (optionnel)</label>
+        <textarea id="message" name="message" rows="3" placeholder="Type de véhicule, contraintes du site, questions…"></textarea>
 
         <label class="rgpd">
           <input type="checkbox" name="rgpd" required>
-          J'accepte que mes données (nom, prénom, email, téléphone, commune) soient traitées par EGREENCITY'S dans le seul but de traiter ma commande. Les données sont conservées 5 ans (obligations comptables). Conformément au RGPD, je dispose d'un droit d'accès, de rectification et d'effacement via egreencitys@gmail.com.
+          J'accepte que mes données (nom, prénom, email, téléphone, adresse) soient traitées par EGREENCITY'S pour ma commande. Conservation 5 ans (obligations comptables). Droit d'accès et d'effacement via egreencitys@gmail.com (RGPD).
         </label>
 
-        <button type="submit">Envoyer ma demande de commande →</button>
-
-        <p class="rgpd" style="margin-top:1rem;text-align:center;">
-          🔒 Vos données sont envoyées de manière sécurisée · Vous recevrez un accusé de réception immédiat
-        </p>
+        <button type="submit">Envoyer ma commande →</button>
+        <p class="rgpd" style="margin-top:1rem;text-align:center;">🔒 Envoi sécurisé · Accusé de réception immédiat · Rappel sous 24 h</p>
       </form>
     </div>
   </div>
 </section>
 
-<!-- CTA FINAL -->
-<section>
-  <div class="order-cta">
-    <h2>Une question avant de commander ?</h2>
-    <p>Notre équipe est disponible du lundi au vendredi, 8h-18h. Appelez-nous pour un conseil personnalisé — sans engagement.</p>
-    <a href="tel:+33651141118" class="cta-btn">📞 +33 6 51 14 11 18</a>
+<!-- DRAWER OPTIONS -->
+<div class="drawer-backdrop" id="backdrop" onclick="closeAllDrawers()"></div>
+
+<div class="options-drawer" id="optDrawer">
+  <div class="drawer-head">
+    <h3>⚙️ Options & configuration</h3>
+    <button onclick="closeAllDrawers()" aria-label="Fermer">×</button>
   </div>
-</section>
+  <div class="drawer-content" id="optContent"></div>
+  <div class="drawer-footer">
+    <div class="drawer-total"><span>Total TTC</span><span id="optTotal">0 €</span></div>
+    <div class="drawer-total-split" id="optSplit"></div>
+    <button class="btn-drawer" onclick="addConfiguredToCart()">Ajouter au panier</button>
+  </div>
+</div>
+
+<!-- DRAWER PANIER -->
+<div class="options-drawer" id="cartDrawer">
+  <div class="drawer-head">
+    <h3>🛒 Mon panier</h3>
+    <button onclick="closeAllDrawers()" aria-label="Fermer">×</button>
+  </div>
+  <div class="drawer-content" id="cartContent"></div>
+  <div class="drawer-footer">
+    <div class="drawer-total"><span>Total TTC</span><span id="cartTotal">0 €</span></div>
+    <div class="drawer-total-split" id="cartSplit"></div>
+    <button class="btn-drawer" onclick="checkoutFromCart()">Finaliser la commande →</button>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer>
-  <p><strong style="color:#fff;">EGREENCITY'S</strong> — Bornes de recharge électrique en Guyane</p>
+  <p><strong style="color:#fff;">EGREENCITY'S</strong> — Distributeur agréé E-TOTEM en Guyane</p>
   <p>1 rue Anangosi, Résidence La Rougerie — 97355 MACOURIA — Guyane française</p>
   <p>Tél : +33 6 51 14 11 18 | <a href="mailto:egreencitys@gmail.com">egreencitys@gmail.com</a> | <a href="https://egreencitys.com">egreencitys.com</a></p>
   <p><a href="/pages/legal/mentions-legales.html">Mentions légales</a> · <a href="/pages/legal/cgv.html">CGV</a> · <a href="/pages/faq.html">FAQ</a></p>
-  <p class="legal">SAS au capital de 250 EUR — RCS Cayenne 878 682 854 — SIRET 878 682 854 00019</p>
+  <p class="legal">SAS au capital de 250 € — RCS Cayenne 878 682 854</p>
 </footer>
 
-<script>
-// NAV scrolled state
-var nav = document.querySelector('nav');
-window.addEventListener('scroll', function(){
-  if (window.scrollY > 30) nav.classList.add('scrolled'); else nav.classList.remove('scrolled');
-}, {passive:true});
+<!-- CATALOG DATA -->
+<script src="/assets/js/catalog.js?v=1"></script>
 
-// Pré-remplissage modèle depuis lien direct #commande?model=xxx
-(function(){
-  var hash = location.hash;
-  if (hash && hash.indexOf('model=') > -1) {
-    var m = hash.split('model=')[1];
-    var sel = document.getElementById('modele');
-    if (sel) {
-      var map = {starter:'WallBox Résidentielle', standard:'WallBox Confort', premium:'WallBox Premium'};
-      var label = map[m];
-      if (label) {
-        Array.from(sel.options).forEach(function(o){
-          if (o.text.indexOf(label) === 0) sel.value = o.value || o.text;
-        });
-      }
+<!-- LOGIC -->
+<script>
+(function () {
+  'use strict';
+
+  var cart = JSON.parse(sessionStorage.getItem('egc_cart') || '[]');
+  var configuring = null; // produit en cours de config
+
+  // ---- RENDER catalogue -------------------------------------------
+  function renderCatalog(filter) {
+    var root = document.getElementById('catalog-root');
+    root.innerHTML = '';
+    var totalCount = 0;
+
+    Object.keys(window.CATALOG).forEach(function (key) {
+      if (filter !== 'all' && filter !== key) return;
+      var gamme = window.CATALOG[key];
+      var block = document.createElement('section');
+      block.className = 'gamme-block';
+      block.id = 'gamme-' + key;
+
+      block.innerHTML = ''
+        + '<div class="gamme-header">'
+        +   '<span class="icon">' + gamme.icon + '</span>'
+        +   '<h2>' + gamme.title + '</h2>'
+        +   '<div class="sub">' + gamme.subtitle + '</div>'
+        +   '<p>' + gamme.description + '</p>'
+        + '</div>'
+        + '<div class="products-grid" id="grid-' + key + '"></div>';
+
+      root.appendChild(block);
+      var grid = document.getElementById('grid-' + key);
+
+      gamme.products.forEach(function (p, idx) {
+        totalCount++;
+        var priceTTC = window.priceTTC(p.ht);
+        var priceSplit3 = Math.ceil(priceTTC / 3);
+        var priceSplit4 = Math.ceil(priceTTC / 4);
+        var featured = idx === 1 || p.tag ? true : false;
+
+        var card = document.createElement('article');
+        card.className = 'product-card' + (featured ? ' featured' : '');
+        card.dataset.gamme = key;
+        card.dataset.id = p.id;
+
+        var tagHtml = p.tag ? '<div class="tag">' + p.tag + '</div>' : '';
+        var specsHtml = p.specs.slice(0, 5).map(function (s) { return '<li>' + s + '</li>'; }).join('');
+
+        card.innerHTML = ''
+          + tagHtml
+          + '<div class="product-img"><img src="/assets/img/products/' + p.image + '" alt="' + p.name + '" loading="lazy"></div>'
+          + '<div class="product-body">'
+          +   '<h3>' + p.name + '</h3>'
+          +   '<div class="product-meta">'
+          +     '<span>' + p.power + '</span>'
+          +     '<span>' + p.format + '</span>'
+          +     '<span>' + p.pdc + ' PDC</span>'
+          +   '</div>'
+          +   '<div class="product-price">'
+          +     '<span class="price-main">' + window.formatPrice(priceTTC) + '</span>'
+          +     '<span class="price-unit">TTC</span>'
+          +   '</div>'
+          +   '<div class="price-split">💳 <span class="x">3×</span> ' + window.formatPrice(priceSplit3)
+          +     ' · <span class="x">4×</span> ' + window.formatPrice(priceSplit4) + ' sans frais</div>'
+          +   '<ul class="product-specs">' + specsHtml + '</ul>'
+          +   '<div class="product-actions">'
+          +     '<button class="btn-add" onclick="openConfigurator(\'' + key + '\',\'' + p.id + '\')">Configurer & commander</button>'
+          +   '</div>'
+          + '</div>';
+
+        grid.appendChild(card);
+      });
+    });
+
+    document.getElementById('cnt-all').textContent = getTotalProductCount();
+    Object.keys(window.CATALOG).forEach(function (k) {
+      var el = document.getElementById('cnt-' + k);
+      if (el) el.textContent = window.CATALOG[k].products.length;
+    });
+  }
+
+  function getTotalProductCount() {
+    return Object.values(window.CATALOG).reduce(function (n, g) { return n + g.products.length; }, 0);
+  }
+
+  // ---- CONFIGURATEUR (drawer options) -----------------------------
+  window.openConfigurator = function (gammeKey, productId) {
+    var gamme = window.CATALOG[gammeKey];
+    var product = gamme.products.find(function (p) { return p.id === productId; });
+    if (!product) return;
+
+    configuring = { gammeKey: gammeKey, product: product, options: [] };
+
+    var content = document.getElementById('optContent');
+    var basePriceTTC = window.priceTTC(product.ht);
+    content.innerHTML = ''
+      + '<div class="drawer-summary">'
+      +   '<div class="name">' + product.name + '</div>'
+      +   '<div class="base-price">Prix borne : <strong>' + window.formatPrice(basePriceTTC) + ' TTC</strong></div>'
+      + '</div>'
+      + '<h4>Ajouter des options</h4>'
+      + '<div id="opt-list"></div>';
+
+    var list = document.getElementById('opt-list');
+    var availableOpts = window.CATALOG_OPTIONS.filter(function (o) {
+      return o.gammes.indexOf(gammeKey) !== -1;
+    });
+
+    if (availableOpts.length === 0) {
+      list.innerHTML = '<p style="color:var(--muted);font-size:.85rem;text-align:center;padding:1rem 0;">Aucune option disponible pour ce modèle.</p>';
+    } else {
+      availableOpts.forEach(function (opt) {
+        var optTTC = window.priceTTC(opt.ht);
+        var row = document.createElement('div');
+        row.className = 'opt-item';
+        row.innerHTML = ''
+          + '<label>'
+          +   '<input type="checkbox" data-opt-id="' + opt.id + '" data-opt-ht="' + opt.ht + '" onchange="updateConfigTotal()">'
+          +   '<span><div class="lbl">' + opt.name + '</div><div class="lbl-sub">Option E-TOTEM</div></span>'
+          + '</label>'
+          + '<span class="price">+' + window.formatPrice(optTTC) + '</span>';
+        list.appendChild(row);
+      });
     }
+
+    updateConfigTotal();
+    openDrawer('opt');
+  };
+
+  window.updateConfigTotal = function () {
+    if (!configuring) return;
+    var total = window.priceTTC(configuring.product.ht);
+    var selected = [];
+    document.querySelectorAll('#opt-list input[type="checkbox"]:checked').forEach(function (cb) {
+      var ht = parseFloat(cb.dataset.optHt);
+      total += window.priceTTC(ht);
+      selected.push({ id: cb.dataset.optId, ht: ht });
+    });
+    configuring.options = selected;
+    configuring.totalTTC = total;
+    document.getElementById('optTotal').textContent = window.formatPrice(total);
+    document.getElementById('optSplit').innerHTML = '💳 en 3× : <strong>' + window.formatPrice(Math.ceil(total / 3))
+      + '</strong> · ou 4× : <strong>' + window.formatPrice(Math.ceil(total / 4)) + '</strong> sans frais';
+  };
+
+  // ---- PANIER -----------------------------------------------------
+  window.addConfiguredToCart = function () {
+    if (!configuring) return;
+    var opts = configuring.options.map(function (o) {
+      var full = window.CATALOG_OPTIONS.find(function (x) { return x.id === o.id; });
+      return { id: o.id, name: full ? full.name : o.id, ht: o.ht };
+    });
+    cart.push({
+      productId: configuring.product.id,
+      name: configuring.product.name,
+      basePriceTTC: window.priceTTC(configuring.product.ht),
+      options: opts,
+      totalTTC: configuring.totalTTC
+    });
+    sessionStorage.setItem('egc_cart', JSON.stringify(cart));
+    updateCartBadge();
+    closeAllDrawers();
+    showToast('✓ Ajouté au panier');
+  };
+
+  window.openCart = function () {
+    var content = document.getElementById('cartContent');
+    if (cart.length === 0) {
+      content.innerHTML = '<div class="cart-empty">🛒<br>Votre panier est vide<br><small>Configurez une borne pour commencer</small></div>';
+      document.getElementById('cartTotal').textContent = '0 €';
+      document.getElementById('cartSplit').textContent = '';
+    } else {
+      var html = '';
+      var total = 0;
+      cart.forEach(function (item, i) {
+        var optNames = item.options.map(function (o) { return o.name; }).join(', ');
+        html += ''
+          + '<div class="cart-summary">'
+          +   '<div style="display:flex;justify-content:space-between;gap:.5rem;">'
+          +     '<div style="flex:1;">'
+          +       '<div style="font-weight:700;color:var(--green-deep);font-size:.9rem;margin-bottom:.2rem;">' + item.name + '</div>'
+          +       (optNames ? '<div style="font-size:.75rem;color:var(--muted);">' + optNames + '</div>' : '')
+          +     '</div>'
+          +     '<div style="text-align:right;">'
+          +       '<div style="font-weight:800;color:var(--green-deep);">' + window.formatPrice(item.totalTTC) + '</div>'
+          +       '<button class="cart-item-rm" onclick="removeFromCart(' + i + ')" title="Retirer">🗑️</button>'
+          +     '</div>'
+          +   '</div>'
+          + '</div>';
+        total += item.totalTTC;
+      });
+      content.innerHTML = html;
+      document.getElementById('cartTotal').textContent = window.formatPrice(total);
+      document.getElementById('cartSplit').innerHTML = '💳 en 3× : <strong>' + window.formatPrice(Math.ceil(total / 3))
+        + '</strong> · ou 4× : <strong>' + window.formatPrice(Math.ceil(total / 4)) + '</strong> sans frais';
+    }
+    openDrawer('cart');
+  };
+
+  window.removeFromCart = function (i) {
+    cart.splice(i, 1);
+    sessionStorage.setItem('egc_cart', JSON.stringify(cart));
+    updateCartBadge();
+    openCart(); // refresh view
+  };
+
+  window.checkoutFromCart = function () {
+    if (cart.length === 0) return;
+    var lines = [];
+    var total = 0;
+    cart.forEach(function (item) {
+      var opts = item.options.map(function (o) { return o.name; }).join('; ');
+      lines.push(item.name + (opts ? ' + ' + opts : '') + ' = ' + window.formatPrice(item.totalTTC));
+      total += item.totalTTC;
+    });
+    document.getElementById('hiddenCommande').value = lines.join(' | ');
+    document.getElementById('hiddenTotal').value = total.toString();
+
+    var box = document.getElementById('order-summary');
+    box.style.display = 'block';
+    box.innerHTML = '<strong>Votre commande :</strong><br>' + lines.join('<br>') + '<br><br><strong>Total : ' + window.formatPrice(total) + ' TTC</strong>';
+
+    closeAllDrawers();
+    document.getElementById('commande').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  function updateCartBadge() {
+    document.getElementById('cartBadge').textContent = cart.length;
   }
-  // Message succès après envoi
+
+  // ---- DRAWERS ----------------------------------------------------
+  function openDrawer(name) {
+    document.getElementById('optDrawer').classList.remove('open');
+    document.getElementById('cartDrawer').classList.remove('open');
+    document.getElementById(name + 'Drawer').classList.add('open');
+    document.getElementById('backdrop').classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  }
+  window.closeAllDrawers = function () {
+    document.getElementById('optDrawer').classList.remove('open');
+    document.getElementById('cartDrawer').classList.remove('open');
+    document.getElementById('backdrop').classList.remove('visible');
+    document.body.style.overflow = '';
+  };
+
+  // ---- TOAST ------------------------------------------------------
+  function showToast(msg) {
+    var t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--green-deep);color:#fff;padding:.9rem 1.6rem;border-radius:50px;box-shadow:0 8px 24px rgba(10,72,0,.35);z-index:3000;font-weight:600;font-size:.9rem;animation:toastIn .3s ease-out;';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function () { t.style.opacity = '0'; t.style.transition = 'opacity .4s'; setTimeout(function () { t.remove(); }, 400); }, 2200);
+  }
+
+  // ---- TABS FILTRE ------------------------------------------------
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      renderCatalog(btn.dataset.filter);
+    });
+  });
+
+  // ---- NAV scrolled ----------------------------------------------
+  var nav = document.querySelector('nav');
+  window.addEventListener('scroll', function () {
+    if (window.scrollY > 30) nav.classList.add('scrolled'); else nav.classList.remove('scrolled');
+  }, { passive: true });
+
+  // ---- Toast success post-envoi -----------------------------------
   if (location.search.indexOf('ok=1') > -1) {
-    var b = document.createElement('div');
-    b.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#0a4800;color:#fff;padding:1.2rem 2rem;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:2000;font-weight:600;';
-    b.innerHTML = '✓ Commande reçue ! Nous vous recontactons sous 24 h.';
-    document.body.appendChild(b);
-    setTimeout(function(){b.style.opacity='0';b.style.transition='opacity .5s';setTimeout(function(){b.remove()}, 500)}, 5000);
+    sessionStorage.removeItem('egc_cart');
+    cart = [];
+    showToast('✓ Commande reçue ! Nous vous recontactons sous 24 h.');
   }
+
+  // ---- INIT -------------------------------------------------------
+  renderCatalog('all');
+  updateCartBadge();
+
 })();
 </script>
 
 <script src="/assets/js/refonte.js?v=2" defer></script>
 
-<!-- Widget Alma — paiement 3× / 4× sans frais.
-     Actif dès que vous configurez ALMA_MERCHANT_ID dans alma-widget.js.
-     Guide complet : _dossiers/05_Dropshipping_WallBox/GUIDE_ACTIVATION_ALMA.md -->
+<!-- Widget Alma (activé quand clé fournie) -->
 <script src="/assets/js/alma-widget.js?v=1" defer></script>
 
-<!-- Style pour le badge Alma généré dynamiquement -->
-<style>
-  .alma-badge { margin: -8px 0 12px; min-height: 22px; }
-  .alma-badge:empty { display: none; }
-</style>
 </body>
 </html>
