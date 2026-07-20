@@ -458,6 +458,14 @@ window.handleDelete = function () {
 
 // --------- Init ---------
 refreshView();
+
+// Contourne le reveal-on-scroll pour ne pas cacher le contenu critique du compte
+setTimeout(function () {
+  document.querySelectorAll('#view-guest, #view-logged').forEach(function (el) {
+    el.classList.remove('reveal');
+    el.classList.add('is-visible');
+  });
+}, 0);
 </script>
 
 </body>
