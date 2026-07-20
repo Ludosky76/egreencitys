@@ -311,8 +311,8 @@
     <li><a href="/">Accueil</a></li>
     <li><a href="/pages/produits.html">Produits</a></li>
     <li><a href="/pages/boutique-wallbox.html" style="color:var(--green);font-weight:700;">Boutique</a></li>
+    <li><a href="/pages/compte.html">👤 Mon compte</a></li>
     <li><a href="/pages/reseau.html">Réseau</a></li>
-    <li><a href="/pages/investisseurs.html">Investisseurs</a></li>
     <li><a href="/pages/devis.html" class="btn-nav">Devis gratuit</a></li>
   </ul>
 </nav>
@@ -413,6 +413,11 @@
 
     <div class="form-block">
       <div id="order-summary" class="order-summary-box" style="display:none;"></div>
+
+      <!-- Encart connexion / guest -->
+      <div id="account-hint" style="background:#f4fff0;border:1px solid #d8e6cc;border-radius:12px;padding:.9rem 1.2rem;margin-bottom:1.2rem;display:flex;justify-content:space-between;align-items:center;gap:.8rem;flex-wrap:wrap;font-size:.85rem;">
+        <span id="account-hint-text">👤 <a href="/pages/compte.html" style="color:var(--green-deep);font-weight:700;text-decoration:underline;">Créez un compte</a> pour retrouver vos commandes, ou continuez en tant qu'invité.</span>
+      </div>
 
       <form action="https://formsubmit.co/egreencitys@gmail.com" method="POST">
         <input type="hidden" name="_subject" value="🛒 Nouvelle commande boutique WallBox">
@@ -518,9 +523,10 @@
   <p class="legal">SAS au capital de 250 € — RCS Cayenne 878 682 854</p>
 </footer>
 
-<!-- STRIPE + CATALOG DATA (stripe-config avant catalog pour dispo hasStripeLink) -->
+<!-- STRIPE + CATALOG + COMPTE CLIENT -->
 <script src="/assets/js/stripe-config.js?v=1"></script>
 <script src="/assets/js/catalog.js?v=1"></script>
+<script src="/assets/js/customer-account.js?v=1"></script>
 
 <!-- LOGIC -->
 <script>
@@ -831,6 +837,37 @@
   }
   if (location.search.indexOf('paiement=annule') > -1) {
     showToast('❌ Paiement annulé. Votre panier est conservé, réessayez quand vous voulez.');
+  }
+
+  // ---- INTEGRATION COMPTE CLIENT ---------------------------------
+  function refreshAccountHint() {
+    var hint = document.getElementById('account-hint-text');
+    if (!hint || !window.EGCCustomer) return;
+    var c = window.EGCCustomer.current();
+    if (c && c.sessionActive) {
+      hint.innerHTML = '👤 Connecté en tant que <strong>' + c.prenom + ' ' + c.nom + '</strong> — <a href="/pages/compte.html" style="color:var(--green-deep);font-weight:700;text-decoration:underline;">mon compte</a>';
+    } else {
+      hint.innerHTML = '👤 <a href="/pages/compte.html" style="color:var(--green-deep);font-weight:700;text-decoration:underline;">Créez un compte</a> pour retrouver vos commandes, ou continuez en tant qu\'invité.';
+    }
+  }
+  refreshAccountHint();
+
+  // Enregistre la commande dans l'historique du compte au submit
+  var orderForm = document.querySelector('form[action*="formsubmit"]');
+  if (orderForm) {
+    orderForm.addEventListener('submit', function () {
+      if (window.EGCCustomer && window.EGCCustomer.isLoggedIn()) {
+        try {
+          var items = cart.length > 0 ? cart.map(function (it) {
+            return { name: it.name, total: it.totalTTC };
+          }) : [];
+          var total = cart.reduce(function (s, it) { return s + it.totalTTC; }, 0);
+          if (items.length > 0) {
+            window.EGCCustomer.addOrder({ items: items, total: total, status: 'en_attente' });
+          }
+        } catch (e) { /* silent */ }
+      }
+    });
   }
 
   // ---- INIT -------------------------------------------------------

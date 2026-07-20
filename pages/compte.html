@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon compte — EGREENCITY'S</title>
+  <meta name="description" content="Espace client EGREENCITY'S : gérez votre profil, consultez l'historique de vos commandes de bornes de recharge en Guyane.">
+  <meta name="robots" content="noindex,follow">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://egreencitys.com/pages/compte.html">
+  <link rel="icon" type="image/png" href="/logo.png">
+  <meta name="theme-color" content="#0a4800">
+  <link rel="stylesheet" href="/assets/css/refonte.css?v=2">
+
+  <style>
+    :root {
+      --green:#33CC00; --green-dark:#28a800; --green-deep:#0a4800;
+      --blue:#2B4DB5; --white:#fff; --off:#f4fff0;
+      --dark:#081a00; --text:#1a3a00; --muted:#4a6a40;
+      --shadow:rgba(0,80,0,.12);
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Poppins',system-ui,sans-serif;color:var(--text);background:#f4fff0;min-height:100vh;}
+
+    /* NAV */
+    nav{
+      position:fixed;top:0;width:100%;z-index:1000;
+      padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;
+      background:rgba(255,255,255,.95);backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(51,204,0,.12);
+    }
+    .nav-logo{display:flex;align-items:center;text-decoration:none;}
+    .nav-logo img{height:42px;}
+    .nav-links{display:flex;gap:1.5rem;list-style:none;align-items:center;}
+    .nav-links a{text-decoration:none;color:var(--text);font-size:.82rem;font-weight:500;transition:color .2s;}
+    .nav-links a:hover{color:var(--green);}
+    .btn-nav{background:var(--green);color:#fff!important;padding:.5rem 1.3rem;border-radius:50px;font-weight:700!important;}
+
+    /* HERO compte */
+    .page-hero{
+      padding:8rem 2rem 3rem;
+      background:linear-gradient(140deg,#041000 0%,#0b3300 50%,#0a2800 100%);
+      color:#fff;text-align:center;
+    }
+    .page-hero h1{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:800;margin-bottom:.5rem;letter-spacing:-.02em;}
+    .page-hero p{color:rgba(255,255,255,.75);font-size:1rem;}
+
+    /* Container */
+    .container{max-width:900px;margin:-2rem auto 3rem;padding:0 2rem;position:relative;z-index:2;}
+    .card{background:#fff;border-radius:20px;padding:2.5rem 2rem;box-shadow:0 12px 40px rgba(10,72,0,.1);margin-bottom:1.5rem;border:1px solid #e5f0dd;}
+
+    /* Tabs (guest) */
+    .auth-tabs{display:flex;gap:.5rem;margin-bottom:2rem;background:#f4fff0;padding:.4rem;border-radius:14px;}
+    .auth-tab-btn{flex:1;background:transparent;border:none;color:var(--muted);padding:.85rem;font-family:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border-radius:10px;transition:all .2s;}
+    .auth-tab-btn.active{background:var(--green-deep);color:#fff;box-shadow:0 4px 12px rgba(10,72,0,.2);}
+
+    /* Forms */
+    form label{display:block;font-weight:600;color:var(--green-deep);font-size:.85rem;margin-bottom:.4rem;margin-top:1rem;}
+    form input,form select,form textarea{
+      width:100%;padding:.9rem 1rem;border:1px solid #d8e6cc;border-radius:10px;
+      font-family:inherit;font-size:.95rem;color:var(--text);background:#fafffa;transition:all .2s;
+    }
+    form input:focus,form select:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(51,204,0,.15);background:#fff;}
+    form .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+    form button.btn-primary{
+      margin-top:1.6rem;width:100%;background:var(--green);color:#fff;
+      padding:1rem;border:none;border-radius:50px;font-weight:700;font-size:1rem;
+      cursor:pointer;transition:all .25s;box-shadow:0 6px 20px rgba(51,204,0,.32);
+    }
+    form button.btn-primary:hover{background:var(--green-dark);transform:translateY(-2px);box-shadow:0 10px 28px rgba(51,204,0,.45);}
+
+    /* Info encart */
+    .info-box{background:#fff9c4;border-left:4px solid #f9a825;padding:1rem 1.4rem;border-radius:0 8px 8px 0;margin:1rem 0;font-size:.85rem;color:#5d4037;line-height:1.55;}
+    .info-box strong{display:block;margin-bottom:.3rem;}
+
+    /* Dashboard */
+    .dashboard-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;padding-bottom:1.2rem;border-bottom:1px solid #e5f0dd;}
+    .welcome{font-size:1.4rem;font-weight:800;color:var(--green-deep);}
+    .welcome small{display:block;font-size:.82rem;font-weight:500;color:var(--muted);margin-top:.2rem;}
+    .btn-signout{background:transparent;border:1px solid #d8e6cc;color:var(--text);padding:.5rem 1rem;border-radius:50px;cursor:pointer;font-family:inherit;font-size:.82rem;transition:all .2s;}
+    .btn-signout:hover{border-color:#c62828;color:#c62828;}
+
+    /* Stats compte */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
+    .stat{background:#f4fff0;padding:1.2rem;border-radius:14px;text-align:center;border:1px solid #d8e6cc;}
+    .stat .num{font-size:1.9rem;font-weight:800;color:var(--green-deep);line-height:1;}
+    .stat .lbl{font-size:.78rem;color:var(--muted);margin-top:.3rem;text-transform:uppercase;letter-spacing:.5px;}
+
+    /* Section title */
+    h2.sec{font-size:1.15rem;font-weight:800;color:var(--green-deep);margin:2rem 0 1rem;letter-spacing:-.01em;display:flex;align-items:center;gap:.5rem;}
+
+    /* Orders list */
+    .orders-list{display:flex;flex-direction:column;gap:.7rem;}
+    .order{background:#f4fff0;border:1px solid #d8e6cc;padding:1.1rem 1.3rem;border-radius:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;transition:all .2s;}
+    .order:hover{background:#e8f5e9;border-color:var(--green);}
+    .order .info{flex:1;min-width:200px;}
+    .order .id{font-weight:700;color:var(--green-deep);font-size:.9rem;}
+    .order .date{font-size:.75rem;color:var(--muted);margin-top:.2rem;}
+    .order .items{font-size:.8rem;color:var(--text);margin-top:.4rem;}
+    .order .price{font-weight:800;color:var(--green-deep);font-size:1.1rem;text-align:right;}
+    .order .status{background:#c8e6c9;color:var(--green-deep);padding:.2rem .7rem;border-radius:50px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:inline-block;margin-top:.3rem;}
+    .empty-orders{text-align:center;padding:2.5rem 1rem;color:var(--muted);font-size:.95rem;background:#fafffa;border-radius:12px;border:1px dashed #d8e6cc;}
+    .empty-orders .icon{font-size:2.5rem;display:block;margin-bottom:.5rem;}
+
+    /* Actions RGPD */
+    .rgpd-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.5rem;border-top:1px solid #e5f0dd;}
+    .btn-secondary{background:#fff;color:var(--green-deep);border:1px solid #d8e6cc;padding:.7rem 1.2rem;border-radius:50px;cursor:pointer;font-family:inherit;font-size:.82rem;transition:all .2s;text-decoration:none;display:inline-block;}
+    .btn-secondary:hover{border-color:var(--green);color:var(--green);}
+    .btn-danger{background:#fff;color:#c62828;border:1px solid #ffcdd2;padding:.7rem 1.2rem;border-radius:50px;cursor:pointer;font-family:inherit;font-size:.82rem;transition:all .2s;}
+    .btn-danger:hover{background:#ffebee;border-color:#c62828;}
+
+    /* Guest option */
+    .guest-cta{text-align:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid #e5f0dd;color:var(--muted);font-size:.85rem;}
+    .guest-cta a{color:var(--green-dark);font-weight:700;text-decoration:none;border-bottom:1px solid var(--green);}
+    .guest-cta a:hover{color:var(--green-deep);}
+
+    /* Alerts */
+    .alert{padding:.8rem 1rem;border-radius:10px;margin:1rem 0;font-size:.87rem;line-height:1.5;}
+    .alert-error{background:#ffebee;color:#c62828;border-left:4px solid #c62828;}
+    .alert-success{background:#e8f5e9;color:var(--green-deep);border-left:4px solid var(--green);}
+
+    /* Footer */
+    footer{background:var(--dark);color:#a8c9a0;padding:2.5rem 2rem 1.2rem;text-align:center;font-size:.82rem;margin-top:3rem;}
+    footer a{color:var(--green);text-decoration:none;}
+
+    @media(max-width:768px){
+      nav{padding:.85rem 1.2rem;}
+      .nav-links{display:none;}
+      .page-hero{padding:6rem 1.2rem 2.5rem;}
+      .container{padding:0 1rem;margin-top:-1.5rem;}
+      .card{padding:1.6rem 1.3rem;}
+      form .row{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo"><img src="/logo.png" alt="EGREENCITY'S"></a>
+  <ul class="nav-links">
+    <li><a href="/">Accueil</a></li>
+    <li><a href="/pages/produits.html">Produits</a></li>
+    <li><a href="/pages/boutique-wallbox.html">Boutique</a></li>
+    <li><a href="/pages/compte.html" style="color:var(--green);font-weight:700;">👤 Mon compte</a></li>
+    <li><a href="/pages/devis.html" class="btn-nav">Devis gratuit</a></li>
+  </ul>
+</nav>
+
+<section class="page-hero">
+  <h1>👤 Mon espace client</h1>
+  <p>Gérez vos commandes et vos informations personnelles</p>
+</section>
+
+<main class="container">
+
+  <!-- Vue GUEST (déconnecté) -->
+  <div id="view-guest" class="card">
+    <div class="auth-tabs">
+      <button class="auth-tab-btn active" data-tab="login" onclick="switchTab('login')">Se connecter</button>
+      <button class="auth-tab-btn" data-tab="signup" onclick="switchTab('signup')">Créer un compte</button>
+    </div>
+
+    <div id="alert-guest"></div>
+
+    <!-- CONNEXION -->
+    <form id="form-login" onsubmit="handleLogin(event)">
+      <label for="li-email">Email</label>
+      <input type="email" id="li-email" required autocomplete="email">
+      <label for="li-password">Mot de passe</label>
+      <input type="password" id="li-password" required autocomplete="current-password">
+      <button type="submit" class="btn-primary">Se connecter</button>
+    </form>
+
+    <!-- INSCRIPTION -->
+    <form id="form-signup" onsubmit="handleSignup(event)" style="display:none;">
+      <div class="row">
+        <div><label for="su-prenom">Prénom *</label><input type="text" id="su-prenom" required></div>
+        <div><label for="su-nom">Nom *</label><input type="text" id="su-nom" required></div>
+      </div>
+      <label for="su-email">Email *</label>
+      <input type="email" id="su-email" required autocomplete="email">
+      <div class="row">
+        <div><label for="su-password">Mot de passe *</label><input type="password" id="su-password" minlength="8" required autocomplete="new-password"></div>
+        <div><label for="su-tel">Téléphone</label><input type="tel" id="su-tel" placeholder="+594 6 XX XX XX XX"></div>
+      </div>
+      <label for="su-adresse">Adresse (optionnel)</label>
+      <input type="text" id="su-adresse" placeholder="N° et rue">
+      <div class="row">
+        <div><label for="su-cp">Code postal</label><input type="text" id="su-cp" placeholder="97300"></div>
+        <div>
+          <label for="su-commune">Commune</label>
+          <select id="su-commune">
+            <option value="">— Sélectionnez —</option>
+            <option>Cayenne</option><option>Matoury</option><option>Rémire-Montjoly</option>
+            <option>Macouria</option><option>Kourou</option>
+            <option>Saint-Laurent-du-Maroni</option><option>Iracoubo</option><option>Mana</option>
+            <option>Autre commune de Guyane</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary">Créer mon compte</button>
+    </form>
+
+    <div class="info-box">
+      <strong>💡 Bon à savoir</strong>
+      Le compte est stocké <strong>sur cet appareil</strong> (localStorage). Vous pourrez retrouver vos commandes ici, mais elles ne sont pas synchronisées entre appareils. Pour un compte cloud multi-appareils, contactez-nous.
+    </div>
+
+    <div class="guest-cta">
+      Vous préférez commander sans compte ?
+      <a href="/pages/boutique-wallbox.html">→ Accéder à la boutique en tant qu'invité</a>
+    </div>
+  </div>
+
+  <!-- Vue LOGGED (connecté) -->
+  <div id="view-logged" class="card" style="display:none;">
+    <div class="dashboard-head">
+      <div class="welcome">
+        Bonjour <span id="user-firstname"></span> 👋
+        <small>Membre depuis <span id="user-since"></span></small>
+      </div>
+      <button class="btn-signout" onclick="handleSignout()">Se déconnecter</button>
+    </div>
+
+    <div id="alert-logged"></div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat"><div class="num" id="stat-orders">0</div><div class="lbl">Commandes</div></div>
+      <div class="stat"><div class="num" id="stat-total">0 €</div><div class="lbl">Total dépensé</div></div>
+      <div class="stat"><div class="num" id="stat-last">—</div><div class="lbl">Dernière commande</div></div>
+    </div>
+
+    <!-- Historique commandes -->
+    <h2 class="sec">📦 Historique de mes commandes</h2>
+    <div id="orders-list" class="orders-list"></div>
+
+    <!-- Profil (form pré-rempli) -->
+    <h2 class="sec">👤 Mon profil</h2>
+    <form id="form-profile" onsubmit="handleProfileUpdate(event)">
+      <div class="row">
+        <div><label for="p-prenom">Prénom</label><input type="text" id="p-prenom"></div>
+        <div><label for="p-nom">Nom</label><input type="text" id="p-nom"></div>
+      </div>
+      <div class="row">
+        <div><label for="p-email">Email</label><input type="email" id="p-email" disabled style="background:#f0f0f0;cursor:not-allowed;"></div>
+        <div><label for="p-tel">Téléphone</label><input type="tel" id="p-tel"></div>
+      </div>
+      <label for="p-adresse">Adresse de livraison par défaut</label>
+      <input type="text" id="p-adresse">
+      <div class="row">
+        <div><label for="p-cp">Code postal</label><input type="text" id="p-cp"></div>
+        <div>
+          <label for="p-commune">Commune</label>
+          <select id="p-commune">
+            <option value="">— Sélectionnez —</option>
+            <option>Cayenne</option><option>Matoury</option><option>Rémire-Montjoly</option>
+            <option>Macouria</option><option>Kourou</option>
+            <option>Saint-Laurent-du-Maroni</option><option>Iracoubo</option><option>Mana</option>
+            <option>Autre commune de Guyane</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary">Enregistrer les modifications</button>
+    </form>
+
+    <!-- Actions RGPD -->
+    <div class="rgpd-actions">
+      <button class="btn-secondary" onclick="handleExport()">📥 Exporter mes données (RGPD)</button>
+      <a href="/pages/boutique-wallbox.html" class="btn-secondary">🛒 Retour boutique</a>
+      <button class="btn-danger" onclick="handleDelete()" style="margin-left:auto;">🗑️ Supprimer mon compte</button>
+    </div>
+
+    <div class="info-box" style="margin-top:1.5rem;">
+      <strong>🔒 Vos données</strong>
+      Stockées uniquement sur cet appareil (localStorage). Effacer le cache navigateur = perdre le compte. Utilisez « Exporter » pour sauvegarder vos données.
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p><strong style="color:#fff;">EGREENCITY'S</strong> — Bornes de recharge électrique en Guyane</p>
+  <p>1 rue Anangosi, Résidence La Rougerie — 97355 MACOURIA</p>
+  <p><a href="mailto:egreencitys@gmail.com">egreencitys@gmail.com</a> · +33 6 51 14 11 18 · <a href="/pages/legal/mentions-legales.html">Mentions légales</a> · <a href="/pages/legal/cgv.html">CGV</a></p>
+</footer>
+
+<script src="/assets/js/customer-account.js?v=1"></script>
+<script src="/assets/js/refonte.js?v=2" defer></script>
+
+<script>
+// --------- Vues (guest vs logged) ---------
+function refreshView() {
+  var c = window.EGCCustomer.current();
+  var guestEl = document.getElementById('view-guest');
+  var loggedEl = document.getElementById('view-logged');
+  if (c && c.sessionActive) {
+    guestEl.style.display = 'none';
+    loggedEl.style.display = 'block';
+    renderDashboard(c);
+  } else {
+    guestEl.style.display = 'block';
+    loggedEl.style.display = 'none';
+  }
+}
+
+// --------- Tabs login/signup ---------
+window.switchTab = function (tab) {
+  document.querySelectorAll('.auth-tab-btn').forEach(function (b) { b.classList.remove('active'); });
+  document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+  document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('form-signup').style.display = tab === 'signup' ? 'block' : 'none';
+  document.getElementById('alert-guest').innerHTML = '';
+};
+
+// --------- Alerts ---------
+function alertGuest(type, msg) {
+  document.getElementById('alert-guest').innerHTML =
+    '<div class="alert alert-' + type + '">' + msg + '</div>';
+}
+function alertLogged(type, msg) {
+  document.getElementById('alert-logged').innerHTML =
+    '<div class="alert alert-' + type + '">' + msg + '</div>';
+  setTimeout(function () { document.getElementById('alert-logged').innerHTML = ''; }, 4000);
+}
+
+// --------- Login ---------
+window.handleLogin = async function (e) {
+  e.preventDefault();
+  try {
+    await window.EGCCustomer.signIn(
+      document.getElementById('li-email').value,
+      document.getElementById('li-password').value
+    );
+    refreshView();
+  } catch (err) {
+    alertGuest('error', '❌ ' + err.message);
+  }
+};
+
+// --------- Signup ---------
+window.handleSignup = async function (e) {
+  e.preventDefault();
+  try {
+    await window.EGCCustomer.signUp({
+      prenom: document.getElementById('su-prenom').value,
+      nom: document.getElementById('su-nom').value,
+      email: document.getElementById('su-email').value,
+      password: document.getElementById('su-password').value,
+      telephone: document.getElementById('su-tel').value,
+      adresse: document.getElementById('su-adresse').value,
+      code_postal: document.getElementById('su-cp').value,
+      commune: document.getElementById('su-commune').value
+    });
+    refreshView();
+  } catch (err) {
+    alertGuest('error', '❌ ' + err.message);
+  }
+};
+
+// --------- Signout ---------
+window.handleSignout = function () {
+  window.EGCCustomer.signOut();
+  refreshView();
+};
+
+// --------- Dashboard ---------
+function renderDashboard(c) {
+  document.getElementById('user-firstname').textContent = c.prenom;
+  document.getElementById('user-since').textContent = new Date(c.createdAt).toLocaleDateString('fr-FR');
+
+  // Pré-remplir profil
+  ['prenom', 'nom', 'email', 'tel', 'adresse', 'cp', 'commune'].forEach(function (k) {
+    var el = document.getElementById('p-' + k);
+    if (!el) return;
+    var val = c[{tel:'telephone', cp:'code_postal'}[k] || k] || '';
+    el.value = val;
+  });
+
+  // Stats + orders
+  var orders = window.EGCCustomer.getOrders();
+  document.getElementById('stat-orders').textContent = orders.length;
+  var total = orders.reduce(function (s, o) { return s + (o.total || 0); }, 0);
+  document.getElementById('stat-total').textContent = total.toLocaleString('fr-FR') + ' €';
+  document.getElementById('stat-last').textContent = orders.length
+    ? new Date(orders[0].date).toLocaleDateString('fr-FR')
+    : '—';
+
+  var list = document.getElementById('orders-list');
+  if (orders.length === 0) {
+    list.innerHTML = ''
+      + '<div class="empty-orders">'
+      +   '<span class="icon">🛒</span>'
+      +   'Aucune commande pour le moment.<br>'
+      +   '<a href="/pages/boutique-wallbox.html" style="color:var(--green-dark);font-weight:700;">→ Découvrir la boutique</a>'
+      + '</div>';
+  } else {
+    list.innerHTML = orders.map(function (o) {
+      var items = (o.items || []).map(function (i) { return i.name; }).join(', ') || 'Commande';
+      return ''
+        + '<div class="order">'
+        +   '<div class="info">'
+        +     '<div class="id">' + o.id + '</div>'
+        +     '<div class="date">' + new Date(o.date).toLocaleString('fr-FR') + '</div>'
+        +     '<div class="items">' + items + '</div>'
+        +     '<span class="status">' + (o.status === 'paye' ? '✓ payée' : 'en attente') + '</span>'
+        +   '</div>'
+        +   '<div class="price">' + (o.total || 0).toLocaleString('fr-FR') + ' €</div>'
+        + '</div>';
+    }).join('');
+  }
+}
+
+// --------- Update profil ---------
+window.handleProfileUpdate = function (e) {
+  e.preventDefault();
+  try {
+    window.EGCCustomer.updateProfile({
+      prenom: document.getElementById('p-prenom').value,
+      nom: document.getElementById('p-nom').value,
+      telephone: document.getElementById('p-tel').value,
+      adresse: document.getElementById('p-adresse').value,
+      code_postal: document.getElementById('p-cp').value,
+      commune: document.getElementById('p-commune').value
+    });
+    alertLogged('success', '✓ Profil mis à jour.');
+  } catch (err) {
+    alertLogged('error', '❌ ' + err.message);
+  }
+};
+
+// --------- Export RGPD ---------
+window.handleExport = function () {
+  try {
+    var data = window.EGCCustomer.exportData();
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'egreencitys-mes-donnees-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    alertLogged('success', '✓ Données exportées.');
+  } catch (err) {
+    alertLogged('error', '❌ ' + err.message);
+  }
+};
+
+// --------- Suppression ---------
+window.handleDelete = function () {
+  if (!confirm('⚠️ Supprimer définitivement votre compte et toutes vos données locales ?\n\nCette action est irréversible.')) return;
+  window.EGCCustomer.deleteAccount();
+  refreshView();
+};
+
+// --------- Init ---------
+refreshView();
+</script>
+
+</body>
+</html>

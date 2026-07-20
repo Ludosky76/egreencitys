@@ -35,6 +35,8 @@ REDIRECTS = {
     "boutique-wallbox.html":                   "/pages/boutique-wallbox.html",
     "boutique.html":                           "/pages/boutique-wallbox.html",
     "wallbox.html":                            "/pages/boutique-wallbox.html",
+    "compte.html":                             "/pages/compte.html",
+    "mon-compte.html":                         "/pages/compte.html",
 }
 
 TEMPLATE = """<!doctype html>
