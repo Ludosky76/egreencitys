@@ -350,7 +350,7 @@
   <div class="icon">💳</div>
   <div class="txt">
     <strong>Paiement en 3× ou 4× sans frais dès 200 €</strong>
-    <p>Financement instantané via notre partenaire agréé Alma / Cofidis Pay. Décision en 30 s, sans dossier papier.</p>
+    <p>Paiement CB comptant sécurisé (Visa, Mastercard, Apple Pay, Google Pay) via <strong>Stripe</strong>. Ou paiement en 3× / 4× sans frais via nos partenaires (bientôt disponible).</p>
   </div>
   <div class="pay-badges">
     <span>3× SANS FRAIS</span>
@@ -399,7 +399,7 @@
       <div class="gar-card"><div class="icon">🇫🇷</div><h5>Fabrication française</h5><p>Bornes conçues à Saint-Étienne (42), homologuées CE, IRVE.</p></div>
       <div class="gar-card"><div class="icon">📍</div><h5>SAV local Guyane</h5><p>Équipe IRVE Qualifelec à Macouria, intervention 5 j ouvrés.</p></div>
       <div class="gar-card"><div class="icon">💰</div><h5>Éligible ADVENIR</h5><p>Jusqu'à 2 700 € de subvention pour entreprises. On monte le dossier.</p></div>
-      <div class="gar-card"><div class="icon">🔒</div><h5>Paiement sécurisé</h5><p>SSL, PCI-DSS, partenaires Alma / Cofidis Pay / Stripe.</p></div>
+      <div class="gar-card"><div class="icon">🔒</div><h5>Paiement Stripe sécurisé</h5><p>SSL, PCI-DSS niveau 1. Visa, Mastercard, Amex, Apple Pay, Google Pay.</p></div>
       <div class="gar-card"><div class="icon">📞</div><h5>Assistance 5j/7</h5><p>Hotline lundi-vendredi 8h-18h, par téléphone, email, WhatsApp.</p></div>
     </div>
   </div>
@@ -451,8 +451,8 @@
         <select id="paiement" name="paiement" required>
           <option value="">— Choisissez —</option>
           <option>Comptant (CB / virement)</option>
-          <option>Paiement en 3× sans frais (Alma)</option>
-          <option>Paiement en 4× sans frais (Alma)</option>
+          <option>Paiement en 3× sans frais (partenaire bancaire)</option>
+          <option>Paiement en 4× sans frais (partenaire bancaire)</option>
           <option>Devis financement (ADVENIR / crédit-bail)</option>
         </select>
 
@@ -490,6 +490,7 @@
   <div class="drawer-footer">
     <div class="drawer-total"><span>Total TTC</span><span id="optTotal">0 €</span></div>
     <div class="drawer-total-split" id="optSplit"></div>
+    <button id="btnStripeDirect" class="btn-drawer" style="display:none;background:#635BFF;margin-bottom:.5rem;" onclick="checkoutStripeDirect()">💳 Payer par CB — Stripe</button>
     <button class="btn-drawer" onclick="addConfiguredToCart()">Ajouter au panier</button>
   </div>
 </div>
@@ -517,7 +518,8 @@
   <p class="legal">SAS au capital de 250 € — RCS Cayenne 878 682 854</p>
 </footer>
 
-<!-- CATALOG DATA -->
+<!-- STRIPE + CATALOG DATA (stripe-config avant catalog pour dispo hasStripeLink) -->
+<script src="/assets/js/stripe-config.js?v=1"></script>
 <script src="/assets/js/catalog.js?v=1"></script>
 
 <!-- LOGIC -->
@@ -646,7 +648,33 @@
     }
 
     updateConfigTotal();
+
+    // Bouton Stripe direct : visible seulement si un Payment Link est configuré
+    var stripeBtn = document.getElementById('btnStripeDirect');
+    if (window.hasStripeLink && window.hasStripeLink(product.id)) {
+      stripeBtn.style.display = 'block';
+    } else {
+      stripeBtn.style.display = 'none';
+    }
+
     openDrawer('opt');
+  };
+
+  // Redirection vers le Payment Link Stripe (paiement CB direct)
+  window.checkoutStripeDirect = function () {
+    if (!configuring) return;
+    var link = window.STRIPE_PAYMENT_LINKS[configuring.product.id];
+    if (!link) {
+      alert('Le paiement en ligne pour ce modèle n\'est pas encore configuré. Ajoutez au panier pour finaliser via le formulaire de commande.');
+      return;
+    }
+    // Passe la commande complète en metadata via URL params (client_reference_id)
+    var ref = configuring.product.id + '_' + Date.now();
+    var opts = configuring.options.map(function (o) { return o.id; }).join(',');
+    var separator = link.indexOf('?') > -1 ? '&' : '?';
+    var url = link + separator + 'client_reference_id=' + encodeURIComponent(ref);
+    if (opts) url += '&prefilled_promo_code=';  // options loggees separement via webhook
+    window.location.href = url;
   };
 
   window.updateConfigTotal = function () {
@@ -795,6 +823,15 @@
     cart = [];
     showToast('✓ Commande reçue ! Nous vous recontactons sous 24 h.');
   }
+  // ---- Toast retour Stripe ---------------------------------------
+  if (location.search.indexOf('paiement=succes') > -1) {
+    sessionStorage.removeItem('egc_cart');
+    cart = [];
+    showToast('✅ Paiement CB validé ! Confirmation par email + expédition Chronopost sous 24 h.');
+  }
+  if (location.search.indexOf('paiement=annule') > -1) {
+    showToast('❌ Paiement annulé. Votre panier est conservé, réessayez quand vous voulez.');
+  }
 
   // ---- INIT -------------------------------------------------------
   renderCatalog('all');
@@ -805,8 +842,8 @@
 
 <script src="/assets/js/refonte.js?v=2" defer></script>
 
-<!-- Widget Alma (activé quand clé fournie) -->
-<script src="/assets/js/alma-widget.js?v=1" defer></script>
+<!-- Stripe SDK (utile pour Elements/futur — stripe-config deja charge plus haut) -->
+<script src="https://js.stripe.com/v3/" defer></script>
 
 </body>
 </html>
