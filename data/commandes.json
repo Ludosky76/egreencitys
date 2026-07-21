@@ -1,0 +1,6 @@
+{
+  "_comment": "Base de données des commandes EGREENCITY'S — public read, admin write via _tools/manage_orders.py",
+  "_version": "1.0",
+  "_last_updated": "2026-05-07",
+  "orders": {}
+}

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facture — EGREENCITY'S</title>
+  <meta name="robots" content="noindex,follow">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/logo.png">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Poppins','Helvetica Neue',Arial,sans-serif;color:#1a3a00;background:#e8e8e8;padding:2rem 1rem;}
+    .toolbar{max-width:820px;margin:0 auto 1rem;display:flex;justify-content:space-between;align-items:center;gap:.7rem;flex-wrap:wrap;}
+    .toolbar a{background:#33CC00;color:#fff;padding:.7rem 1.3rem;border-radius:50px;text-decoration:none;font-weight:700;font-size:.85rem;box-shadow:0 4px 12px rgba(51,204,0,.28);}
+    .toolbar button{background:#635BFF;color:#fff;padding:.7rem 1.3rem;border:none;border-radius:50px;font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;box-shadow:0 4px 12px rgba(99,91,255,.28);}
+    .toolbar button:hover{background:#524BFF;}
+
+    .invoice{max-width:820px;margin:0 auto;background:#fff;padding:3.5rem 3rem;box-shadow:0 8px 40px rgba(0,0,0,.1);border-radius:8px;}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.5rem;padding-bottom:2rem;border-bottom:3px solid #33CC00;margin-bottom:2rem;}
+    .header-left img{height:52px;margin-bottom:.6rem;}
+    .header-left .company{font-size:.75rem;color:#666;line-height:1.5;}
+    .header-right{text-align:right;}
+    .header-right h1{font-size:2.2rem;font-weight:800;color:#0a4800;letter-spacing:-.02em;margin-bottom:.4rem;}
+    .header-right .num{font-size:1.05rem;font-weight:700;color:#33CC00;letter-spacing:.5px;}
+    .header-right .date{font-size:.85rem;color:#666;margin-top:.3rem;}
+
+    .parties{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2.5rem;}
+    .party-block h3{font-size:.72rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:.7rem;font-weight:700;}
+    .party-block .name{font-size:1rem;font-weight:700;color:#0a4800;margin-bottom:.3rem;}
+    .party-block p{font-size:.85rem;line-height:1.6;color:#333;}
+
+    table{width:100%;border-collapse:collapse;margin-bottom:2rem;}
+    thead th{background:#0a4800;color:#fff;text-align:left;padding:.9rem 1rem;font-size:.78rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+    thead th:last-child, tbody td:last-child{text-align:right;}
+    tbody td{padding:.85rem 1rem;font-size:.9rem;border-bottom:1px solid #eef3e9;}
+    tbody tr:nth-child(even){background:#f4fff0;}
+    tbody td.name{font-weight:600;color:#0a4800;}
+    tbody td.small{font-size:.78rem;color:#666;}
+
+    .totals{margin-left:auto;width:320px;}
+    .tot-row{display:flex;justify-content:space-between;padding:.5rem 1rem;font-size:.9rem;border-bottom:1px solid #eef3e9;}
+    .tot-row.grand{background:#0a4800;color:#fff;font-weight:800;font-size:1.1rem;padding:.85rem 1rem;border-radius:8px;margin-top:.5rem;border:none;}
+
+    .footer-invoice{border-top:2px solid #eef3e9;padding-top:1.5rem;margin-top:3rem;font-size:.72rem;color:#666;line-height:1.6;}
+    .footer-invoice strong{color:#0a4800;}
+    .payment-info{background:#f4fff0;padding:1rem 1.2rem;border-radius:8px;border-left:4px solid #33CC00;margin-top:1.2rem;font-size:.82rem;line-height:1.6;color:#1a3a00;}
+
+    .error-msg{max-width:600px;margin:4rem auto;background:#fff;padding:2rem;border-radius:12px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.08);}
+    .error-msg h2{color:#c62828;margin-bottom:.8rem;}
+
+    @media print {
+      body{background:#fff;padding:0;}
+      .toolbar{display:none;}
+      .invoice{box-shadow:none;max-width:100%;padding:2rem 1.5rem;border-radius:0;}
+      @page{size:A4;margin:1.2cm;}
+    }
+    @media(max-width:640px){
+      .invoice{padding:2rem 1.5rem;}
+      .parties{grid-template-columns:1fr;}
+      .header{flex-direction:column;}
+      .header-right{text-align:left;}
+      .totals{width:100%;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <a href="/pages/suivi.html">← Retour au suivi</a>
+  <button onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>
+</div>
+
+<div id="invoice-wrap"></div>
+
+<script>
+async function loadOrders() {
+  var r = await fetch('/data/commandes.json?_=' + Date.now());
+  var d = await r.json();
+  return d.orders || {};
+}
+
+function fmt(n) { return (n || 0).toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function fmtDate(iso) { if(!iso) return '—'; try { return new Date(iso).toLocaleDateString('fr-FR'); } catch(e){ return iso; } }
+
+async function renderInvoice() {
+  var params = new URLSearchParams(location.search);
+  var num = params.get('commande');
+  var wrap = document.getElementById('invoice-wrap');
+
+  if (!num) {
+    wrap.innerHTML = '<div class="error-msg"><h2>Numéro de commande manquant</h2><p>URL attendue : <code>/pages/facture.html?commande=EGC-2026-0001</code></p></div>';
+    return;
+  }
+
+  var orders = await loadOrders();
+  var o = orders[num.toUpperCase()];
+
+  if (!o) {
+    wrap.innerHTML = '<div class="error-msg"><h2>Commande introuvable</h2><p>La commande <strong>' + num + '</strong> n\'existe pas ou n\'est plus disponible.</p><p><a href="/pages/suivi.html">→ Retour au suivi</a></p></div>';
+    return;
+  }
+
+  // Calcul des lignes de facture
+  var items = o.items && o.items.length ? o.items : [{name: o.product || 'Borne de recharge', qty: 1, priceTTC: o.amount || 0}];
+  var totalTTC = items.reduce(function(s, it){ return s + (it.priceTTC || 0) * (it.qty || 1); }, 0);
+  if (totalTTC === 0) totalTTC = o.amount || 0;
+  var tva = totalTTC - (totalTTC / 1.085);   // TVA Guyane 8,5 %
+  var totalHT = totalTTC - tva;
+
+  var itemsHtml = items.map(function(it){
+    var qty = it.qty || 1;
+    var ptu = it.priceTTC || 0;
+    return ''
+      + '<tr>'
+      +   '<td class="name">' + (it.name || 'Produit') + (it.desc ? '<div class="small">'+it.desc+'</div>' : '') + '</td>'
+      +   '<td>' + qty + '</td>'
+      +   '<td>' + fmt(ptu / 1.085) + ' €</td>'
+      +   '<td><strong>' + fmt(qty * ptu) + ' €</strong></td>'
+      + '</tr>';
+  }).join('');
+
+  wrap.innerHTML = ''
+  + '<div class="invoice">'
+  +   '<div class="header">'
+  +     '<div class="header-left">'
+  +       '<img src="/logo.png" alt="EGREENCITY\'S">'
+  +       '<div class="company">'
+  +         '<strong>EGREENCITY\'S SAS</strong><br>'
+  +         '1 rue Anangosi, Résidence La Rougerie<br>'
+  +         '97355 MACOURIA — Guyane française<br>'
+  +         'Tél : +33 6 51 14 11 18 · egreencitys@gmail.com<br>'
+  +         'RCS Cayenne 878 682 854 · TVA FR00878682854'
+  +       '</div>'
+  +     '</div>'
+  +     '<div class="header-right">'
+  +       '<h1>FACTURE</h1>'
+  +       '<div class="num">N° ' + num + '</div>'
+  +       '<div class="date">Émise le ' + fmtDate(o.date) + '</div>'
+  +     '</div>'
+  +   '</div>'
+
+  +   '<div class="parties">'
+  +     '<div class="party-block">'
+  +       '<h3>Facturé à</h3>'
+  +       '<div class="name">' + (o.customer || '—') + '</div>'
+  +       '<p>' + (o.address || '—') + '<br>' + (o.postal_code || '') + ' ' + (o.commune || '') + '<br>Guyane française</p>'
+  +       (o.email ? '<p style="margin-top:.4rem;">' + o.email + '</p>' : '')
+  +     '</div>'
+  +     '<div class="party-block">'
+  +       '<h3>Livraison</h3>'
+  +       '<div class="name">' + (o.delivery_name || o.customer || '—') + '</div>'
+  +       '<p>' + (o.delivery_address || o.address || '—') + '<br>' + (o.delivery_postal_code || o.postal_code || '') + ' ' + (o.delivery_commune || o.commune || '') + '</p>'
+  +     '</div>'
+  +   '</div>'
+
+  +   '<table>'
+  +     '<thead><tr><th>Désignation</th><th>Qté</th><th>PU HT</th><th>Total TTC</th></tr></thead>'
+  +     '<tbody>' + itemsHtml + '</tbody>'
+  +   '</table>'
+
+  +   '<div class="totals">'
+  +     '<div class="tot-row"><span>Total HT</span><span>' + fmt(totalHT) + ' €</span></div>'
+  +     '<div class="tot-row"><span>TVA Guyane (8,5 %)</span><span>' + fmt(tva) + ' €</span></div>'
+  +     '<div class="tot-row grand"><span>TOTAL TTC</span><span>' + fmt(totalTTC) + ' €</span></div>'
+  +   '</div>'
+
+  +   '<div class="payment-info">'
+  +     '💳 <strong>Payé par carte bancaire</strong> le ' + fmtDate(o.date) + ' via Stripe. '
+  +     'Référence transaction : ' + (o.stripe_payment_intent || o.stripe_session || 'consulter votre reçu Stripe')
+  +   '</div>'
+
+  +   '<div class="footer-invoice">'
+  +     '<strong>Conditions générales</strong><br>'
+  +     'Facture acquittée. TVA DOM 8,5 % applicable. Garantie constructeur 24 mois pièces et main d\'œuvre. '
+  +     'SAV local EGREENCITY\'S sous 5 jours ouvrés. Droit de rétractation 14 jours pour les particuliers '
+  +     '(article L.221-18 du Code de la consommation).<br><br>'
+  +     'En cas de réclamation : egreencitys@gmail.com — Médiation via CMAP Paris.'
+  +   '</div>'
+  + '</div>';
+}
+
+renderInvoice();
+</script>
+
+</body>
+</html>
