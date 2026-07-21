@@ -32,25 +32,25 @@ window.STRIPE_CONFIG = {
    ============================================================ */
 window.STRIPE_PAYMENT_LINKS = {
   // e-WallBox
-  'wb-mur-7':   '',   // 1 049 EUR
-  'wb-mur-22':  '',   // 1 239 EUR
-  'wb-pied-7':  '',   // 1 339 EUR
-  'wb-pied-22': '',   // 1 529 EUR
+  'wb-mur-7':   'https://buy.stripe.com/test_6oU8wPgQ84Eu0rc828fIs00',   // 1 049 EUR
+  'wb-mur-22':  'https://buy.stripe.com/test_9B6cN51Veef43Do6Y4fIs01',   // 1 239 EUR
+  'wb-pied-7':  'https://buy.stripe.com/test_aFaeVdarK4Eu1vg2HOfIs02',   // 1 339 EUR
+  'wb-pied-22': 'https://buy.stripe.com/test_3cIcN5czS6MC7TE2HOfIs03',   // 1 529 EUR
 
   // e-Smart 7 kW
-  'sm7-mur-1':  '',   // 2 179 EUR
-  'sm7-mur-2':  '',   // 3 749 EUR
-  'sm7-pied-1': '',   // 2 219 EUR
-  'sm7-pied-2': '',   // 3 769 EUR
+  'sm7-mur-1':  'https://buy.stripe.com/test_28EdR957q4Eu6PA0zGfIs04',   // 2 179 EUR
+  'sm7-mur-2':  'https://buy.stripe.com/test_28E6oHeI07QGgqagyEfIs05',   // 3 749 EUR
+  'sm7-pied-1': 'https://buy.stripe.com/test_dRm7sL8jCfj87TEfuAfIs06',   // 2 219 EUR
+  'sm7-pied-2': 'https://buy.stripe.com/test_fZu28r7fyc6W3Do828fIs07',   // 3 769 EUR
 
   // e-Smart 22 kW
-  'sm22-mur-1':  '',  // 2 299 EUR
-  'sm22-mur-2':  '',  // 3 999 EUR
-  'sm22-pied-1': '',  // 2 349 EUR
-  'sm22-pied-2': '',  // 4 009 EUR
+  'sm22-mur-1':  'https://buy.stripe.com/test_7sY3cv2Zi8UKb5Q2HOfIs08',  // 2 299 EUR
+  'sm22-mur-2':  'https://buy.stripe.com/test_4gMfZh9nG9YOb5QfuAfIs09',  // 3 999 EUR
+  'sm22-pied-1': 'https://buy.stripe.com/test_eVq4gzeI07QGb5QciofIs0a',  // 2 349 EUR
+  'sm22-pied-2': 'https://buy.stripe.com/test_7sY8wP6bu1si5Lw6Y4fIs0b',  // 4 009 EUR
 
   // e-Premium AC
-  'prem-2x22':   ''   // 7 249 EUR
+  'prem-2x22':   'https://buy.stripe.com/test_14AeVd1Ve9YO4HsgyEfIs0c'   // 7 249 EUR
 };
 
 /* Utilitaire : vrai si un lien Payment Link est configure pour le produit */

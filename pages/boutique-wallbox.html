@@ -179,6 +179,16 @@
     }
     .btn-details:hover{border-color:var(--green);color:var(--green);}
 
+    /* Bouton Stripe direct sur la card */
+    .btn-stripe-direct{
+      display:block;width:100%;margin-top:.5rem;
+      background:#635BFF;color:#fff;padding:.75rem;border:none;border-radius:12px;
+      font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .25s;
+      box-shadow:0 4px 12px rgba(99,91,255,.32);text-align:center;text-decoration:none;
+    }
+    .btn-stripe-direct:hover{background:#524BFF;transform:translateY(-2px);box-shadow:0 8px 22px rgba(99,91,255,.5);}
+    .btn-stripe-direct .small{font-size:.7rem;opacity:.85;display:block;font-weight:500;margin-top:.15rem;}
+
     /* OPTIONS PANEL (drawer) */
     .options-drawer{
       position:fixed;top:0;right:-420px;width:400px;max-width:100vw;height:100vh;background:#fff;
@@ -524,7 +534,7 @@
 </footer>
 
 <!-- STRIPE + CATALOG + COMPTE CLIENT -->
-<script src="/assets/js/stripe-config.js?v=1"></script>
+<script src="/assets/js/stripe-config.js?v=2"></script>
 <script src="/assets/js/catalog.js?v=1"></script>
 <script src="/assets/js/customer-account.js?v=1"></script>
 
@@ -596,6 +606,9 @@
           +   '<div class="product-actions">'
           +     '<button class="btn-add" onclick="openConfigurator(\'' + key + '\',\'' + p.id + '\')">Configurer & commander</button>'
           +   '</div>'
+          +   (window.hasStripeLink && window.hasStripeLink(p.id)
+              ? '<a class="btn-stripe-direct" href="' + window.STRIPE_PAYMENT_LINKS[p.id] + '">💳 Payer maintenant<span class="small">CB · Apple Pay · Google Pay</span></a>'
+              : '')
           + '</div>';
 
         grid.appendChild(card);
