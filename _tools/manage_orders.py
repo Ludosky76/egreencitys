@@ -122,6 +122,8 @@ def cmd_add(args):
         return 1
 
     now_iso = datetime.now().isoformat(timespec="seconds")
+    shipping = args.shipping if args.shipping is not None else 0.0
+    # amount = total facture (produits + livraison). Si non fourni, calcule.
     order = {
         "date": now_iso,
         "customer": args.customer,
@@ -132,6 +134,7 @@ def cmd_add(args):
         "commune": args.commune or "",
         "product": args.product,
         "amount": args.amount,
+        "shipping": shipping,
         "status": "payee",
         "stripe_payment_intent": args.stripe or "",
         "timeline": {"payee": now_iso},
@@ -277,9 +280,10 @@ def main():
     p.add_argument("--postal")
     p.add_argument("--commune")
     p.add_argument("--product", required=True, help="Description du produit")
-    p.add_argument("--amount", type=float, required=True, help="Montant TTC en EUR")
+    p.add_argument("--amount", type=float, required=True, help="Montant total paye en EUR (produits + livraison, SANS TVA)")
+    p.add_argument("--shipping", type=float, help="Frais de livraison Chronopost DOM inclus dans le montant")
     p.add_argument("--stripe", help="ID transaction Stripe (pi_...)")
-    p.add_argument("--item", action="append", help="Format : 'nom|qty|priceTTC' (repetable)")
+    p.add_argument("--item", action="append", help="Format : 'nom|qty|prix' (repetable, prix sans TVA)")
 
     # status
     p = sp.add_parser("status", help="Changer le statut d'une commande")

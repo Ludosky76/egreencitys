@@ -72,31 +72,45 @@ def load_secret_key() -> str:
 # ============================================================
 #  Catalogue produits (miroir de catalog.js)
 # ============================================================
-# COEFFICIENT + TVA identiques a catalog.js (mais ici on envoie le TTC arrondi)
+# FISCALITE GUYANE : PAS de TVA (art. 294 CGI).
+# Le prix Stripe = prix produit + frais de livraison Chronopost DOM.
+# L'octroi de mer est preleve par la douane a la livraison (hors facture).
 COEF_MARGE = 1.35
-TVA = 0.085
 ARRONDI = 10
 
-def price_ttc(ht: float) -> int:
-    raw = ht * COEF_MARGE * (1 + TVA)
+# Frais de livraison Chronopost DOM par gamme (miroir de catalog.js SHIPPING)
+SHIPPING = {
+    "wallbox": 55,
+    "smart7":  89,
+    "smart22": 89,
+    "premium": 149,
+}
+
+def price_product(ht: float) -> int:
+    """Prix produit seul (sans TVA, sans livraison)."""
+    raw = ht * COEF_MARGE
     rounded = round(raw / ARRONDI) * ARRONDI
-    return rounded - 1  # 1499, 2349, etc.
+    return rounded - 1  # 999, 1049, 2349...
+
+def price_ttc(ht: float, gamme: str = "smart22") -> int:
+    """Prix total facture Stripe = produit + livraison Chronopost DOM."""
+    return price_product(ht) + SHIPPING.get(gamme, 89)
 
 PRODUCTS = [
-    # (product_id, name, ht_fournisseur, description, image)
-    ("wb-mur-7",   "e-WallBox Résidentielle 7 kW",       715,  "1 point de charge - 7 kW AC monophasé - murale - lecteur RFID - fabrication France E-TOTEM"),
-    ("wb-mur-22",  "e-WallBox Confort 22 kW",            845,  "1 point de charge - 22 kW AC triphasé - murale - lecteur RFID - fabrication France E-TOTEM"),
-    ("wb-pied-7",  "e-WallBox sur Pied 7 kW",            911,  "1 point de charge - 7 kW AC - sur pied - lecteur RFID - fabrication France E-TOTEM"),
-    ("wb-pied-22", "e-WallBox sur Pied 22 kW",          1041,  "1 point de charge - 22 kW AC - sur pied - lecteur RFID - fabrication France E-TOTEM"),
-    ("sm7-mur-1",  "e-Smart 7 kW Murale 1 PDC",         1485,  "1 point de charge - 7 kW AC - capot fonderie aluminium - MID - murale"),
-    ("sm7-mur-2",  "e-Smart 7 kW Murale 2 PDC",         2560,  "2 points de charge - 2x7 kW AC - capot fonderie aluminium - MID - murale + potence"),
-    ("sm7-pied-1", "e-Smart 7 kW sur Pied 1 PDC",       1517,  "1 point de charge - 7 kW AC - capot fonderie aluminium - MID - sur pied"),
-    ("sm7-pied-2", "e-Smart 7 kW sur Pied 2 PDC",       2572,  "2 points de charge - 2x7 kW AC - capot fonderie aluminium - MID - sur pied"),
-    ("sm22-mur-1", "e-Smart 22 kW Murale 1 PDC",        1568,  "1 point de charge - 22 kW AC triphasé - MID - murale"),
-    ("sm22-mur-2", "e-Smart 22 kW Murale 2 PDC",        2727,  "2 points de charge - 2x22 kW AC - MID - murale + potence"),
-    ("sm22-pied-1","e-Smart 22 kW sur Pied 1 PDC",      1599,  "1 point de charge - 22 kW AC triphasé - MID - sur pied"),
-    ("sm22-pied-2","e-Smart 22 kW sur Pied 2 PDC",      2739,  "2 points de charge - 2x22 kW AC - MID - sur pied"),
-    ("prem-2x22",  "e-Premium AC 2x22 kW (ADVENIR)",    4948,  "2 points de charge - 2x22 kW AC - borne inox - parafoudre - modele voirie publique ADVENIR"),
+    # (product_id, name, ht_fournisseur, gamme, description)
+    ("wb-mur-7",   "e-WallBox Résidentielle 7 kW",       715, "wallbox",  "1 point de charge - 7 kW AC monophasé - murale - lecteur RFID - fabrication France E-TOTEM. Livraison Chronopost DOM incluse."),
+    ("wb-mur-22",  "e-WallBox Confort 22 kW",            845, "wallbox",  "1 point de charge - 22 kW AC triphasé - murale - lecteur RFID - fabrication France E-TOTEM. Livraison Chronopost DOM incluse."),
+    ("wb-pied-7",  "e-WallBox sur Pied 7 kW",            911, "wallbox",  "1 point de charge - 7 kW AC - sur pied - lecteur RFID - fabrication France E-TOTEM. Livraison Chronopost DOM incluse."),
+    ("wb-pied-22", "e-WallBox sur Pied 22 kW",          1041, "wallbox",  "1 point de charge - 22 kW AC - sur pied - lecteur RFID - fabrication France E-TOTEM. Livraison Chronopost DOM incluse."),
+    ("sm7-mur-1",  "e-Smart 7 kW Murale 1 PDC",         1485, "smart7",   "1 point de charge - 7 kW AC - capot fonderie aluminium - MID - murale. Livraison Chronopost DOM incluse."),
+    ("sm7-mur-2",  "e-Smart 7 kW Murale 2 PDC",         2560, "smart7",   "2 points de charge - 2x7 kW AC - capot fonderie aluminium - MID - murale + potence. Livraison Chronopost DOM incluse."),
+    ("sm7-pied-1", "e-Smart 7 kW sur Pied 1 PDC",       1517, "smart7",   "1 point de charge - 7 kW AC - capot fonderie aluminium - MID - sur pied. Livraison Chronopost DOM incluse."),
+    ("sm7-pied-2", "e-Smart 7 kW sur Pied 2 PDC",       2572, "smart7",   "2 points de charge - 2x7 kW AC - capot fonderie aluminium - MID - sur pied. Livraison Chronopost DOM incluse."),
+    ("sm22-mur-1", "e-Smart 22 kW Murale 1 PDC",        1568, "smart22",  "1 point de charge - 22 kW AC triphasé - MID - murale. Livraison Chronopost DOM incluse."),
+    ("sm22-mur-2", "e-Smart 22 kW Murale 2 PDC",        2727, "smart22",  "2 points de charge - 2x22 kW AC - MID - murale + potence. Livraison Chronopost DOM incluse."),
+    ("sm22-pied-1","e-Smart 22 kW sur Pied 1 PDC",      1599, "smart22",  "1 point de charge - 22 kW AC triphasé - MID - sur pied. Livraison Chronopost DOM incluse."),
+    ("sm22-pied-2","e-Smart 22 kW sur Pied 2 PDC",      2739, "smart22",  "2 points de charge - 2x22 kW AC - MID - sur pied. Livraison Chronopost DOM incluse."),
+    ("prem-2x22",  "e-Premium AC 2x22 kW (ADVENIR)",    4948, "premium",  "2 points de charge - 2x22 kW AC - borne inox - parafoudre - modele voirie publique ADVENIR. Livraison Chronopost DOM incluse."),
 ]
 
 SITE_URL = "https://egreencitys.com"
@@ -111,12 +125,14 @@ def create_all(dry_run: bool = False) -> dict:
     results = {}
     total = len(PRODUCTS)
 
-    for i, (pid, name, ht, desc) in enumerate(PRODUCTS, 1):
-        ttc = price_ttc(ht)
+    for i, (pid, name, ht, gamme, desc) in enumerate(PRODUCTS, 1):
+        prod_price = price_product(ht)
+        ship = SHIPPING.get(gamme, 89)
+        ttc = prod_price + ship  # total facture = produit + livraison
         amount_cents = ttc * 100  # Stripe utilise les centimes
 
         print(f"\n[{i}/{total}] {name}")
-        print(f"    HT E-TOTEM : {ht} EUR  ->  TTC public : {ttc} EUR")
+        print(f"    HT E-TOTEM : {ht} EUR  ->  Produit : {prod_price} EUR + Livraison : {ship} EUR = {ttc} EUR (sans TVA)")
 
         if dry_run:
             print(f"    [DRY RUN] pas de creation reelle")
@@ -127,7 +143,14 @@ def create_all(dry_run: bool = False) -> dict:
             product = stripe.Product.create(
                 name=name,
                 description=desc,
-                metadata={"egc_product_id": pid, "coef_marge": str(COEF_MARGE)},
+                metadata={
+                    "egc_product_id": pid,
+                    "coef_marge": str(COEF_MARGE),
+                    "gamme": gamme,
+                    "product_price": str(prod_price),
+                    "shipping": str(ship),
+                    "fiscalite": "Sans TVA (Guyane) - octroi de mer a la livraison",
+                },
                 images=[f"{SITE_URL}/assets/img/products/{pid_to_img(pid)}"]
             )
             print(f"    [OK] Product cree : {product.id}")

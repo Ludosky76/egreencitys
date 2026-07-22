@@ -385,6 +385,16 @@
   <!-- Injection dynamique via JS -->
 </main>
 
+<!-- NOTE FISCALE GUYANE -->
+<div class="container" style="padding-bottom:2.5rem;">
+  <div style="background:#fff9c4;border-left:5px solid #f9a825;border-radius:0 12px 12px 0;padding:1.2rem 1.5rem;font-size:.85rem;color:#5d4037;line-height:1.6;">
+    <strong style="display:block;margin-bottom:.3rem;">📋 Fiscalité Guyane — à savoir avant de commander</strong>
+    • Prix affichés <strong>sans TVA</strong> (la Guyane est hors du champ de la TVA — article 294 du CGI).<br>
+    • <strong>Octroi de mer non inclus</strong> : cette taxe locale est prélevée par la douane <strong>à la livraison</strong>, à la charge du destinataire. Son montant dépend du taux applicable au produit et ne peut pas être fixé à l'avance par EGREENCITY'S.<br>
+    • <strong>Frais de livraison Chronopost DOM</strong> : forfait par gamme (55 € e-WallBox · 89 € e-Smart · 149 € e-Premium AC), inclus dans le total de votre commande.
+  </div>
+</div>
+
 <!-- COMMENT ÇA MARCHE -->
 <section class="info-section alt">
   <div class="info-block">
@@ -504,7 +514,7 @@
   </div>
   <div class="drawer-content" id="optContent"></div>
   <div class="drawer-footer">
-    <div class="drawer-total"><span>Total TTC</span><span id="optTotal">0 €</span></div>
+    <div class="drawer-total"><span>Total (livraison incluse)</span><span id="optTotal">0 €</span></div>
     <div class="drawer-total-split" id="optSplit"></div>
     <button id="btnStripeDirect" class="btn-drawer" style="display:none;background:#635BFF;margin-bottom:.5rem;" onclick="checkoutStripeDirect()">💳 Payer par CB — Stripe</button>
     <button class="btn-drawer" onclick="addConfiguredToCart()">Ajouter au panier</button>
@@ -519,7 +529,7 @@
   </div>
   <div class="drawer-content" id="cartContent"></div>
   <div class="drawer-footer">
-    <div class="drawer-total"><span>Total TTC</span><span id="cartTotal">0 €</span></div>
+    <div class="drawer-total"><span>Total (livraison incluse)</span><span id="cartTotal">0 €</span></div>
     <div class="drawer-total-split" id="cartSplit"></div>
     <button class="btn-drawer" onclick="checkoutFromCart()">Finaliser la commande →</button>
   </div>
@@ -536,7 +546,7 @@
 
 <!-- STRIPE + CATALOG + COMPTE CLIENT -->
 <script src="/assets/js/stripe-config.js?v=2"></script>
-<script src="/assets/js/catalog.js?v=1"></script>
+<script src="/assets/js/catalog.js?v=2"></script>
 <script src="/assets/js/customer-account.js?v=1"></script>
 
 <!-- LOGIC -->
@@ -574,9 +584,11 @@
 
       gamme.products.forEach(function (p, idx) {
         totalCount++;
-        var priceTTC = window.priceTTC(p.ht);
-        var priceSplit3 = Math.ceil(priceTTC / 3);
-        var priceSplit4 = Math.ceil(priceTTC / 4);
+        var priceTTC = window.priceProduct(p.ht);
+        var shipping = window.shippingFor(key);
+        var totalWithShip = priceTTC + shipping;
+        var priceSplit3 = Math.ceil(totalWithShip / 3);
+        var priceSplit4 = Math.ceil(totalWithShip / 4);
         var featured = idx === 1 || p.tag ? true : false;
 
         var card = document.createElement('article');
@@ -599,9 +611,10 @@
           +   '</div>'
           +   '<div class="product-price">'
           +     '<span class="price-main">' + window.formatPrice(priceTTC) + '</span>'
-          +     '<span class="price-unit">TTC</span>'
+          +     '<span class="price-unit">+ ' + window.formatPrice(shipping) + ' livraison</span>'
           +   '</div>'
-          +   '<div class="price-split">💳 <span class="x">3×</span> ' + window.formatPrice(priceSplit3)
+          +   '<div class="price-split">Total livré ' + window.formatPrice(totalWithShip)
+          +     ' · 💳 <span class="x">3×</span> ' + window.formatPrice(priceSplit3)
           +     ' · <span class="x">4×</span> ' + window.formatPrice(priceSplit4) + ' sans frais</div>'
           +   '<ul class="product-specs">' + specsHtml + '</ul>'
           +   '<div class="product-actions">'
@@ -636,11 +649,14 @@
     configuring = { gammeKey: gammeKey, product: product, options: [] };
 
     var content = document.getElementById('optContent');
-    var basePriceTTC = window.priceTTC(product.ht);
+    var basePriceTTC = window.priceProduct(product.ht);
+    var shipFee = window.shippingFor(gammeKey);
     content.innerHTML = ''
       + '<div class="drawer-summary">'
       +   '<div class="name">' + product.name + '</div>'
-      +   '<div class="base-price">Prix borne : <strong>' + window.formatPrice(basePriceTTC) + ' TTC</strong></div>'
+      +   '<div class="base-price">Prix borne : <strong>' + window.formatPrice(basePriceTTC) + '</strong>'
+      +   ' · Livraison Chronopost DOM : <strong>' + window.formatPrice(shipFee) + '</strong></div>'
+      +   '<div class="base-price" style="margin-top:.3rem;font-size:.72rem;">Prix sans TVA (Guyane) — octroi de mer à la charge du destinataire, prélevé à la livraison</div>'
       + '</div>'
       + '<h4>Ajouter des options</h4>'
       + '<div id="opt-list"></div>';
@@ -699,17 +715,20 @@
 
   window.updateConfigTotal = function () {
     if (!configuring) return;
-    var total = window.priceTTC(configuring.product.ht);
+    var shipFee = window.shippingFor(configuring.gammeKey);
+    var total = window.priceProduct(configuring.product.ht) + shipFee;
     var selected = [];
     document.querySelectorAll('#opt-list input[type="checkbox"]:checked').forEach(function (cb) {
       var ht = parseFloat(cb.dataset.optHt);
-      total += window.priceTTC(ht);
+      total += window.priceProduct(ht);
       selected.push({ id: cb.dataset.optId, ht: ht });
     });
     configuring.options = selected;
+    configuring.shipping = shipFee;
     configuring.totalTTC = total;
     document.getElementById('optTotal').textContent = window.formatPrice(total);
-    document.getElementById('optSplit').innerHTML = '💳 en 3× : <strong>' + window.formatPrice(Math.ceil(total / 3))
+    document.getElementById('optSplit').innerHTML = 'dont livraison ' + window.formatPrice(shipFee)
+      + ' · 💳 en 3× : <strong>' + window.formatPrice(Math.ceil(total / 3))
       + '</strong> · ou 4× : <strong>' + window.formatPrice(Math.ceil(total / 4)) + '</strong> sans frais';
   };
 
@@ -723,7 +742,8 @@
     cart.push({
       productId: configuring.product.id,
       name: configuring.product.name,
-      basePriceTTC: window.priceTTC(configuring.product.ht),
+      basePriceTTC: window.priceProduct(configuring.product.ht),
+      shipping: configuring.shipping || 0,
       options: opts,
       totalTTC: configuring.totalTTC
     });
@@ -750,6 +770,7 @@
           +     '<div style="flex:1;">'
           +       '<div style="font-weight:700;color:var(--green-deep);font-size:.9rem;margin-bottom:.2rem;">' + item.name + '</div>'
           +       (optNames ? '<div style="font-size:.75rem;color:var(--muted);">' + optNames + '</div>' : '')
+          +       (item.shipping ? '<div style="font-size:.72rem;color:var(--muted);">dont livraison Chronopost : ' + window.formatPrice(item.shipping) + '</div>' : '')
           +     '</div>'
           +     '<div style="text-align:right;">'
           +       '<div style="font-weight:800;color:var(--green-deep);">' + window.formatPrice(item.totalTTC) + '</div>'
@@ -761,8 +782,11 @@
       });
       content.innerHTML = html;
       document.getElementById('cartTotal').textContent = window.formatPrice(total);
-      document.getElementById('cartSplit').innerHTML = '💳 en 3× : <strong>' + window.formatPrice(Math.ceil(total / 3))
-        + '</strong> · ou 4× : <strong>' + window.formatPrice(Math.ceil(total / 4)) + '</strong> sans frais';
+      var totalShip = cart.reduce(function (s, it) { return s + (it.shipping || 0); }, 0);
+      document.getElementById('cartSplit').innerHTML = 'dont livraison ' + window.formatPrice(totalShip)
+        + ' · 💳 en 3× : <strong>' + window.formatPrice(Math.ceil(total / 3))
+        + '</strong> · ou 4× : <strong>' + window.formatPrice(Math.ceil(total / 4)) + '</strong> sans frais'
+        + '<br><span style="font-size:.7rem;">Hors octroi de mer (prélevé par la douane à la livraison)</span>';
     }
     openDrawer('cart');
   };
@@ -788,7 +812,9 @@
 
     var box = document.getElementById('order-summary');
     box.style.display = 'block';
-    box.innerHTML = '<strong>Votre commande :</strong><br>' + lines.join('<br>') + '<br><br><strong>Total : ' + window.formatPrice(total) + ' TTC</strong>';
+    box.innerHTML = '<strong>Votre commande :</strong><br>' + lines.join('<br>')
+      + '<br><br><strong>Total : ' + window.formatPrice(total) + '</strong> (livraison Chronopost DOM incluse)'
+      + '<br><span style="font-size:.78rem;color:#5d4037;">Prix sans TVA — octroi de mer à la charge du destinataire, prélevé par la douane à la livraison.</span>';
 
     closeAllDrawers();
     document.getElementById('commande').scrollIntoView({ behavior: 'smooth', block: 'start' });

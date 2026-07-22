@@ -1,40 +1,71 @@
 /* ==========================================================================
    EGREENCITY'S — Catalogue boutique WallBox
    ==========================================================================
-   Source : Devis E-TOTEM installateurs 2026
-   Structure :
-     - COEF_MARGE   : coefficient applique au prix HT fournisseur (marge brute)
-     - TVA_GUYANE   : TVA DOM 8,5 % ajoutee au dessus
-     - Prix TTC public = HT * COEF_MARGE * (1 + TVA_GUYANE)
-   Pour modifier la marge : changer COEF_MARGE ci-dessous.
+   IMPORTANT — FISCALITE GUYANE :
+     - PAS de TVA (Guyane hors champ TVA, art. 294 CGI)
+     - OCTROI DE MER preleve par la douane a la LIVRAISON (variable selon
+       le taux applicable au produit, non connu a l'avance) - a la charge
+       du destinataire final
+     - Frais de livraison Chronopost DOM : forfait par gamme (voir SHIPPING)
+
+   Structure de prix boutique :
+     - Prix produit = HT fournisseur E-TOTEM * COEF_MARGE (arrondi marketing)
+     - Frais livraison Chronopost DOM ajoutes au total
+     - Total facture (sans TVA) = prix produit + frais livraison
+     - Octroi de mer = a la charge du client, preleve a la livraison
    ========================================================================== */
 
 /* ================================================================
-   ⚙️ CONFIGURATION MARGE — MODIFIABLE
+   CONFIGURATION MARGE ET LIVRAISON
    ================================================================
-   1.00 = prix coutant fournisseur (aucune marge)
-   1.20 = +20 % de marge brute
-   1.35 = +35 % (recommande dropshipping, DEFAUT)
-   1.50 = +50 % (marge confortable)
+   COEF_MARGE :
+     1.00 = prix coutant fournisseur (aucune marge)
+     1.35 = +35 % (recommande dropshipping, DEFAUT)
+     1.50 = +50 % (marge confortable)
+   SHIPPING (frais Chronopost DOM) :
+     Par gamme, en fonction du poids typique
+     e-WallBox   : ~8 kg   -> 55 EUR
+     e-Smart     : ~25-35 kg -> 89 EUR
+     e-Premium AC: ~60 kg (palette) -> 149 EUR
    ================================================================ */
 window.CATALOG_CONFIG = {
-  COEF_MARGE: 1.35,     // <-- Ajustez ici votre marge dropshipping
-  TVA_GUYANE: 0.085,    // 8,5 % DOM
-  FRAIS_LIVRAISON: 0,   // 0 = livraison offerte (deja incluse fournisseur)
+  COEF_MARGE: 1.35,       // <-- Ajustez ici votre marge dropshipping
   DEVISE: '€',
-  ARRONDI: 10           // arrondi TTC a 10 € pres (marketing)
+  ARRONDI: 10,            // arrondi marketing a 10 € pres (donne 999, 1049, etc.)
+  SHIPPING: {
+    wallbox: 55,          // Frais livraison Chronopost DOM e-WallBox
+    smart7:  89,          // e-Smart 7 kW
+    smart22: 89,          // e-Smart 22 kW
+    premium: 149          // e-Premium AC (palette lourde)
+  },
+  // Mentions legales affichees a divers endroits
+  MENTION_TVA:    'Prix sans TVA (Guyane hors champ TVA - art. 294 CGI)',
+  MENTION_OCTROI: 'Octroi de mer non inclus - à la charge du destinataire, prélevé par la douane à la livraison'
 };
 
-/* Fonction utilitaire — calcule le prix TTC final arrondi */
-window.priceTTC = function (htFournisseur) {
+/* Prix produit seul (sans livraison, sans TVA) */
+window.priceProduct = function (htFournisseur) {
   var C = window.CATALOG_CONFIG;
-  var raw = htFournisseur * C.COEF_MARGE * (1 + C.TVA_GUYANE);
+  var raw = htFournisseur * C.COEF_MARGE;
   if (C.ARRONDI > 0) {
-    // Arrondi marketing : XXX9 (ex : 999, 1490, 2790)
     var rounded = Math.round(raw / C.ARRONDI) * C.ARRONDI;
-    return rounded - 1; // Ex : 1500 → 1499
+    return rounded - 1; // 999, 1049, 2349...
   }
   return Math.round(raw);
+};
+
+/* Alias pour retrocompatibilite (ex-priceTTC → maintenant priceProduct) */
+window.priceTTC = window.priceProduct;
+
+/* Frais de livraison Chronopost DOM par gamme */
+window.shippingFor = function (gamme) {
+  var C = window.CATALOG_CONFIG;
+  return C.SHIPPING[gamme] || 89;
+};
+
+/* Total complet : produit + livraison */
+window.priceTotalWithShipping = function (htFournisseur, gamme) {
+  return window.priceProduct(htFournisseur) + window.shippingFor(gamme);
 };
 
 /* Formatage prix */

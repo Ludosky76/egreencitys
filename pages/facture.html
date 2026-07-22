@@ -102,12 +102,13 @@ async function renderInvoice() {
     return;
   }
 
-  // Calcul des lignes de facture
+  // Calcul des lignes de facture — FISCALITE GUYANE :
+  // pas de TVA (art. 294 CGI), octroi de mer preleve par la douane a la livraison
   var items = o.items && o.items.length ? o.items : [{name: o.product || 'Borne de recharge', qty: 1, priceTTC: o.amount || 0}];
-  var totalTTC = items.reduce(function(s, it){ return s + (it.priceTTC || 0) * (it.qty || 1); }, 0);
-  if (totalTTC === 0) totalTTC = o.amount || 0;
-  var tva = totalTTC - (totalTTC / 1.085);   // TVA Guyane 8,5 %
-  var totalHT = totalTTC - tva;
+  var sousTotal = items.reduce(function(s, it){ return s + (it.priceTTC || 0) * (it.qty || 1); }, 0);
+  var shipping = o.shipping || 0;
+  var totalTTC = sousTotal + shipping;
+  if (sousTotal === 0) { totalTTC = o.amount || 0; sousTotal = totalTTC - shipping; }
 
   var itemsHtml = items.map(function(it){
     var qty = it.qty || 1;
@@ -116,10 +117,19 @@ async function renderInvoice() {
       + '<tr>'
       +   '<td class="name">' + (it.name || 'Produit') + (it.desc ? '<div class="small">'+it.desc+'</div>' : '') + '</td>'
       +   '<td>' + qty + '</td>'
-      +   '<td>' + fmt(ptu / 1.085) + ' €</td>'
+      +   '<td>' + fmt(ptu) + ' €</td>'
       +   '<td><strong>' + fmt(qty * ptu) + ' €</strong></td>'
       + '</tr>';
   }).join('');
+  if (shipping > 0) {
+    itemsHtml += ''
+      + '<tr>'
+      +   '<td class="name">Livraison Chronopost DOM<div class="small">Expédition vers la Guyane — suivi inclus</div></td>'
+      +   '<td>1</td>'
+      +   '<td>' + fmt(shipping) + ' €</td>'
+      +   '<td><strong>' + fmt(shipping) + ' €</strong></td>'
+      + '</tr>';
+  }
 
   wrap.innerHTML = ''
   + '<div class="invoice">'
@@ -131,7 +141,7 @@ async function renderInvoice() {
   +         '1 rue Anangosi, Résidence La Rougerie<br>'
   +         '97355 MACOURIA — Guyane française<br>'
   +         'Tél : +33 6 51 14 11 18 · egreencitys@gmail.com<br>'
-  +         'RCS Cayenne 878 682 854 · TVA FR00878682854'
+  +         'RCS Cayenne 878 682 854 · TVA non applicable (art. 294 CGI)'
   +       '</div>'
   +     '</div>'
   +     '<div class="header-right">'
@@ -156,14 +166,15 @@ async function renderInvoice() {
   +   '</div>'
 
   +   '<table>'
-  +     '<thead><tr><th>Désignation</th><th>Qté</th><th>PU HT</th><th>Total TTC</th></tr></thead>'
+  +     '<thead><tr><th>Désignation</th><th>Qté</th><th>PU</th><th>Total</th></tr></thead>'
   +     '<tbody>' + itemsHtml + '</tbody>'
   +   '</table>'
 
   +   '<div class="totals">'
-  +     '<div class="tot-row"><span>Total HT</span><span>' + fmt(totalHT) + ' €</span></div>'
-  +     '<div class="tot-row"><span>TVA Guyane (8,5 %)</span><span>' + fmt(tva) + ' €</span></div>'
-  +     '<div class="tot-row grand"><span>TOTAL TTC</span><span>' + fmt(totalTTC) + ' €</span></div>'
+  +     '<div class="tot-row"><span>Sous-total produits</span><span>' + fmt(sousTotal) + ' €</span></div>'
+  +     (shipping > 0 ? '<div class="tot-row"><span>Livraison Chronopost DOM</span><span>' + fmt(shipping) + ' €</span></div>' : '')
+  +     '<div class="tot-row"><span>TVA</span><span>Non applicable</span></div>'
+  +     '<div class="tot-row grand"><span>TOTAL À PAYER</span><span>' + fmt(totalTTC) + ' €</span></div>'
   +   '</div>'
 
   +   '<div class="payment-info">'
@@ -171,11 +182,18 @@ async function renderInvoice() {
   +     'Référence transaction : ' + (o.stripe_payment_intent || o.stripe_session || 'consulter votre reçu Stripe')
   +   '</div>'
 
+  +   '<div class="octroi-notice" style="background:#fff9c4;border-left:4px solid #f9a825;padding:.9rem 1.2rem;border-radius:0 8px 8px 0;margin-top:1rem;font-size:.8rem;color:#5d4037;line-height:1.6;">'
+  +     '⚠️ <strong>Octroi de mer non inclus.</strong> Cette taxe locale est prélevée séparément par la douane guyanaise '
+  +     'à la livraison, selon le taux applicable au produit. Elle est à la charge du destinataire et n\'est pas '
+  +     'facturée par EGREENCITY\'S.'
+  +   '</div>'
+
   +   '<div class="footer-invoice">'
   +     '<strong>Conditions générales</strong><br>'
-  +     'Facture acquittée. TVA DOM 8,5 % applicable. Garantie constructeur 24 mois pièces et main d\'œuvre. '
-  +     'SAV local EGREENCITY\'S sous 5 jours ouvrés. Droit de rétractation 14 jours pour les particuliers '
-  +     '(article L.221-18 du Code de la consommation).<br><br>'
+  +     'Facture acquittée. <strong>Prix sans TVA</strong> — la Guyane est hors du champ d\'application de la TVA '
+  +     '(article 294 du Code général des impôts). Octroi de mer à la charge du destinataire (voir ci-dessus). '
+  +     'Garantie constructeur 24 mois pièces et main d\'œuvre. SAV local EGREENCITY\'S sous 5 jours ouvrés. '
+  +     'Droit de rétractation 14 jours pour les particuliers (article L.221-18 du Code de la consommation).<br><br>'
   +     'En cas de réclamation : egreencitys@gmail.com — Médiation via CMAP Paris.'
   +   '</div>'
   + '</div>';
