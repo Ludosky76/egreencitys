@@ -16,31 +16,28 @@
    ========================================================================== */
 
 /* ================================================================
-   CONFIGURATION MARGE ET LIVRAISON
+   CONFIGURATION MARGE
    ================================================================
    COEF_MARGE :
      1.00 = prix coutant fournisseur (aucune marge)
      1.35 = +35 % (recommande dropshipping, DEFAUT)
      1.50 = +50 % (marge confortable)
-   SHIPPING (frais Chronopost DOM) :
-     Par gamme, en fonction du poids typique
-     e-WallBox   : ~8 kg   -> 55 EUR
-     e-Smart     : ~25-35 kg -> 89 EUR
-     e-Premium AC: ~60 kg (palette) -> 149 EUR
+
+   LIVRAISON :
+     Les frais de livraison Chronopost DOM vers la Guyane NE SONT PAS
+     forfaitaires. Ils dependent du poids reel du colis et de la commune
+     de destination. Ils sont calcules par Chronopost et communiques au
+     client AVANT la validation de la commande (devis).
+     -> Le prix affiche en boutique = PRIX PRODUIT SEUL (hors livraison).
    ================================================================ */
 window.CATALOG_CONFIG = {
   COEF_MARGE: 1.35,       // <-- Ajustez ici votre marge dropshipping
   DEVISE: '€',
   ARRONDI: 10,            // arrondi marketing a 10 € pres (donne 999, 1049, etc.)
-  SHIPPING: {
-    wallbox: 55,          // Frais livraison Chronopost DOM e-WallBox
-    smart7:  89,          // e-Smart 7 kW
-    smart22: 89,          // e-Smart 22 kW
-    premium: 149          // e-Premium AC (palette lourde)
-  },
-  // Mentions legales affichees a divers endroits
+  // Mentions legales / info affichees a divers endroits
   MENTION_TVA:    'Prix sans TVA (Guyane hors champ TVA - art. 294 CGI)',
-  MENTION_OCTROI: 'Octroi de mer non inclus - à la charge du destinataire, prélevé par la douane à la livraison'
+  MENTION_OCTROI: 'Octroi de mer non inclus - à la charge du destinataire, prélevé par la douane à la livraison',
+  MENTION_LIVRAISON: 'Frais de livraison Chronopost DOM en sus, calculés selon le poids et votre commune, communiqués avant validation de commande'
 };
 
 /* Prix produit seul (sans livraison, sans TVA) */
@@ -57,15 +54,29 @@ window.priceProduct = function (htFournisseur) {
 /* Alias pour retrocompatibilite (ex-priceTTC → maintenant priceProduct) */
 window.priceTTC = window.priceProduct;
 
-/* Frais de livraison Chronopost DOM par gamme */
-window.shippingFor = function (gamme) {
-  var C = window.CATALOG_CONFIG;
-  return C.SHIPPING[gamme] || 89;
+/* ================================================================
+   POIDS REELS (kg) — pour le devis de livraison Chronopost DOM
+   ================================================================
+   Estimations d'apres les fiches E-TOTEM. Le colis > 30 kg necessite
+   une palette (tarif Chronopost superieur / DPD palette).
+   ================================================================ */
+window.PRODUCT_WEIGHTS = {
+  'wb-mur-7':    8,
+  'wb-mur-22':   9,
+  'wb-pied-7':  18,
+  'wb-pied-22': 19,
+  'sm7-mur-1':  15,
+  'sm7-mur-2':  22,
+  'sm7-pied-1': 30,
+  'sm7-pied-2': 38,
+  'sm22-mur-1': 15,
+  'sm22-mur-2': 22,
+  'sm22-pied-1':30,
+  'sm22-pied-2':38,
+  'prem-2x22':  60
 };
-
-/* Total complet : produit + livraison */
-window.priceTotalWithShipping = function (htFournisseur, gamme) {
-  return window.priceProduct(htFournisseur) + window.shippingFor(gamme);
+window.weightFor = function (productId) {
+  return window.PRODUCT_WEIGHTS[productId] || 15;
 };
 
 /* Formatage prix */

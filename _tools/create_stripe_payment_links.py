@@ -73,18 +73,12 @@ def load_secret_key() -> str:
 #  Catalogue produits (miroir de catalog.js)
 # ============================================================
 # FISCALITE GUYANE : PAS de TVA (art. 294 CGI).
-# Le prix Stripe = prix produit + frais de livraison Chronopost DOM.
+# Le Payment Link Stripe facture le PRODUIT SEUL.
+# La livraison Chronopost DOM (variable selon poids + commune) est devisee
+# separement et payee via un 2e lien de paiement.
 # L'octroi de mer est preleve par la douane a la livraison (hors facture).
 COEF_MARGE = 1.35
 ARRONDI = 10
-
-# Frais de livraison Chronopost DOM par gamme (miroir de catalog.js SHIPPING)
-SHIPPING = {
-    "wallbox": 55,
-    "smart7":  89,
-    "smart22": 89,
-    "premium": 149,
-}
 
 def price_product(ht: float) -> int:
     """Prix produit seul (sans TVA, sans livraison)."""
@@ -92,9 +86,13 @@ def price_product(ht: float) -> int:
     rounded = round(raw / ARRONDI) * ARRONDI
     return rounded - 1  # 999, 1049, 2349...
 
-def price_ttc(ht: float, gamme: str = "smart22") -> int:
-    """Prix total facture Stripe = produit + livraison Chronopost DOM."""
-    return price_product(ht) + SHIPPING.get(gamme, 89)
+# Poids reels (kg) par produit — pour info devis Chronopost (miroir catalog.js)
+WEIGHTS = {
+    "wb-mur-7": 8, "wb-mur-22": 9, "wb-pied-7": 18, "wb-pied-22": 19,
+    "sm7-mur-1": 15, "sm7-mur-2": 22, "sm7-pied-1": 30, "sm7-pied-2": 38,
+    "sm22-mur-1": 15, "sm22-mur-2": 22, "sm22-pied-1": 30, "sm22-pied-2": 38,
+    "prem-2x22": 60,
+}
 
 PRODUCTS = [
     # (product_id, name, ht_fournisseur, gamme, description)
@@ -127,12 +125,13 @@ def create_all(dry_run: bool = False) -> dict:
 
     for i, (pid, name, ht, gamme, desc) in enumerate(PRODUCTS, 1):
         prod_price = price_product(ht)
-        ship = SHIPPING.get(gamme, 89)
-        ttc = prod_price + ship  # total facture = produit + livraison
-        amount_cents = ttc * 100  # Stripe utilise les centimes
+        # Le Payment Link facture le PRODUIT SEUL (sans TVA, sans livraison).
+        # La livraison Chronopost DOM est devisee separement selon poids + commune,
+        # et payee via un 2e lien de paiement apres confirmation du devis.
+        amount_cents = prod_price * 100  # Stripe utilise les centimes
 
         print(f"\n[{i}/{total}] {name}")
-        print(f"    HT E-TOTEM : {ht} EUR  ->  Produit : {prod_price} EUR + Livraison : {ship} EUR = {ttc} EUR (sans TVA)")
+        print(f"    HT E-TOTEM : {ht} EUR  ->  Produit seul : {prod_price} EUR (sans TVA, hors livraison Chronopost)")
 
         if dry_run:
             print(f"    [DRY RUN] pas de creation reelle")
@@ -148,8 +147,8 @@ def create_all(dry_run: bool = False) -> dict:
                     "coef_marge": str(COEF_MARGE),
                     "gamme": gamme,
                     "product_price": str(prod_price),
-                    "shipping": str(ship),
-                    "fiscalite": "Sans TVA (Guyane) - octroi de mer a la livraison",
+                    "poids_kg": str(WEIGHTS.get(pid, 15)),
+                    "fiscalite": "Sans TVA (Guyane) - livraison Chronopost devisee separement - octroi de mer a la livraison",
                 },
                 images=[f"{SITE_URL}/assets/img/products/{pid_to_img(pid)}"]
             )
