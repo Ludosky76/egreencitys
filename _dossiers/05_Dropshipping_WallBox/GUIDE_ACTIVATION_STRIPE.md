@@ -14,6 +14,44 @@
 - ✅ Facturation, reçus, remboursements automatiques
 - ✅ Payment Links = **aucun code à écrire**, tout dans le dashboard
 - ✅ Certifié PCI-DSS niveau 1, RGPD, 3D Secure
+- ✅ **Paiement en 3× / 4×** via Klarna (activation dashboard, voir plus bas)
+
+---
+
+## ⭐ Activer le paiement en 3× / 4× (Klarna)
+
+Le paiement fractionné (3× ou 4× sans frais pour le client) se fait via
+**Klarna**, intégré nativement à Stripe. Aucune ligne de code : c'est un
+réglage dans votre dashboard.
+
+### Étapes
+1. Dashboard Stripe → **Réglages** → **Moyens de paiement**
+   (https://dashboard.stripe.com/settings/payment_methods)
+2. Chercher **Klarna** dans la liste
+3. Cliquer **Activer** (Klarna gère le "Payer en 3 fois" en France)
+4. C'est tout : sur **chaque Payment Link**, le client verra automatiquement
+   l'option « Payer en plusieurs fois avec Klarna » à côté de la carte bancaire.
+
+### Comment ça marche pour vous
+- Le client choisit 3× ou 4× au moment de payer
+- **Klarna vous verse la totalité immédiatement** (comme un paiement CB)
+- Klarna se rembourse ensuite auprès du client — **aucun risque d'impayé**
+- Frais marchand Klarna : ~2 à 3 % (légèrement plus que la CB simple)
+
+### Montants éligibles
+- Klarna « Pay in 3 » France : commandes de **35 € à 1 000 €** environ
+- Au-delà, Klarna propose du paiement en 3× classique ou finance jusqu'à
+  plusieurs milliers d'euros selon le profil client
+
+> **Note** : pour les grosses bornes (> 1 000 €), le client peut aussi utiliser
+> sa CB en une fois, ou vous pouvez lui proposer un financement séparé
+> (crédit-bail / ADVENIR pour les pros).
+
+### Alternative : Cofidis Pay 3xCB / 4xCB
+Si vous préférez un partenaire français dédié au fractionné (plafonds plus
+élevés, jusqu'à 6 000 €), **Cofidis Pay** s'intègre aussi. Il nécessite un
+contrat séparé (cofidis-retail.com). Le bouton « Payer en 3×/4× » de la
+boutique pointe alors vers Cofidis au lieu de Klarna.
 
 ---
 
