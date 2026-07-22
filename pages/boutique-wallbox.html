@@ -834,13 +834,13 @@
       if (c.commune) { var cm = document.getElementById('commune'); if (cm && !cm.value) cm.value = c.commune; }
     }
 
-    // Affiche le bouton "Payer par carte" si la commande est mono-produit
-    // sans option (un Payment Link Stripe existe pour ce produit exact).
+    // Affiche le bouton "Payer par carte" si AU MOINS un produit du panier
+    // dispose d'un lien de paiement Stripe.
     var payBtn = document.getElementById('btnPayStripe');
-    var eligible = (cart.length === 1
-                    && (!cart[0].options || cart[0].options.length === 0)
-                    && window.hasStripeLink && window.hasStripeLink(cart[0].productId));
-    payBtn.style.display = eligible ? 'block' : 'none';
+    var anyPayable = cart.some(function (it) {
+      return window.hasStripeLink && window.hasStripeLink(it.productId);
+    });
+    payBtn.style.display = anyPayable ? 'block' : 'none';
 
     closeAllDrawers();
     document.getElementById('commande').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -868,22 +868,50 @@
     var rgpd = document.querySelector('input[name="rgpd"]');
     if (rgpd && !rgpd.checked) { showToast('Merci d\'accepter le traitement de vos données'); return; }
 
-    if (cart.length !== 1) return;
-    var item = cart[0];
-    var link = window.STRIPE_PAYMENT_LINKS[item.productId];
-    if (!link) { showToast('Paiement en ligne indisponible pour ce produit'); return; }
+    var email = encodeURIComponent(document.getElementById('email').value.trim());
 
     // Enregistre la commande dans le compte si connecte
     if (window.EGCCustomer && window.EGCCustomer.isLoggedIn()) {
-      try { window.EGCCustomer.addOrder({ items: [{ name: item.name, total: item.totalTTC }], total: item.totalTTC, status: 'en_attente' }); } catch (e) {}
+      try {
+        var items = cart.map(function (it) { return { name: it.name, total: it.totalTTC }; });
+        var totalAll = cart.reduce(function (s, it) { return s + it.totalTTC; }, 0);
+        window.EGCCustomer.addOrder({ items: items, total: totalAll, status: 'en_attente' });
+      } catch (e) {}
     }
 
-    // Pre-remplit l'email Stripe + passe les infos client en reference
-    var email = encodeURIComponent(document.getElementById('email').value.trim());
-    var ref = encodeURIComponent(item.productId + '_' + Date.now());
-    var sep = link.indexOf('?') > -1 ? '&' : '?';
-    var url = link + sep + 'prefilled_email=' + email + '&client_reference_id=' + ref;
-    window.location.href = url;
+    // CAS 1 — un seul produit : redirection directe vers le paiement Stripe
+    if (cart.length === 1) {
+      var item = cart[0];
+      var link = window.STRIPE_PAYMENT_LINKS[item.productId];
+      if (!link) { showToast('Paiement en ligne indisponible pour ce produit — utilisez « Envoyer ma commande »'); return; }
+      var ref = encodeURIComponent(item.productId + '_' + Date.now());
+      var sep = link.indexOf('?') > -1 ? '&' : '?';
+      window.location.href = link + sep + 'prefilled_email=' + email + '&client_reference_id=' + ref;
+      return;
+    }
+
+    // CAS 2 — plusieurs produits : affiche un lien de paiement par article
+    var box = document.getElementById('order-summary');
+    var html = '<strong>💳 Réglez chaque article par carte :</strong><br><br>';
+    cart.forEach(function (it) {
+      var link = window.STRIPE_PAYMENT_LINKS[it.productId];
+      if (link) {
+        var sep = link.indexOf('?') > -1 ? '&' : '?';
+        var url = link + sep + 'prefilled_email=' + email;
+        html += '<a href="' + url + '" target="_blank" rel="noopener" '
+             +  'style="display:inline-block;background:#635BFF;color:#fff;padding:.6rem 1.1rem;'
+             +  'border-radius:50px;text-decoration:none;font-weight:700;font-size:.82rem;margin:.25rem .3rem .25rem 0;">'
+             +  '💳 Payer ' + it.name + ' — ' + window.formatPrice(it.totalTTC) + '</a>';
+      } else {
+        html += '<div style="font-size:.82rem;color:#5d4037;margin:.3rem 0;">• ' + it.name
+             +  ' — réglé sur devis</div>';
+      }
+    });
+    html += '<br><span style="font-size:.78rem;color:#5d4037;">Les options et la livraison Chronopost DOM sont ajoutées au devis que nous vous envoyons sous 24 h.</span>';
+    box.style.display = 'block';
+    box.innerHTML = html;
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showToast('Cliquez sur chaque bouton violet pour payer vos articles');
   };
 
   function updateCartBadge() {
