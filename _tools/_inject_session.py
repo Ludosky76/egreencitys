@@ -11,11 +11,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 CUST = '<script src="/assets/js/customer-account.js?v=1"></script>'
 SESS = '<script src="/assets/js/session-nav.js?v=1" defer></script>'
+MNAV = '<script src="/assets/js/mobile-nav.js?v=1" defer></script>'
 
 PAGES = [
     "index.html",
     "pages/produits.html", "pages/reseau.html", "pages/investisseurs.html",
     "pages/economies.html", "pages/faq.html", "pages/blog.html", "pages/devis.html",
+    "pages/boutique-wallbox.html",
     "pages/compte.html", "pages/suivi.html", "pages/facture.html",
     "pages/legal/cgv.html", "pages/legal/mentions-legales.html",
     "pages/communes/borne-recharge-cayenne.html",
@@ -37,7 +39,8 @@ for rel in PAGES:
 
     has_cust = "customer-account.js" in html
     has_sess = "session-nav.js" in html
-    if has_cust and has_sess:
+    has_mnav = "mobile-nav.js" in html
+    if has_cust and has_sess and has_mnav:
         n_skip += 1
         continue
 
@@ -46,6 +49,8 @@ for rel in PAGES:
         inject += "  " + CUST + "\n"
     if not has_sess:
         inject += "  " + SESS + "\n"
+    if not has_mnav:
+        inject += "  " + MNAV + "\n"
 
     new = re.sub(r"(</body>)", inject + r"\1", html, count=1, flags=re.IGNORECASE)
     if new != html:
