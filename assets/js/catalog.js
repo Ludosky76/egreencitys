@@ -34,9 +34,21 @@ window.CATALOG_CONFIG = {
   COEF_MARGE: 1.35,       // <-- Ajustez ici votre marge dropshipping
   DEVISE: '€',
   ARRONDI: 10,            // arrondi marketing a 10 € pres (donne 999, 1049, etc.)
+
+  // OCTROI DE MER Guyane (TGOM 2026, delib. AP-2026-47) — code 8504.40
+  // Bornes = convertisseurs statiques / chargeurs d'accumulateurs :
+  //   Octroi de mer (OM externe)       : 17 %
+  //   Octroi de mer regional (OMR ext.) :  3 %
+  //   Total                             : 20 %
+  // Preleve par la douane a la LIVRAISON, a la charge du destinataire.
+  CODE_DOUANE:  '8504 40',
+  OCTROI_OM:    0.17,     // octroi de mer externe
+  OCTROI_OMR:   0.03,     // octroi de mer regional externe
+  OCTROI_TOTAL: 0.20,     // total (17 % + 3 %)
+
   // Mentions legales / info affichees a divers endroits
   MENTION_TVA:    'Prix sans TVA (Guyane hors champ TVA - art. 294 CGI)',
-  MENTION_OCTROI: 'Octroi de mer non inclus - à la charge du destinataire, prélevé par la douane à la livraison',
+  MENTION_OCTROI: 'Octroi de mer 20 % (code douanier 8504.40) preleve par la douane a la livraison, a la charge du destinataire',
   MENTION_LIVRAISON: 'Frais de livraison Chronopost DOM en sus, calculés selon le poids et votre commune, communiqués avant validation de commande'
 };
 
@@ -53,6 +65,13 @@ window.priceProduct = function (htFournisseur) {
 
 /* Alias pour retrocompatibilite (ex-priceTTC → maintenant priceProduct) */
 window.priceTTC = window.priceProduct;
+
+/* Estimation de l'octroi de mer (20 %) sur un montant (base = valeur produit).
+   Note : l'assiette douaniere reelle est la valeur CAF (produit + fret + assurance).
+   On donne ici une estimation basee sur le prix produit pour la transparence. */
+window.octroiMer = function (montant) {
+  return Math.round(montant * window.CATALOG_CONFIG.OCTROI_TOTAL);
+};
 
 /* ================================================================
    POIDS REELS (kg) — pour le devis de livraison Chronopost DOM

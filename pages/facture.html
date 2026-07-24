@@ -109,6 +109,8 @@ async function renderInvoice() {
   var shipping = o.shipping || 0;
   var totalTTC = sousTotal + shipping;
   if (sousTotal === 0) { totalTTC = o.amount || 0; sousTotal = totalTTC - shipping; }
+  // Octroi de mer estimatif : 20 % de la valeur des produits (code 8504.40)
+  var octroiEstime = Math.round(sousTotal * 0.20);
 
   var itemsHtml = items.map(function(it){
     var qty = it.qty || 1;
@@ -183,9 +185,11 @@ async function renderInvoice() {
   +   '</div>'
 
   +   '<div class="octroi-notice" style="background:#fff9c4;border-left:4px solid #f9a825;padding:.9rem 1.2rem;border-radius:0 8px 8px 0;margin-top:1rem;font-size:.8rem;color:#5d4037;line-height:1.6;">'
-  +     '⚠️ <strong>Octroi de mer non inclus.</strong> Cette taxe locale est prélevée séparément par la douane guyanaise '
-  +     'à la livraison, selon le taux applicable au produit. Elle est à la charge du destinataire et n\'est pas '
-  +     'facturée par EGREENCITY\'S.'
+  +     '⚠️ <strong>Octroi de mer non inclus (estimé ~' + fmt(octroiEstime) + ' €).</strong> '
+  +     'Nos bornes relèvent du code douanier <strong>8504.40</strong> (convertisseurs statiques / chargeurs), soumis à un octroi de mer de '
+  +     '<strong>20 %</strong> (17 % OM + 3 % OMR) au Tarif Général de la Collectivité Territoriale de Guyane (TGOM 2026). '
+  +     'Cette taxe est prélevée séparément par la douane à la livraison, sur la valeur CAF (bien + fret + assurance). '
+  +     'Elle est à la charge du destinataire et n\'est pas facturée par EGREENCITY\'S.'
   +   '</div>'
 
   +   '<div class="footer-invoice">'

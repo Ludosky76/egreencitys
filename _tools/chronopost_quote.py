@@ -195,6 +195,7 @@ def main() -> int:
     ap.add_argument("--product", help="ID produit catalogue (ex: wb-mur-7)")
     ap.add_argument("--weight", type=float, help="Poids en kg (si pas de --product)")
     ap.add_argument("--commune", required=True, help="Commune de livraison")
+    ap.add_argument("--valeur", type=float, help="Valeur du produit EUR (pour calcul octroi de mer 20%%)")
     ap.add_argument("--grid", action="store_true", help="Forcer la grille (pas d'appel API)")
     args = ap.parse_args()
 
@@ -244,9 +245,28 @@ def main() -> int:
     print(f"  Source : {res['source']}")
     if res.get("palette"):
         print(f"  [!] Colis > 30 kg : transport palette — confirmer avec le transporteur.")
+
+    # Octroi de mer (20 %) si valeur produit fournie
+    if args.valeur:
+        octroi = round(args.valeur * 0.20)
+        print("\n" + "=" * 56)
+        print("  OCTROI DE MER GUYANE (code 8504.40)")
+        print("=" * 56)
+        print(f"  Valeur produit    : {args.valeur:.0f} EUR")
+        print(f"  Taux OM  (externe): 17 %")
+        print(f"  Taux OMR (externe):  3 %")
+        print(f"  Total octroi 20 % : {octroi} EUR")
+        print(f"  (assiette reelle = valeur CAF : produit + fret + assurance)")
+        print("-" * 56)
+        total_client = res['prix_final'] + octroi
+        print(f"  RAPPEL — a la charge du client :")
+        print(f"    Livraison Chronopost : {res['prix_final']} EUR")
+        print(f"    Octroi de mer douane : {octroi} EUR (preleve a la livraison)")
+        print(f"    Total taxes+port     : {total_client} EUR")
+
     print("\n  A communiquer au client AVANT validation de la commande.")
-    print("  Puis creer un 2e lien de paiement Stripe pour la livraison,")
-    print("  ou l'inclure dans le devis global.\n")
+    print("  L'octroi de mer est preleve par la douane a la livraison")
+    print("  (pas encaisse par EGREENCITY'S).\n")
     return 0
 
 

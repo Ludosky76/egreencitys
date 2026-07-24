@@ -161,8 +161,10 @@
     .product-price{margin-bottom:.4rem;}
     .price-main{font-size:1.7rem;font-weight:800;color:var(--green-deep);line-height:1;}
     .price-unit{font-size:.75rem;color:var(--muted);margin-left:.2rem;}
-    .price-split{font-size:.75rem;color:var(--green-dark);font-weight:600;margin-bottom:.9rem;}
+    .price-split{font-size:.75rem;color:var(--green-dark);font-weight:600;margin-bottom:.5rem;}
     .price-split .x{background:var(--green);color:#fff;padding:1px 6px;border-radius:5px;font-size:.68rem;margin:0 3px;font-weight:800;}
+    .octroi-note{font-size:.72rem;color:var(--muted);background:#f4fff0;border-radius:8px;padding:.4rem .6rem;margin-bottom:.9rem;line-height:1.4;}
+    .octroi-note strong{color:var(--green-deep);}
     .product-specs{list-style:none;padding:0;margin:.5rem 0 1.2rem;flex-grow:1;}
     .product-specs li{padding:3px 0;font-size:.78rem;color:var(--text);position:relative;padding-left:16px;}
     .product-specs li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:800;}
@@ -385,7 +387,7 @@
   <div style="background:#fff9c4;border-left:5px solid #f9a825;border-radius:0 12px 12px 0;padding:1.2rem 1.5rem;font-size:.85rem;color:#5d4037;line-height:1.6;">
     <strong style="display:block;margin-bottom:.3rem;">📋 Fiscalité & livraison Guyane — à savoir avant de commander</strong>
     • Prix affichés <strong>sans TVA</strong> (la Guyane est hors du champ de la TVA — article 294 du CGI).<br>
-    • <strong>Octroi de mer non inclus</strong> : cette taxe locale est prélevée par la douane <strong>à la livraison</strong>, à la charge du destinataire. Son montant dépend du taux applicable au produit et ne peut pas être fixé à l'avance par EGREENCITY'S.<br>
+    • <strong>Octroi de mer 20 %</strong> (17 % OM + 3 % OMR) : nos bornes relèvent du <strong>code douanier 8504.40</strong> (convertisseurs statiques / chargeurs) au Tarif Général de la Collectivité Territoriale de Guyane (TGOM 2026). Cette taxe est prélevée par la <strong>douane à la livraison</strong>, à la charge du destinataire. L'estimation affichée sur chaque produit se calcule sur la valeur du bien (l'assiette douanière réelle est la valeur CAF : bien + fret + assurance).<br>
     • <strong>Frais de livraison Chronopost DOM en sus</strong> : ils ne sont <strong>pas forfaitaires</strong>. Ils dépendent du <strong>poids du colis</strong> et de <strong>votre commune</strong>, et vous sont <strong>communiqués par devis avant la validation</strong> de votre commande (pas de mauvaise surprise).
   </div>
 </div>
@@ -550,7 +552,7 @@
 
 <!-- STRIPE + CATALOG + COMPTE CLIENT -->
 <script src="/assets/js/stripe-config.js?v=2"></script>
-<script src="/assets/js/catalog.js?v=3"></script>
+<script src="/assets/js/catalog.js?v=4"></script>
 <script src="/assets/js/customer-account.js?v=1"></script>
 
 <!-- LOGIC -->
@@ -590,6 +592,7 @@
         totalCount++;
         var priceTTC = window.priceProduct(p.ht);
         var weight = window.weightFor(p.id);
+        var octroi = window.octroiMer(priceTTC);
         var priceSplit3 = Math.ceil(priceTTC / 3);
         var priceSplit4 = Math.ceil(priceTTC / 4);
         var featured = idx === 1 || p.tag ? true : false;
@@ -619,6 +622,7 @@
           +   '<div class="price-split">🚚 Livraison Chronopost DOM en sus (' + weight + ' kg — devis avant achat)'
           +     ' · 💳 <span class="x">3×</span> ' + window.formatPrice(priceSplit3)
           +     ' · <span class="x">4×</span> ' + window.formatPrice(priceSplit4) + ' sans frais</div>'
+          +   '<div class="octroi-note">🏛️ Octroi de mer estimé <strong>~' + window.formatPrice(octroi) + '</strong> (20 %, code 8504.40) — payé à la douane à la livraison</div>'
           +   '<ul class="product-specs">' + specsHtml + '</ul>'
           +   '<div class="product-actions">'
           +     '<button class="btn-add" onclick="openConfigurator(\'' + key + '\',\'' + p.id + '\')">Configurer & commander</button>'
@@ -654,11 +658,13 @@
     var content = document.getElementById('optContent');
     var basePriceTTC = window.priceProduct(product.ht);
     var weight = window.weightFor(product.id);
+    var octroi = window.octroiMer(basePriceTTC);
     content.innerHTML = ''
       + '<div class="drawer-summary">'
       +   '<div class="name">' + product.name + '</div>'
       +   '<div class="base-price">Prix borne : <strong>' + window.formatPrice(basePriceTTC) + '</strong> (hors livraison)</div>'
-      +   '<div class="base-price" style="margin-top:.3rem;font-size:.72rem;">Prix sans TVA (Guyane). Livraison Chronopost DOM (' + weight + ' kg) et octroi de mer en sus, communiqués avant validation.</div>'
+      +   '<div class="base-price" style="margin-top:.3rem;">🏛️ Octroi de mer estimé : <strong>~' + window.formatPrice(octroi) + '</strong> (20 %, payé à la douane à la livraison)</div>'
+      +   '<div class="base-price" style="margin-top:.3rem;font-size:.72rem;">Prix sans TVA (Guyane). Livraison Chronopost DOM (' + weight + ' kg) en sus, communiquée avant validation.</div>'
       + '</div>'
       + '<h4>Ajouter des options</h4>'
       + '<div id="opt-list"></div>';
