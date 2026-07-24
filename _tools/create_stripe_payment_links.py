@@ -73,18 +73,37 @@ def load_secret_key() -> str:
 #  Catalogue produits (miroir de catalog.js)
 # ============================================================
 # FISCALITE GUYANE : PAS de TVA (art. 294 CGI).
-# Le Payment Link Stripe facture le PRODUIT SEUL.
-# La livraison Chronopost DOM (variable selon poids + commune) est devisee
-# separement et payee via un 2e lien de paiement.
-# L'octroi de mer est preleve par la douane a la livraison (hors facture).
+# MODELE "TOUT COMPRIS" : le Payment Link Stripe facture
+#     (prix fournisseur x COEF_MARGE)  <- benefice EGREENCITY'S
+#   + octroi de mer 20 % (code 8504.40) <- reverse a la douane
+#   + livraison Chronopost DOM          <- reverse au transporteur
+# Le client paie tout en une seule fois, rien a regler a la livraison.
 COEF_MARGE = 1.35
 ARRONDI = 10
+OCTROI_TOTAL = 0.20   # 17 % OM + 3 % OMR (TGOM Guyane 2026, code 8504.40)
 
 def price_product(ht: float) -> int:
-    """Prix produit seul (sans TVA, sans livraison)."""
+    """Prix produit seul (marge EGREENCITY'S, sans TVA, sans octroi, sans port)."""
     raw = ht * COEF_MARGE
     rounded = round(raw / ARRONDI) * ARRONDI
-    return rounded - 1  # 999, 1049, 2349...
+    return rounded - 1  # 969, 1139, 2349...
+
+def shipping_for_weight(kg: float) -> int:
+    """Livraison forfaitaire Chronopost DOM (littoral guyanais)."""
+    grid = [(1, 35), (2, 48), (5, 72), (10, 115), (15, 165),
+            (20, 215), (25, 270), (30, 330)]
+    for wmax, price in grid:
+        if kg <= wmax:
+            return price
+    return round(380 + (kg - 30) * 4.5)  # palette
+
+def price_all_in(ht: float, pid: str) -> dict:
+    """Decomposition du prix tout compris."""
+    base = price_product(ht)
+    octroi = round(base * OCTROI_TOTAL)
+    ship = shipping_for_weight(WEIGHTS.get(pid, 15))
+    return {"produit": base, "octroi": octroi, "livraison": ship,
+            "total": base + octroi + ship}
 
 # Poids reels (kg) par produit — pour info devis Chronopost (miroir catalog.js)
 WEIGHTS = {
@@ -124,14 +143,14 @@ def create_all(dry_run: bool = False) -> dict:
     total = len(PRODUCTS)
 
     for i, (pid, name, ht, gamme, desc) in enumerate(PRODUCTS, 1):
-        prod_price = price_product(ht)
-        # Le Payment Link facture le PRODUIT SEUL (sans TVA, sans livraison).
-        # La livraison Chronopost DOM est devisee separement selon poids + commune,
-        # et payee via un 2e lien de paiement apres confirmation du devis.
-        amount_cents = prod_price * 100  # Stripe utilise les centimes
+        bd = price_all_in(ht, pid)
+        prod_price = bd["produit"]
+        # Le Payment Link facture le TOUT COMPRIS : produit + octroi + livraison.
+        amount_cents = bd["total"] * 100  # Stripe utilise les centimes
 
         print(f"\n[{i}/{total}] {name}")
-        print(f"    HT E-TOTEM : {ht} EUR  ->  Produit seul : {prod_price} EUR (sans TVA, hors livraison Chronopost)")
+        print(f"    HT E-TOTEM {ht} EUR -> produit {prod_price} + octroi {bd['octroi']}"
+              f" + port {bd['livraison']} = {bd['total']} EUR TOUT COMPRIS")
 
         if dry_run:
             print(f"    [DRY RUN] pas de creation reelle")
@@ -146,9 +165,12 @@ def create_all(dry_run: bool = False) -> dict:
                     "egc_product_id": pid,
                     "coef_marge": str(COEF_MARGE),
                     "gamme": gamme,
-                    "product_price": str(prod_price),
+                    "prix_produit": str(prod_price),
+                    "octroi_de_mer": str(bd["octroi"]),
+                    "livraison": str(bd["livraison"]),
+                    "total_tout_compris": str(bd["total"]),
                     "poids_kg": str(WEIGHTS.get(pid, 15)),
-                    "fiscalite": "Sans TVA (Guyane) - livraison Chronopost devisee separement - octroi de mer a la livraison",
+                    "fiscalite": "Sans TVA (Guyane) - octroi de mer 20% (8504.40) et livraison Chronopost DOM INCLUS",
                 },
                 images=[f"{SITE_URL}/assets/img/products/{pid_to_img(pid)}"]
             )

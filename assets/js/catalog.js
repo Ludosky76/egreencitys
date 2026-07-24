@@ -66,11 +66,55 @@ window.priceProduct = function (htFournisseur) {
 /* Alias pour retrocompatibilite (ex-priceTTC → maintenant priceProduct) */
 window.priceTTC = window.priceProduct;
 
-/* Estimation de l'octroi de mer (20 %) sur un montant (base = valeur produit).
-   Note : l'assiette douaniere reelle est la valeur CAF (produit + fret + assurance).
-   On donne ici une estimation basee sur le prix produit pour la transparence. */
+/* Octroi de mer (20 %) sur la valeur produit. */
 window.octroiMer = function (montant) {
   return Math.round(montant * window.CATALOG_CONFIG.OCTROI_TOTAL);
+};
+
+/* ================================================================
+   LIVRAISON FORFAITAIRE Chronopost DOM (littoral guyanais)
+   ================================================================
+   Grille par tranche de poids. Au-dela de 30 kg : transport palette.
+   Base : Cayenne / Matoury / Remire / Macouria / Kourou.
+   Communes isolees (Maripasoula, Saint-Georges) : supplement sur devis.
+   ================================================================ */
+window.shippingForWeight = function (kg) {
+  var grid = [[1,35],[2,48],[5,72],[10,115],[15,165],[20,215],[25,270],[30,330]];
+  for (var i = 0; i < grid.length; i++) {
+    if (kg <= grid[i][0]) return grid[i][1];
+  }
+  return Math.round(380 + (kg - 30) * 4.5); // palette
+};
+
+/* Livraison forfaitaire pour un produit donne */
+window.shippingFor = function (productId) {
+  return window.shippingForWeight(window.weightFor(productId));
+};
+
+/* ================================================================
+   PRIX TOUT COMPRIS (affiche et facture)
+   ================================================================
+   = (prix fournisseur x COEF_MARGE)   <- benefice EGREENCITY'S
+   + octroi de mer 20 %                <- reverse a la douane
+   + livraison Chronopost DOM          <- reverse au transporteur
+   Le client paie ce montant en UNE SEULE FOIS.
+   ================================================================ */
+window.priceAllIn = function (htFournisseur, productId) {
+  var base = window.priceProduct(htFournisseur);
+  return base + window.octroiMer(base) + window.shippingFor(productId);
+};
+
+/* Detail de la decomposition (pour affichage transparent) */
+window.priceBreakdown = function (htFournisseur, productId) {
+  var base = window.priceProduct(htFournisseur);
+  var octroi = window.octroiMer(base);
+  var ship = window.shippingFor(productId);
+  return {
+    produit: base,
+    octroi: octroi,
+    livraison: ship,
+    total: base + octroi + ship
+  };
 };
 
 /* ================================================================
