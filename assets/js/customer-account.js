@@ -60,6 +60,11 @@
         throw new Error('Un compte existe deja pour cet email sur cet appareil.');
       }
       var hash = await hashPassword(data.password);
+      // Question de securite (pour recuperation du mot de passe)
+      var secQuestion = data.securityQuestion || '';
+      var secAnswerHash = data.securityAnswer
+        ? await hashPassword(data.securityAnswer.trim().toLowerCase())
+        : '';
       var account = {
         email: data.email.toLowerCase(),
         prenom: data.prenom,
@@ -69,14 +74,57 @@
         code_postal: data.code_postal || '',
         commune: data.commune || '',
         passwordHash: hash,
+        securityQuestion: secQuestion,
         createdAt: new Date().toISOString(),
         sessionActive: true
       };
       // Sauvegarde dans le registre des comptes + compte courant
-      existing[data.email.toLowerCase()] = { hash: hash, profile: account };
+      existing[data.email.toLowerCase()] = {
+        hash: hash,
+        secQuestion: secQuestion,
+        secAnswerHash: secAnswerHash,
+        profile: account
+      };
       localStorage.setItem('egc_accounts', JSON.stringify(existing));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(account));
       return account;
+    },
+
+    // Recuperation — question de securite associee a un email
+    getSecurityQuestion: function (email) {
+      var acc = this.getAllAccounts()[(email || '').toLowerCase()];
+      if (!acc) return null;                       // compte inexistant
+      return { hasQuestion: !!acc.secQuestion, question: acc.secQuestion || '' };
+    },
+
+    // Recuperation — reinitialise le mot de passe
+    // Si le compte a une question de securite, `securityAnswer` doit correspondre.
+    // Sinon (ancien compte), reset direct autorise (donnees locales a l'appareil).
+    resetPassword: async function (email, newPassword, securityAnswer) {
+      var accounts = this.getAllAccounts();
+      var key = (email || '').toLowerCase();
+      var acc = accounts[key];
+      if (!acc) throw new Error('Aucun compte trouve pour cet email sur cet appareil.');
+      if (!newPassword || newPassword.length < 8) {
+        throw new Error('Le nouveau mot de passe doit faire au moins 8 caracteres.');
+      }
+      if (acc.secAnswerHash) {
+        var ansHash = await hashPassword((securityAnswer || '').trim().toLowerCase());
+        if (ansHash !== acc.secAnswerHash) {
+          throw new Error('Reponse a la question de securite incorrecte.');
+        }
+      }
+      var newHash = await hashPassword(newPassword);
+      acc.hash = newHash;
+      acc.profile.passwordHash = newHash;
+      accounts[key] = acc;
+      localStorage.setItem('egc_accounts', JSON.stringify(accounts));
+      return true;
+    },
+
+    // Rappel identifiant — liste les emails des comptes sur cet appareil
+    listEmails: function () {
+      return Object.keys(this.getAllAccounts());
     },
 
     // Connexion

@@ -172,6 +172,11 @@
       <label for="li-password">Mot de passe</label>
       <input type="password" id="li-password" required autocomplete="current-password">
       <button type="submit" class="btn-primary">Se connecter</button>
+      <div style="text-align:center;margin-top:1rem;font-size:.83rem;">
+        <a href="#" onclick="showRecover('password');return false;" style="color:var(--green-dark);text-decoration:none;font-weight:600;">Mot de passe oublié ?</a>
+        <span style="color:#c8d8bc;margin:0 .5rem;">·</span>
+        <a href="#" onclick="showRecover('email');return false;" style="color:var(--green-dark);text-decoration:none;font-weight:600;">Identifiant oublié ?</a>
+      </div>
     </form>
 
     <!-- INSCRIPTION -->
@@ -201,7 +206,46 @@
           </select>
         </div>
       </div>
+
+      <!-- Question de sécurité (pour récupérer le mot de passe) -->
+      <label for="su-secq">Question de sécurité <span style="color:var(--muted);font-weight:400;">(pour récupérer votre mot de passe)</span></label>
+      <select id="su-secq">
+        <option value="">— Choisissez une question —</option>
+        <option>Nom de votre premier animal ?</option>
+        <option>Ville de naissance de votre mère ?</option>
+        <option>Nom de votre école primaire ?</option>
+        <option>Votre plat préféré ?</option>
+        <option>Nom de jeune fille de votre mère ?</option>
+      </select>
+      <label for="su-seca">Votre réponse</label>
+      <input type="text" id="su-seca" placeholder="Réponse (mémorisez-la bien)" autocomplete="off">
+
       <button type="submit" class="btn-primary">Créer mon compte</button>
+    </form>
+
+    <!-- RÉCUPÉRATION mot de passe / identifiant -->
+    <form id="form-recover" onsubmit="handleRecover(event)" style="display:none;">
+      <h3 id="recover-title" style="color:var(--green-deep);font-size:1.1rem;margin-bottom:.3rem;">Mot de passe oublié</h3>
+      <p id="recover-intro" style="font-size:.85rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;"></p>
+
+      <div id="recover-email-block">
+        <label for="rec-email">Votre email</label>
+        <input type="email" id="rec-email" autocomplete="email">
+      </div>
+
+      <div id="recover-question-block" style="display:none;">
+        <label id="rec-question-label">Question de sécurité</label>
+        <input type="text" id="rec-answer" placeholder="Votre réponse" autocomplete="off">
+        <label for="rec-newpass">Nouveau mot de passe</label>
+        <input type="password" id="rec-newpass" minlength="8" placeholder="8 caractères minimum" autocomplete="new-password">
+      </div>
+
+      <div id="recover-emails-list" style="display:none;background:#f4fff0;border-radius:12px;padding:1rem;margin:1rem 0;font-size:.9rem;"></div>
+
+      <button type="submit" class="btn-primary" id="rec-submit">Continuer</button>
+      <div style="text-align:center;margin-top:1rem;font-size:.83rem;">
+        <a href="#" onclick="switchTab('login');return false;" style="color:var(--green-dark);text-decoration:none;font-weight:600;">← Retour à la connexion</a>
+      </div>
     </form>
 
     <div class="info-box">
@@ -288,7 +332,7 @@
   <p><a href="mailto:egreencitys@gmail.com">egreencitys@gmail.com</a> · +33 6 51 14 11 18 · <a href="/pages/legal/mentions-legales.html">Mentions légales</a> · <a href="/pages/legal/cgv.html">CGV</a></p>
 </footer>
 
-<script src="/assets/js/customer-account.js?v=1"></script>
+<script src="/assets/js/customer-account.js?v=2"></script>
 <script src="/assets/js/refonte.js?v=2" defer></script>
 
 <script>
@@ -310,10 +354,102 @@ function refreshView() {
 // --------- Tabs login/signup ---------
 window.switchTab = function (tab) {
   document.querySelectorAll('.auth-tab-btn').forEach(function (b) { b.classList.remove('active'); });
-  document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+  var btn = document.querySelector('[data-tab="' + tab + '"]');
+  if (btn) btn.classList.add('active');
   document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
   document.getElementById('form-signup').style.display = tab === 'signup' ? 'block' : 'none';
+  document.getElementById('form-recover').style.display = 'none';
   document.getElementById('alert-guest').innerHTML = '';
+};
+
+// --------- Récupération mot de passe / identifiant ---------
+var recoverMode = 'password'; // 'password' | 'email'
+window.showRecover = function (mode) {
+  recoverMode = mode;
+  document.querySelectorAll('.auth-tab-btn').forEach(function (b) { b.classList.remove('active'); });
+  document.getElementById('form-login').style.display = 'none';
+  document.getElementById('form-signup').style.display = 'none';
+  document.getElementById('form-recover').style.display = 'block';
+  document.getElementById('alert-guest').innerHTML = '';
+
+  // Reset état
+  document.getElementById('recover-question-block').style.display = 'none';
+  document.getElementById('recover-emails-list').style.display = 'none';
+  document.getElementById('recover-email-block').style.display = 'block';
+  document.getElementById('rec-submit').textContent = 'Continuer';
+  recoverStep = 'init';
+
+  if (mode === 'password') {
+    document.getElementById('recover-title').textContent = '🔑 Mot de passe oublié';
+    document.getElementById('recover-intro').textContent = 'Entrez votre email. Nous vous poserons votre question de sécurité pour définir un nouveau mot de passe.';
+  } else {
+    document.getElementById('recover-title').textContent = '📧 Identifiant oublié';
+    document.getElementById('recover-intro').textContent = 'Voici les comptes enregistrés sur cet appareil :';
+    // Affiche direct la liste des emails
+    document.getElementById('recover-email-block').style.display = 'none';
+    var emails = window.EGCCustomer.listEmails();
+    var box = document.getElementById('recover-emails-list');
+    if (emails.length === 0) {
+      box.innerHTML = '<em style="color:var(--muted);">Aucun compte trouvé sur cet appareil. Créez-en un via l\'onglet « Créer un compte ».</em>';
+    } else {
+      box.innerHTML = emails.map(function (em) {
+        return '<div style="padding:.4rem 0;border-bottom:1px solid #e0ebd8;">👤 <strong>' + em + '</strong></div>';
+      }).join('');
+    }
+    box.style.display = 'block';
+    document.getElementById('rec-submit').style.display = 'none';
+  }
+};
+
+var recoverStep = 'init';
+window.handleRecover = async function (e) {
+  e.preventDefault();
+  document.getElementById('alert-guest').innerHTML = '';
+  try {
+    if (recoverMode !== 'password') { switchTab('login'); return; }
+
+    if (recoverStep === 'init') {
+      // Étape 1 : vérifier l'email et récupérer la question
+      var email = document.getElementById('rec-email').value.trim();
+      var info = window.EGCCustomer.getSecurityQuestion(email);
+      if (!info) {
+        alertGuest('error', '❌ Aucun compte pour cet email sur cet appareil.');
+        return;
+      }
+      document.getElementById('recover-email-block').style.display = 'none';
+      document.getElementById('recover-question-block').style.display = 'block';
+      if (info.hasQuestion) {
+        document.getElementById('rec-question-label').textContent = info.question;
+        document.getElementById('rec-answer').parentNode.style.display = 'block';
+        document.getElementById('rec-answer').required = true;
+      } else {
+        // Ancien compte sans question : reset direct
+        document.getElementById('rec-answer').closest ? null : null;
+        document.getElementById('rec-answer').style.display = 'none';
+        document.getElementById('rec-question-label').textContent =
+          'Compte sans question de sécurité — définissez directement un nouveau mot de passe (données locales à cet appareil).';
+        document.getElementById('rec-answer').required = false;
+      }
+      document.getElementById('rec-submit').textContent = 'Réinitialiser mon mot de passe';
+      recoverStep = 'reset';
+      return;
+    }
+
+    if (recoverStep === 'reset') {
+      // Étape 2 : appliquer le nouveau mot de passe
+      var email2 = document.getElementById('rec-email').value.trim();
+      var answer = document.getElementById('rec-answer').value;
+      var newpass = document.getElementById('rec-newpass').value;
+      await window.EGCCustomer.resetPassword(email2, newpass, answer);
+      alertGuest('success', '✅ Mot de passe réinitialisé. Vous pouvez vous connecter.');
+      setTimeout(function () {
+        switchTab('login');
+        document.getElementById('li-email').value = email2;
+      }, 1500);
+    }
+  } catch (err) {
+    alertGuest('error', '❌ ' + err.message);
+  }
 };
 
 // --------- Alerts ---------
@@ -353,7 +489,9 @@ window.handleSignup = async function (e) {
       telephone: document.getElementById('su-tel').value,
       adresse: document.getElementById('su-adresse').value,
       code_postal: document.getElementById('su-cp').value,
-      commune: document.getElementById('su-commune').value
+      commune: document.getElementById('su-commune').value,
+      securityQuestion: document.getElementById('su-secq').value,
+      securityAnswer: document.getElementById('su-seca').value
     });
     refreshView();
   } catch (err) {
