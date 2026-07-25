@@ -136,6 +136,45 @@ CANCEL_URL  = f"{SITE_URL}/pages/boutique-wallbox.html?paiement=annule"
 
 
 # ============================================================
+#  SOURCE UNIQUE DES PRIX : assets/js/catalog.js
+# ============================================================
+# Les prix (marge COEF_MARGE + prix d'achat HT de chaque produit) ne sont
+# PAS dupliques ici : ils sont lus depuis catalog.js pour garantir que la
+# boutique affichee et les liens Stripe restent toujours coherents.
+# Pour ajuster un prix : modifier catalog.js puis relancer ce script.
+def sync_prices_from_catalog() -> None:
+    """Lit COEF_MARGE et les prix HT depuis catalog.js et met a jour ce module."""
+    global COEF_MARGE, PRODUCTS
+    if not CATALOG_FILE.exists():
+        print(f"[WARN] {CATALOG_FILE} introuvable — prix internes utilises.")
+        return
+    js = CATALOG_FILE.read_text(encoding="utf-8")
+
+    # Cible la ligne de config  COEF_MARGE: 1.35,  (pas les commentaires type
+    # "COEF_MARGE :\n  1.00 = ..."). D'ou : pas d'espace avant ':' et valeur
+    # sur la MEME ligne (pas de saut de ligne).
+    m = re.search(r"COEF_MARGE:[ \t]*([\d.]+)", js)
+    if m:
+        COEF_MARGE = float(m.group(1))
+
+    new_products = []
+    changed = 0
+    for (pid, name, ht, gamme, desc) in PRODUCTS:
+        # Cherche  id: '<pid>'  puis le premier  ht: <nombre>  qui suit.
+        pm = re.search(
+            r"id:\s*'" + re.escape(pid) + r"'.*?ht:\s*(\d+)",
+            js, re.DOTALL,
+        )
+        new_ht = int(pm.group(1)) if pm else ht
+        if new_ht != ht:
+            changed += 1
+        new_products.append((pid, name, new_ht, gamme, desc))
+    PRODUCTS = new_products
+    print(f"[OK] Prix lus depuis catalog.js (COEF_MARGE={COEF_MARGE}, "
+          f"{changed} prix HT differents des valeurs internes).")
+
+
+# ============================================================
 #  Creation Products + Prices + Payment Links
 # ============================================================
 def create_all(dry_run: bool = False) -> dict:
@@ -224,6 +263,41 @@ def create_all(dry_run: bool = False) -> dict:
     return results
 
 
+def deactivate_existing_links() -> int:
+    """Desactive les anciens Payment Links EGREENCITY'S (evite qu'un ancien
+    lien avec un ancien prix reste payable). Retourne le nombre desactive."""
+    our_ids = {p[0] for p in PRODUCTS}
+    n = 0
+    try:
+        links = stripe.PaymentLink.list(active=True, limit=100)
+        for link in links.auto_paging_iter():
+            pid = (link.get("metadata") or {}).get("egc_product_id")
+            if pid in our_ids:
+                stripe.PaymentLink.modify(link.id, active=False)
+                n += 1
+    except stripe.error.StripeError as e:
+        print(f"[WARN] Desactivation anciens liens : {e}")
+    if n:
+        print(f"[OK] {n} ancien(s) lien(s) desactive(s).")
+    return n
+
+
+def bump_boutique_cache_version() -> None:
+    """Incremente stripe-config.js?v=N dans boutique-wallbox.html pour forcer
+    les navigateurs a recharger les nouveaux prix immediatement."""
+    boutique = ROOT / "pages" / "boutique-wallbox.html"
+    if not boutique.exists():
+        return
+    html = boutique.read_text(encoding="utf-8")
+    m = re.search(r"(stripe-config\.js\?v=)(\d+)", html)
+    if not m:
+        return
+    new_v = int(m.group(2)) + 1
+    html = html[:m.start()] + m.group(1) + str(new_v) + html[m.end():]
+    boutique.write_text(html, encoding="utf-8")
+    print(f"[OK] Cache-bust : stripe-config.js?v={new_v}")
+
+
 def pid_to_img(pid: str) -> str:
     """Mapping product_id -> nom d'image dans /assets/img/products/"""
     mapping = {
@@ -300,6 +374,9 @@ def main():
     print("  EGREENCITY'S — Creation Payment Links Stripe")
     print("=" * 60)
 
+    # Source unique des prix : catalog.js
+    sync_prices_from_catalog()
+
     env = "test"
     if not args.dry_run:
         stripe.api_key = load_secret_key()
@@ -317,6 +394,11 @@ def main():
     else:
         print("[DRY RUN] Aucun appel API reel — juste affichage")
 
+    # Regeneration : on desactive d'abord les anciens liens (anciens prix)
+    if not args.dry_run:
+        print("\n--- Desactivation des anciens liens ---")
+        deactivate_existing_links()
+
     results = create_all(dry_run=args.dry_run)
 
     if not args.dry_run:
@@ -328,6 +410,7 @@ def main():
         if not args.skip_config_update:
             print("\n--- Mise a jour de assets/js/stripe-config.js ---")
             update_stripe_config_js(results, env)
+            bump_boutique_cache_version()
 
     print("\n" + "=" * 60)
     ok = sum(1 for r in results.values() if "payment_link_url" in r)
