@@ -9,9 +9,11 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 
-CUST = '<script src="/assets/js/customer-account.js?v=1"></script>'
+CUST = '<script src="/assets/js/customer-account.js?v=2"></script>'
+FBCFG = '<script src="/assets/js/firebase-config.js?v=1"></script>'
+FBAUTH = '<script src="/assets/js/firebase-auth.js?v=1"></script>'
 SESS = '<script src="/assets/js/session-nav.js?v=1" defer></script>'
-MNAV = '<script src="/assets/js/mobile-nav.js?v=1" defer></script>'
+MNAV = '<script src="/assets/js/mobile-nav.js?v=3" defer></script>'
 
 PAGES = [
     "index.html",
@@ -28,7 +30,7 @@ PAGES = [
     "pages/communes/borne-recharge-saint-laurent-du-maroni.html",
 ]
 
-print("=== Injection session-nav sur toutes les pages ===\n")
+print("=== Injection scripts compte/session/firebase ===\n")
 n_ok = n_skip = 0
 for rel in PAGES:
     p = ROOT / rel
@@ -36,28 +38,33 @@ for rel in PAGES:
         print(f"  [SKIP] {rel} (absent)")
         continue
     html = p.read_text(encoding="utf-8")
+    orig = html
 
-    has_cust = "customer-account.js" in html
-    has_sess = "session-nav.js" in html
-    has_mnav = "mobile-nav.js" in html
-    if has_cust and has_sess and has_mnav:
-        n_skip += 1
-        continue
+    # 1. customer-account.js — ajoute avant </body> si absent
+    if "customer-account.js" not in html:
+        html = re.sub(r"(</body>)", "  " + CUST + "\n\\1", html, count=1, flags=re.IGNORECASE)
 
-    inject = ""
-    if not has_cust:
-        inject += "  " + CUST + "\n"
-    if not has_sess:
-        inject += "  " + SESS + "\n"
-    if not has_mnav:
-        inject += "  " + MNAV + "\n"
+    # 2. firebase-config.js + firebase-auth.js — juste APRES customer-account.js
+    if "firebase-auth.js" not in html:
+        html = re.sub(
+            r'(<script src="/assets/js/customer-account\.js[^"]*"></script>)',
+            r"\1\n  " + FBCFG + "\n  " + FBAUTH,
+            html, count=1
+        )
 
-    new = re.sub(r"(</body>)", inject + r"\1", html, count=1, flags=re.IGNORECASE)
-    if new != html:
-        p.write_text(new, encoding="utf-8")
+    # 3. session-nav.js
+    if "session-nav.js" not in html:
+        html = re.sub(r"(</body>)", "  " + SESS + "\n\\1", html, count=1, flags=re.IGNORECASE)
+
+    # 4. mobile-nav.js
+    if "mobile-nav.js" not in html:
+        html = re.sub(r"(</body>)", "  " + MNAV + "\n\\1", html, count=1, flags=re.IGNORECASE)
+
+    if html != orig:
+        p.write_text(html, encoding="utf-8")
         print(f"  [OK]  {rel}")
         n_ok += 1
     else:
-        print(f"  [WARN] {rel} : </body> introuvable")
+        n_skip += 1
 
 print(f"\n=== Termine : {n_ok} injecte(s), {n_skip} deja OK ===")

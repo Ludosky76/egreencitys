@@ -239,29 +239,34 @@ def pid_to_img(pid: str) -> str:
 # ============================================================
 #  Mise a jour stripe-config.js
 # ============================================================
-def update_stripe_config_js(results: dict):
+def update_stripe_config_js(results: dict, env: str):
+    """Met a jour UNIQUEMENT la section env ('test' ou 'live') de STRIPE_LINKS."""
     if not CONFIG_JS_FILE.exists():
         print(f"[WARN] {CONFIG_JS_FILE} introuvable, saut de la mise a jour.")
         return
 
     content = CONFIG_JS_FILE.read_text(encoding="utf-8")
 
+    # Isole le bloc de la section  env: {  ...  }
+    block_pat = re.compile(r"(" + env + r"\s*:\s*\{)(.*?)(\n\s*\})", re.DOTALL)
+    m = block_pat.search(content)
+    if not m:
+        print(f"[WARN] Section '{env}' introuvable dans STRIPE_LINKS.")
+        return
+
+    block = m.group(2)
     for pid, info in results.items():
         if "payment_link_url" not in info:
             continue
         url = info["payment_link_url"]
-        # Remplace la ligne '  pid': '',   ->   '  pid': 'https://buy.stripe.com/...',
-        pattern = re.compile(
-            r"('" + re.escape(pid) + r"'\s*:\s*)'[^']*'",
-            re.MULTILINE
-        )
-        replacement = r"\1'" + url + r"'"
-        content, n = pattern.subn(replacement, content)
+        pat = re.compile(r"('" + re.escape(pid) + r"'\s*:\s*)'[^']*'")
+        block, n = pat.subn(r"\1'" + url + r"'", block)
         if n > 0:
-            print(f"  [OK] stripe-config.js : {pid} -> {url[:50]}...")
+            print(f"  [OK] {env}: {pid} -> {url[:48]}...")
 
+    content = content[:m.start(2)] + block + content[m.end(2):]
     CONFIG_JS_FILE.write_text(content, encoding="utf-8")
-    print(f"\n[OK] {CONFIG_JS_FILE} mis a jour.")
+    print(f"\n[OK] {CONFIG_JS_FILE} mis a jour (section '{env}').")
 
 
 # ============================================================
@@ -278,10 +283,12 @@ def main():
     print("  EGREENCITY'S — Creation Payment Links Stripe")
     print("=" * 60)
 
+    env = "test"
     if not args.dry_run:
         stripe.api_key = load_secret_key()
         print(f"[OK] Cle API chargee : {stripe.api_key[:12]}...")
-        mode = "TEST" if stripe.api_key.startswith("sk_test_") else "LIVE (PRODUCTION)"
+        env = "live" if stripe.api_key.startswith("sk_live_") else "test"
+        mode = "TEST" if env == "test" else "LIVE (PRODUCTION)"
         print(f"[OK] Mode : {mode}")
 
         if mode == "LIVE (PRODUCTION)":
@@ -303,7 +310,7 @@ def main():
 
         if not args.skip_config_update:
             print("\n--- Mise a jour de assets/js/stripe-config.js ---")
-            update_stripe_config_js(results)
+            update_stripe_config_js(results, env)
 
     print("\n" + "=" * 60)
     ok = sum(1 for r in results.values() if "payment_link_url" in r)

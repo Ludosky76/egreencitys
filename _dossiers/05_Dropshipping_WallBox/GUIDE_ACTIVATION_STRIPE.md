@@ -14,13 +14,13 @@
 - ✅ Facturation, reçus, remboursements automatiques
 - ✅ Payment Links = **aucun code à écrire**, tout dans le dashboard
 - ✅ Certifié PCI-DSS niveau 1, RGPD, 3D Secure
-- ✅ **Paiement en 3× / 4×** via Klarna (activation dashboard, voir plus bas)
+- ✅ **Paiement en 3×** via Klarna (activation dashboard, voir plus bas)
 
 ---
 
-## ⭐ Activer le paiement en 3× / 4× (Klarna)
+## ⭐ Activer le paiement en 3× (Klarna)
 
-Le paiement fractionné (3× ou 4× sans frais pour le client) se fait via
+Le paiement fractionné (3× sans frais pour le client) se fait via
 **Klarna**, intégré nativement à Stripe. Aucune ligne de code : c'est un
 réglage dans votre dashboard.
 
@@ -33,7 +33,7 @@ réglage dans votre dashboard.
    l'option « Payer en plusieurs fois avec Klarna » à côté de la carte bancaire.
 
 ### Comment ça marche pour vous
-- Le client choisit 3× ou 4× au moment de payer
+- Le client choisit le paiement en 3× au moment de payer
 - **Klarna vous verse la totalité immédiatement** (comme un paiement CB)
 - Klarna se rembourse ensuite auprès du client — **aucun risque d'impayé**
 - Frais marchand Klarna : ~2 à 3 % (légèrement plus que la CB simple)
@@ -47,11 +47,14 @@ réglage dans votre dashboard.
 > sa CB en une fois, ou vous pouvez lui proposer un financement séparé
 > (crédit-bail / ADVENIR pour les pros).
 
-### Alternative : Cofidis Pay 3xCB / 4xCB
+### Alternative : Cofidis Pay 3xCB
 Si vous préférez un partenaire français dédié au fractionné (plafonds plus
 élevés, jusqu'à 6 000 €), **Cofidis Pay** s'intègre aussi. Il nécessite un
-contrat séparé (cofidis-retail.com). Le bouton « Payer en 3×/4× » de la
+contrat séparé (cofidis-retail.com). Le bouton « Payer en 3× » de la
 boutique pointe alors vers Cofidis au lieu de Klarna.
+
+> **Important** : la boutique ne propose **que le 1× (comptant) et le 3×**.
+> L'option 4× a été retirée (choix commercial EGREENCITY'S).
 
 ---
 
@@ -208,31 +211,44 @@ Répéter l'étape 2 en mode production. Les URLs commencent maintenant par `htt
 ### 5.3 Récupérer la clé publique LIVE
 Dashboard Stripe (en mode Live) → **Développeurs** → **Clés API** → copier la **clé publique publiable** (`pk_live_...`)
 
-### 5.4 Mettre à jour la config
-Éditer `assets/js/stripe-config.js` :
+### 5.4 Mettre à jour la config (nouveau système à 1 seul interrupteur)
+
+Le fichier `assets/js/stripe-config.js` gère désormais **deux environnements**
+(test + live) et une seule variable `STRIPE_ENV` pour basculer entre les deux :
 
 ```javascript
-window.STRIPE_CONFIG = {
-  publishableKey: 'pk_live_XXXXXXX',  // <-- remplacer
-  mode: 'live',                        // <-- passer à live
-  successUrl: 'https://egreencitys.com/pages/boutique-wallbox.html?paiement=succes',
-  cancelUrl:  'https://egreencitys.com/pages/boutique-wallbox.html?paiement=annule'
-};
+window.STRIPE_ENV = 'test';   // <-- passer à 'live' pour encaisser réellement
 
-window.STRIPE_PAYMENT_LINKS = {
-  'wb-mur-7': 'https://buy.stripe.com/XXXXX',   // <-- URLs Live
-  // etc. pour les 13 produits
+var STRIPE_KEYS = {
+  test: { publishableKey: 'pk_test_51TvM98...' },
+  live: { publishableKey: 'pk_live_A_REMPLIR' }   // <-- coller votre clé pk_live_
 };
 ```
+
+**Trois choses à faire :**
+1. Coller votre clé **`pk_live_...`** dans `STRIPE_KEYS.live.publishableKey`.
+2. Générer les Payment Links Live automatiquement (au lieu de les créer un par un) :
+   - Mettre votre clé secrète `sk_live_...` dans `_config/stripe.env`
+   - Lancer :
+     ```bash
+     python _tools/create_stripe_payment_links.py --live
+     ```
+   - Le script crée les 13 produits/prix **tout compris** (prix produit + octroi
+     de mer 20 % + livraison Chronopost) et remplit le bloc `live:` de `STRIPE_LINKS`.
+3. Passer l'interrupteur : `window.STRIPE_ENV = 'live';`
+
+> ⚠️ La clé secrète `sk_live_` ne doit **jamais** être commitée : `_config/stripe.env`
+> est ignoré par Git. Seule la clé publique `pk_live_` va dans le code.
 
 ### 5.5 Commit + push
 ```bash
 git add assets/js/stripe-config.js
-git commit -m "prod: passage Stripe en mode Live"
+git commit -m "prod: passage Stripe en mode Live (STRIPE_ENV=live)"
 git push
 ```
 
 → Boutique en production, prête à encaisser les vraies commandes.
+> Rappel : seuls le **1× comptant** et le **3× Klarna** sont proposés (pas de 4×).
 
 ---
 

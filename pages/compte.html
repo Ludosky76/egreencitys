@@ -207,18 +207,21 @@
         </div>
       </div>
 
-      <!-- Question de sécurité (pour récupérer le mot de passe) -->
-      <label for="su-secq">Question de sécurité <span style="color:var(--muted);font-weight:400;">(pour récupérer votre mot de passe)</span></label>
-      <select id="su-secq">
-        <option value="">— Choisissez une question —</option>
-        <option>Nom de votre premier animal ?</option>
-        <option>Ville de naissance de votre mère ?</option>
-        <option>Nom de votre école primaire ?</option>
-        <option>Votre plat préféré ?</option>
-        <option>Nom de jeune fille de votre mère ?</option>
-      </select>
-      <label for="su-seca">Votre réponse</label>
-      <input type="text" id="su-seca" placeholder="Réponse (mémorisez-la bien)" autocomplete="off">
+      <!-- Question de sécurité (récupération mot de passe — mode localStorage uniquement).
+           Masquée automatiquement quand Firebase est actif : le lien de reset arrive par email. -->
+      <div id="secq-wrap">
+        <label for="su-secq">Question de sécurité <span style="color:var(--muted);font-weight:400;">(pour récupérer votre mot de passe)</span></label>
+        <select id="su-secq">
+          <option value="">— Choisissez une question —</option>
+          <option>Nom de votre premier animal ?</option>
+          <option>Ville de naissance de votre mère ?</option>
+          <option>Nom de votre école primaire ?</option>
+          <option>Votre plat préféré ?</option>
+          <option>Nom de jeune fille de votre mère ?</option>
+        </select>
+        <label for="su-seca">Votre réponse</label>
+        <input type="text" id="su-seca" placeholder="Réponse (mémorisez-la bien)" autocomplete="off">
+      </div>
 
       <button type="submit" class="btn-primary">Créer mon compte</button>
     </form>
@@ -270,6 +273,12 @@
     </div>
 
     <div id="alert-logged"></div>
+
+    <!-- Bandeau vérification email (Firebase) -->
+    <div id="email-verify-box" style="display:none;background:#fff9c4;border-left:4px solid #f9a825;padding:.9rem 1.2rem;border-radius:0 8px 8px 0;margin-bottom:1rem;font-size:.85rem;color:#5d4037;line-height:1.5;">
+      ✉️ <strong>Vérifiez votre adresse email.</strong> Un lien de confirmation vous a été envoyé.
+      <a href="#" onclick="resendVerif();return false;" style="color:var(--green-dark);font-weight:700;">Renvoyer le lien</a>
+    </div>
 
     <!-- Stats -->
     <div class="stats-grid">
@@ -333,6 +342,8 @@
 </footer>
 
 <script src="/assets/js/customer-account.js?v=2"></script>
+  <script src="/assets/js/firebase-config.js?v=1"></script>
+  <script src="/assets/js/firebase-auth.js?v=1"></script>
 <script src="/assets/js/refonte.js?v=2" defer></script>
 
 <script>
@@ -379,11 +390,23 @@ window.showRecover = function (mode) {
   document.getElementById('rec-submit').textContent = 'Continuer';
   recoverStep = 'init';
 
+  document.getElementById('rec-submit').style.display = 'block';
+
   if (mode === 'password') {
     document.getElementById('recover-title').textContent = '🔑 Mot de passe oublié';
+    if (window.EGC_AUTH_BACKEND === 'firebase') {
+      document.getElementById('recover-intro').textContent = 'Entrez votre email : vous recevrez un lien pour réinitialiser votre mot de passe.';
+      document.getElementById('rec-submit').textContent = '📧 Recevoir le lien par email';
+    } else
     document.getElementById('recover-intro').textContent = 'Entrez votre email. Nous vous poserons votre question de sécurité pour définir un nouveau mot de passe.';
   } else {
     document.getElementById('recover-title').textContent = '📧 Identifiant oublié';
+    if (window.EGC_AUTH_BACKEND === 'firebase') {
+      document.getElementById('recover-intro').innerHTML =
+        'Votre identifiant est l\'adresse email utilisée à l\'inscription. Si vous ne vous en souvenez plus, contactez-nous à <strong>egreencitys@gmail.com</strong>.';
+      document.getElementById('rec-submit').style.display = 'none';
+      return;
+    }
     document.getElementById('recover-intro').textContent = 'Voici les comptes enregistrés sur cet appareil :';
     // Affiche direct la liste des emails
     document.getElementById('recover-email-block').style.display = 'none';
@@ -407,6 +430,15 @@ window.handleRecover = async function (e) {
   document.getElementById('alert-guest').innerHTML = '';
   try {
     if (recoverMode !== 'password') { switchTab('login'); return; }
+
+    // FIREBASE : envoi d'un vrai email de réinitialisation
+    if (window.EGC_AUTH_BACKEND === 'firebase') {
+      var femail = document.getElementById('rec-email').value.trim();
+      if (!femail) { alertGuest('error', '❌ Entrez votre email.'); return; }
+      await window.EGCCustomer.sendPasswordReset(femail);
+      alertGuest('success', '✅ Un email de réinitialisation a été envoyé à ' + femail + '. Cliquez sur le lien reçu pour définir un nouveau mot de passe (vérifiez vos spams).');
+      return;
+    }
 
     if (recoverStep === 'init') {
       // Étape 1 : vérifier l'email et récupérer la question
@@ -500,15 +532,16 @@ window.handleSignup = async function (e) {
 };
 
 // --------- Signout ---------
-window.handleSignout = function () {
-  window.EGCCustomer.signOut();
+window.handleSignout = async function () {
+  await window.EGCCustomer.signOut();
   refreshView();
 };
 
 // --------- Dashboard ---------
 function renderDashboard(c) {
-  document.getElementById('user-firstname').textContent = c.prenom;
-  document.getElementById('user-since').textContent = new Date(c.createdAt).toLocaleDateString('fr-FR');
+  document.getElementById('user-firstname').textContent = c.prenom || c.email;
+  document.getElementById('user-since').textContent = c.createdAt
+    ? new Date(c.createdAt).toLocaleDateString('fr-FR') : '—';
 
   // Pré-remplir profil
   ['prenom', 'nom', 'email', 'tel', 'adresse', 'cp', 'commune'].forEach(function (k) {
@@ -518,8 +551,22 @@ function renderDashboard(c) {
     el.value = val;
   });
 
-  // Stats + orders
-  var orders = window.EGCCustomer.getOrders();
+  // Bandeau vérification email (Firebase) si email non vérifié
+  var vbox = document.getElementById('email-verify-box');
+  if (vbox) {
+    if (window.EGC_AUTH_BACKEND === 'firebase' && c.emailVerified === false) {
+      vbox.style.display = 'block';
+    } else {
+      vbox.style.display = 'none';
+    }
+  }
+
+  // Stats + orders (getOrders peut etre sync (local) ou async (firebase))
+  Promise.resolve(window.EGCCustomer.getOrders()).then(renderOrders);
+}
+
+function renderOrders(orders) {
+  orders = orders || [];
   document.getElementById('stat-orders').textContent = orders.length;
   var total = orders.reduce(function (s, o) { return s + (o.total || 0); }, 0);
   document.getElementById('stat-total').textContent = total.toLocaleString('fr-FR') + ' €';
@@ -553,10 +600,10 @@ function renderDashboard(c) {
 }
 
 // --------- Update profil ---------
-window.handleProfileUpdate = function (e) {
+window.handleProfileUpdate = async function (e) {
   e.preventDefault();
   try {
-    window.EGCCustomer.updateProfile({
+    await window.EGCCustomer.updateProfile({
       prenom: document.getElementById('p-prenom').value,
       nom: document.getElementById('p-nom').value,
       telephone: document.getElementById('p-tel').value,
@@ -571,9 +618,9 @@ window.handleProfileUpdate = function (e) {
 };
 
 // --------- Export RGPD ---------
-window.handleExport = function () {
+window.handleExport = async function () {
   try {
-    var data = window.EGCCustomer.exportData();
+    var data = await window.EGCCustomer.exportData();
     var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
@@ -588,13 +635,35 @@ window.handleExport = function () {
 };
 
 // --------- Suppression ---------
-window.handleDelete = function () {
-  if (!confirm('⚠️ Supprimer définitivement votre compte et toutes vos données locales ?\n\nCette action est irréversible.')) return;
-  window.EGCCustomer.deleteAccount();
-  refreshView();
+window.handleDelete = async function () {
+  if (!confirm('⚠️ Supprimer définitivement votre compte et toutes vos données ?\n\nCette action est irréversible.')) return;
+  try {
+    await window.EGCCustomer.deleteAccount();
+    refreshView();
+  } catch (err) {
+    alertLogged('error', '❌ ' + (err.message || '') + ' (reconnectez-vous puis réessayez si nécessaire).');
+  }
 };
 
+// --------- Renvoyer email de vérification (Firebase) ---------
+window.resendVerif = async function () {
+  try {
+    await window.EGCCustomer.resendVerification();
+    alertLogged('success', '✓ Email de vérification renvoyé.');
+  } catch (err) {
+    alertLogged('error', '❌ ' + err.message);
+  }
+};
+
+// --------- Rafraîchit la vue quand Firebase change l'état d'auth ---------
+document.addEventListener('egc-auth-changed', function () { refreshView(); });
+
 // --------- Init ---------
+// Firebase actif : la récupération se fait par email, on masque la question de sécurité.
+if (window.EGC_AUTH_BACKEND === 'firebase') {
+  var secqWrap = document.getElementById('secq-wrap');
+  if (secqWrap) secqWrap.style.display = 'none';
+}
 refreshView();
 
 // Contourne le reveal-on-scroll pour ne pas cacher le contenu critique du compte
