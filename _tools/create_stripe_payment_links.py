@@ -187,7 +187,12 @@ def create_all(dry_run: bool = False) -> dict:
 
             # 3. Payment Link
             link = stripe.PaymentLink.create(
-                line_items=[{"price": price.id, "quantity": 1}],
+                line_items=[{
+                    "price": price.id,
+                    "quantity": 1,
+                    # Permet au client d'ajuster la quantite (plusieurs bornes)
+                    "adjustable_quantity": {"enabled": True, "minimum": 1, "maximum": 20}
+                }],
                 after_completion={
                     "type": "redirect",
                     "redirect": {"url": SUCCESS_URL}
@@ -196,6 +201,9 @@ def create_all(dry_run: bool = False) -> dict:
                     "allowed_countries": ["FR", "GF"]
                 },
                 phone_number_collection={"enabled": True},
+                # Codes promo actives -> promotions gerees depuis le dashboard Stripe,
+                # sans toucher au code ni redeployer le site.
+                allow_promotion_codes=True,
                 metadata={"egc_product_id": pid}
             )
             print(f"    [OK] Payment Link : {link.url}")
@@ -205,7 +213,7 @@ def create_all(dry_run: bool = False) -> dict:
                 "price_id": price.id,
                 "payment_link_id": link.id,
                 "payment_link_url": link.url,
-                "ttc": ttc,
+                "total": bd["total"],
                 "name": name
             }
 
@@ -247,12 +255,21 @@ def update_stripe_config_js(results: dict, env: str):
 
     content = CONFIG_JS_FILE.read_text(encoding="utf-8")
 
-    # Isole le bloc de la section  env: {  ...  }
+    # On travaille UNIQUEMENT dans la definition de STRIPE_LINKS pour ne pas
+    # confondre avec le bloc 'live:'/'test:' de STRIPE_KEYS (meme mot-cle).
+    links_start = content.find("var STRIPE_LINKS")
+    if links_start == -1:
+        print("[WARN] 'var STRIPE_LINKS' introuvable dans stripe-config.js.")
+        return
+    prefix, links_content = content[:links_start], content[links_start:]
+
+    # Isole le bloc de la section  env: {  ...  }  a l'interieur de STRIPE_LINKS
     block_pat = re.compile(r"(" + env + r"\s*:\s*\{)(.*?)(\n\s*\})", re.DOTALL)
-    m = block_pat.search(content)
+    m = block_pat.search(links_content)
     if not m:
         print(f"[WARN] Section '{env}' introuvable dans STRIPE_LINKS.")
         return
+    content = links_content  # les offsets m.start/end sont relatifs a links_content
 
     block = m.group(2)
     for pid, info in results.items():
@@ -264,8 +281,8 @@ def update_stripe_config_js(results: dict, env: str):
         if n > 0:
             print(f"  [OK] {env}: {pid} -> {url[:48]}...")
 
-    content = content[:m.start(2)] + block + content[m.end(2):]
-    CONFIG_JS_FILE.write_text(content, encoding="utf-8")
+    links_content = content[:m.start(2)] + block + content[m.end(2):]
+    CONFIG_JS_FILE.write_text(prefix + links_content, encoding="utf-8")
     print(f"\n[OK] {CONFIG_JS_FILE} mis a jour (section '{env}').")
 
 

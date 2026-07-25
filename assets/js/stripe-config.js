@@ -24,15 +24,15 @@
      4. Passer STRIPE_ENV a 'live', commit + push
    Paiement en 3x : activer Klarna dans le dashboard Stripe (Moyens de paiement).
    ================================================================ */
-window.STRIPE_ENV = 'test';   // <-- 'test' ou 'live'
+window.STRIPE_ENV = 'live';   // <-- 'test' ou 'live'
 
 var STRIPE_KEYS = {
   test: {
     publishableKey: 'pk_test_51TvM98HVp8b7CHe3Qymb6RG8PgUXy4F3ibWfB7YIuBBxTZYtHKOsd0RoquVXXvSmnQ4T6jHOrROIPVs9s5DpUz7e00jrYZrmcl'
   },
   live: {
-    // ⚠️ Coller ici votre cle publique LIVE (commence par pk_live_)
-    publishableKey: 'pk_live_A_REMPLIR'
+    // Cle publique LIVE (publique par nature — safe cote client)
+    publishableKey: 'pk_live_51TvM8iHq3SoDDNowGtC4nnzAtVtqN9j14HiU8EnbTgVimGBTCYfkWYP7S0M4K4fXHhye7nZBoXHZFRhsJTnJjldz00zfVQF4oi'
   }
 };
 
@@ -73,11 +73,19 @@ var STRIPE_LINKS = {
     'prem-2x22':   'https://buy.stripe.com/test_14AeVd1Ve9YO4HsgyEfIs0c'
   },
   live: {
-    // ⚠️ Rempli automatiquement par create_stripe_payment_links.py --live
-    'wb-mur-7': '', 'wb-mur-22': '', 'wb-pied-7': '', 'wb-pied-22': '',
-    'sm7-mur-1': '', 'sm7-mur-2': '', 'sm7-pied-1': '', 'sm7-pied-2': '',
-    'sm22-mur-1': '', 'sm22-mur-2': '', 'sm22-pied-1': '', 'sm22-pied-2': '',
-    'prem-2x22': ''
+    'wb-mur-7':   'https://buy.stripe.com/6oU8wPgQ84Eu0rc828fIs00',
+    'wb-mur-22':  'https://buy.stripe.com/9B6cN51Veef43Do6Y4fIs01',
+    'wb-pied-7':  'https://buy.stripe.com/aFaeVdarK4Eu1vg2HOfIs02',
+    'wb-pied-22': 'https://buy.stripe.com/3cIcN5czS6MC7TE2HOfIs03',
+    'sm7-mur-1':  'https://buy.stripe.com/28EdR957q4Eu6PA0zGfIs04',
+    'sm7-mur-2':  'https://buy.stripe.com/28E6oHeI07QGgqagyEfIs05',
+    'sm7-pied-1': 'https://buy.stripe.com/dRm7sL8jCfj87TEfuAfIs06',
+    'sm7-pied-2': 'https://buy.stripe.com/fZu28r7fyc6W3Do828fIs07',
+    'sm22-mur-1':  'https://buy.stripe.com/7sY3cv2Zi8UKb5Q2HOfIs08',
+    'sm22-mur-2':  'https://buy.stripe.com/4gMfZh9nG9YOb5QfuAfIs09',
+    'sm22-pied-1': 'https://buy.stripe.com/eVq4gzeI07QGb5QciofIs0a',
+    'sm22-pied-2': 'https://buy.stripe.com/7sY8wP6bu1si5Lw6Y4fIs0b',
+    'prem-2x22':   'https://buy.stripe.com/14AeVd1Ve9YO4HsgyEfIs0c'
   }
 };
 window.STRIPE_PAYMENT_LINKS = STRIPE_LINKS[window.STRIPE_ENV] || STRIPE_LINKS.test;
