@@ -16,12 +16,13 @@
    ========================================================================== */
 
 window.FIREBASE_CONFIG = {
-  apiKey: "A_REMPLIR",
-  authDomain: "egreencitys.firebaseapp.com",
-  projectId: "egreencitys",
-  storageBucket: "egreencitys.appspot.com",
-  messagingSenderId: "A_REMPLIR",
-  appId: "A_REMPLIR"
+  apiKey: "AIzaSyA9NmTJ_826aOjD12XjLKI4Eny9OQtZGbc",
+  authDomain: "egreencitys-93e0b.firebaseapp.com",
+  projectId: "egreencitys-93e0b",
+  storageBucket: "egreencitys-93e0b.firebasestorage.app",
+  messagingSenderId: "979890591344",
+  appId: "1:979890591344:web:c875b286ec76ecbb9a06b5",
+  measurementId: "G-MPRFT15BDP"
 };
 
 /* Actif seulement si la config a ete remplie (sinon fallback localStorage). */

@@ -167,7 +167,7 @@ git push
 5. Se reconnecter avec le nouveau mot de passe ✅
 
 > Si l'email n'arrive pas : vérifier les spams, et que le domaine est bien
-> autorisé (Étape 6). Les emails Firebase partent de `noreply@egreencitys.firebaseapp.com`.
+> autorisé (Étape 6). Les emails Firebase partent de `noreply@egreencitys-93e0b.firebaseapp.com`.
 
 ---
 

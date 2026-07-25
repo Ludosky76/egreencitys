@@ -24,9 +24,9 @@ ADD = {
         "https://*.googleapis.com",
         "https://*.firebaseio.com",
         "wss://*.firebaseio.com",
-        "https://egreencitys.firebaseapp.com",
+        "https://egreencitys-93e0b.firebaseapp.com",
     ],
-    "frame-src":   ["https://egreencitys.firebaseapp.com"],
+    "frame-src":   ["https://egreencitys-93e0b.firebaseapp.com"],
 }
 
 
