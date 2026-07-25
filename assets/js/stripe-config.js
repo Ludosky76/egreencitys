@@ -51,10 +51,11 @@ window.STRIPE_CONFIG = {
    2. Copier l'URL commencant par https://buy.stripe.com/...
    3. Coller dans le mapping ci-dessous en face du bon product id.
    Un lien vide '' = pas encore configure (fallback : formulaire manuel).
-   ============================================================ */
+
    Deux jeux de liens : test (bac a sable) et live (production).
    Le script create_stripe_payment_links.py remplit automatiquement le bon
-   jeu selon --live. Le site utilise le jeu correspondant a STRIPE_ENV. */
+   jeu selon --live. Le site utilise le jeu correspondant a STRIPE_ENV.
+   ============================================================ */
 var STRIPE_LINKS = {
   test: {
     'wb-mur-7':   'https://buy.stripe.com/test_6oU8wPgQ84Eu0rc828fIs00',
