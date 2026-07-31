@@ -107,7 +107,7 @@ def price_all_in(ht: float, pid: str) -> dict:
 
 # Poids reels (kg) par produit — pour info devis Chronopost (miroir catalog.js)
 WEIGHTS = {
-    "wb-mur-7": 8, "wb-mur-22": 9, "wb-pied-7": 18, "wb-pied-22": 19,
+    "wb-mur": 8, "wb-mur-rfid": 8, "wb-pied-7": 18, "wb-pied-22": 19,
     "sm7-mur-1": 15, "sm7-mur-2": 22, "sm7-pied-1": 30, "sm7-pied-2": 38,
     "sm22-mur-1": 15, "sm22-mur-2": 22, "sm22-pied-1": 30, "sm22-pied-2": 38,
     "prem-2x22": 60,
@@ -115,8 +115,8 @@ WEIGHTS = {
 
 PRODUCTS = [
     # (product_id, name, ht_fournisseur, gamme, description)
-    ("wb-mur-7",   "e-WallBox Résidentielle 7 kW",       715, "wallbox",  "1 point de charge - 7 kW AC monophasé - murale - lecteur RFID - fabrication France E-TOTEM. Livraison Chronopost DOM incluse."),
-    ("wb-mur-22",  "e-WallBox Confort 22 kW",            845, "wallbox",  "1 point de charge - 22 kW AC triphasé - murale - lecteur RFID - fabrication France E-TOTEM. Livraison Chronopost DOM incluse."),
+    ("wb-mur",      "e-WallBox Murale (mono 7 kW ou tri 22 kW)", 742, "wallbox", "Borne e-Wallbox NG - configurable Monophase 7 kW ou Triphase 22 kW (meme prix) - prise Type 2S + cache de finition - fabrication France E-TOTEM. Livraison Chronopost DOM incluse."),
+    ("wb-mur-rfid", "e-WallBox Murale + lecteur RFID",     826, "wallbox",  "Borne e-Wallbox NG (mono 7 kW ou tri 22 kW) AVEC lecteur RFID / badge d'acces - prise Type 2S - fabrication France E-TOTEM. Livraison Chronopost DOM incluse."),
     ("wb-pied-7",  "e-WallBox sur Pied 7 kW",            911, "wallbox",  "1 point de charge - 7 kW AC - sur pied - lecteur RFID - fabrication France E-TOTEM. Livraison Chronopost DOM incluse."),
     ("wb-pied-22", "e-WallBox sur Pied 22 kW",          1041, "wallbox",  "1 point de charge - 22 kW AC - sur pied - lecteur RFID - fabrication France E-TOTEM. Livraison Chronopost DOM incluse."),
     ("sm7-mur-1",  "e-Smart 7 kW Murale 1 PDC",         1485, "smart7",   "1 point de charge - 7 kW AC - capot fonderie aluminium - MID - murale. Livraison Chronopost DOM incluse."),
@@ -177,11 +177,12 @@ def sync_prices_from_catalog() -> None:
 # ============================================================
 #  Creation Products + Prices + Payment Links
 # ============================================================
-def create_all(dry_run: bool = False) -> dict:
+def create_all(dry_run: bool = False, only=None) -> dict:
     results = {}
-    total = len(PRODUCTS)
+    prods = [p for p in PRODUCTS if (only is None or p[0] in only)]
+    total = len(prods)
 
-    for i, (pid, name, ht, gamme, desc) in enumerate(PRODUCTS, 1):
+    for i, (pid, name, ht, gamme, desc) in enumerate(prods, 1):
         bd = price_all_in(ht, pid)
         prod_price = bd["produit"]
         # Le Payment Link facture le TOUT COMPRIS : produit + octroi + livraison.
@@ -263,16 +264,18 @@ def create_all(dry_run: bool = False) -> dict:
     return results
 
 
-def deactivate_existing_links() -> int:
-    """Desactive les anciens Payment Links EGREENCITY'S (evite qu'un ancien
-    lien avec un ancien prix reste payable). Retourne le nombre desactive."""
-    our_ids = {p[0] for p in PRODUCTS}
+def deactivate_existing_links(ids) -> int:
+    """Desactive les Payment Links EGREENCITY'S dont l'egc_product_id est dans
+    `ids` (evite qu'un ancien lien avec un ancien prix reste payable)."""
     n = 0
     try:
         links = stripe.PaymentLink.list(active=True, limit=100)
         for link in links.auto_paging_iter():
-            pid = (link.get("metadata") or {}).get("egc_product_id")
-            if pid in our_ids:
+            try:
+                pid = link["metadata"]["egc_product_id"]
+            except Exception:
+                pid = None
+            if pid in ids:
                 stripe.PaymentLink.modify(link.id, active=False)
                 n += 1
     except stripe.error.StripeError as e:
@@ -301,8 +304,8 @@ def bump_boutique_cache_version() -> None:
 def pid_to_img(pid: str) -> str:
     """Mapping product_id -> nom d'image dans /assets/img/products/"""
     mapping = {
-        "wb-mur-7":   "e-wallbox-murale.jpg",
-        "wb-mur-22":  "e-wallbox-murale.jpg",
+        "wb-mur":      "e-wallbox-murale.jpg",
+        "wb-mur-rfid": "e-wallbox-murale.jpg",
         "wb-pied-7":  "e-wallbox-pied.jpg",
         "wb-pied-22": "e-wallbox-pied.jpg",
         "sm7-mur-1":  "e-smart-7kw-murale-1p.jpg",
@@ -368,7 +371,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true", help="Ne rien creer chez Stripe, juste afficher")
     ap.add_argument("--skip-config-update", action="store_true", help="Ne pas modifier stripe-config.js")
+    ap.add_argument("--only", default="", help="Ne (re)creer QUE ces product ids (liste separee par des virgules)")
+    ap.add_argument("--deactivate", default="", help="Ids supplementaires a desactiver (anciens produits remplaces)")
     args = ap.parse_args()
+
+    only_set = set(x.strip() for x in args.only.split(",") if x.strip()) or None
+    deact = set(only_set) if only_set else {p[0] for p in PRODUCTS}
+    deact |= set(x.strip() for x in args.deactivate.split(",") if x.strip())
 
     print("=" * 60)
     print("  EGREENCITY'S — Creation Payment Links Stripe")
@@ -397,9 +406,9 @@ def main():
     # Regeneration : on desactive d'abord les anciens liens (anciens prix)
     if not args.dry_run:
         print("\n--- Desactivation des anciens liens ---")
-        deactivate_existing_links()
+        deactivate_existing_links(deact)
 
-    results = create_all(dry_run=args.dry_run)
+    results = create_all(dry_run=args.dry_run, only=only_set)
 
     if not args.dry_run:
         # Sauvegarde JSON
@@ -415,7 +424,7 @@ def main():
     print("\n" + "=" * 60)
     ok = sum(1 for r in results.values() if "payment_link_url" in r)
     err = sum(1 for r in results.values() if "error" in r)
-    print(f"  Termine : {ok}/{len(PRODUCTS)} OK, {err} erreur(s)")
+    print(f"  Termine : {ok}/{len(results)} OK, {err} erreur(s)")
     print("=" * 60)
 
     if ok > 0 and not args.dry_run:

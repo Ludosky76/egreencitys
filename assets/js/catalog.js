@@ -124,6 +124,8 @@ window.priceBreakdown = function (htFournisseur, productId) {
    une palette (tarif Chronopost superieur / DPD palette).
    ================================================================ */
 window.PRODUCT_WEIGHTS = {
+  'wb-mur':      8,
+  'wb-mur-rfid': 8,
   'wb-mur-7':    8,
   'wb-mur-22':   9,
   'wb-pied-7':  18,
@@ -162,40 +164,40 @@ window.CATALOG = {
     color: '#33CC00',
     products: [
       {
-        id: 'wb-mur-7',
-        name: 'e-WallBox Murale 1×7 kW',
-        ht: 715,
-        power: '7 kW AC · monophasé',
+        id: 'wb-mur',
+        name: 'e-WallBox Murale',
+        ht: 742,                 // borne NG 420 + prise T2S 196 + cache 56 + transport 70
+        configurable: true,      // carte spéciale : sélecteur mono/tri + option RFID
+        rfidId: 'wb-mur-rfid',   // variante avec lecteur RFID (même borne, +84 € HT)
+        phases: [
+          { key: 'mono', label: 'Monophasé 7 kW', power: '7 kW AC · monophasé' },
+          { key: 'tri',  label: 'Triphasé 22 kW', power: '22 kW AC · triphasé 32A' }
+        ],
+        power: '7 kW mono ou 22 kW tri',
         pdc: 1,
         format: 'Murale',
         image: 'e-wallbox-murale.jpg',
         specs: [
-          'Capot aluminium + plastique',
-          '1 prise Type 2S verrouillable',
-          'Lecteur RFID intégré',
-          'Recharge complète 6-8 h (VE 40 kWh)',
+          'Borne e-Wallbox NG — fabrication France E-TOTEM',
+          'Configurable Monophasé 7 kW ou Triphasé 22 kW — même prix',
+          'Prise Type 2S verrouillable incluse',
+          'Cache de finition inclus',
           'Transport France métropole inclus',
+          'Lecteur RFID en option (badge d\'accès)',
           'Protections différentielles à installer',
         ],
-        tag: 'Entrée de gamme'
+        tag: 'Configurable mono / tri'
       },
       {
-        id: 'wb-mur-22',
-        name: 'e-WallBox Murale 1×22 kW',
-        ht: 845,
-        power: '22 kW AC · triphasé 32A',
+        id: 'wb-mur-rfid',
+        name: 'e-WallBox Murale + lecteur RFID',
+        ht: 826,                 // = wb-mur (742) + lecteur RFID (84)
+        hidden: true,            // pas de carte propre : c'est l'option RFID de wb-mur
+        power: '7 kW mono ou 22 kW tri',
         pdc: 1,
         format: 'Murale',
         image: 'e-wallbox-murale.jpg',
-        specs: [
-          'Capot aluminium + plastique',
-          '1 prise Type 2S verrouillable',
-          'Lecteur RFID intégré',
-          'Recharge complète 1-2 h (VE 22 kW)',
-          'Transport France métropole inclus',
-          'Protections différentielles à installer',
-        ],
-        tag: 'Best-seller particulier'
+        specs: []
       },
       {
         id: 'wb-pied-7',

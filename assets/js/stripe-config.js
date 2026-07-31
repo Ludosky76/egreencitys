@@ -58,8 +58,8 @@ window.STRIPE_CONFIG = {
    ============================================================ */
 var STRIPE_LINKS = {
   test: {
-    'wb-mur-7':   'https://buy.stripe.com/test_6oU8wPgQ84Eu0rc828fIs00',
-    'wb-mur-22':  'https://buy.stripe.com/test_9B6cN51Veef43Do6Y4fIs01',
+    'wb-mur':      '',
+    'wb-mur-rfid': '',
     'wb-pied-7':  'https://buy.stripe.com/test_aFaeVdarK4Eu1vg2HOfIs02',
     'wb-pied-22': 'https://buy.stripe.com/test_3cIcN5czS6MC7TE2HOfIs03',
     'sm7-mur-1':  'https://buy.stripe.com/test_28EdR957q4Eu6PA0zGfIs04',
@@ -73,8 +73,8 @@ var STRIPE_LINKS = {
     'prem-2x22':   'https://buy.stripe.com/test_14AeVd1Ve9YO4HsgyEfIs0c'
   },
   live: {
-    'wb-mur-7':   'https://buy.stripe.com/6oU8wPgQ84Eu0rc828fIs00',
-    'wb-mur-22':  'https://buy.stripe.com/9B6cN51Veef43Do6Y4fIs01',
+    'wb-mur':      'https://buy.stripe.com/3cIaEX2Zi2wma1M4PWfIs0d',
+    'wb-mur-rfid': 'https://buy.stripe.com/eVq14n2Zi8UKfm6bekfIs0e',
     'wb-pied-7':  'https://buy.stripe.com/aFaeVdarK4Eu1vg2HOfIs02',
     'wb-pied-22': 'https://buy.stripe.com/3cIcN5czS6MC7TE2HOfIs03',
     'sm7-mur-1':  'https://buy.stripe.com/28EdR957q4Eu6PA0zGfIs04',

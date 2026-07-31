@@ -173,6 +173,14 @@
     .product-specs li{padding:3px 0;font-size:.78rem;color:var(--text);position:relative;padding-left:16px;}
     .product-specs li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:800;}
     .product-actions{display:flex;gap:.5rem;}
+    /* Sélecteur mono/tri (carte configurateur murale) */
+    .phase-btn{
+      background:#fff;color:var(--green-deep);border:1px solid #d8e6cc;border-radius:10px;
+      padding:.6rem .4rem;font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;
+    }
+    .phase-btn:hover{border-color:var(--green);}
+    .phase-btn.active{background:var(--green-deep);color:#fff;border-color:var(--green-deep);box-shadow:0 3px 10px rgba(10,72,0,.2);}
+    .mur-rfid-opt input:checked ~ span{color:var(--green-deep);}
     .btn-add{
       flex:1;background:var(--green);color:#fff;padding:.75rem;border:none;border-radius:12px;
       font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .25s;
@@ -556,8 +564,8 @@
 </footer>
 
 <!-- STRIPE + CATALOG + COMPTE CLIENT -->
-<script src="/assets/js/stripe-config.js?v=4"></script>
-<script src="/assets/js/catalog.js?v=5"></script>
+<script src="/assets/js/stripe-config.js?v=5"></script>
+<script src="/assets/js/catalog.js?v=6"></script>
 <script src="/assets/js/customer-account.js?v=2"></script>
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/firebase-auth.js?v=1"></script>
@@ -596,7 +604,9 @@
       var grid = document.getElementById('grid-' + key);
 
       gamme.products.forEach(function (p, idx) {
+        if (p.hidden) return;   // variante interne (ex: option RFID) — pas de carte propre
         totalCount++;
+        if (p.configurable) { grid.appendChild(buildConfigurableCard(p, key)); return; }
         var bd = window.priceBreakdown(p.ht, p.id);   // produit / octroi / livraison / total
         var priceTTC = bd.total;                       // prix TOUT COMPRIS affiche
         var weight = window.weightFor(p.id);
@@ -648,13 +658,106 @@
     document.getElementById('cnt-all').textContent = getTotalProductCount();
     Object.keys(window.CATALOG).forEach(function (k) {
       var el = document.getElementById('cnt-' + k);
-      if (el) el.textContent = window.CATALOG[k].products.length;
+      if (el) el.textContent = visibleProducts(window.CATALOG[k]).length;
     });
   }
 
-  function getTotalProductCount() {
-    return Object.values(window.CATALOG).reduce(function (n, g) { return n + g.products.length; }, 0);
+  function visibleProducts(gamme) {
+    return gamme.products.filter(function (p) { return !p.hidden; });
   }
+
+  function getTotalProductCount() {
+    return Object.values(window.CATALOG).reduce(function (n, g) { return n + visibleProducts(g).length; }, 0);
+  }
+
+  // ---- CARTE CONFIGURATEUR (e-WallBox murale : mono/tri + option RFID) ----
+  var muraleState = { phase: 'mono', rfid: false };
+
+  function muralePid() { return muraleState.rfid ? 'wb-mur-rfid' : 'wb-mur'; }
+
+  function findProduct(pid) {
+    var found = null;
+    Object.keys(window.CATALOG).forEach(function (k) {
+      window.CATALOG[k].products.forEach(function (p) { if (p.id === pid) found = p; });
+    });
+    return found;
+  }
+
+  function buildConfigurableCard(p, key) {
+    var card = document.createElement('article');
+    card.className = 'product-card featured';
+    card.dataset.gamme = key;
+    card.dataset.id = p.id;
+    var specsHtml = p.specs.slice(0, 6).map(function (s) { return '<li>' + s + '</li>'; }).join('');
+    var rfidDelta = window.priceBreakdown(findProduct(p.rfidId).ht, p.rfidId).total
+                  - window.priceBreakdown(p.ht, p.id).total;
+
+    card.innerHTML = ''
+      + (p.tag ? '<div class="tag">' + p.tag + '</div>' : '')
+      + '<div class="product-img"><img src="/assets/img/products/' + p.image + '" alt="' + p.name + '" loading="lazy"></div>'
+      + '<div class="product-body">'
+      +   '<h3>' + p.name + '</h3>'
+      +   '<div class="phase-toggle" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin:.6rem 0 .8rem;">'
+      +     '<button type="button" data-phase="mono" class="phase-btn active" onclick="setMuralePhase(\'mono\')">Monophasé 7 kW</button>'
+      +     '<button type="button" data-phase="tri" class="phase-btn" onclick="setMuralePhase(\'tri\')">Triphasé 22 kW</button>'
+      +   '</div>'
+      +   '<div class="product-price">'
+      +     '<span class="price-main" id="mur-price">—</span>'
+      +     '<span class="price-unit">tout compris</span>'
+      +   '</div>'
+      +   '<div class="price-split">💳 <span class="x">3×</span> <span id="mur-split">—</span> sans frais</div>'
+      +   '<label class="mur-rfid-opt" style="display:flex;align-items:center;gap:.5rem;margin:.7rem 0;padding:.6rem .7rem;border:1px solid var(--green);border-radius:10px;cursor:pointer;font-size:.85rem;">'
+      +     '<input type="checkbox" id="mur-rfid" onchange="setMuraleRfid(this.checked)" style="width:auto;">'
+      +     '<span style="flex:1;">Lecteur RFID <span style="color:var(--muted);">(badge d\'accès)</span></span>'
+      +     '<strong id="mur-rfid-price">+' + window.formatPrice(rfidDelta) + '</strong>'
+      +   '</label>'
+      +   '<div class="octroi-note" id="mur-bd"></div>'
+      +   '<ul class="product-specs">' + specsHtml + '</ul>'
+      +   '<div class="product-actions">'
+      +     '<button class="btn-add" onclick="openConfigurator(\'' + key + '\', muralePid())">Configurer & commander</button>'
+      +   '</div>'
+      +   '<a class="btn-stripe-direct" id="mur-pay" href="#">💳 Payer maintenant<span class="small">CB · Apple Pay · Google Pay</span></a>'
+      + '</div>';
+
+    setTimeout(updateMuraleCard, 0);
+    return card;
+  }
+
+  window.setMuralePhase = function (ph) {
+    muraleState.phase = ph;
+    document.querySelectorAll('.phase-btn').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.phase === ph);
+    });
+    updateMuraleCard();
+  };
+  window.setMuraleRfid = function (on) { muraleState.rfid = !!on; updateMuraleCard(); };
+
+  window.updateMuraleCard = function () {
+    var pid = muralePid();
+    var prod = findProduct(pid);
+    if (!prod) return;
+    var bd = window.priceBreakdown(prod.ht, pid);
+    var weight = window.weightFor(pid);
+    var el = function (id) { return document.getElementById(id); };
+    if (el('mur-price')) el('mur-price').textContent = window.formatPrice(bd.total);
+    if (el('mur-split')) el('mur-split').textContent = window.formatPrice(Math.ceil(bd.total / 3));
+    if (el('mur-bd')) el('mur-bd').innerHTML = ''
+      + '<div class="bd-row"><span>Borne ' + weight + ' kg (' + (muraleState.phase === 'mono' ? 'mono 7 kW' : 'tri 22 kW') + ')</span><span>' + window.formatPrice(bd.produit) + '</span></div>'
+      + '<div class="bd-row"><span>🏛️ Octroi de mer (20 %)</span><span>' + window.formatPrice(bd.octroi) + '</span></div>'
+      + '<div class="bd-row"><span>🚚 Livraison Chronopost DOM</span><span>' + window.formatPrice(bd.livraison) + '</span></div>'
+      + '<div class="bd-row bd-total"><span>Total livré chez vous</span><span>' + window.formatPrice(bd.total) + '</span></div>';
+    var pay = el('mur-pay');
+    if (pay) {
+      var link = window.STRIPE_PAYMENT_LINKS && window.STRIPE_PAYMENT_LINKS[pid];
+      if (window.hasStripeLink && window.hasStripeLink(pid) && link) {
+        var sep = link.indexOf('?') > -1 ? '&' : '?';
+        pay.href = link + sep + 'client_reference_id=' + encodeURIComponent(pid + '-' + muraleState.phase);
+        pay.style.display = '';
+      } else {
+        pay.style.display = 'none';
+      }
+    }
+  };
 
   // ---- CONFIGURATEUR (drawer options) -----------------------------
   window.openConfigurator = function (gammeKey, productId) {
