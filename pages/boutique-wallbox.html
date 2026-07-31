@@ -564,8 +564,8 @@
 </footer>
 
 <!-- STRIPE + CATALOG + COMPTE CLIENT -->
-<script src="/assets/js/stripe-config.js?v=5"></script>
-<script src="/assets/js/catalog.js?v=6"></script>
+<script src="/assets/js/stripe-config.js?v=6"></script>
+<script src="/assets/js/catalog.js?v=7"></script>
 <script src="/assets/js/customer-account.js?v=2"></script>
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/firebase-auth.js?v=1"></script>
@@ -670,10 +670,9 @@
     return Object.values(window.CATALOG).reduce(function (n, g) { return n + visibleProducts(g).length; }, 0);
   }
 
-  // ---- CARTE CONFIGURATEUR (e-WallBox murale : mono/tri + option RFID) ----
-  var muraleState = { phase: 'mono', rfid: false };
-
-  function muralePid() { return muraleState.rfid ? 'wb-mur-rfid' : 'wb-mur'; }
+  // ---- CARTE CONFIGURATEUR (e-WallBox murale : mono/tri + options a cocher) ----
+  // Etat : phase + options cochees. Par defaut TOUT decoche -> borne nue.
+  var muraleState = { phase: 'mono', opts: {} };
 
   function findProduct(pid) {
     var found = null;
@@ -683,14 +682,37 @@
     return found;
   }
 
+  // HT courant = borne nue + options cochees
+  function muraleHt(prod) {
+    var ht = prod.ht;
+    prod.options.forEach(function (o) { if (muraleState.opts[o.key]) ht += o.ht; });
+    return ht;
+  }
+
+  // Id Stripe de la combinaison : 'wb-mur' + suffixe des options cochees (ordre catalogue)
+  function muraleComboPid(prod) {
+    var suffix = '';
+    prod.options.forEach(function (o) { if (muraleState.opts[o.key]) suffix += o.key; });
+    return 'wb-mur' + (suffix ? '-' + suffix : '');
+  }
+
   function buildConfigurableCard(p, key) {
     var card = document.createElement('article');
     card.className = 'product-card featured';
     card.dataset.gamme = key;
     card.dataset.id = p.id;
     var specsHtml = p.specs.slice(0, 6).map(function (s) { return '<li>' + s + '</li>'; }).join('');
-    var rfidDelta = window.priceBreakdown(findProduct(p.rfidId).ht, p.rfidId).total
-                  - window.priceBreakdown(p.ht, p.id).total;
+
+    var basePrice = window.priceBreakdown(p.ht, p.id).total;   // borne nue tout compris
+    var optsHtml = p.options.map(function (o) {
+      var supp = window.priceBreakdown(p.ht + o.ht, p.id).total - basePrice;  // supplement indicatif
+      return ''
+        + '<label class="mur-opt" style="display:flex;align-items:center;gap:.55rem;margin:.35rem 0;padding:.55rem .7rem;border:1px solid #d8e6cc;border-radius:10px;cursor:pointer;font-size:.85rem;">'
+        +   '<input type="checkbox" data-optkey="' + o.key + '" onchange="toggleMuraleOpt(\'' + o.key + '\', this.checked)" style="width:auto;">'
+        +   '<span style="flex:1;"><strong>' + o.name + '</strong><br><span style="color:var(--muted);font-size:.74rem;">' + o.sub + '</span></span>'
+        +   '<strong style="color:var(--green-deep);white-space:nowrap;">+' + window.formatPrice(supp) + '</strong>'
+        + '</label>';
+    }).join('');
 
     card.innerHTML = ''
       + (p.tag ? '<div class="tag">' + p.tag + '</div>' : '')
@@ -706,15 +728,12 @@
       +     '<span class="price-unit">tout compris</span>'
       +   '</div>'
       +   '<div class="price-split">💳 <span class="x">3×</span> <span id="mur-split">—</span> sans frais</div>'
-      +   '<label class="mur-rfid-opt" style="display:flex;align-items:center;gap:.5rem;margin:.7rem 0;padding:.6rem .7rem;border:1px solid var(--green);border-radius:10px;cursor:pointer;font-size:.85rem;">'
-      +     '<input type="checkbox" id="mur-rfid" onchange="setMuraleRfid(this.checked)" style="width:auto;">'
-      +     '<span style="flex:1;">Lecteur RFID <span style="color:var(--muted);">(badge d\'accès)</span></span>'
-      +     '<strong id="mur-rfid-price">+' + window.formatPrice(rfidDelta) + '</strong>'
-      +   '</label>'
-      +   '<div class="octroi-note" id="mur-bd"></div>'
+      +   '<div style="font-size:.72rem;color:var(--muted);margin:.6rem 0 .3rem;font-weight:600;">Borne nue — cochez vos options :</div>'
+      +   optsHtml
+      +   '<div class="octroi-note" id="mur-bd" style="margin-top:.6rem;"></div>'
       +   '<ul class="product-specs">' + specsHtml + '</ul>'
       +   '<div class="product-actions">'
-      +     '<button class="btn-add" onclick="openConfigurator(\'' + key + '\', muralePid())">Configurer & commander</button>'
+      +     '<button class="btn-add" onclick="openConfigurator(\'' + key + '\', \'wb-mur\')">Configurer & commander</button>'
       +   '</div>'
       +   '<a class="btn-stripe-direct" id="mur-pay" href="#">💳 Payer maintenant<span class="small">CB · Apple Pay · Google Pay</span></a>'
       + '</div>';
@@ -730,14 +749,15 @@
     });
     updateMuraleCard();
   };
-  window.setMuraleRfid = function (on) { muraleState.rfid = !!on; updateMuraleCard(); };
+  window.toggleMuraleOpt = function (k, on) { muraleState.opts[k] = !!on; updateMuraleCard(); };
 
   window.updateMuraleCard = function () {
-    var pid = muralePid();
-    var prod = findProduct(pid);
+    var prod = findProduct('wb-mur');
     if (!prod) return;
-    var bd = window.priceBreakdown(prod.ht, pid);
-    var weight = window.weightFor(pid);
+    var ht = muraleHt(prod);
+    var comboPid = muraleComboPid(prod);
+    var bd = window.priceBreakdown(ht, 'wb-mur');
+    var weight = window.weightFor('wb-mur');
     var el = function (id) { return document.getElementById(id); };
     if (el('mur-price')) el('mur-price').textContent = window.formatPrice(bd.total);
     if (el('mur-split')) el('mur-split').textContent = window.formatPrice(Math.ceil(bd.total / 3));
@@ -748,10 +768,10 @@
       + '<div class="bd-row bd-total"><span>Total livré chez vous</span><span>' + window.formatPrice(bd.total) + '</span></div>';
     var pay = el('mur-pay');
     if (pay) {
-      var link = window.STRIPE_PAYMENT_LINKS && window.STRIPE_PAYMENT_LINKS[pid];
-      if (window.hasStripeLink && window.hasStripeLink(pid) && link) {
+      var link = window.STRIPE_PAYMENT_LINKS && window.STRIPE_PAYMENT_LINKS[comboPid];
+      if (window.hasStripeLink && window.hasStripeLink(comboPid) && link) {
         var sep = link.indexOf('?') > -1 ? '&' : '?';
-        pay.href = link + sep + 'client_reference_id=' + encodeURIComponent(pid + '-' + muraleState.phase);
+        pay.href = link + sep + 'client_reference_id=' + encodeURIComponent(comboPid + '-' + muraleState.phase);
         pay.style.display = '';
       } else {
         pay.style.display = 'none';

@@ -141,6 +141,7 @@ window.PRODUCT_WEIGHTS = {
   'prem-2x22':  60
 };
 window.weightFor = function (productId) {
+  if (productId && productId.indexOf('wb-mur') === 0) return 8;  // toutes les combinaisons murale
   return window.PRODUCT_WEIGHTS[productId] || 15;
 };
 
@@ -166,12 +167,18 @@ window.CATALOG = {
       {
         id: 'wb-mur',
         name: 'e-WallBox Murale',
-        ht: 742,                 // borne NG 420 + prise T2S 196 + cache 56 + transport 70
-        configurable: true,      // carte spéciale : sélecteur mono/tri + option RFID
-        rfidId: 'wb-mur-rfid',   // variante avec lecteur RFID (même borne, +84 € HT)
+        ht: 420,                 // borne e-Wallbox NG NUE (prix de base)
+        configurable: true,      // carte configurateur : mono/tri + options a cocher
         phases: [
           { key: 'mono', label: 'Monophasé 7 kW', power: '7 kW AC · monophasé' },
           { key: 'tri',  label: 'Triphasé 22 kW', power: '22 kW AC · triphasé 32A' }
+        ],
+        // Options a cocher — l'ordre définit le suffixe de l'id Stripe (p,c,t,r).
+        options: [
+          { key: 'p', name: 'Prise Type 2S',       sub: 'connecteur de charge (indispensable)', ht: 196 },
+          { key: 'c', name: 'Cache de finition',   sub: 'façade (si pas de RFID)',              ht: 56  },
+          { key: 't', name: 'Transport métropole', sub: 'acheminement vers EGREENCITY\'S',       ht: 70  },
+          { key: 'r', name: 'Lecteur RFID',        sub: 'badge d\'accès',                        ht: 84  }
         ],
         power: '7 kW mono ou 22 kW tri',
         pdc: 1,
@@ -180,24 +187,11 @@ window.CATALOG = {
         specs: [
           'Borne e-Wallbox NG — fabrication France E-TOTEM',
           'Configurable Monophasé 7 kW ou Triphasé 22 kW — même prix',
-          'Prise Type 2S verrouillable incluse',
-          'Cache de finition inclus',
-          'Transport France métropole inclus',
-          'Lecteur RFID en option (badge d\'accès)',
-          'Protections différentielles à installer',
+          'Prix de base = borne nue ; ajoutez vos options',
+          'Prise Type 2S, cache, transport et lecteur RFID en options',
+          'Protections différentielles à installer par un électricien IRVE',
         ],
         tag: 'Configurable mono / tri'
-      },
-      {
-        id: 'wb-mur-rfid',
-        name: 'e-WallBox Murale + lecteur RFID',
-        ht: 826,                 // = wb-mur (742) + lecteur RFID (84)
-        hidden: true,            // pas de carte propre : c'est l'option RFID de wb-mur
-        power: '7 kW mono ou 22 kW tri',
-        pdc: 1,
-        format: 'Murale',
-        image: 'e-wallbox-murale.jpg',
-        specs: []
       },
       {
         id: 'wb-pied-7',

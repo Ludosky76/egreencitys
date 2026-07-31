@@ -82,6 +82,34 @@ COEF_MARGE = 1.35
 ARRONDI = 10
 OCTROI_TOTAL = 0.20   # 17 % OM + 3 % OMR (TGOM Guyane 2026, code 8504.40)
 
+# --- e-WallBox murale configurable : borne nue 420 € HT + options a cocher ---
+# Chaque combinaison d'options = un product/price/lien Stripe distinct.
+# L'ordre des options definit le suffixe de l'id (p,c,t,r) — DOIT correspondre
+# a l'ordre du tableau `options` de wb-mur dans catalog.js.
+MUR_BASE_HT = 420
+MUR_OPTS = [
+    ("p", "Prise Type 2S", 196),
+    ("c", "Cache de finition", 56),
+    ("t", "Transport metropole", 70),
+    ("r", "lecteur RFID", 84),
+]
+
+def murale_combos():
+    """Genere les 16 combinaisons (borne nue + sous-ensemble d'options)."""
+    out = []
+    for mask in range(2 ** len(MUR_OPTS)):
+        letters, ht, parts = "", MUR_BASE_HT, []
+        for i, (k, nm, h) in enumerate(MUR_OPTS):
+            if mask & (1 << i):
+                letters += k; ht += h; parts.append(nm)
+        pid = "wb-mur" + ("-" + letters if letters else "")
+        name = "e-WallBox Murale" + (" - " + ", ".join(parts) if parts else " (borne nue)")
+        desc = ("Borne e-Wallbox NG mono 7 kW ou tri 22 kW"
+                + (", avec " + ", ".join(parts) if parts else " seule")
+                + ". Fabrication France E-TOTEM. Livraison Chronopost DOM incluse.")
+        out.append((pid, name, ht, "wallbox", desc))
+    return out
+
 def price_product(ht: float) -> int:
     """Prix produit seul (marge EGREENCITY'S, sans TVA, sans octroi, sans port)."""
     raw = ht * COEF_MARGE
@@ -97,11 +125,16 @@ def shipping_for_weight(kg: float) -> int:
             return price
     return round(380 + (kg - 30) * 4.5)  # palette
 
+def weight_for(pid: str) -> float:
+    if pid.startswith("wb-mur"):
+        return 8       # toutes les combinaisons de la murale
+    return WEIGHTS.get(pid, 15)
+
 def price_all_in(ht: float, pid: str) -> dict:
     """Decomposition du prix tout compris."""
     base = price_product(ht)
     octroi = round(base * OCTROI_TOTAL)
-    ship = shipping_for_weight(WEIGHTS.get(pid, 15))
+    ship = shipping_for_weight(weight_for(pid))
     return {"produit": base, "octroi": octroi, "livraison": ship,
             "total": base + octroi + ship}
 
@@ -113,10 +146,8 @@ WEIGHTS = {
     "prem-2x22": 60,
 }
 
-PRODUCTS = [
+NON_MURALE = [
     # (product_id, name, ht_fournisseur, gamme, description)
-    ("wb-mur",      "e-WallBox Murale (mono 7 kW ou tri 22 kW)", 742, "wallbox", "Borne e-Wallbox NG - configurable Monophase 7 kW ou Triphase 22 kW (meme prix) - prise Type 2S + cache de finition - fabrication France E-TOTEM. Livraison Chronopost DOM incluse."),
-    ("wb-mur-rfid", "e-WallBox Murale + lecteur RFID",     826, "wallbox",  "Borne e-Wallbox NG (mono 7 kW ou tri 22 kW) AVEC lecteur RFID / badge d'acces - prise Type 2S - fabrication France E-TOTEM. Livraison Chronopost DOM incluse."),
     ("wb-pied-7",  "e-WallBox sur Pied 7 kW",            911, "wallbox",  "1 point de charge - 7 kW AC - sur pied - lecteur RFID - fabrication France E-TOTEM. Livraison Chronopost DOM incluse."),
     ("wb-pied-22", "e-WallBox sur Pied 22 kW",          1041, "wallbox",  "1 point de charge - 22 kW AC - sur pied - lecteur RFID - fabrication France E-TOTEM. Livraison Chronopost DOM incluse."),
     ("sm7-mur-1",  "e-Smart 7 kW Murale 1 PDC",         1485, "smart7",   "1 point de charge - 7 kW AC - capot fonderie aluminium - MID - murale. Livraison Chronopost DOM incluse."),
@@ -129,6 +160,9 @@ PRODUCTS = [
     ("sm22-pied-2","e-Smart 22 kW sur Pied 2 PDC",      2739, "smart22",  "2 points de charge - 2x22 kW AC - MID - sur pied. Livraison Chronopost DOM incluse."),
     ("prem-2x22",  "e-Premium AC 2x22 kW (ADVENIR)",    4948, "premium",  "2 points de charge - 2x22 kW AC - borne inox - parafoudre - modele voirie publique ADVENIR. Livraison Chronopost DOM incluse."),
 ]
+
+# Catalogue complet = produits standards + 16 combinaisons de la murale
+PRODUCTS = NON_MURALE + murale_combos()
 
 SITE_URL = "https://egreencitys.com"
 SUCCESS_URL = f"{SITE_URL}/pages/boutique-wallbox.html?paiement=succes"
@@ -144,7 +178,7 @@ CANCEL_URL  = f"{SITE_URL}/pages/boutique-wallbox.html?paiement=annule"
 # Pour ajuster un prix : modifier catalog.js puis relancer ce script.
 def sync_prices_from_catalog() -> None:
     """Lit COEF_MARGE et les prix HT depuis catalog.js et met a jour ce module."""
-    global COEF_MARGE, PRODUCTS
+    global COEF_MARGE, PRODUCTS, MUR_BASE_HT
     if not CATALOG_FILE.exists():
         print(f"[WARN] {CATALOG_FILE} introuvable — prix internes utilises.")
         return
@@ -157,21 +191,20 @@ def sync_prices_from_catalog() -> None:
     if m:
         COEF_MARGE = float(m.group(1))
 
-    new_products = []
-    changed = 0
-    for (pid, name, ht, gamme, desc) in PRODUCTS:
-        # Cherche  id: '<pid>'  puis le premier  ht: <nombre>  qui suit.
-        pm = re.search(
-            r"id:\s*'" + re.escape(pid) + r"'.*?ht:\s*(\d+)",
-            js, re.DOTALL,
-        )
-        new_ht = int(pm.group(1)) if pm else ht
-        if new_ht != ht:
-            changed += 1
-        new_products.append((pid, name, new_ht, gamme, desc))
-    PRODUCTS = new_products
+    # Base murale (borne nue) depuis catalog.js -> regenere les 16 combinaisons
+    bm = re.search(r"id:\s*'wb-mur'.*?ht:\s*(\d+)", js, re.DOTALL)
+    if bm:
+        MUR_BASE_HT = int(bm.group(1))
+
+    # Produits standards (non murale) : ht lu depuis catalog.js
+    non_murale = []
+    for (pid, name, ht, gamme, desc) in NON_MURALE:
+        pm = re.search(r"id:\s*'" + re.escape(pid) + r"'.*?ht:\s*(\d+)", js, re.DOTALL)
+        non_murale.append((pid, name, int(pm.group(1)) if pm else ht, gamme, desc))
+
+    PRODUCTS = non_murale + murale_combos()
     print(f"[OK] Prix lus depuis catalog.js (COEF_MARGE={COEF_MARGE}, "
-          f"{changed} prix HT differents des valeurs internes).")
+          f"base murale={MUR_BASE_HT} EUR HT, {len(PRODUCTS)} produits).")
 
 
 # ============================================================
@@ -209,7 +242,7 @@ def create_all(dry_run: bool = False, only=None) -> dict:
                     "octroi_de_mer": str(bd["octroi"]),
                     "livraison": str(bd["livraison"]),
                     "total_tout_compris": str(bd["total"]),
-                    "poids_kg": str(WEIGHTS.get(pid, 15)),
+                    "poids_kg": str(weight_for(pid)),
                     "fiscalite": "Sans TVA (Guyane) - octroi de mer 20% (8504.40) et livraison Chronopost DOM INCLUS",
                 },
                 images=[f"{SITE_URL}/assets/img/products/{pid_to_img(pid)}"]
@@ -303,6 +336,8 @@ def bump_boutique_cache_version() -> None:
 
 def pid_to_img(pid: str) -> str:
     """Mapping product_id -> nom d'image dans /assets/img/products/"""
+    if pid.startswith("wb-mur"):
+        return "e-wallbox-murale.jpg"
     mapping = {
         "wb-mur":      "e-wallbox-murale.jpg",
         "wb-mur-rfid": "e-wallbox-murale.jpg",
@@ -355,7 +390,11 @@ def update_stripe_config_js(results: dict, env: str):
         url = info["payment_link_url"]
         pat = re.compile(r"('" + re.escape(pid) + r"'\s*:\s*)'[^']*'")
         block, n = pat.subn(r"\1'" + url + r"'", block)
-        if n > 0:
+        if n == 0:
+            # cle absente du fichier -> on l'insere en tete du bloc
+            block = "\n    '" + pid + "': '" + url + "'," + block
+            print(f"  [+]  {env}: {pid} -> {url[:48]}... (nouvelle cle)")
+        else:
             print(f"  [OK] {env}: {pid} -> {url[:48]}...")
 
     links_content = content[:m.start(2)] + block + content[m.end(2):]
@@ -372,19 +411,24 @@ def main():
     ap.add_argument("--dry-run", action="store_true", help="Ne rien creer chez Stripe, juste afficher")
     ap.add_argument("--skip-config-update", action="store_true", help="Ne pas modifier stripe-config.js")
     ap.add_argument("--only", default="", help="Ne (re)creer QUE ces product ids (liste separee par des virgules)")
+    ap.add_argument("--murale", action="store_true", help="Ne regenerer QUE les 16 combinaisons de la murale")
     ap.add_argument("--deactivate", default="", help="Ids supplementaires a desactiver (anciens produits remplaces)")
     args = ap.parse_args()
-
-    only_set = set(x.strip() for x in args.only.split(",") if x.strip()) or None
-    deact = set(only_set) if only_set else {p[0] for p in PRODUCTS}
-    deact |= set(x.strip() for x in args.deactivate.split(",") if x.strip())
 
     print("=" * 60)
     print("  EGREENCITY'S — Creation Payment Links Stripe")
     print("=" * 60)
 
-    # Source unique des prix : catalog.js
+    # Source unique des prix : catalog.js (rebuild PRODUCTS avec les 16 combos murale)
     sync_prices_from_catalog()
+
+    # Cibles a (re)creer / desactiver
+    only_set = set(x.strip() for x in args.only.split(",") if x.strip())
+    if args.murale:
+        only_set |= {p[0] for p in PRODUCTS if p[0].startswith("wb-mur")}
+    only_set = only_set or None
+    deact = set(only_set) if only_set else {p[0] for p in PRODUCTS}
+    deact |= set(x.strip() for x in args.deactivate.split(",") if x.strip())
 
     env = "test"
     if not args.dry_run:
