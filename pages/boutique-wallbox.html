@@ -564,8 +564,8 @@
 </footer>
 
 <!-- STRIPE + CATALOG + COMPTE CLIENT -->
-<script src="/assets/js/stripe-config.js?v=6"></script>
-<script src="/assets/js/catalog.js?v=7"></script>
+<script src="/assets/js/stripe-config.js?v=7"></script>
+<script src="/assets/js/catalog.js?v=8"></script>
 <script src="/assets/js/customer-account.js?v=2"></script>
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/firebase-auth.js?v=1"></script>
@@ -682,18 +682,24 @@
     return found;
   }
 
-  // HT courant = borne nue + options cochees
+  // Base HT selon la puissance : mono (ht) ou tri (htTri)
+  function muraleBaseHt(prod) {
+    return (muraleState.phase === 'tri' && prod.htTri) ? prod.htTri : prod.ht;
+  }
+
+  // HT courant = borne nue (mono/tri) + options cochees
   function muraleHt(prod) {
-    var ht = prod.ht;
+    var ht = muraleBaseHt(prod);
     prod.options.forEach(function (o) { if (muraleState.opts[o.key]) ht += o.ht; });
     return ht;
   }
 
-  // Id Stripe de la combinaison : 'wb-mur' + suffixe des options cochees (ordre catalogue)
+  // Id Stripe : 'wb-mur' + '22' si triphasé + suffixe des options (ordre catalogue)
   function muraleComboPid(prod) {
     var suffix = '';
     prod.options.forEach(function (o) { if (muraleState.opts[o.key]) suffix += o.key; });
-    return 'wb-mur' + (suffix ? '-' + suffix : '');
+    var phasePfx = (muraleState.phase === 'tri') ? '22' : '';
+    return 'wb-mur' + phasePfx + (suffix ? '-' + suffix : '');
   }
 
   function buildConfigurableCard(p, key) {

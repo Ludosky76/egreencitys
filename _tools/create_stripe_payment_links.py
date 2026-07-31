@@ -86,7 +86,8 @@ OCTROI_TOTAL = 0.20   # 17 % OM + 3 % OMR (TGOM Guyane 2026, code 8504.40)
 # Chaque combinaison d'options = un product/price/lien Stripe distinct.
 # L'ordre des options definit le suffixe de l'id (p,c,t,r) — DOIT correspondre
 # a l'ordre du tableau `options` de wb-mur dans catalog.js.
-MUR_BASE_HT = 420
+MUR_BASE_MONO = 420   # borne nue monophase 7 kW
+MUR_BASE_TRI = 509    # borne nue triphase 22 kW (config electrique differente)
 MUR_OPTS = [
     ("p", "Prise Type 2S", 196),
     ("c", "Cache de finition", 56),
@@ -95,19 +96,22 @@ MUR_OPTS = [
 ]
 
 def murale_combos():
-    """Genere les 16 combinaisons (borne nue + sous-ensemble d'options)."""
+    """Genere les 32 combinaisons : 2 puissances (mono/tri) x 16 sous-ensembles
+    d'options. Suffixe '22' = triphase. Meme ordre d'options que catalog.js."""
     out = []
-    for mask in range(2 ** len(MUR_OPTS)):
-        letters, ht, parts = "", MUR_BASE_HT, []
-        for i, (k, nm, h) in enumerate(MUR_OPTS):
-            if mask & (1 << i):
-                letters += k; ht += h; parts.append(nm)
-        pid = "wb-mur" + ("-" + letters if letters else "")
-        name = "e-WallBox Murale" + (" - " + ", ".join(parts) if parts else " (borne nue)")
-        desc = ("Borne e-Wallbox NG mono 7 kW ou tri 22 kW"
-                + (", avec " + ", ".join(parts) if parts else " seule")
-                + ". Fabrication France E-TOTEM. Livraison Chronopost DOM incluse.")
-        out.append((pid, name, ht, "wallbox", desc))
+    for pfx, base, plabel in (("", MUR_BASE_MONO, "Monophase 7 kW"),
+                              ("22", MUR_BASE_TRI, "Triphase 22 kW")):
+        for mask in range(2 ** len(MUR_OPTS)):
+            letters, ht, parts = "", base, []
+            for i, (k, nm, h) in enumerate(MUR_OPTS):
+                if mask & (1 << i):
+                    letters += k; ht += h; parts.append(nm)
+            pid = "wb-mur" + pfx + ("-" + letters if letters else "")
+            name = "e-WallBox Murale " + plabel + (" - " + ", ".join(parts) if parts else " (borne nue)")
+            desc = ("Borne e-Wallbox NG " + plabel
+                    + (", avec " + ", ".join(parts) if parts else " seule")
+                    + ". Fabrication France E-TOTEM. Livraison Chronopost DOM incluse.")
+            out.append((pid, name, ht, "wallbox", desc))
     return out
 
 def price_product(ht: float) -> int:
@@ -178,7 +182,7 @@ CANCEL_URL  = f"{SITE_URL}/pages/boutique-wallbox.html?paiement=annule"
 # Pour ajuster un prix : modifier catalog.js puis relancer ce script.
 def sync_prices_from_catalog() -> None:
     """Lit COEF_MARGE et les prix HT depuis catalog.js et met a jour ce module."""
-    global COEF_MARGE, PRODUCTS, MUR_BASE_HT
+    global COEF_MARGE, PRODUCTS, MUR_BASE_MONO, MUR_BASE_TRI
     if not CATALOG_FILE.exists():
         print(f"[WARN] {CATALOG_FILE} introuvable — prix internes utilises.")
         return
@@ -191,10 +195,13 @@ def sync_prices_from_catalog() -> None:
     if m:
         COEF_MARGE = float(m.group(1))
 
-    # Base murale (borne nue) depuis catalog.js -> regenere les 16 combinaisons
+    # Bases murale depuis catalog.js : ht = mono 7 kW, htTri = tri 22 kW
     bm = re.search(r"id:\s*'wb-mur'.*?ht:\s*(\d+)", js, re.DOTALL)
     if bm:
-        MUR_BASE_HT = int(bm.group(1))
+        MUR_BASE_MONO = int(bm.group(1))
+    bt = re.search(r"id:\s*'wb-mur'.*?htTri:\s*(\d+)", js, re.DOTALL)
+    if bt:
+        MUR_BASE_TRI = int(bt.group(1))
 
     # Produits standards (non murale) : ht lu depuis catalog.js
     non_murale = []
@@ -204,7 +211,7 @@ def sync_prices_from_catalog() -> None:
 
     PRODUCTS = non_murale + murale_combos()
     print(f"[OK] Prix lus depuis catalog.js (COEF_MARGE={COEF_MARGE}, "
-          f"base murale={MUR_BASE_HT} EUR HT, {len(PRODUCTS)} produits).")
+          f"base murale mono={MUR_BASE_MONO} / tri={MUR_BASE_TRI} EUR HT, {len(PRODUCTS)} produits).")
 
 
 # ============================================================

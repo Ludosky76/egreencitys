@@ -167,7 +167,8 @@ window.CATALOG = {
       {
         id: 'wb-mur',
         name: 'e-WallBox Murale',
-        ht: 420,                 // borne e-Wallbox NG NUE (prix de base)
+        ht: 420,                 // borne e-Wallbox NG NUE — base MONOPHASÉ 7 kW
+        htTri: 509,              // borne NUE — base TRIPHASÉ 22 kW (config élec différente)
         configurable: true,      // carte configurateur : mono/tri + options a cocher
         phases: [
           { key: 'mono', label: 'Monophasé 7 kW', power: '7 kW AC · monophasé' },
@@ -186,7 +187,7 @@ window.CATALOG = {
         image: 'e-wallbox-murale.jpg',
         specs: [
           'Borne e-Wallbox NG — fabrication France E-TOTEM',
-          'Configurable Monophasé 7 kW ou Triphasé 22 kW — même prix',
+          'Configurable Monophasé 7 kW ou Triphasé 22 kW',
           'Prix de base = borne nue ; ajoutez vos options',
           'Prise Type 2S, cache, transport et lecteur RFID en options',
           'Protections différentielles à installer par un électricien IRVE',
