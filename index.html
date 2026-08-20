@@ -215,6 +215,24 @@
     .stat-n{font-size:2.3rem;font-weight:800;line-height:1;display:block;}
     .stat-l{font-size:.78rem;opacity:.88;margin-top:.25rem;}
 
+    /* ── BANNIÈRE BOUTIQUE ───────────────────────────── */
+    .shop-banner{background:linear-gradient(135deg,var(--green-deep) 0%,#0d5c00 55%,var(--green-dark) 100%);padding:4rem 3rem;position:relative;overflow:hidden;}
+    .shop-banner::after{content:"";position:absolute;top:-40%;right:-10%;width:480px;height:480px;background:radial-gradient(circle,rgba(51,204,0,.35) 0%,transparent 70%);pointer-events:none;}
+    .shop-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.3fr 1fr;gap:3rem;align-items:center;position:relative;z-index:1;}
+    .shop-badge{display:inline-block;background:rgba(255,255,255,.15);color:#fff;padding:.35rem 1rem;border-radius:50px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:1rem;border:1px solid rgba(255,255,255,.25);}
+    .shop-txt h2{font-size:clamp(1.6rem,2.6vw,2.2rem);font-weight:800;color:#fff;line-height:1.2;margin-bottom:.9rem;}
+    .shop-txt p{font-size:.95rem;color:rgba(255,255,255,.9);line-height:1.7;margin-bottom:1.2rem;max-width:560px;}
+    .shop-txt p strong{color:#fff;}
+    .shop-points{list-style:none;padding:0;margin:0 0 1.6rem;display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;}
+    .shop-points li{color:#fff;font-size:.86rem;font-weight:600;}
+    .shop-btn{display:inline-block;background:#fff;color:var(--green-deep);padding:.95rem 2.2rem;border-radius:50px;font-weight:800;font-size:1rem;text-decoration:none;box-shadow:0 8px 26px rgba(0,0,0,.28);transition:transform .18s,box-shadow .18s;}
+    .shop-btn:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.36);}
+    .shop-cards{display:flex;flex-direction:column;gap:.8rem;}
+    .shop-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:1rem 1.3rem;display:flex;align-items:center;gap:1rem;backdrop-filter:blur(6px);}
+    .sc-emo{font-size:1.7rem;}
+    .sc-name{color:#fff;font-weight:700;font-size:.95rem;flex:1;}
+    .sc-price{color:#baffb0;font-weight:800;font-size:.9rem;white-space:nowrap;}
+
     /* ── SECTIONS ────────────────────────────────────── */
     section{padding:5.5rem 3rem;}
     .section-inner{max-width:1200px;margin:0 auto;}
@@ -400,6 +418,8 @@
       .hero-map-wrap{display:none;}
       .stats-inner{grid-template-columns:repeat(2,1fr);}
       .mission-grid,.econ-grid,.reseau-grid,.contact-grid{grid-template-columns:1fr;}
+      .shop-banner{padding:3rem 1.5rem;}
+      .shop-inner{grid-template-columns:1fr;gap:2rem;}
       .prod-grid{grid-template-columns:1fr 1fr;}
       .invest-grid{grid-template-columns:1fr 1fr;}
       .foot-top{grid-template-columns:1fr 1fr;}
@@ -475,7 +495,7 @@
   <ul class="nav-links">
     <li><a href="#mission">Mission</a></li>
     <li><a href="/pages/produits.html">Produits</a></li>
-    <li><a href="/pages/boutique-wallbox.html" style="color:#33CC00;font-weight:700;">🛒 Boutique</a></li>
+    <li><a href="/pages/boutique-wallbox.html" class="btn-nav" style="box-shadow:0 4px 14px rgba(51,204,0,.45);">🛒 Boutique</a></li>
     <li><a href="/pages/compte.html">👤 Mon compte</a></li>
     <li><a href="/pages/economies.html">Économies</a></li>
     <li><a href="/pages/reseau.html">Réseau</a></li>
@@ -506,7 +526,8 @@
         mairies, collectivités et entreprises.
       </p>
       <div class="hero-btns">
-        <a href="/pages/devis.html" class="btn-primary">Devis gratuit →</a>
+        <a href="/pages/boutique-wallbox.html" class="btn-primary">🛒 Boutique en ligne →</a>
+        <a href="/pages/devis.html" class="btn-ghost">Devis gratuit</a>
         <a href="/pages/reseau.html" class="btn-ghost">Découvrir le projet</a>
       </div>
     </div>
@@ -567,6 +588,28 @@
     <div class="stat rv d3"><span class="stat-n">64 %</span><span class="stat-l">visés via ADVENIR</span></div>
   </div>
 </div>
+
+<!-- ════════════════ BANNIÈRE BOUTIQUE ════════════════ -->
+<section class="shop-banner" id="boutique">
+  <div class="shop-inner rv">
+    <div class="shop-txt">
+      <span class="shop-badge">🛒 Boutique en ligne</span>
+      <h2>Achetez votre borne de recharge en quelques clics</h2>
+      <p>Configurez votre borne (mono ou triphasé, options à la carte), payez en ligne en toute sécurité — <strong>prix tout compris</strong>, octroi de mer et livraison en Guyane inclus. Fabrication française E-TOTEM.</p>
+      <ul class="shop-points">
+        <li>✔ Paiement sécurisé en 3× sans frais</li>
+        <li>✔ Prix tout compris — pas de surprise</li>
+        <li>✔ Installation IRVE en option</li>
+      </ul>
+      <a href="/pages/boutique-wallbox.html" class="shop-btn">Accéder à la boutique →</a>
+    </div>
+    <div class="shop-cards">
+      <div class="shop-card"><span class="sc-emo">🔌</span><span class="sc-name">e-WallBox</span><span class="sc-price">dès 1&nbsp;278&nbsp;€</span></div>
+      <div class="shop-card"><span class="sc-emo">⚡</span><span class="sc-name">e-Smart 7 kW</span><span class="sc-price">dès 2&nbsp;564&nbsp;€</span></div>
+      <div class="shop-card"><span class="sc-emo">🚀</span><span class="sc-name">e-Smart 22 kW</span><span class="sc-price">dès 2&nbsp;708&nbsp;€</span></div>
+    </div>
+  </div>
+</section>
 
 <!-- ════════════════ MISSION ════════════════ -->
 <section class="mission" id="mission">
