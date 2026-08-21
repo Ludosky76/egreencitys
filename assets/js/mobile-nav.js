@@ -15,12 +15,28 @@
   }
 
   ready(function () {
-    var nav = document.querySelector('nav');
+    var nav = document.querySelector('nav') || document.querySelector('header.ltopbar')
+            || document.querySelector('header.topbar') || document.querySelector('header');
     if (!nav) return;
-    var navLinks = nav.querySelector('.nav-links');
-    if (!navLinks) return;
 
     injectCss();
+
+    var navLinks = nav.querySelector('.nav-links');
+
+    // Bouton "Boutique" toujours accessible dans la barre du haut
+    // (toutes les pages sauf la boutique elle-meme)
+    if (!/boutique-wallbox\.html/i.test(location.pathname)) {
+      var shop = document.createElement('a');
+      shop.className = 'egc-shop-btn' + (navLinks ? '' : ' egc-shop-btn--always');
+      shop.href = '/pages/boutique-wallbox.html';
+      shop.innerHTML = '🛒 Boutique';
+      var shopHost = nav.querySelector('.ltopbar-inner') || nav.querySelector('.topbar-inner') || nav;
+      var backLink = shopHost.querySelector('.lback') || shopHost.querySelector('.back-btn');
+      if (backLink) shopHost.insertBefore(shop, backLink);
+      else shopHost.appendChild(shop);
+    }
+
+    if (!navLinks) return; // pas de menu complet : pas de hamburger (bouton Boutique deja pose)
 
     // 1. Extraire les liens de navigation (hors menu compte transforme)
     var links = [];
@@ -114,9 +130,18 @@
       '.egc-burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;',
       '  background:none;border:none;cursor:pointer;padding:0;margin-left:auto;}',
       '.egc-burger span{display:block;width:26px;height:3px;background:#0a4800;border-radius:3px;transition:.25s;margin:0 auto;}',
+      /* Bouton Boutique persistant */
+      '.egc-shop-btn{display:none;align-items:center;gap:.3rem;background:#33CC00;color:#fff!important;text-decoration:none;',
+      '  font-weight:700;font-size:.82rem;line-height:1;padding:.55rem .95rem;border-radius:50px;',
+      '  box-shadow:0 3px 12px rgba(51,204,0,.4);white-space:nowrap;transition:background .2s,transform .15s;}',
+      '.egc-shop-btn:hover{background:#28a800;color:#fff!important;}',
+      '.egc-shop-btn:active{transform:scale(.96);}',
+      '.egc-shop-btn--always{display:inline-flex;margin-left:auto;margin-right:.55rem;}',
       '@media(max-width:900px){',
       '  nav .nav-links{display:none!important;}',
       '  .egc-burger{display:flex;}',
+      '  nav .egc-shop-btn{display:inline-flex;margin-left:auto;}',
+      '  nav .egc-burger{margin-left:.5rem;}',
       '}',
       /* Overlay */
       '.egc-mnav-overlay{position:fixed;inset:0;background:rgba(8,26,0,.5);opacity:0;pointer-events:none;',
