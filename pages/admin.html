@@ -108,7 +108,8 @@
         snap.forEach(function(d){
           var o=d.data(); n++; if(o.statut==='payee') ca+=Number(o.montant)||0;
           var date = o.created_at && o.created_at.toDate ? o.created_at.toDate().toLocaleDateString('fr-FR') : '—';
-          tb.innerHTML += '<tr><td>'+esc(o.numero||d.id.slice(-8))+'</td><td>'+esc(o.nom||'—')+'</td><td>'+esc(o.email||'—')+'</td><td>'+fmt(o.montant)+'</td><td><span class="pill">'+esc(o.statut||'?')+'</span></td><td>'+date+'</td></tr>';
+          var arts = (o.articles||[]).map(function(a){ return (a.quantite>1? a.quantite+'× ':'') + a.libelle; }).join(', ');
+          tb.innerHTML += '<tr><td>'+esc(o.numero||d.id.slice(-8))+'</td><td>'+esc(o.nom||'—')+(arts?'<div style="font-size:.72rem;color:#9db2a3;margin-top:.15rem;">'+esc(arts)+'</div>':'')+'</td><td>'+esc(o.email||'—')+'</td><td>'+fmt(o.montant)+'</td><td><span class="pill">'+esc(o.statut||'?')+'</span></td><td>'+date+'</td></tr>';
         });
         document.getElementById('ordersEmpty').classList.toggle('hidden', n>0);
         renderKpis(ca, n);

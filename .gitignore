@@ -22,3 +22,4 @@ _archive/
 _dossiers/_social_publisher.log
 _config/
 *.env
+functions/node_modules/
