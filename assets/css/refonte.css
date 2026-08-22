@@ -122,6 +122,32 @@ nav.scrolled {
 }
 
 /* --------------------------------------------------------------------------
+   CONTRASTE AA (WCAG) — CTA verts en vert profond
+   -------------------------------------------------------------------------- */
+/* #33CC00 sur texte blanc ~2.1:1 (echec AA). --green-deep #0a4800 ~9:1 (OK).
+   Meilleure lisibilite, y compris en plein soleil (usage exterieur Guyane).
+   Le bouton de paiement Stripe (#635BFF) est explicitement exclu. */
+.btn-nav,
+.btn-primary,
+.btn-hero,
+.btn-add,
+.btn-cta,
+.btn-drawer:not(#btnStripeDirect),
+.egc-shop-btn {
+  background: var(--green-deep, #0a4800) !important;
+  color: #fff !important;
+}
+.btn-nav:hover,
+.btn-primary:hover,
+.btn-hero:hover,
+.btn-add:hover,
+.btn-cta:hover,
+.btn-drawer:not(#btnStripeDirect):hover,
+.egc-shop-btn:hover {
+  background: #063200 !important;
+}
+
+/* --------------------------------------------------------------------------
    6. BOUTONS — micro-interactions premium
    -------------------------------------------------------------------------- */
 .btn-primary,
