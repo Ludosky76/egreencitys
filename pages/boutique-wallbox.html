@@ -395,6 +395,35 @@
   <!-- Injection dynamique via JS -->
 </main>
 
+<!-- SERVICES COMPLEMENTAIRES (proposition) -->
+<div class="container" style="padding-bottom:2.5rem;">
+  <div style="background:linear-gradient(135deg,#0a4800 0%,#0d5c00 55%,#28a800 100%);border-radius:20px;padding:2rem;color:#fff;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:-45%;right:-8%;width:420px;height:420px;background:radial-gradient(circle,rgba(51,204,0,.35) 0%,transparent 70%);pointer-events:none;"></div>
+    <div style="display:flex;flex-wrap:wrap;gap:1.8rem;align-items:center;justify-content:space-between;position:relative;z-index:1;">
+      <div style="flex:1;min-width:280px;">
+        <div style="display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);color:#fff;padding:.32rem .9rem;border-radius:50px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.9rem;">🛠️ Services complémentaires E-TOTEM</div>
+        <h2 style="font-size:1.6rem;font-weight:800;margin:0 0 .55rem;color:#fff;line-height:1.2;">Faites vivre et rentabiliser votre borne</h2>
+        <p style="font-size:.93rem;color:rgba(255,255,255,.92);line-height:1.65;margin:0 0 1rem;max-width:580px;">
+          Supervision, monétisation des recharges, maintenance préventive &amp; curative, extension de garantie — <strong>sur devis</strong>, à ajouter directement à votre borne dans le configurateur ci-dessus.
+        </p>
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.7);font-weight:700;margin-bottom:.5rem;">Bornes concernées</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.2rem;">
+          <span style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);border-radius:50px;padding:.4rem .95rem;font-size:.82rem;font-weight:600;color:#fff;">⚡ e-Smart 7 kW</span>
+          <span style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);border-radius:50px;padding:.4rem .95rem;font-size:.82rem;font-weight:600;color:#fff;">⚡ e-Smart 22 kW</span>
+          <span style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);border-radius:50px;padding:.4rem .95rem;font-size:.82rem;font-weight:600;color:#fff;">🏛️ e-Premium</span>
+        </div>
+        <a href="/pages/services.html" style="display:inline-block;background:#fff;color:#0a4800;padding:.85rem 1.9rem;border-radius:50px;font-weight:800;font-size:.93rem;text-decoration:none;box-shadow:0 8px 22px rgba(0,0,0,.24);">Découvrir tous nos services →</a>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.6rem;min-width:230px;">
+        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:.75rem 1rem;font-size:.88rem;font-weight:600;color:#fff;">🖥️ Supervision &amp; pilotage</div>
+        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:.75rem 1rem;font-size:.88rem;font-weight:600;color:#fff;">💳 Monétisation des recharges</div>
+        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:.75rem 1rem;font-size:.88rem;font-weight:600;color:#fff;">🔧 Maintenance (obligatoire)</div>
+        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:.75rem 1rem;font-size:.88rem;font-weight:600;color:#fff;">🛡️ Extension de garantie</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- NOTE FISCALE GUYANE -->
 <div class="container" style="padding-bottom:2.5rem;">
   <div style="background:#fff9c4;border-left:5px solid #f9a825;border-radius:0 12px 12px 0;padding:1.2rem 1.5rem;font-size:.85rem;color:#5d4037;line-height:1.6;">
@@ -565,7 +594,7 @@
 
 <!-- STRIPE + CATALOG + COMPTE CLIENT -->
 <script src="/assets/js/stripe-config.js?v=7"></script>
-<script src="/assets/js/catalog.js?v=8"></script>
+<script src="/assets/js/catalog.js?v=12"></script>
 <script src="/assets/js/customer-account.js?v=2"></script>
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/firebase-auth.js?v=1"></script>
@@ -799,14 +828,16 @@
     content.innerHTML = ''
       + '<div class="drawer-summary">'
       +   '<div class="name">' + product.name + '</div>'
-      +   '<div class="bd-row"><span>Borne ' + weight + ' kg</span><span>' + window.formatPrice(bd.produit) + '</span></div>'
-      +   '<div class="bd-row"><span>🏛️ Octroi de mer (20 %)</span><span>' + window.formatPrice(bd.octroi) + '</span></div>'
-      +   '<div class="bd-row"><span>🚚 Livraison Chronopost DOM</span><span>' + window.formatPrice(bd.livraison) + '</span></div>'
-      +   '<div class="bd-row bd-total"><span>Total livré chez vous</span><span>' + window.formatPrice(bd.total) + '</span></div>'
+      +   '<div class="bd-row"><span id="sumProduitLbl">Borne ' + weight + ' kg</span><span id="sumProduit">' + window.formatPrice(bd.produit) + '</span></div>'
+      +   '<div class="bd-row"><span>🏛️ Octroi de mer (20 %)</span><span id="sumOctroi">' + window.formatPrice(bd.octroi) + '</span></div>'
+      +   '<div class="bd-row"><span>🚚 Livraison Chronopost DOM</span><span id="sumLivraison">' + window.formatPrice(bd.livraison) + '</span></div>'
+      +   '<div class="bd-row bd-total"><span>Total livré chez vous</span><span id="sumTotal">' + window.formatPrice(bd.total) + '</span></div>'
       +   '<div class="base-price" style="margin-top:.4rem;font-size:.72rem;">Tout compris, un seul paiement. Prix sans TVA (Guyane). Livraison littoral guyanais.</div>'
       + '</div>'
       + '<h4>Ajouter des options</h4>'
-      + '<div id="opt-list"></div>';
+      + '<div id="opt-list"></div>'
+      + '<h4 style="margin-top:1.2rem;">🛠️ Services complémentaires E-TOTEM</h4>'
+      + '<div id="svc-list"></div>';
 
     var list = document.getElementById('opt-list');
     var availableOpts = window.CATALOG_OPTIONS.filter(function (o) {
@@ -827,6 +858,36 @@
           + '</label>'
           + '<span class="price">+' + window.formatPrice(optTTC) + '</span>';
         list.appendChild(row);
+      });
+    }
+
+    // Services complémentaires : supervision = abonnement annuel / PDC (×1.25) ;
+    // maintenance & extension de garantie = sur devis. Facturés séparément de la borne.
+    var svcList = document.getElementById('svc-list');
+    var availableSvc = (window.CATALOG_SERVICES || []).filter(function (s) {
+      return s.gammes.indexOf(gammeKey) !== -1;
+    });
+    if (svcList && availableSvc.length === 0) {
+      svcList.innerHTML = '<p style="color:var(--muted);font-size:.85rem;text-align:center;padding:.6rem 0;">Aucun service pour ce modèle.</p>';
+    } else if (svcList) {
+      availableSvc.forEach(function (svc) {
+        var priceLabel, dataAnnual;
+        if (svc.type === 'abo') {
+          dataAnnual = window.priceSupervision(svc.htPdcAn) * (svc.perPdc ? (product.pdc || 1) : 1);
+          priceLabel = '+' + window.formatPrice(dataAnnual) + '/an';
+        } else {
+          dataAnnual = 0;
+          priceLabel = 'sur devis';
+        }
+        var row = document.createElement('div');
+        row.className = 'opt-item';
+        row.innerHTML = ''
+          + '<label>'
+          +   '<input type="checkbox" data-svc-id="' + svc.id + '" data-svc-name="' + svc.name + '" data-svc-type="' + svc.type + '" data-svc-annual="' + dataAnnual + '" onchange="updateConfigTotal()">'
+          +   '<span><div class="lbl">' + svc.name + '</div><div class="lbl-sub">' + svc.sub + '</div></span>'
+          + '</label>'
+          + '<span class="price">' + priceLabel + '</span>';
+        svcList.appendChild(row);
       });
     }
 
@@ -862,23 +923,61 @@
 
   window.updateConfigTotal = function () {
     if (!configuring) return;
-    // Base tout compris = produit + octroi + livraison
-    var bd = window.priceBreakdown(configuring.product.ht, configuring.product.id);
-    var total = bd.total;
+    var product = configuring.product;
+
+    // Valeur produits (borne + options) et poids total (borne + options)
+    var produits = window.priceProduct(product.ht);
+    var weight = window.weightFor(product.id);
     var selected = [];
-    // Chaque option ajoute son prix + son octroi de mer (20 %)
     document.querySelectorAll('#opt-list input[type="checkbox"]:checked').forEach(function (cb) {
       var ht = parseFloat(cb.dataset.optHt);
-      var optBase = window.priceProduct(ht);
-      total += optBase + window.octroiMer(optBase);
-      selected.push({ id: cb.dataset.optId, ht: ht });
+      var optId = cb.dataset.optId;
+      produits += window.priceProduct(ht);
+      var full = (window.CATALOG_OPTIONS || []).find(function (x) { return x.id === optId; });
+      if (full && full.kg) weight += full.kg;
+      selected.push({ id: optId, ht: ht });
     });
+
+    // Octroi de mer (20 %) sur TOUTE la valeur produits ; livraison selon le poids TOTAL
+    var octroi = window.octroiMer(produits);
+    var livraison = window.shippingForWeight(weight);
+    var total = produits + octroi + livraison;
+
     configuring.options = selected;
-    configuring.breakdown = bd;
+    configuring.breakdown = { produit: produits, octroi: octroi, livraison: livraison, total: total, weight: weight };
     configuring.totalTTC = total;
+
+    // Réactualise le récapitulatif (octroi + livraison recalculés selon les options)
+    var nOpt = selected.length;
+    var lblEl = document.getElementById('sumProduitLbl');
+    if (lblEl) lblEl.textContent = 'Borne' + (nOpt ? ' + ' + nOpt + ' option' + (nOpt > 1 ? 's' : '') : '') + ' · ' + (Math.round(weight * 10) / 10) + ' kg';
+    var setTxt = function (id, val) { var el = document.getElementById(id); if (el) el.textContent = window.formatPrice(val); };
+    setTxt('sumProduit', produits);
+    setTxt('sumOctroi', octroi);
+    setTxt('sumLivraison', livraison);
+    setTxt('sumTotal', total);
+
+    // Services complémentaires — NON inclus dans le total unique (récurrents / sur devis)
+    var svcSel = [];
+    var svcAnnual = 0;
+    document.querySelectorAll('#svc-list input[type="checkbox"]:checked').forEach(function (cb) {
+      var annual = parseFloat(cb.dataset.svcAnnual) || 0;
+      svcAnnual += annual;
+      svcSel.push({ id: cb.dataset.svcId, name: cb.dataset.svcName, type: cb.dataset.svcType, annual: annual });
+    });
+    configuring.services = svcSel;
+    configuring.servicesAnnual = svcAnnual;
+
     document.getElementById('optTotal').textContent = window.formatPrice(total);
+    var svcTxt = '';
+    if (svcSel.length) {
+      var parts = svcSel.map(function (s) {
+        return s.type === 'abo' ? (s.name + ' ' + window.formatPrice(s.annual) + '/an') : (s.name + ' (sur devis)');
+      });
+      svcTxt = '<br><span style="color:#0a4800;font-weight:600;">🛠️ + Services : ' + parts.join(' · ') + ' — facturés séparément de la borne</span>';
+    }
     document.getElementById('optSplit').innerHTML = 'octroi de mer et livraison inclus'
-      + ' · 💳 en 3× : <strong>' + window.formatPrice(Math.ceil(total / 3)) + '</strong> sans frais';
+      + ' · 💳 en 3× : <strong>' + window.formatPrice(Math.ceil(total / 3)) + '</strong> sans frais' + svcTxt;
   };
 
   // ---- PANIER -----------------------------------------------------
@@ -894,6 +993,8 @@
       basePriceTTC: window.priceProduct(configuring.product.ht),
       weight: window.weightFor(configuring.product.id),
       options: opts,
+      services: configuring.services || [],
+      servicesAnnual: configuring.servicesAnnual || 0,
       totalTTC: configuring.totalTTC
     });
     sessionStorage.setItem('egc_cart', JSON.stringify(cart));
@@ -919,6 +1020,7 @@
           +     '<div style="flex:1;">'
           +       '<div style="font-weight:700;color:var(--green-deep);font-size:.9rem;margin-bottom:.2rem;">' + item.name + '</div>'
           +       (optNames ? '<div style="font-size:.75rem;color:var(--muted);">' + optNames + '</div>' : '')
+          +       ((item.services && item.services.length) ? '<div style="font-size:.75rem;color:#0a4800;">🛠️ ' + item.services.map(function (s) { return s.type === 'abo' ? (s.name + ' ' + window.formatPrice(s.annual) + '/an') : (s.name + ' (devis)'); }).join(', ') + '</div>' : '')
           +       (item.weight ? '<div style="font-size:.72rem;color:var(--muted);">' + item.weight + ' kg — octroi de mer + livraison inclus</div>' : '')
           +     '</div>'
           +     '<div style="text-align:right;">'
@@ -930,9 +1032,12 @@
         total += item.totalTTC;
       });
       content.innerHTML = html;
+      var svcAnnualTotal = cart.reduce(function (a, it) { return a + (it.servicesAnnual || 0); }, 0);
+      var hasDevisSvc = cart.some(function (it) { return (it.services || []).some(function (s) { return s.type === 'devis'; }); });
       document.getElementById('cartTotal').textContent = window.formatPrice(total);
       document.getElementById('cartSplit').innerHTML = '💳 en 3× : <strong>' + window.formatPrice(Math.ceil(total / 3)) + '</strong> sans frais'
-        + '<br><span style="font-size:.7rem;">Octroi de mer (20 %) et livraison Chronopost DOM inclus — un seul paiement</span>';
+        + '<br><span style="font-size:.7rem;">Octroi de mer (20 %) et livraison Chronopost DOM inclus — un seul paiement</span>'
+        + ((svcAnnualTotal || hasDevisSvc) ? '<br><span style="font-size:.72rem;color:#0a4800;">🛠️ Services complémentaires : ' + (svcAnnualTotal ? window.formatPrice(svcAnnualTotal) + '/an' : '') + (hasDevisSvc ? ((svcAnnualTotal ? ' + ' : '') + 'prestations sur devis') : '') + ' — facturés séparément de la borne</span>' : '');
     }
     openDrawer('cart');
   };
@@ -950,7 +1055,8 @@
     var total = 0;
     cart.forEach(function (item) {
       var opts = item.options.map(function (o) { return o.name; }).join('; ');
-      lines.push(item.name + (opts ? ' + ' + opts : '') + ' = ' + window.formatPrice(item.totalTTC));
+      var svc = (item.services || []).map(function (s) { return s.type === 'abo' ? (s.name + ' ' + window.formatPrice(s.annual) + '/an') : (s.name + ' (sur devis)'); }).join('; ');
+      lines.push(item.name + (opts ? ' + ' + opts : '') + (svc ? ' + Services: ' + svc : '') + ' = ' + window.formatPrice(item.totalTTC));
       total += item.totalTTC;
     });
     document.getElementById('hiddenCommande').value = lines.join(' | ');

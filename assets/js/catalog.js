@@ -31,7 +31,8 @@
      -> Le prix affiche en boutique = PRIX PRODUIT SEUL (hors livraison).
    ================================================================ */
 window.CATALOG_CONFIG = {
-  COEF_MARGE: 1.35,       // <-- Ajustez ici votre marge dropshipping
+  COEF_MARGE: 1.35,       // <-- Ajustez ici votre marge dropshipping (bornes)
+  COEF_SUPERVISION: 1.25, // <-- marge sur les services de supervision (E-TOTEM)
   DEVISE: '€',
   ARRONDI: 10,            // arrondi marketing a 10 € pres (donne 999, 1049, etc.)
 
@@ -175,10 +176,10 @@ window.CATALOG = {
           { key: 'tri',  label: 'Triphasé 22 kW', power: '22 kW AC · triphasé 32A' }
         ],
         // Options a cocher — l'ordre définit le suffixe de l'id Stripe (p,c,t,r).
+        // Transport France métropole DÉJÀ inclus dans le prix de vente (pas d'option séparée).
         options: [
           { key: 'p', name: 'Prise Type 2S',       sub: 'connecteur de charge (indispensable)', ht: 196 },
           { key: 'c', name: 'Cache de finition',   sub: 'façade (si pas de RFID)',              ht: 56  },
-          { key: 't', name: 'Transport métropole', sub: 'acheminement vers EGREENCITY\'S',       ht: 70  },
           { key: 'r', name: 'Lecteur RFID',        sub: 'badge d\'accès',                        ht: 84  }
         ],
         power: '7 kW mono ou 22 kW tri',
@@ -189,7 +190,8 @@ window.CATALOG = {
           'Borne e-Wallbox NG — fabrication France E-TOTEM',
           'Configurable Monophasé 7 kW ou Triphasé 22 kW',
           'Prix de base = borne nue ; ajoutez vos options',
-          'Prise Type 2S, cache, transport et lecteur RFID en options',
+          'Prise Type 2S, cache et lecteur RFID en options',
+          'Transport France métropole inclus',
           'Protections différentielles à installer par un électricien IRVE',
         ],
         tag: 'Configurable mono / tri'
@@ -437,15 +439,43 @@ window.CATALOG = {
 /* ================================================================
    ⚙️ OPTIONS (add-ons transversales)
    ================================================================ */
+/* kg = surpoids estimé de l'option pour le calcul de la livraison (colis).
+   Revêtements / sérigraphie = 0 (appliqués sur la borne, aucun surpoids). */
 window.CATALOG_OPTIONS = [
-  { id: 'opt-modem-4g',       name: 'Modem 4G intégré (sans SIM)',                    ht: 104, gammes: ['smart7','smart22','wallbox'] },
-  { id: 'opt-ecran',          name: 'Écran afficheur par PDC',                        ht: 224, gammes: ['smart7','smart22'] },
-  { id: 'opt-ecran-10',       name: 'Écran 10" couleur tactile',                      ht: 648, gammes: ['premium'] },
-  { id: 'opt-tpe-cb',         name: 'TPE CB sans contact (à la commande)',            ht: 837, gammes: ['premium'] },
-  { id: 'opt-prise-e',        name: 'Prise E/F additionnelle',                        ht:  69, gammes: ['smart7','smart22'] },
-  { id: 'opt-borne-maitre',   name: 'Borne maître (gère jusqu\'à 16 PDC)',            ht: 351, gammes: ['smart7','smart22'] },
-  { id: 'opt-anti-graffiti',  name: 'Revêtement anti-graffiti',                       ht:  41, gammes: ['premium'] },
-  { id: 'opt-peinture-humide',name: 'Peinture zone humide tropicale (DOM)',            ht: 203, gammes: ['premium','smart7','smart22'] },
-  { id: 'opt-pied-pdl',       name: 'Pied PDL (préparation coffret CIBE)',            ht: 108, gammes: ['premium'] },
-  { id: 'opt-personnalisation', name: 'Sérigraphie logo entreprise sur capot',        ht: 120, gammes: ['smart7','smart22','wallbox','premium'] }
+  { id: 'opt-modem-4g',       name: 'Modem 4G intégré (sans SIM)',                    ht: 104, kg: 0.3, gammes: ['smart7','smart22','wallbox'] },
+  { id: 'opt-ecran',          name: 'Écran afficheur par PDC',                        ht: 224, kg: 1.5, gammes: ['smart7','smart22'] },
+  { id: 'opt-ecran-10',       name: 'Écran 10" couleur tactile',                      ht: 648, kg: 2.5, gammes: ['premium'] },
+  { id: 'opt-tpe-cb',         name: 'TPE CB sans contact (à la commande)',            ht: 837, kg: 1.5, gammes: ['premium'] },
+  { id: 'opt-prise-e',        name: 'Prise E/F additionnelle',                        ht:  69, kg: 0.5, gammes: ['smart7','smart22'] },
+  { id: 'opt-borne-maitre',   name: 'Borne maître (gère jusqu\'à 16 PDC)',            ht: 351, kg: 0.5, gammes: ['smart7','smart22'] },
+  { id: 'opt-anti-graffiti',  name: 'Revêtement anti-graffiti',                       ht:  41, kg: 0,   gammes: ['premium'] },
+  { id: 'opt-peinture-humide',name: 'Peinture zone humide tropicale (DOM)',            ht: 203, kg: 0,   gammes: ['premium','smart7','smart22'] },
+  { id: 'opt-pied-pdl',       name: 'Pied PDL (préparation coffret CIBE)',            ht: 108, kg: 6,   gammes: ['premium'] },
+  { id: 'opt-personnalisation', name: 'Sérigraphie logo entreprise sur capot',        ht: 120, kg: 0,   gammes: ['smart7','smart22','wallbox','premium'] }
+];
+
+
+/* ================================================================
+   🛠️ SERVICES COMPLEMENTAIRES (E-TOTEM) — abonnements & prestations
+   ================================================================
+   - Supervision FULL : proposée SUR DEVIS (tarif selon l'offre et l'engagement).
+       Réf. E-TOTEM offre FULL : 180 €/PDC/an (5 ans) · 204 € (3 ans) · 252 € (1 an).
+       Marge EGREENCITY'S : × COEF_SUPERVISION (1.25) -> 225 / 255 / 315 €/PDC/an.
+       (Offre BASIC E-TOTEM : 96 / 108 / 144 €/PDC/an.)
+       Aucun octroi de mer (c'est un service, pas un bien importé).
+   - Maintenance préventive / extension de garantie : sur devis.
+   Ces services s'affichent dans la boutique pour les gammes concernées
+   (e-Smart, e-Premium) et sont facturés SEPAREMENT de la borne.
+   ================================================================ */
+window.priceSupervision = function (htPdcAn) {
+  return Math.round(htPdcAn * (window.CATALOG_CONFIG.COEF_SUPERVISION || 1.25));
+};
+
+window.CATALOG_SERVICES = [
+  { id: 'sup-full',     name: 'Supervision FULL',       sub: 'Pilotage à distance, monétisation, hotline & SAV — sur devis',
+    type: 'devis', htPdcAn: 180, coef: 1.25, perPdc: true, gammes: ['smart7','smart22','premium'] },
+  { id: 'maint-prev',   name: 'Maintenance préventive', sub: 'Visite annuelle obligatoire (décret 2017-26)',
+    type: 'devis', gammes: ['smart7','smart22','premium'] },
+  { id: 'ext-garantie', name: 'Extension de garantie',  sub: '+1 à +3 ans au-delà des 2 ans (jusqu\'à 5 ans)',
+    type: 'devis', gammes: ['smart7','smart22','premium'] }
 ];
