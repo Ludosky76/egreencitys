@@ -564,6 +564,7 @@
   <div class="drawer-footer">
     <div class="drawer-total"><span>Total tout compris</span><span id="optTotal">0 €</span></div>
     <div class="drawer-total-split" id="optSplit"></div>
+    <div id="optPayHint" style="display:none;font-size:.75rem;color:#8a6d00;background:#fff8e6;border:1px solid #ffe3a3;border-radius:8px;padding:.5rem .7rem;margin-bottom:.6rem;">Options sélectionnées : validez via « Ajouter au panier » — nous vous confirmons le règlement au montant exact.</div>
     <button id="btnStripeDirect" class="btn-drawer" style="display:none;background:#635BFF;margin-bottom:.5rem;" onclick="checkoutStripeDirect()">💳 Payer par CB — Stripe</button>
     <button class="btn-drawer" onclick="addConfiguredToCart()">Ajouter au panier</button>
   </div>
@@ -892,15 +893,7 @@
       });
     }
 
-    updateConfigTotal();
-
-    // Bouton Stripe direct : visible seulement si un Payment Link est configuré
-    var stripeBtn = document.getElementById('btnStripeDirect');
-    if (window.hasStripeLink && window.hasStripeLink(product.id)) {
-      stripeBtn.style.display = 'block';
-    } else {
-      stripeBtn.style.display = 'none';
-    }
+    updateConfigTotal(); // gère aussi la visibilité du bouton « Payer par CB »
 
     openDrawer('opt');
   };
@@ -979,6 +972,18 @@
     }
     document.getElementById('optSplit').innerHTML = 'octroi de mer et livraison inclus'
       + ' · 💳 en 3× : <strong>' + window.formatPrice(Math.ceil(total / 3)) + '</strong> sans frais' + svcTxt;
+
+    // Paiement CB direct : uniquement si un lien Stripe couvre EXACTEMENT le total affiché.
+    // Donc masqué dès qu'une option est cochée (le lien de base ne l'inclut pas) et pour la
+    // murale configurable (qui se paie via le lien "combo" de sa carte). Sinon, on passe par le panier.
+    var stripeBtn = document.getElementById('btnStripeDirect');
+    if (stripeBtn) {
+      var canDirect = window.hasStripeLink && window.hasStripeLink(product.id)
+        && selected.length === 0 && !product.configurable;
+      stripeBtn.style.display = canDirect ? 'block' : 'none';
+    }
+    var hint = document.getElementById('optPayHint');
+    if (hint) hint.style.display = (selected.length > 0) ? 'block' : 'none';
   };
 
   // ---- PANIER -----------------------------------------------------
@@ -1323,6 +1328,6 @@
 <script src="https://js.stripe.com/v3/" defer></script>
 
   <script src="/assets/js/session-nav.js?v=1" defer></script>
-  <script src="/assets/js/mobile-nav.js?v=4" defer></script>
+  <script src="/assets/js/mobile-nav.js?v=5" defer></script>
 </body>
 </html>
