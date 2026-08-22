@@ -580,6 +580,14 @@
   <div class="drawer-footer">
     <div class="drawer-total"><span>Total tout compris</span><span id="cartTotal">0 €</span></div>
     <div class="drawer-total-split" id="cartSplit"></div>
+    <div id="cartLead" style="display:none;background:#fff;border:1px solid #d8e6cc;border-radius:12px;padding:.7rem .8rem;margin-bottom:.7rem;">
+      <div style="font-size:.8rem;font-weight:600;color:var(--green-deep);margin-bottom:.4rem;">📧 Pas encore décidé ? Recevez votre devis</div>
+      <div style="display:flex;gap:.4rem;">
+        <input type="email" id="leadEmail" placeholder="Votre email" autocomplete="email" style="flex:1;min-width:0;padding:.55rem .7rem;border:1px solid #cddcc2;border-radius:8px;font-size:.85rem;">
+        <button type="button" onclick="sendCartByEmail()" class="btn-drawer" style="width:auto;padding:.55rem 1rem;margin:0;font-size:.85rem;white-space:nowrap;">Recevoir</button>
+      </div>
+      <div id="leadMsg" style="font-size:.74rem;margin-top:.35rem;color:var(--muted);"></div>
+    </div>
     <button id="btnCartStripe" class="btn-drawer" style="background:#635BFF;margin-bottom:.5rem;" onclick="checkoutFromCart()">💳 Commander & payer par carte</button>
     <div style="text-align:center;font-size:.72rem;color:var(--muted);">Paiement en 1× ou 3× au choix à l'étape suivante</div>
   </div>
@@ -606,7 +614,7 @@
 (function () {
   'use strict';
 
-  var cart = JSON.parse(sessionStorage.getItem('egc_cart') || '[]');
+  var cart = JSON.parse(localStorage.getItem('egc_cart') || '[]');
   var configuring = null; // produit en cours de config
 
   // ---- RENDER catalogue -------------------------------------------
@@ -1003,7 +1011,7 @@
       servicesAnnual: configuring.servicesAnnual || 0,
       totalTTC: configuring.totalTTC
     });
-    sessionStorage.setItem('egc_cart', JSON.stringify(cart));
+    localStorage.setItem('egc_cart', JSON.stringify(cart));
     updateCartBadge();
     closeAllDrawers();
     showToast('✓ Ajouté au panier');
@@ -1045,12 +1053,41 @@
         + '<br><span style="font-size:.7rem;">Octroi de mer (20 %) et livraison Chronopost DOM inclus — un seul paiement</span>'
         + ((svcAnnualTotal || hasDevisSvc) ? '<br><span style="font-size:.72rem;color:#0a4800;">🛠️ Services complémentaires : ' + (svcAnnualTotal ? window.formatPrice(svcAnnualTotal) + '/an' : '') + (hasDevisSvc ? ((svcAnnualTotal ? ' + ' : '') + 'prestations sur devis') : '') + ' — facturés séparément de la borne</span>' : '');
     }
+    var lead = document.getElementById('cartLead');
+    if (lead) lead.style.display = cart.length ? 'block' : 'none';
     openDrawer('cart');
+  };
+
+  // Capture de lead : envoie le panier + email au commerçant (formsubmit AJAX)
+  window.sendCartByEmail = function () {
+    var input = document.getElementById('leadEmail');
+    var msg = document.getElementById('leadMsg');
+    var email = (input.value || '').trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { msg.style.color = '#c0392b'; msg.textContent = 'Merci d\'entrer un email valide.'; return; }
+    if (!cart.length) { msg.style.color = '#c0392b'; msg.textContent = 'Votre panier est vide.'; return; }
+    var lines = cart.map(function (it) {
+      var o = (it.options || []).map(function (x) { return x.name; }).join(', ');
+      var s = (it.services || []).map(function (x) { return x.type === 'abo' ? (x.name + ' ' + window.formatPrice(x.annual) + '/an') : (x.name + ' (sur devis)'); }).join(', ');
+      return it.name + (o ? ' + ' + o : '') + (s ? ' + Services : ' + s : '') + ' = ' + window.formatPrice(it.totalTTC);
+    }).join(' | ');
+    var total = cart.reduce(function (a, it) { return a + it.totalTTC; }, 0);
+    msg.style.color = 'var(--muted)'; msg.textContent = 'Envoi…';
+    fetch('https://formsubmit.co/ajax/egreencitys@gmail.com', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ _subject: '🛒 Devis boutique demandé — ' + email, email: email, panier: lines, total: window.formatPrice(total) + ' (tout compris)', source: 'Boutique — capture panier' })
+    }).then(function (r) { return r.json(); }).then(function () {
+      msg.style.color = 'var(--green-dark)'; msg.textContent = '✓ Merci ! Nous vous envoyons votre devis rapidement.';
+      input.value = '';
+      if (window.gtag) window.gtag('event', 'generate_lead', { source: 'cart' });
+    }).catch(function () {
+      msg.style.color = '#c0392b'; msg.textContent = 'Envoi impossible. Réessayez, ou utilisez « Commander ».';
+    });
   };
 
   window.removeFromCart = function (i) {
     cart.splice(i, 1);
-    sessionStorage.setItem('egc_cart', JSON.stringify(cart));
+    localStorage.setItem('egc_cart', JSON.stringify(cart));
     updateCartBadge();
     openCart(); // refresh view
   };
@@ -1211,13 +1248,13 @@
 
   // ---- Toast success post-envoi -----------------------------------
   if (location.search.indexOf('ok=1') > -1) {
-    sessionStorage.removeItem('egc_cart');
+    localStorage.removeItem('egc_cart');
     cart = [];
     showToast('✓ Commande reçue ! Nous vous recontactons sous 24 h.');
   }
   // ---- Toast retour Stripe ---------------------------------------
   if (location.search.indexOf('paiement=succes') > -1) {
-    sessionStorage.removeItem('egc_cart');
+    localStorage.removeItem('egc_cart');
     cart = [];
     showToast('✅ Paiement validé ! Votre borne est fabriquée sur mesure — livraison sous 4 à 5 semaines.');
   }
