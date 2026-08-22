@@ -5,7 +5,7 @@ service cloud.firestore {
     // Admin = comptes autorisés (à ajuster). L'email vient du token d'auth Firebase.
     function isAdmin() {
       return request.auth != null &&
-             request.auth.token.email in ['egreencitys@gmail.com', 'ludosky.loic@gmail.com'];
+             request.auth.token.email in ['egreencitys@gmail.com', 'ludosky.loic@gmail.com', 'melanie.clery@gmail.com'];
     }
 
     // LEADS (capture panier / devis) : création ouverte au public, lecture réservée admin.
