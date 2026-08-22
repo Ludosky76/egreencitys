@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — EGREENCITY'S</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline' https://www.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://firestore.googleapis.com https://egreencitys-93e0b.firebaseapp.com; frame-ancestors 'none'; base-uri 'self';">
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--green:#33CC00;--green-deep:#0a4800;--bg:#0e1a10;--card:#152417;--line:#243a29;--ink:#e8f2e6;--muted:#9db2a3;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Poppins',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;min-height:100vh;}
+    .top{background:linear-gradient(135deg,var(--green-deep),#146400);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;}
+    .top b{font-size:1.05rem;font-weight:800;letter-spacing:.5px;}
+    .top .who{font-size:.8rem;color:#bfeeb0;}
+    .btn{background:var(--green);color:#052e00;border:none;padding:.55rem 1.1rem;border-radius:8px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit;}
+    .btn.ghost{background:transparent;color:#bfeeb0;border:1px solid #2f5a34;}
+    .wrap{max-width:1100px;margin:0 auto;padding:1.5rem;}
+    .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.6rem;}
+    .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem;}
+    .kpi .n{font-size:1.8rem;font-weight:800;color:#fff;line-height:1;}
+    .kpi .l{font-size:.78rem;color:var(--muted);margin-top:.3rem;text-transform:uppercase;letter-spacing:.5px;}
+    h2{font-size:1.05rem;margin:1.6rem 0 .7rem;color:#cfeecb;}
+    .tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;}
+    table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:560px;}
+    th,td{padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--line);}
+    th{color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;}
+    td{color:var(--ink);}
+    .pill{display:inline-block;padding:.15rem .55rem;border-radius:50px;font-size:.72rem;font-weight:700;background:rgba(51,204,0,.15);color:#7fe85c;}
+    .empty{padding:1.4rem;color:var(--muted);text-align:center;font-size:.9rem;}
+    #login{max-width:360px;margin:5rem auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:2rem;}
+    #login h1{font-size:1.2rem;margin-bottom:.3rem;}
+    #login p{color:var(--muted);font-size:.85rem;margin-bottom:1.2rem;}
+    #login input{width:100%;padding:.7rem .8rem;margin-bottom:.7rem;border:1px solid var(--line);border-radius:8px;background:#0c150d;color:var(--ink);font-family:inherit;font-size:.9rem;}
+    #login .btn{width:100%;padding:.75rem;}
+    #msg{font-size:.82rem;margin-top:.7rem;min-height:1.1rem;}
+    .hidden{display:none!important;}
+    .note{font-size:.78rem;color:var(--muted);margin-top:1.2rem;}
+  </style>
+</head>
+<body>
+
+  <div id="login">
+    <h1>🔐 Espace admin</h1>
+    <p>Réservé à EGREENCITY'S. Connectez-vous avec un compte administrateur.</p>
+    <input type="email" id="email" placeholder="Email" autocomplete="username">
+    <input type="password" id="password" placeholder="Mot de passe" autocomplete="current-password">
+    <button class="btn" onclick="doLogin()">Se connecter</button>
+    <div id="msg"></div>
+    <div class="note">L'accès aux données est protégé côté serveur par les règles Firestore : seuls les emails admin peuvent lire.</div>
+  </div>
+
+  <div id="app" class="hidden">
+    <div class="top">
+      <div><b>EGREENCITY'S · Admin</b> <span class="who" id="who"></span></div>
+      <div style="display:flex;gap:.5rem;">
+        <button class="btn ghost" onclick="loadAll()">↻ Actualiser</button>
+        <button class="btn ghost" onclick="firebase.auth().signOut()">Se déconnecter</button>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="kpis" id="kpis"></div>
+      <h2>🛒 Commandes</h2>
+      <div class="tablewrap"><table id="ordersT"><thead><tr><th>N°</th><th>Client</th><th>Email</th><th>Montant</th><th>Statut</th><th>Date</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="ordersEmpty">Aucune commande. Les paiements Stripe apparaîtront ici une fois le webhook déployé.</div></div>
+      <h2>📧 Leads</h2>
+      <div class="tablewrap"><table id="leadsT"><thead><tr><th>Email</th><th>Panier / demande</th><th>Total</th><th>Source</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="leadsEmpty">Aucun lead pour le moment.</div></div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="/assets/js/firebase-config.js?v=2"></script>
+  <script>
+    var ADMINS = ['egreencitys@gmail.com', 'ludosky.loic@gmail.com'];
+    if (!firebase.apps.length) firebase.initializeApp(window.FIREBASE_CONFIG);
+
+    function fmt(n){ return (Number(n)||0).toLocaleString('fr-FR') + ' €'; }
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];}); }
+
+    window.doLogin = function(){
+      var m = document.getElementById('msg');
+      m.style.color = '#9db2a3'; m.textContent = 'Connexion…';
+      firebase.auth().signInWithEmailAndPassword(
+        document.getElementById('email').value.trim(),
+        document.getElementById('password').value
+      ).catch(function(e){ m.style.color = '#ff8574'; m.textContent = 'Échec : ' + e.message; });
+    };
+
+    firebase.auth().onAuthStateChanged(function(user){
+      var isAdmin = user && ADMINS.indexOf((user.email||'').toLowerCase()) !== -1;
+      document.getElementById('login').classList.toggle('hidden', !!isAdmin);
+      document.getElementById('app').classList.toggle('hidden', !isAdmin);
+      if (isAdmin){ document.getElementById('who').textContent = user.email; loadAll(); }
+      else if (user){ var m=document.getElementById('msg'); m.style.color='#ff8574'; m.textContent='Ce compte n\'est pas administrateur.'; }
+    });
+
+    window.loadAll = function(){ loadOrders(); loadLeads(); };
+
+    function loadOrders(){
+      var db = firebase.firestore();
+      db.collection('orders').orderBy('created_at','desc').limit(200).get().then(function(snap){
+        var tb = document.querySelector('#ordersT tbody'); tb.innerHTML='';
+        var ca=0, n=0;
+        snap.forEach(function(d){
+          var o=d.data(); n++; if(o.statut==='payee') ca+=Number(o.montant)||0;
+          var date = o.created_at && o.created_at.toDate ? o.created_at.toDate().toLocaleDateString('fr-FR') : '—';
+          tb.innerHTML += '<tr><td>'+esc(o.numero||d.id.slice(-8))+'</td><td>'+esc(o.nom||'—')+'</td><td>'+esc(o.email||'—')+'</td><td>'+fmt(o.montant)+'</td><td><span class="pill">'+esc(o.statut||'?')+'</span></td><td>'+date+'</td></tr>';
+        });
+        document.getElementById('ordersEmpty').classList.toggle('hidden', n>0);
+        renderKpis(ca, n);
+      }).catch(function(e){ document.getElementById('ordersEmpty').classList.remove('hidden'); document.getElementById('ordersEmpty').textContent='Lecture impossible ('+e.code+'). Vérifiez que Firestore est activé et les règles publiées.'; });
+    }
+
+    function loadLeads(){
+      var db = firebase.firestore();
+      db.collection('leads').orderBy('created_at','desc').limit(200).get().then(function(snap){
+        var tb = document.querySelector('#leadsT tbody'); tb.innerHTML=''; var n=0;
+        snap.forEach(function(d){ var l=d.data(); n++;
+          tb.innerHTML += '<tr><td>'+esc(l.email||'—')+'</td><td>'+esc((l.panier||l.demande||'').slice(0,80))+'</td><td>'+esc(l.total||'—')+'</td><td>'+esc(l.source||'—')+'</td></tr>';
+        });
+        document.getElementById('leadsEmpty').classList.toggle('hidden', n>0);
+        window.__leadsCount = n; renderKpis();
+      }).catch(function(){ document.getElementById('leadsEmpty').classList.remove('hidden'); });
+    }
+
+    var _ca=0,_orders=0;
+    function renderKpis(ca, n){
+      if(ca!==undefined){_ca=ca;_orders=n;}
+      document.getElementById('kpis').innerHTML =
+        '<div class="kpi"><div class="n">'+fmt(_ca)+'</div><div class="l">CA payé</div></div>'+
+        '<div class="kpi"><div class="n">'+_orders+'</div><div class="l">Commandes</div></div>'+
+        '<div class="kpi"><div class="n">'+(window.__leadsCount||0)+'</div><div class="l">Leads</div></div>';
+    }
+  </script>
+</body>
+</html>

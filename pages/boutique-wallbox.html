@@ -1072,6 +1072,16 @@
     }).join(' | ');
     var total = cart.reduce(function (a, it) { return a + it.totalTTC; }, 0);
     msg.style.color = 'var(--muted)'; msg.textContent = 'Envoi…';
+    // Best-effort : enregistre aussi le lead dans Firestore (actif une fois les regles publiees)
+    try {
+      if (window.firebase && firebase.firestore) {
+        firebase.firestore().collection('leads').add({
+          email: email, panier: lines, total: window.formatPrice(total) + ' (tout compris)',
+          source: 'Boutique — capture panier',
+          created_at: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(function () {});
+      }
+    } catch (e) {}
     fetch('https://formsubmit.co/ajax/egreencitys@gmail.com', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
