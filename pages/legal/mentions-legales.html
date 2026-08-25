@@ -203,8 +203,17 @@
   <!-- ══════════ 3. COOKIES ══════════ -->
   <section id="cookies" class="lsection">
     <h2>3. Gestion des cookies</h2>
-    <p>Ce site <strong>n'utilise aucun cookie de traçage</strong>, aucun outil d'analyse tiers (Google Analytics, Meta Pixel, etc.), aucun cookie publicitaire. Seules les polices Google Fonts sont chargées via CDN (sans dépôt de cookie sur votre navigateur grâce à la configuration <code>display=swap</code>).</p>
-    <p>Aucune bannière de consentement n'est donc requise au sens de la délibération CNIL n° 2020-091 du 17 septembre 2020.</p>
+    <p>Ce site utilise <strong>un seul outil de mesure d'audience : Google Analytics 4</strong> (identifiant de mesure <code>G-MPRFT15BDP</code>), configuré avec <strong>anonymisation de l'adresse IP</strong>. Il nous sert uniquement à comprendre quelles pages sont consultées, afin d'améliorer le site.</p>
+    <p><strong>Aucun cookie publicitaire, aucun profilage, aucune revente de données.</strong> Nous n'utilisons ni Meta Pixel, ni régie publicitaire, ni outil de reciblage.</p>
+    <h3>Base légale et consentement</h3>
+    <p>Ces cookies de mesure d'audience ne sont déposés <strong>qu'après votre consentement explicite</strong> (article 6.1.a du RGPD), recueilli via la bannière affichée lors de votre première visite. Tant que vous n'avez pas accepté, <strong>aucun traceur n'est chargé</strong>. Si vous refusez, le site fonctionne normalement.</p>
+    <h3>Durée de conservation</h3>
+    <p>Les cookies Google Analytics ont une durée de vie maximale de 13 mois. Les données d'audience sont conservées 14 mois, puis supprimées automatiquement.</p>
+    <h3>Revenir sur votre choix</h3>
+    <p>Vous pouvez modifier ou retirer votre consentement à tout moment, aussi simplement que vous l'avez donné (article 7.3 du RGPD) :</p>
+    <p><button type="button" onclick="if(window.resetCookieConsent){window.resetCookieConsent();}else{try{localStorage.removeItem('cookieConsent');localStorage.removeItem('cookieConsentDate');}catch(e){}location.reload();}" style="background:var(--green-deep,#0a4800);color:#fff;border:none;padding:.7rem 1.4rem;border-radius:50px;font-weight:700;cursor:pointer;font-family:inherit;font-size:.9rem;">🍪 Gérer mes cookies</button></p>
+    <p>Vous pouvez également paramétrer votre navigateur pour bloquer les cookies, ou installer le <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">module de désactivation de Google Analytics</a>.</p>
+    <p>Les polices Google Fonts sont chargées via CDN, sans dépôt de cookie (configuration <code>display=swap</code>).</p>
   </section>
 
   <p style="text-align:center;margin-top:2.5rem;">
@@ -239,6 +248,7 @@
   <script src="/assets/js/firebase-auth.js?v=1"></script>
   <script src="/assets/js/session-nav.js?v=1" defer></script>
   <script src="/assets/js/mobile-nav.js?v=5" defer></script>
-  <script src="/assets/js/analytics.js?v=1" defer></script>
+  <script src="/assets/js/analytics.js?v=2" defer></script>
+  <script src="/assets/js/consent.js?v=1" defer></script>
 </body>
 </html>
