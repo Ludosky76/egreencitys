@@ -37,7 +37,7 @@
     }
 
     // Bouton WhatsApp flottant global (uniquement si la page n'en a pas deja un)
-    if (!document.querySelector('.whatsapp-float, .egc-wa-float')) {
+    if (!document.querySelector('.whatsapp-float, .egc-wa-float, a.wa')) {
       var wa = document.createElement('a');
       wa.className = 'egc-wa-float' + (document.querySelector('.cart-pill, #cartPill') ? ' egc-wa-float--up' : '');
       wa.href = 'https://wa.me/33651141118?text=' + encodeURIComponent("Bonjour EGREENCITY'S, je vous contacte depuis votre site web pour...");
@@ -150,12 +150,12 @@
       '.egc-shop-btn:active{transform:scale(.96);}',
       '.egc-shop-btn--always{display:inline-flex;margin-left:auto;margin-right:.55rem;}',
       /* WhatsApp flottant global */
-      '.egc-wa-float{position:fixed;right:1.1rem;bottom:1.1rem;z-index:2500;width:56px;height:56px;',
+      '.egc-wa-float{position:fixed;right:1.1rem;bottom:1.1rem;z-index:1800;width:56px;height:56px;',
       '  border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;',
       '  box-shadow:0 6px 20px rgba(37,211,102,.45);transition:transform .18s;}',
       '.egc-wa-float svg{width:30px;height:30px;}',
       '.egc-wa-float:hover{transform:scale(1.08);}',
-      '.egc-wa-float--up{bottom:5.8rem;}',
+      '.egc-wa-float--up{bottom:9.5rem;}',
       '@media(max-width:900px){',
       '  nav .nav-links{display:none!important;}',
       '  .egc-burger{display:flex;}',

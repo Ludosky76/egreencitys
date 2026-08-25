@@ -132,7 +132,7 @@ nav.scrolled {
 .btn-hero,
 .btn-add,
 .btn-cta,
-.btn-drawer:not(#btnStripeDirect),
+.btn-drawer:not(#btnStripeDirect):not(#btnCartStripe),
 .egc-shop-btn {
   background: var(--green-deep, #0a4800) !important;
   color: #fff !important;
@@ -142,7 +142,7 @@ nav.scrolled {
 .btn-hero:hover,
 .btn-add:hover,
 .btn-cta:hover,
-.btn-drawer:not(#btnStripeDirect):hover,
+.btn-drawer:not(#btnStripeDirect):not(#btnCartStripe):hover,
 .egc-shop-btn:hover {
   background: #063200 !important;
 }
