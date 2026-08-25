@@ -2,26 +2,59 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Admin = comptes autorisés (à ajuster). L'email vient du token d'auth Firebase.
+    // --------------------------------------------------------------------
+    // ADMIN — l'appartenance ne repose plus sur le seul email du token.
+    // Un email seul est usurpable : il suffisait de créer un compte avec une
+    // adresse admin non encore enregistrée pour lire toutes les données.
+    // Désormais : UID explicitement listé, OU email admin AVEC email vérifié.
+    // --------------------------------------------------------------------
     function isAdmin() {
-      return request.auth != null &&
-             request.auth.token.email in ['egreencitys@gmail.com', 'ludosky.loic@gmail.com', 'melanie.clery@gmail.com'];
+      return request.auth != null && (
+        request.auth.uid in ['NwZkDHzbjbhvqeOODqe1rsr8K3a2']
+        || (
+          request.auth.token.email_verified == true &&
+          request.auth.token.email in [
+            'egreencitys@gmail.com',
+            'ludosky.loic@gmail.com',
+            'melanie.clery@gmail.com'
+          ]
+        )
+      );
     }
 
-    // LEADS (capture panier / devis) : création ouverte au public, lecture réservée admin.
+    // --------------------------------------------------------------------
+    // LEADS — création publique (capture panier), mais strictement encadrée :
+    // champs autorisés uniquement, tailles bornées, horodatage serveur imposé.
+    // Empêche l'écriture de documents arbitraires et limite l'abus de quota.
+    // --------------------------------------------------------------------
     match /leads/{id} {
-      allow create: if true;
+      allow create: if request.resource.data.keys().hasOnly(
+                         ['email', 'panier', 'total', 'source', 'created_at'])
+                    && request.resource.data.email is string
+                    && request.resource.data.email.size() > 3
+                    && request.resource.data.email.size() < 200
+                    && request.resource.data.panier is string
+                    && request.resource.data.panier.size() < 2000
+                    && request.resource.data.total is string
+                    && request.resource.data.total.size() < 50
+                    && request.resource.data.source is string
+                    && request.resource.data.source.size() < 100
+                    && request.resource.data.created_at == request.time;
       allow read, update, delete: if isAdmin();
     }
 
-    // COMMANDES : écrites UNIQUEMENT par la Cloud Function (Admin SDK, qui contourne
-    // les règles). Personne d'autre ne peut écrire. Lecture réservée admin.
+    // --------------------------------------------------------------------
+    // COMMANDES — écrites uniquement par la Cloud Function (Admin SDK, qui
+    // contourne ces règles). Aucune écriture cliente possible.
+    // --------------------------------------------------------------------
     match /orders/{id} {
       allow read: if isAdmin();
       allow write: if false;
     }
 
-    // PROFILS / commandes des clients connectés (module compte existant).
+    // --------------------------------------------------------------------
+    // PROFILS CLIENTS — chacun accède exclusivement à ses propres données.
+    // --------------------------------------------------------------------
     match /users/{uid}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
