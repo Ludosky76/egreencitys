@@ -8,26 +8,30 @@
    Fonctionne avec les Payment Links actuels : Stripe déclenche
    "checkout.session.completed" à chaque paiement réussi.
 
-   Secrets à définir (voir _backend/SETUP_BACKEND.md) :
-     firebase functions:secrets:set STRIPE_SECRET          (clé secrète sk_live_...)
-     firebase functions:secrets:set STRIPE_WEBHOOK_SECRET  (signing secret whsec_...)
+   UN SEUL SECRET NÉCESSAIRE (fourni par Stripe à la création du webhook) :
+     firebase functions:secrets:set STRIPE_WEBHOOK_SECRET   (whsec_...)
+
+   La clé secrète d'API (sk_live_...) n'est PAS requise : la vérification de
+   signature n'utilise que le secret du webhook, et le produit acheté est
+   identifié via le client_reference_id transmis par la boutique.
    ========================================================================== */
 const { onRequest } = require('firebase-functions/v2/https');
 const { defineSecret } = require('firebase-functions/params');
 const admin = require('firebase-admin');
+const Stripe = require('stripe');
 
 admin.initializeApp();
 
-const STRIPE_SECRET = defineSecret('STRIPE_SECRET');
 const STRIPE_WEBHOOK_SECRET = defineSecret('STRIPE_WEBHOOK_SECRET');
 
 /* Événements traités : paiement immédiat, et paiement différé confirmé plus tard. */
 const EVENEMENTS = ['checkout.session.completed', 'checkout.session.async_payment_succeeded'];
 
 exports.stripeWebhook = onRequest(
-  { secrets: [STRIPE_SECRET, STRIPE_WEBHOOK_SECRET], region: 'europe-west1' },
+  { secrets: [STRIPE_WEBHOOK_SECRET], region: 'europe-west1' },
   async (req, res) => {
-    const stripe = require('stripe')(STRIPE_SECRET.value());
+    // Aucune clé d'API nécessaire : constructEvent ne fait que vérifier une signature.
+    const stripe = new Stripe('sk_unused', { apiVersion: '2024-06-20' });
     const sig = req.headers['stripe-signature'];
     let event;
     try {
@@ -50,18 +54,9 @@ exports.stripeWebhook = onRequest(
       return res.json({ received: true, ignore: 'unpaid' });
     }
 
-    // Détail des articles achetés (le Payment Link ne le transmet pas dans l'événement).
-    let articles = [];
-    try {
-      const li = await stripe.checkout.sessions.listLineItems(s.id, { limit: 50 });
-      articles = li.data.map((l) => ({
-        libelle: l.description || '(article)',
-        quantite: l.quantity || 1,
-        montant: (l.amount_total || 0) / 100
-      }));
-    } catch (e) {
-      console.warn('Détail des articles indisponible :', e.message);
-    }
+    // La boutique transmet "<idProduit>_<horodatage>" comme client_reference_id.
+    const refClient = s.client_reference_id || null;
+    const produit = refClient ? String(refClient).split('_')[0] : null;
 
     const db = admin.firestore();
     const ref = db.collection('orders').doc(s.id); // doc id = session -> idempotent
@@ -76,8 +71,8 @@ exports.stripeWebhook = onRequest(
       montant: (s.amount_total || 0) / 100,
       devise: s.currency,
       statut: 'payee',
-      articles,
-      client_reference_id: s.client_reference_id || null,
+      produit,
+      client_reference_id: refClient,
       stripe_session: s.id,
       paye_at: admin.firestore.FieldValue.serverTimestamp()
     };
