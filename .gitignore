@@ -23,3 +23,14 @@ _dossiers/_social_publisher.log
 _config/
 *.env
 functions/node_modules/
+
+# --- Documents internes : ne doivent PAS être publiés par GitHub Pages ---
+# (ils restent sur le disque local, simplement hors du dépôt public)
+_dossiers/
+_tools/
+
+# Dépendances et journaux
+node_modules/
+*-debug.log
+firebase-debug.log
+.firebase/
