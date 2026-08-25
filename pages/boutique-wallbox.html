@@ -885,6 +885,8 @@
       list.innerHTML = '<p style="color:var(--muted);font-size:.85rem;text-align:center;padding:1rem 0;">Aucune option disponible pour ce modèle.</p>';
     } else {
       availableOpts.forEach(function (opt) {
+        // Le supplement "tout compris" est calcule dans updateConfigTotal (il depend
+        // des autres options cochees : octroi de mer + tranche de livraison).
         var optTTC = window.priceTTC(opt.ht);
         var row = document.createElement('div');
         row.className = 'opt-item';
@@ -893,7 +895,7 @@
           +   '<input type="checkbox" data-opt-id="' + opt.id + '" data-opt-ht="' + opt.ht + '" onchange="updateConfigTotal()">'
           +   '<span><div class="lbl">' + opt.name + '</div><div class="lbl-sub">Option E-TOTEM</div></span>'
           + '</label>'
-          + '<span class="price">+' + window.formatPrice(optTTC) + '</span>';
+          + '<span class="price" data-opt-price="' + opt.id + '">+' + window.formatPrice(optTTC) + '</span>';
         list.appendChild(row);
       });
     }
@@ -985,6 +987,30 @@
     setTxt('sumOctroi', octroi);
     setTxt('sumLivraison', livraison);
     setTxt('sumTotal', total);
+
+    // Supplement affiche par option = ce que son ajout coute REELLEMENT au total
+    // (produit + octroi de mer + eventuel saut de tranche de livraison), pour que
+    // l'etiquette corresponde a la variation du "Total tout compris".
+    document.querySelectorAll('#opt-list input[type="checkbox"]').forEach(function (cb) {
+      var optId = cb.dataset.optId;
+      var etiquette = document.querySelector('[data-opt-price="' + optId + '"]');
+      if (!etiquette) return;
+      var htOpt = parseFloat(cb.dataset.optHt);
+      var infos = (window.CATALOG_OPTIONS || []).find(function (x) { return x.id === optId; });
+      var kgOpt = (infos && infos.kg) ? infos.kg : 0;
+      var pSans, wSans;
+      if (cb.checked) {                      // deja cochee : cout = total actuel - total sans elle
+        pSans = produits - window.priceProduct(htOpt);
+        wSans = weight - kgOpt;
+      } else {                               // non cochee : cout = total avec elle - total actuel
+        pSans = produits;
+        wSans = weight;
+      }
+      var totalSans = pSans + window.octroiMer(pSans) + window.shippingForWeight(wSans);
+      var pAvec = pSans + window.priceProduct(htOpt);
+      var totalAvec = pAvec + window.octroiMer(pAvec) + window.shippingForWeight(wSans + kgOpt);
+      etiquette.textContent = '+' + window.formatPrice(totalAvec - totalSans);
+    });
 
     // Services complémentaires — NON inclus dans le total unique (récurrents / sur devis)
     var svcSel = [];
