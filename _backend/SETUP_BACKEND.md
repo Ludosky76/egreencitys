@@ -1,64 +1,88 @@
 # Activation du back-office EGREENCITY'S
 
-> Objectif : enregistrer automatiquement chaque paiement Stripe comme commande,
-> et disposer d'un tableau de bord (commandes + leads). Tout est déjà codé — il
-> reste à l'activer sur **le bon compte Google** (celui qui possède le projet
-> `egreencitys-93e0b` : **egreencitys@gmail.com**).
+> État au 25/08/2026 : la **Partie A est active** (Firestore, règles de sécurité,
+> tableau de bord, capture de leads). La **Partie B** (enregistrement automatique
+> des commandes Stripe) est **codée, testée et prête à déployer** — elle attend
+> uniquement l'activation du plan Blaze, prévue à la première vente.
 
 ---
 
-## Partie A — Firestore + Admin (GRATUIT, plan Spark)
+## Partie A — Firestore + tableau de bord ✅ FAIT (plan gratuit)
 
-Suffit pour le **tableau de bord**, les **leads** et l'historique client.
-
-1. **Se connecter avec le bon compte** sur https://console.firebase.google.com
-   → le projet `egreencitys-93e0b` doit apparaître (sinon vous êtes sur le mauvais compte Google).
-2. **Firestore Database** → *Créer une base* → **mode production** → région **`eur3` (europe-west)**
-   ⚠️ la région est **définitive**.
-3. **Onglet Règles** → coller le contenu de [`_backend/firestore.rules`](firestore.rules) → **Publier**.
-   *(Si vous aviez déjà des règles pour `users/{uid}`, fusionnez plutôt que remplacer.)*
-4. Le tableau de bord est en ligne : **https://egreencitys.com/pages/admin.html**
-   → connexion avec un email admin (défini dans les règles + dans `admin.html` : `egreencitys@gmail.com`, `ludosky.loic@gmail.com`).
-   *(Le compte doit exister dans Authentication ; créez-le si besoin dans Authentication → Users.)*
-
-À ce stade : les **leads** (capture panier) et l'historique client remontent déjà.
+- Firestore actif, règles publiées (`firestore.rules`) :
+  - `leads` : création publique (capture panier), lecture réservée aux admins
+  - `orders` : lecture admin uniquement, écriture réservée à la Cloud Function
+  - `users/{uid}` : chacun accède à ses propres données
+- Tableau de bord : **https://egreencitys.com/pages/admin.html**
+  → connexion avec un compte admin (`egreencitys@`, `ludosky.loic@`, `melanie.clery@`)
+- Vérifié : écriture d'un lead OK, lecture anonyme refusée (`permission-denied`).
 
 ---
 
-## Partie B — Webhook Stripe → commandes automatiques (nécessite le plan Blaze)
+## Partie B — Webhook Stripe → commandes automatiques ⏳ EN ATTENTE
 
-Les Cloud Functions exigent le plan **Blaze** (paiement à l'usage — quasi gratuit à faible volume, mais **carte bancaire requise**). C'est **votre décision** (financière).
+**Ce que ça apporte :** chaque paiement crée automatiquement sa commande dans le
+tableau de bord (numéro, client, montant, produit). Fini la saisie manuelle de
+`data/commandes.json` via `_tools/manage_orders.py`.
 
-1. Console Firebase → **Modifier le forfait** → **Blaze**.
-2. Installer l'outil et se connecter (dans un terminal) :
-   ```bash
-   npm install -g firebase-tools
-   firebase login
-   ```
-3. Depuis le dossier du projet :
-   ```bash
-   firebase use egreencitys-93e0b
-   firebase deploy --only functions --project egreencitys-93e0b
-   ```
-   *(Le code est dans `_backend/functions/`. Copiez ce dossier en `functions/` à la racine, ou pointez `firebase.json` dessus.)*
-4. Définir les secrets Stripe :
-   ```bash
-   firebase functions:secrets:set STRIPE_SECRET          # sk_live_...
-   firebase functions:secrets:set STRIPE_WEBHOOK_SECRET  # whsec_... (étape 5)
-   ```
-5. **Stripe** → Développeurs → Webhooks → *Ajouter un endpoint* :
-   - URL = celle affichée après le déploiement (ex. `https://europe-west1-egreencitys-93e0b.cloudfunctions.net/stripeWebhook`)
-   - Événement : **`checkout.session.completed`**
-   - Copier le **signing secret** (`whsec_...`) → le mettre dans `STRIPE_WEBHOOK_SECRET` (étape 4) puis redéployer.
+**Ce qui est déjà fait :** code de la fonction (`functions/index.js`), configuration
+de déploiement (`firebase.json`, `.firebaserc`), dépendances installées, CLI
+connecté, accès au projet validé. Signature testée localement (valide acceptée,
+falsifiée rejetée).
 
-Résultat : **chaque paiement** (y compris via vos Payment Links actuels) crée automatiquement une commande dans Firestore, visible dans `admin.html`. Fini la ressaisie manuelle de `data/commandes.json`.
+**Bon à savoir :** la clé secrète Stripe (`sk_live_…`) **n'est pas nécessaire**.
+La vérification de signature n'utilise que le secret du webhook, et le produit
+acheté est déduit du `client_reference_id` transmis par la boutique.
+
+### Les 5 étapes le jour J
+
+1. **Activer Blaze** (carte bancaire requise, ~0 € au volume attendu — le palier
+   gratuit couvre 2 M d'appels/mois). Pensez à poser un budget d'alerte à 5 €.
+   → https://console.firebase.google.com/project/egreencitys-93e0b/usage/details
+
+2. **Ouvrir un terminal dans le dossier du projet.** Si `firebase` n'est pas
+   reconnu, ajouter son chemin à la session :
+   ```powershell
+   cd C:\projet\Egreencity
+   $env:PATH += ";C:\Users\ludosky\AppData\Roaming\npm"
+   ```
+
+3. **Créer le secret provisoire**, sinon le déploiement échoue :
+   ```bash
+   firebase functions:secrets:set STRIPE_WEBHOOK_SECRET
+   ```
+   → saisir `whsec_placeholder`
+
+4. **Déployer**, puis noter l'URL affichée :
+   ```bash
+   firebase deploy --only functions
+   ```
+   → URL attendue : `https://europe-west1-egreencitys-93e0b.cloudfunctions.net/stripeWebhook`
+
+5. **Brancher Stripe**, puis enregistrer le vrai secret :
+   - Stripe → Développeurs → Webhooks → *Ajouter un endpoint*
+   - URL = celle de l'étape 4 · Événement = **`checkout.session.completed`**
+   - Copier le `whsec_…` affiché, puis :
+     ```bash
+     firebase functions:secrets:set STRIPE_WEBHOOK_SECRET
+     firebase deploy --only functions
+     ```
+     *(le redéploiement est nécessaire pour que la fonction lise la nouvelle version du secret)*
+
+**Test :** effectuer un paiement réel de faible montant, puis vérifier qu'il
+apparaît dans `admin.html`. Les journaux sont consultables via
+`firebase functions:log`.
 
 ---
 
-## Fichiers fournis
-- `_backend/firestore.rules` — règles de sécurité (leads publics en création, lecture admin ; commandes en lecture admin).
-- `_backend/functions/index.js` + `package.json` — la Cloud Function `stripeWebhook`.
-- `pages/admin.html` — tableau de bord (CA, commandes, leads).
+## Fichiers de référence
+- `_backend/firestore.rules` — règles publiées (copie de référence)
+- `functions/index.js` — la Cloud Function (source déployée)
+- `_backend/functions/` — copie de sauvegarde
+- `pages/admin.html` — tableau de bord
 
-## Reste possible plus tard
-- **Checkout serverless** (montant payé = montant affiché, panier unifié) : une 2ᵉ fonction `createCheckoutSession`. À faire quand le webhook tourne.
+## Étape suivante possible
+**Checkout serverless** : faire correspondre le montant payé au montant affiché
+(options incluses) et permettre un paiement unique pour un panier multi-bornes.
+Aujourd'hui, le bouton « Payer par CB » est masqué dès qu'une option est cochée
+afin de ne jamais sous-facturer.
