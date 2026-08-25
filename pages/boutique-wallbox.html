@@ -683,7 +683,7 @@
           +   '</div>'
           +   '<ul class="product-specs">' + specsHtml + '</ul>'
           +   '<div class="product-actions">'
-          +     '<button class="btn-add" onclick="openConfigurator(\'' + key + '\',\'' + p.id + '\')">Configurer & commander</button>'
+          +     '<button class="btn-add" onclick="addMuraleToCart()">Ajouter au panier</button>'
           +   '</div>'
           +   (window.hasStripeLink && window.hasStripeLink(p.id)
               ? '<a class="btn-stripe-direct" href="' + window.STRIPE_PAYMENT_LINKS[p.id] + '">💳 Payer maintenant<span class="small">CB · Apple Pay · Google Pay</span></a>'
@@ -753,7 +753,7 @@
       var supp = window.priceBreakdown(p.ht + o.ht, p.id).total - basePrice;  // supplement indicatif
       return ''
         + '<label class="mur-opt" style="display:flex;align-items:center;gap:.55rem;margin:.35rem 0;padding:.55rem .7rem;border:1px solid #d8e6cc;border-radius:10px;cursor:pointer;font-size:.85rem;">'
-        +   '<input type="checkbox" data-optkey="' + o.key + '" onchange="toggleMuraleOpt(\'' + o.key + '\', this.checked)" style="width:auto;">'
+        +   '<input type="checkbox" data-optkey="' + o.key + '"' + (muraleState.opts[o.key] ? ' checked' : '') + ' onchange="toggleMuraleOpt(\'' + o.key + '\', this.checked)" style="width:auto;">'
         +   '<span style="flex:1;"><strong>' + o.name + '</strong><br><span style="color:var(--muted);font-size:.74rem;">' + o.sub + '</span></span>'
         +   '<strong style="color:var(--green-deep);white-space:nowrap;">+' + window.formatPrice(supp) + '</strong>'
         + '</label>';
@@ -765,8 +765,8 @@
       + '<div class="product-body">'
       +   '<h3>' + p.name + '</h3>'
       +   '<div class="phase-toggle" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin:.6rem 0 .8rem;">'
-      +     '<button type="button" data-phase="mono" class="phase-btn active" onclick="setMuralePhase(\'mono\')">Monophasé 7 kW</button>'
-      +     '<button type="button" data-phase="tri" class="phase-btn" onclick="setMuralePhase(\'tri\')">Triphasé 22 kW</button>'
+      +     '<button type="button" data-phase="mono" class="phase-btn' + (muraleState.phase === 'mono' ? ' active' : '') + '" onclick="setMuralePhase(\'mono\')">Monophasé 7 kW</button>'
+      +     '<button type="button" data-phase="tri" class="phase-btn' + (muraleState.phase === 'tri' ? ' active' : '') + '" onclick="setMuralePhase(\'tri\')">Triphasé 22 kW</button>'
       +   '</div>'
       +   '<div class="product-price">'
       +     '<span class="price-main" id="mur-price">—</span>'
@@ -822,6 +822,33 @@
         pay.style.display = 'none';
       }
     }
+  };
+
+  // Ajoute au panier la configuration murale REELLE (phase + options cochees).
+  // Le comboPid sert de productId : le lien Stripe correspond alors EXACTEMENT
+  // au montant affiche (plus de sous-facturation possible).
+  window.addMuraleToCart = function () {
+    var prod = findProduct('wb-mur');
+    if (!prod) return;
+    var ht = muraleHt(prod);
+    var comboPid = muraleComboPid(prod);
+    var bd = window.priceBreakdown(ht, 'wb-mur');
+    var libelles = prod.options.filter(function (o) { return muraleState.opts[o.key]; })
+                               .map(function (o) { return o.name; });
+    var nom = prod.name + ' - ' + (muraleState.phase === 'tri' ? 'Triphase 22 kW' : 'Monophase 7 kW')
+            + (libelles.length ? ' + ' + libelles.join(' + ') : ' (borne nue)');
+    cart.push({
+      productId: comboPid,
+      name: nom,
+      basePriceTTC: bd.produit,
+      weight: window.weightFor('wb-mur'),
+      options: [],
+      services: [],
+      totalTTC: bd.total
+    });
+    localStorage.setItem('egc_cart', JSON.stringify(cart));
+    updateCartBadge();
+    showToast('Ajoute au panier');
   };
 
   // ---- CONFIGURATEUR (drawer options) -----------------------------
@@ -1136,14 +1163,24 @@
     // Affiche le bouton "Payer par carte" si AU MOINS un produit du panier
     // dispose d'un lien de paiement Stripe.
     var payBtn = document.getElementById('btnPayStripe');
-    var anyPayable = cart.some(function (it) {
-      return window.hasStripeLink && window.hasStripeLink(it.productId);
-    });
+    var anyPayable = cart.some(itemPayableExactly);
     payBtn.style.display = anyPayable ? 'block' : 'none';
 
     closeAllDrawers();
     document.getElementById('commande').scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+
+  // Un article n'est payable en ligne QUE si un lien Stripe couvre EXACTEMENT
+  // son montant affiche : aucune option, aucun service, et pas un produit
+  // configurable (dont seul le prix de base serait encaisse).
+  function itemPayableExactly(it) {
+    if (!(window.hasStripeLink && window.hasStripeLink(it.productId))) return false;
+    if ((it.options || []).length) return false;
+    if ((it.services || []).length) return false;
+    var prod = findProduct(it.productId);
+    if (prod && prod.configurable) return false;
+    return true;
+  }
 
   function setValIfEmpty(id, val) {
     var el = document.getElementById(id);
@@ -1182,7 +1219,7 @@
     if (cart.length === 1) {
       var item = cart[0];
       var link = window.STRIPE_PAYMENT_LINKS[item.productId];
-      if (!link) { showToast('Paiement en ligne indisponible pour ce produit — utilisez « Envoyer ma commande »'); return; }
+      if (!link || !itemPayableExactly(item)) { showToast('Paiement en ligne indisponible pour cette configuration — utilisez « Envoyer ma commande »'); return; }
       var ref = encodeURIComponent(item.productId + '_' + Date.now());
       var sep = link.indexOf('?') > -1 ? '&' : '?';
       window.location.href = link + sep + 'prefilled_email=' + email + '&client_reference_id=' + ref;
@@ -1194,7 +1231,7 @@
     var html = '<strong>💳 Réglez chaque article par carte :</strong><br><br>';
     cart.forEach(function (it) {
       var link = window.STRIPE_PAYMENT_LINKS[it.productId];
-      if (link) {
+      if (link && itemPayableExactly(it)) {
         var sep = link.indexOf('?') > -1 ? '&' : '?';
         var url = link + sep + 'prefilled_email=' + email;
         html += '<a href="' + url + '" target="_blank" rel="noopener" '
@@ -1203,10 +1240,10 @@
              +  '💳 Payer ' + it.name + ' — ' + window.formatPrice(it.totalTTC) + '</a>';
       } else {
         html += '<div style="font-size:.82rem;color:#5d4037;margin:.3rem 0;">• ' + it.name
-             +  ' — réglé sur devis</div>';
+             +  ' — confirmé par devis (options incluses)</div>';
       }
     });
-    html += '<br><span style="font-size:.78rem;color:#5d4037;">Les options et la livraison Chronopost DOM sont ajoutées au devis que nous vous envoyons sous 24 h.</span>';
+    html += '<br><span style="font-size:.78rem;color:#5d4037;">Les articles avec options sont confirmés par devis sous 24 h, au montant exact affiché ci-dessus.</span>';
     box.style.display = 'block';
     box.innerHTML = html;
     box.scrollIntoView({ behavior: 'smooth', block: 'center' });
