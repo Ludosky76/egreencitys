@@ -683,7 +683,7 @@
           +   '</div>'
           +   '<ul class="product-specs">' + specsHtml + '</ul>'
           +   '<div class="product-actions">'
-          +     '<button class="btn-add" onclick="addMuraleToCart()">Ajouter au panier</button>'
+          +     '<button class="btn-add" onclick="openConfigurator(\'' + key + '\',\'' + p.id + '\')">Options & commander</button>'
           +   '</div>'
           +   (window.hasStripeLink && window.hasStripeLink(p.id)
               ? '<a class="btn-stripe-direct" href="' + window.STRIPE_PAYMENT_LINKS[p.id] + '">💳 Payer maintenant<span class="small">CB · Apple Pay · Google Pay</span></a>'
@@ -778,7 +778,7 @@
       +   '<div class="octroi-note" id="mur-bd" style="margin-top:.6rem;"></div>'
       +   '<ul class="product-specs">' + specsHtml + '</ul>'
       +   '<div class="product-actions">'
-      +     '<button class="btn-add" onclick="openConfigurator(\'' + key + '\', \'wb-mur\')">Configurer & commander</button>'
+      +     '<button class="btn-add" onclick="addMuraleToCart()">Ajouter au panier</button>'
       +   '</div>'
       +   '<a class="btn-stripe-direct" id="mur-pay" href="#">💳 Payer maintenant<span class="small">CB · Apple Pay · Google Pay</span></a>'
       + '</div>';
