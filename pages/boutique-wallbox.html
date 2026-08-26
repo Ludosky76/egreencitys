@@ -603,7 +603,7 @@
 </footer>
 
 <!-- STRIPE + CATALOG + COMPTE CLIENT -->
-<script src="/assets/js/stripe-config.js?v=7"></script>
+<script src="/assets/js/stripe-config.js?v=8"></script>
 <script src="/assets/js/catalog.js?v=12"></script>
 <script src="/assets/js/customer-account.js?v=2"></script>
   <script src="/assets/js/firebase-config.js?v=2"></script>
@@ -885,9 +885,12 @@
       list.innerHTML = '<p style="color:var(--muted);font-size:.85rem;text-align:center;padding:1rem 0;">Aucune option disponible pour ce modèle.</p>';
     } else {
       availableOpts.forEach(function (opt) {
-        // Le supplement "tout compris" est calcule dans updateConfigTotal (il depend
-        // des autres options cochees : octroi de mer + tranche de livraison).
-        var optTTC = window.priceTTC(opt.ht);
+        // Supplement "tout compris" de l'option = produit + octroi de mer (20 %).
+        // C'est exactement le prix de l'article optionnel correspondant sur la
+        // page de paiement Stripe (affiche = paye). La livraison reste celle de
+        // la borne : le leger surpoids eventuel est absorbe.
+        var optProd = window.priceTTC(opt.ht);
+        var optTTC = optProd + window.octroiMer(optProd);
         var row = document.createElement('div');
         row.className = 'opt-item';
         row.innerHTML = ''
@@ -956,21 +959,21 @@
     if (!configuring) return;
     var product = configuring.product;
 
-    // Valeur produits (borne + options) et poids total (borne + options)
+    // Borne : produit + octroi ; livraison calculee sur la borne seule.
+    // Chaque option ajoute produit + octroi (20 %) — le meme montant que
+    // l'article optionnel correspondant sur la page de paiement Stripe,
+    // pour que le total affiche soit exactement le total paye.
     var produits = window.priceProduct(product.ht);
+    var octroi = window.octroiMer(produits);
     var weight = window.weightFor(product.id);
     var selected = [];
     document.querySelectorAll('#opt-list input[type="checkbox"]:checked').forEach(function (cb) {
       var ht = parseFloat(cb.dataset.optHt);
-      var optId = cb.dataset.optId;
-      produits += window.priceProduct(ht);
-      var full = (window.CATALOG_OPTIONS || []).find(function (x) { return x.id === optId; });
-      if (full && full.kg) weight += full.kg;
-      selected.push({ id: optId, ht: ht });
+      var pOpt = window.priceProduct(ht);
+      produits += pOpt;
+      octroi += window.octroiMer(pOpt);
+      selected.push({ id: cb.dataset.optId, ht: ht });
     });
-
-    // Octroi de mer (20 %) sur TOUTE la valeur produits ; livraison selon le poids TOTAL
-    var octroi = window.octroiMer(produits);
     var livraison = window.shippingForWeight(weight);
     var total = produits + octroi + livraison;
 
@@ -987,30 +990,6 @@
     setTxt('sumOctroi', octroi);
     setTxt('sumLivraison', livraison);
     setTxt('sumTotal', total);
-
-    // Supplement affiche par option = ce que son ajout coute REELLEMENT au total
-    // (produit + octroi de mer + eventuel saut de tranche de livraison), pour que
-    // l'etiquette corresponde a la variation du "Total tout compris".
-    document.querySelectorAll('#opt-list input[type="checkbox"]').forEach(function (cb) {
-      var optId = cb.dataset.optId;
-      var etiquette = document.querySelector('[data-opt-price="' + optId + '"]');
-      if (!etiquette) return;
-      var htOpt = parseFloat(cb.dataset.optHt);
-      var infos = (window.CATALOG_OPTIONS || []).find(function (x) { return x.id === optId; });
-      var kgOpt = (infos && infos.kg) ? infos.kg : 0;
-      var pSans, wSans;
-      if (cb.checked) {                      // deja cochee : cout = total actuel - total sans elle
-        pSans = produits - window.priceProduct(htOpt);
-        wSans = weight - kgOpt;
-      } else {                               // non cochee : cout = total avec elle - total actuel
-        pSans = produits;
-        wSans = weight;
-      }
-      var totalSans = pSans + window.octroiMer(pSans) + window.shippingForWeight(wSans);
-      var pAvec = pSans + window.priceProduct(htOpt);
-      var totalAvec = pAvec + window.octroiMer(pAvec) + window.shippingForWeight(wSans + kgOpt);
-      etiquette.textContent = '+' + window.formatPrice(totalAvec - totalSans);
-    });
 
     // Services complémentaires — NON inclus dans le total unique (récurrents / sur devis)
     var svcSel = [];

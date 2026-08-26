@@ -88,17 +88,17 @@ var STRIPE_LINKS = {
     'wb-mur-c': 'https://buy.stripe.com/28E5kDgQ8fj81vgeqwfIs0x',
     'wb-mur-p': 'https://buy.stripe.com/3cIcN557q9YOb5QaagfIs0w',
     'wb-mur':      'https://buy.stripe.com/9B614n43mfj8gqaciofIs0v',
-    'wb-pied-7':  'https://buy.stripe.com/aFaeVdarK4Eu1vg2HOfIs02',
-    'wb-pied-22': 'https://buy.stripe.com/3cIcN5czS6MC7TE2HOfIs03',
-    'sm7-mur-1':  'https://buy.stripe.com/28EdR957q4Eu6PA0zGfIs04',
-    'sm7-mur-2':  'https://buy.stripe.com/28E6oHeI07QGgqagyEfIs05',
-    'sm7-pied-1': 'https://buy.stripe.com/dRm7sL8jCfj87TEfuAfIs06',
-    'sm7-pied-2': 'https://buy.stripe.com/fZu28r7fyc6W3Do828fIs07',
-    'sm22-mur-1':  'https://buy.stripe.com/7sY3cv2Zi8UKb5Q2HOfIs08',
-    'sm22-mur-2':  'https://buy.stripe.com/4gMfZh9nG9YOb5QfuAfIs09',
-    'sm22-pied-1': 'https://buy.stripe.com/eVq4gzeI07QGb5QciofIs0a',
-    'sm22-pied-2': 'https://buy.stripe.com/7sY8wP6bu1si5Lw6Y4fIs0b',
-    'prem-2x22':   'https://buy.stripe.com/14AeVd1Ve9YO4HsgyEfIs0c'
+    'wb-pied-7':  'https://buy.stripe.com/00wfZh0Ra6MC8XI96cfIs11',
+    'wb-pied-22': 'https://buy.stripe.com/bJe6oHeI04Eu1vg1DKfIs12',
+    'sm7-mur-1':  'https://buy.stripe.com/cNi5kDarK8UK6PA5U0fIs13',
+    'sm7-mur-2':  'https://buy.stripe.com/3cIbJ10Ra5Iyfm6dmsfIs14',
+    'sm7-pied-1': 'https://buy.stripe.com/4gMeVd7fy9YOgqaciofIs15',
+    'sm7-pied-2': 'https://buy.stripe.com/aFaeVd8jC4Eu1vggyEfIs16',
+    'sm22-mur-1':  'https://buy.stripe.com/7sY9ATbvO9YO3Do0zGfIs17',
+    'sm22-mur-2':  'https://buy.stripe.com/bJe7sLeI0gnc4Hs2HOfIs18',
+    'sm22-pied-1': 'https://buy.stripe.com/fZu28rdDW9YOc9U6Y4fIs19',
+    'sm22-pied-2': 'https://buy.stripe.com/5kQ5kDgQ8b2S0rcaagfIs1a',
+    'prem-2x22':   'https://buy.stripe.com/8x25kDfM4fj8gqafuAfIs1b'
   }
 };
 window.STRIPE_PAYMENT_LINKS = STRIPE_LINKS[window.STRIPE_ENV] || STRIPE_LINKS.test;
