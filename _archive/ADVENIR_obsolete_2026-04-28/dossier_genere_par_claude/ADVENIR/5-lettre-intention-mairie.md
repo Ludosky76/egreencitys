@@ -6,7 +6,7 @@
 ---
 
 **EGREENCITY'S**
-SAS · RCS Cayenne 878 682 854
+SAS · RCS Cayenne 878 682 954
 1 rue Akangoue, Résidence La Rougerie
 97355 Macouria-Tonate · Guyane française
 egreencitys@gmail.com · +33 6 51 14 11 18

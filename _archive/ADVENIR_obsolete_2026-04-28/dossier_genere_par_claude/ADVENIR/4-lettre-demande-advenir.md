@@ -5,7 +5,7 @@
 ---
 
 **EGREENCITY'S**
-SAS · RCS Cayenne 878 682 854
+SAS · RCS Cayenne 878 682 954
 1 rue Akangoue, Résidence La Rougerie
 97355 Macouria-Tonate · Guyane française
 egreencitys@gmail.com · +33 6 51 14 11 18
@@ -26,7 +26,7 @@ Macouria, le ……/……/2026
 
 Madame, Monsieur,
 
-Par la présente, j'ai l'honneur de solliciter, au nom de la société **EGREENCITY'S** (SAS · RCS Cayenne 878 682 854), une **aide financière au titre du programme ADVENIR** pour le déploiement d'un réseau d'infrastructures de recharge pour véhicules électriques en Guyane française.
+Par la présente, j'ai l'honneur de solliciter, au nom de la société **EGREENCITY'S** (SAS · RCS Cayenne 878 682 954), une **aide financière au titre du programme ADVENIR** pour le déploiement d'un réseau d'infrastructures de recharge pour véhicules électriques en Guyane française.
 
 ## Contexte
 

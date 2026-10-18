@@ -1,7 +1,7 @@
 # Dossier de demande de financement ADVENIR
 ## Programme : Réseau de bornes de recharge en Guyane française
 
-**Porteur de projet :** EGREENCITY'S — SAS · RCS Cayenne 878 682 854
+**Porteur de projet :** EGREENCITY'S — SAS · RCS Cayenne 878 682 954
 **Adresse :** 1 rue Akangoue, Résidence La Rougerie · 97355 Macouria-Tonate · Guyane
 **Représentant légal :** Loïc LUDOSKY — Président, Fondateur
 **Contact :** egreencitys@gmail.com · +33 6 51 14 11 18
@@ -56,12 +56,12 @@ La directive européenne AFIR impose un point de recharge **tous les 60 km** sur
 
 ### 3.1 Identité juridique
 - **Forme :** SAS (Société par Actions Simplifiée)
-- **SIREN :** 878 682 854
+- **SIREN :** 878 682 954
 - **SIRET (siège) :** ……………………………………
 - **Code APE/NAF :** ……… *(à compléter — typiquement 4321A ou 4329B)*
 - **Capital social :** 250 €
 - **Date d'immatriculation :** 15/11/2019
-- **N° TVA intracommunautaire :** FR00 878 682 854
+- **N° TVA intracommunautaire :** FR57 878 682 954
 
 ### 3.2 Qualifications
 - ☐ **Qualifelec IRVE** — niveau 2 (en cours d'obtention)
