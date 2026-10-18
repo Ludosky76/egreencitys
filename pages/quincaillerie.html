@@ -29,7 +29,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/refonte.css?v=4">
+  <link rel="stylesheet" href="/assets/css/refonte.css?v=5">
 
   <!-- Schema.org : cette page PRÉSENTE la boutique, elle ne vend rien elle-même.
        Elle ne contient ni fiche produit, ni prix, ni panier : la déclarer comme
@@ -135,12 +135,19 @@
       transition:padding .3s,box-shadow .3s;
     }
     nav.scrolled{padding:.6rem 2.5rem;box-shadow:0 2px 24px var(--shadow);}
-    .nav-logo{display:flex;align-items:center;}
+    .nav-logo{display:flex;align-items:center;flex-shrink:0;}
     .nav-logo img{height:42px;}
-    .nav-links{display:flex;gap:1.5rem;list-style:none;align-items:center;}
-    .nav-links a{color:var(--text);font-size:.82rem;font-weight:500;transition:color .2s;}
-    .nav-links a:hover{color:var(--green);}
-    .btn-nav{background:var(--green);color:#fff!important;padding:.5rem 1.3rem;border-radius:50px;font-weight:700!important;}
+    .nav-links{display:flex;gap:1.3rem;list-style:none;align-items:center;flex-wrap:nowrap;}
+    .nav-links a{color:var(--text);font-size:.8rem;font-weight:500;letter-spacing:.015em;white-space:nowrap;position:relative;transition:color .2s;}
+    .nav-links a:not(.btn-nav):not(.btn-ghost-nav)::after{content:'';position:absolute;left:0;bottom:-5px;width:100%;height:1.5px;background:var(--green);transform:scaleX(0);transform-origin:left;transition:transform .22s ease;}
+    .nav-links a:not(.btn-nav):not(.btn-ghost-nav):hover{color:var(--green-deep);}
+    .nav-links a:not(.btn-nav):not(.btn-ghost-nav):hover::after{transform:scaleX(1);}
+    .nav-mob{display:none;} /* entrées réservées au menu mobile (reprises par mobile-nav.js) */
+    .nav-sep{width:1px;height:18px;background:rgba(10,72,0,.18);margin:0 .25rem;}
+    .btn-nav{background:var(--green);color:#fff!important;padding:.48rem 1.15rem;border-radius:50px;font-size:.78rem;font-weight:700!important;box-shadow:0 3px 10px rgba(51,204,0,.35);transition:background .2s,transform .2s!important;}
+    .btn-nav:hover{background:var(--green-dark)!important;transform:translateY(-1px);}
+    .btn-ghost-nav{border:1px solid rgba(51,204,0,.5);color:var(--green-deep)!important;padding:.44rem 1.05rem;border-radius:50px;font-size:.78rem;font-weight:600!important;transition:background .2s,border-color .2s;}
+    .btn-ghost-nav:hover{background:rgba(51,204,0,.08);border-color:var(--green);}
 
     /* BREADCRUMB */
     .breadcrumb{padding:5.6rem 2.5rem .6rem;font-size:.8rem;color:var(--muted);background:#fff;}
@@ -266,6 +273,30 @@
     footer a:hover{text-decoration:underline;}
     footer .legal{font-size:.72rem;opacity:.6;margin-top:.6rem;}
 
+    /* Cette barre porte 3 liens outillage de plus que les autres pages :
+       entre 900 et 1180px on resserre pour qu'elle tienne sans masquer le logo */
+    @media(max-width:1180px){
+      nav{padding:1rem 1.2rem;}
+      nav.scrolled{padding:.6rem 1.2rem;}
+      .nav-links{gap:.8rem;}
+      .nav-links a{font-size:.76rem;}
+      .btn-nav{padding:.44rem .95rem;}
+      .btn-ghost-nav{padding:.4rem .85rem;}
+    }
+    @media(max-width:1000px){
+      nav{padding:1rem .9rem;}
+      nav.scrolled{padding:.6rem .9rem;}
+      .nav-links{gap:.45rem;}
+      .nav-links a{font-size:.7rem;}
+      .btn-nav{padding:.38rem .7rem;}
+      .btn-ghost-nav{padding:.34rem .6rem;}
+      .nav-sep{margin:0 .1rem;}
+    }
+    /* le hamburger de mobile-nav.js n'apparaît qu'à 900px : la barre
+       desktop est masquée exactement au même seuil */
+    @media(max-width:900px){
+      .nav-links{display:none;}
+    }
     @media(max-width:900px){
       nav{padding:.8rem 1.2rem;}
       .breadcrumb{padding:4.8rem 1.2rem .6rem;}
@@ -293,15 +324,20 @@
 <nav>
   <a href="/" class="nav-logo"><img src="/logo.png" alt="EGREENCITY'S"></a>
   <ul class="nav-links">
-    <li><a href="/">Accueil</a></li>
     <li><a href="/pages/produits.html">Produits</a></li>
-    <li><a href="/pages/boutique.html" class="btn-nav" style="box-shadow:0 4px 14px rgba(51,204,0,.45);">🛒 Boutique</a></li>
     <li><a href="/pages/services.html">Services</a></li>
+    <li><a href="/pages/boutique-wallbox.html">Bornes</a></li>
+    <li><a href="/pages/boutique-quincaillerie.html">Quincaillerie</a></li>
+    <!-- Réservé au menu mobile (mobile-nav.js reprend les <a> de .nav-links) -->
+    <li class="nav-mob"><a href="/">Accueil</a></li>
+    <li class="nav-sep" aria-hidden="true"></li>
     <!-- Espace client et devis de CETTE boutique (outillage), pas de l'espace bornes :
          href réel fourni par assets/js/site-config.js, repli = #acces-boutique. -->
-    <li><a href="#acces-boutique" data-egc-quincaillerie="/compte">👤 Mon compte outillage</a></li>
-    <li><a href="#acces-boutique" data-egc-quincaillerie="/compte/suivi">📦 Suivi outillage</a></li>
-    <li><a href="#acces-boutique" data-egc-quincaillerie="/devis" class="btn-nav">Devis outillage</a></li>
+    <li><a href="#acces-boutique" data-egc-quincaillerie="/compte">Compte outillage</a></li>
+    <li><a href="#acces-boutique" data-egc-quincaillerie="/compte/suivi">Suivi outillage</a></li>
+    <li><a href="#acces-boutique" data-egc-quincaillerie="/devis">Devis outillage</a></li>
+    <li><a href="/pages/devis.html" class="btn-ghost-nav">Devis gratuit</a></li>
+    <li><a href="/pages/boutique.html" class="btn-nav">Boutique</a></li>
   </ul>
 </nav>
 

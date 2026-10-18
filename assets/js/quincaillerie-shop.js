@@ -113,9 +113,21 @@
     majPastille();
   }
 
-  /* ---------------- panier ---------------- */
-  function sauver() { try { localStorage.setItem(CLE_PANIER, JSON.stringify(etat.panier)); } catch (e) {} }
-  function charger() { try { etat.panier = JSON.parse(localStorage.getItem(CLE_PANIER) || '[]'); } catch (e) { etat.panier = []; } }
+  /* ---------------- panier ----------------
+     Conservé 7 jours sur l'appareil (à compter de la dernière activité) :
+     enregistré horodaté { maj, lignes }, purgé au-delà de PANIER_RETENTION. */
+  var PANIER_RETENTION = 7 * 24 * 3600 * 1000;
+  function sauver() {
+    try { localStorage.setItem(CLE_PANIER, JSON.stringify({ maj: Date.now(), lignes: etat.panier })); } catch (e) {}
+  }
+  function charger() {
+    try {
+      var j = JSON.parse(localStorage.getItem(CLE_PANIER) || 'null');
+      if (!j) { etat.panier = []; return; }
+      if (Array.isArray(j)) { etat.panier = j; sauver(); return; } /* ancien format, migré */
+      etat.panier = (j.maj && Date.now() - j.maj > PANIER_RETENTION) ? [] : (j.lignes || []);
+    } catch (e) { etat.panier = []; }
+  }
   function article(ref) {
     return etat.catalogue.articles.find(function (a) { return a.ref === ref; });
   }

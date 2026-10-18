@@ -23,7 +23,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Refonte visuelle (polish premium par-dessus les styles existants) -->
-  <link rel="stylesheet" href="/assets/css/refonte.css?v=4">
+  <link rel="stylesheet" href="/assets/css/refonte.css?v=5">
 
   <!-- SEO / Canonical -->
   <link rel="canonical" href="https://egreencitys.com/">
@@ -415,6 +415,12 @@
     #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 
     /* ── RESPONSIVE ──────────────────────────────────── */
+    /* entre 900 et ~1060px la barre est juste : resserrer avant de casser */
+    @media(max-width:1060px){
+      .nav-links{gap:.9rem;}
+      .nav-links a{font-size:.76rem;}
+      .btn-nav,.btn-ghost-nav{padding:.42rem .9rem;font-size:.74rem;}
+    }
     /* le hamburger de mobile-nav.js n'apparaît qu'à 900px : la barre
        desktop doit rester visible jusque-là (sinon 900-960px sans nav) */
     @media(max-width:900px){
@@ -508,6 +514,7 @@
   <ul class="nav-links">
     <li><a href="/pages/produits.html">Produits</a></li>
     <li><a href="/pages/services.html">Services</a></li>
+    <li><a href="/pages/boutique-wallbox.html">Bornes</a></li>
     <li><a href="/pages/boutique-quincaillerie.html">Quincaillerie</a></li>
     <!-- Réservés au menu mobile (mobile-nav.js reprend tous les <a>) + footer -->
     <li class="nav-mob"><a href="/pages/apropos.html">À propos</a></li>

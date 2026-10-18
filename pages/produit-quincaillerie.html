@@ -15,8 +15,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/quincaillerie.css?v=4">
-  <link rel="stylesheet" href="/assets/css/refonte.css?v=4">
+  <link rel="stylesheet" href="/assets/css/quincaillerie.css?v=5">
+  <link rel="stylesheet" href="/assets/css/refonte.css?v=5">
   <script src="/assets/js/quincaillerie-theme.js?v=1"></script>
 </head>
 <body data-egc-mnav-compte="non">
@@ -49,6 +49,8 @@
       </a>
       <div class="qtop-actions">
         <button type="button" class="theme-btn" id="q-theme" aria-label="Basculer clair/sombre">🌙</button>
+        <!-- retour page de garde : le panier (localStorage) est conservé -->
+        <a href="/" class="lghost" title="Retour à la page d'accueil — votre panier est conservé">Accueil</a>
         <button type="button" class="cart-pill" id="q-ouvrir-panier">🛒 Panier<span id="q-pastille">0</span></button>
         <a href="/pages/boutique-quincaillerie.html" class="lback">← Catalogue</a>
       </div>
@@ -62,11 +64,15 @@
     <div class="q-menu-corps">
       <div id="q-menu-rayons"></div>
       <div class="q-menu-pied">
+        <div class="q-menu-titre">Espace client</div>
+        <a href="/pages/compte.html">Mon compte</a>
+        <a href="/pages/suivi.html">Suivi de commande</a>
         <div class="q-menu-titre">Boutique</div>
         <a href="/pages/quincaillerie.html">À propos de la boutique</a>
         <a href="/pages/legal/cgv-quincaillerie.html">Conditions de vente</a>
         <a href="/pages/quincaillerie.html#faq-quincaillerie">FAQ outillage</a>
         <a href="/pages/boutique.html">Toutes les boutiques</a>
+        <a href="/">Accueil du site</a>
       </div>
     </div>
   </aside>
@@ -96,7 +102,7 @@
   </footer>
 
   <script src="/assets/js/site-config.js?v=3" defer></script>
-  <script src="/assets/js/quincaillerie-fiche.js?v=1" defer></script>
+  <script src="/assets/js/quincaillerie-fiche.js?v=2" defer></script>
   <script src="/assets/js/mobile-nav.js?v=7" defer></script>
   <script src="/assets/js/analytics.js?v=2" defer></script>
   <script src="/assets/js/consent.js?v=1" defer></script>

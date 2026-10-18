@@ -57,6 +57,10 @@ a:hover{color:var(--navy);}
 .lback:hover{background:#E8F0FE;color:var(--band);}
 .theme-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:12px;padding:.4rem .55rem;font:inherit;font-size:.85rem;line-height:1;cursor:pointer;transition:.15s;}
 .theme-btn:hover{background:rgba(255,255,255,.16);}
+/* retour à la page de garde : pilule fantôme discrète (le panier, en
+   localStorage, est conservé d'une page à l'autre) */
+.lghost{border:1px solid rgba(255,255,255,.35);color:#fff;padding:.42rem .9rem;border-radius:50px;font-weight:600;font-size:.76rem;transition:.15s;}
+.lghost:hover{background:rgba(255,255,255,.12);color:#fff;}
 .cart-pill{position:relative;border:none;color:#fff;padding:.4rem .9rem;border-radius:50px;font:inherit;font-weight:600;font-size:.74rem;cursor:pointer;
   background-image:linear-gradient(135deg,var(--green) 0%,#6BDA1E 100%);
   box-shadow:0 2px 6px rgba(79,190,23,.22);transition:transform .15s ease,filter .15s ease;}

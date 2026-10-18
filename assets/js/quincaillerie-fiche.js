@@ -45,8 +45,18 @@
     return 'livraison sous ~' + (a.delai + 14) + ' jours';
   }
 
-  /* ---------------- panier partagé avec la boutique ---------------- */
-  function panier() { try { return JSON.parse(localStorage.getItem(CLE_PANIER) || '[]'); } catch (e) { return []; } }
+  /* ---------------- panier partagé avec la boutique ----------------
+     Même format horodaté que quincaillerie-shop.js : { maj, lignes },
+     conservé 7 jours sur l'appareil à compter de la dernière activité. */
+  var PANIER_RETENTION = 7 * 24 * 3600 * 1000;
+  function panier() {
+    try {
+      var j = JSON.parse(localStorage.getItem(CLE_PANIER) || 'null');
+      if (!j) return [];
+      if (Array.isArray(j)) return j; /* ancien format */
+      return (j.maj && Date.now() - j.maj > PANIER_RETENTION) ? [] : (j.lignes || []);
+    } catch (e) { return []; }
+  }
   function majPastille() {
     var n = panier().reduce(function (s, l) { return s + l.q; }, 0);
     $('q-pastille').textContent = n;
@@ -56,7 +66,7 @@
     var p = panier();
     var l = p.find(function (x) { return x.ref === ref; });
     if (l) l.q += 1; else p.push({ ref: ref, q: 1 });
-    try { localStorage.setItem(CLE_PANIER, JSON.stringify(p)); } catch (e) {}
+    try { localStorage.setItem(CLE_PANIER, JSON.stringify({ maj: Date.now(), lignes: p })); } catch (e) {}
     window.location.href = URL_BOUTIQUE + '#panier';
   }
 
