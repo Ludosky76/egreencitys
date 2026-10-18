@@ -184,7 +184,7 @@
     .ring:nth-child(4){width:880px;height:880px;animation-delay:1.8s;}
     @keyframes ringpulse{0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1);}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.04);}}
 
-    .hero-inner{position:relative;z-index:2;max-width:1200px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+    .hero-inner{position:relative;z-index:2;max-width:min(1880px, 96vw);width:100%;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
     .hero-badge{
       display:inline-flex;align-items:center;gap:.5rem;
       background:rgba(51,204,0,.12);border:1px solid rgba(51,204,0,.28);
@@ -217,7 +217,7 @@
 
     /* ── STATS BAR ───────────────────────────────────── */
     .stats{background:var(--green);padding:2rem 3rem;}
-    .stats-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;}
+    .stats-inner{max-width:min(1880px, 96vw);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;}
     .stat{text-align:center;color:#fff;}
     .stat-n{font-size:2.3rem;font-weight:800;line-height:1;display:block;}
     .stat-l{font-size:.78rem;opacity:.88;margin-top:.25rem;}
@@ -225,7 +225,7 @@
     /* ── BANNIÈRE BOUTIQUE ───────────────────────────── */
     .shop-banner{background:linear-gradient(135deg,var(--green-deep) 0%,#0d5c00 55%,var(--green-dark) 100%);padding:4rem 3rem;position:relative;overflow:hidden;}
     .shop-banner::after{content:"";position:absolute;top:-40%;right:-10%;width:480px;height:480px;background:radial-gradient(circle,rgba(51,204,0,.35) 0%,transparent 70%);pointer-events:none;}
-    .shop-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.3fr 1fr;gap:3rem;align-items:center;position:relative;z-index:1;}
+    .shop-inner{max-width:min(1880px, 96vw);margin:0 auto;display:grid;grid-template-columns:1.3fr 1fr;gap:3rem;align-items:center;position:relative;z-index:1;}
     .shop-badge{display:inline-block;background:rgba(255,255,255,.15);color:#fff;padding:.35rem 1rem;border-radius:50px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:1rem;border:1px solid rgba(255,255,255,.25);}
     .shop-txt h2{font-size:clamp(1.6rem,2.6vw,2.2rem);font-weight:800;color:#fff;line-height:1.2;margin-bottom:.9rem;}
     .shop-txt p{font-size:.95rem;color:rgba(255,255,255,.9);line-height:1.7;margin-bottom:1.2rem;max-width:560px;}
@@ -242,7 +242,7 @@
 
     /* ── SECTIONS ────────────────────────────────────── */
     section{padding:5.5rem 3rem;}
-    .section-inner{max-width:1200px;margin:0 auto;}
+    .section-inner{max-width:min(1880px, 96vw);margin:0 auto;}
     .badge{display:inline-block;background:rgba(51,204,0,.1);color:var(--green-deep);padding:.28rem .9rem;border-radius:50px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.9rem;}
     .title{font-size:clamp(1.8rem,2.8vw,2.5rem);font-weight:700;color:var(--dark);margin-bottom:1rem;line-height:1.2;}
     .sub{font-size:.94rem;color:var(--muted);max-width:580px;line-height:1.75;}
@@ -257,7 +257,7 @@
     .pico{width:28px;height:28px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
     .pillar p{font-size:.8rem;color:var(--muted);line-height:1.6;}
     .mission-text h2{font-size:1.75rem;font-weight:700;color:var(--dark);margin-bottom:1.3rem;line-height:1.3;}
-    .mission-text p{font-size:.92rem;color:var(--muted);line-height:1.8;margin-bottom:1.1rem;}
+    .mission-text p{font-size:.92rem;color:var(--muted);line-height:1.8;margin-bottom:1.1rem;max-width:95ch;}
     .avantages{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1.8rem;}
     .av{display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:rgba(51,204,0,.05);border-radius:9px;border:1px solid rgba(51,204,0,.13);}
     .av span{font-size:.82rem;font-weight:500;color:var(--text);}
@@ -309,12 +309,12 @@
     .save{font-size:.8rem;}
     .save.pos{color:var(--green);font-weight:700;}
     .save.neg{color:#ff7070;}
-    .econ-note{margin-top:.9rem;font-size:.7rem;color:rgba(255,255,255,.35);line-height:1.6;}
+    .econ-note{margin-top:.9rem;font-size:.7rem;color:rgba(255,255,255,.35);line-height:1.6;max-width:95ch;}
     .econ-pts{display:flex;flex-direction:column;gap:1.6rem;}
     .econ-pt{display:flex;align-items:flex-start;gap:.9rem;}
     .eico{width:46px;height:46px;background:rgba(51,204,0,.12);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
     .eico-text h4{font-size:.92rem;font-weight:700;color:#fff;margin-bottom:.28rem;}
-    .eico-text p{font-size:.8rem;color:rgba(255,255,255,.58);line-height:1.65;}
+    .eico-text p{font-size:.8rem;color:rgba(255,255,255,.58);line-height:1.65;max-width:95ch;}
 
     /* ── RÉSEAU ──────────────────────────────────────── */
     .reseau{background:var(--off);}
@@ -386,11 +386,11 @@
 
     /* ── FOOTER ──────────────────────────────────────── */
     footer{background:var(--dark);color:rgba(255,255,255,.6);padding:3rem 3rem 1.8rem;}
-    .foot-inner{max-width:1200px;margin:0 auto;}
+    .foot-inner{max-width:min(1880px, 96vw);margin:0 auto;}
     .foot-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem;}
     .fbrand .logo-name{font-size:1.35rem;color:var(--green);font-weight:800;}
     .fbrand .logo-tag{color:rgba(255,255,255,.4);margin-bottom:1rem;}
-    .fbrand p{font-size:.8rem;line-height:1.7;color:rgba(255,255,255,.42);}
+    .fbrand p{font-size:.8rem;line-height:1.7;color:rgba(255,255,255,.42);max-width:95ch;}
     .fcol h4{font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.35);margin-bottom:.9rem;}
     .fcol ul{list-style:none;display:flex;flex-direction:column;gap:.45rem;}
     .fcol ul a{text-decoration:none;font-size:.82rem;color:rgba(255,255,255,.55);transition:color .2s;}
@@ -760,7 +760,7 @@
     <!-- CTA vers calculateur personnalisé -->
     <div style="margin-top:3rem;text-align:center;padding:2rem 1.5rem;background:linear-gradient(135deg,var(--off),#fff);border-radius:16px;border:1px solid rgba(51,204,0,.15);">
       <h3 style="font-size:1.3rem;color:var(--green-deep);font-weight:700;margin-bottom:.6rem;">Votre calcul personnalisé en 30 secondes</h3>
-      <p style="color:var(--muted);font-size:.95rem;margin-bottom:1.4rem;">Saisissez vos kilomètres et votre véhicule actuel — découvrez vos économies précises avec les tarifs Guyane d'aujourd'hui.</p>
+      <p style="color:var(--muted);font-size:.95rem;margin-bottom:1.4rem;max-width:95ch;margin-left:auto;margin-right:auto;">Saisissez vos kilomètres et votre véhicule actuel — découvrez vos économies précises avec les tarifs Guyane d'aujourd'hui.</p>
       <a href="/pages/economies.html" style="display:inline-flex;align-items:center;gap:.6rem;background:linear-gradient(135deg,var(--green-deep),var(--green));color:#fff;padding:1rem 2rem;border-radius:50px;font-weight:700;text-decoration:none;box-shadow:0 6px 18px rgba(51,204,0,.3);transition:.25s;">
         🧮 Accéder au calculateur personnalisé →
       </a>
@@ -770,7 +770,7 @@
 
 <!-- ════════════════ TÉMOIGNAGES / CAS CLIENTS ════════════════ -->
 <section class="testimonials" id="temoignages" style="padding:5rem 2rem;background:linear-gradient(180deg,#fff,var(--off));">
-  <div style="max-width:1200px;margin:0 auto;">
+  <div style="max-width:min(1880px, 96vw);margin:0 auto;">
     <div style="text-align:center;margin-bottom:3rem;">
       <div class="badge rv" style="display:inline-block;padding:.35rem .9rem;background:rgba(43,77,181,.1);color:var(--blue);border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem;">Jeune entreprise · pré-lancement</div>
       <h2 class="rv" style="font-size:2.2rem;font-weight:800;color:var(--green-deep);line-height:1.2;">Où nous en sommes<br><em style="color:var(--green);font-style:normal;">en toute transparence</em></h2>
@@ -811,7 +811,7 @@
       </div>
     </div>
 
-    <p style="text-align:center;margin-top:2.5rem;font-size:.85rem;color:var(--muted);">
+    <p style="text-align:center;margin-top:2.5rem;font-size:.85rem;color:var(--muted);max-width:95ch;margin-left:auto;margin-right:auto;">
       Rejoignez notre programme <strong style="color:var(--green-deep);">Early Adopter</strong> : tarif préférentiel et accompagnement renforcé pour les 10 premiers clients.
       <a href="#contact" style="color:var(--green);font-weight:700;">Postuler →</a>
     </p>
@@ -834,10 +834,10 @@
 
 <!-- ════════════════ VIDEO PRÉSENTATION ════════════════ -->
 <section class="video-section" id="video" style="padding:5rem 2rem;background:linear-gradient(180deg,var(--off),#fff);">
-  <div style="max-width:900px;margin:0 auto;text-align:center;">
+  <div style="max-width:min(1880px, 96vw);margin:0 auto;text-align:center;">
     <div class="badge rv" style="display:inline-block;padding:.35rem .9rem;background:rgba(43,77,181,.1);color:var(--blue);border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem;">Découvrir en vidéo</div>
     <h2 class="rv" style="font-size:2.2rem;font-weight:800;color:var(--green-deep);line-height:1.2;margin-bottom:2rem;">Le projet EGREENCITY'S<br><em style="color:var(--green);font-style:normal;">en 2 minutes</em></h2>
-    <div class="video-wrap" id="videoWrap" role="button" tabindex="0" aria-label="Lancer la vidéo de présentation" style="position:relative;padding-bottom:56.25%;height:0;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,80,0,.2);background:linear-gradient(135deg,#0a2800,#041000);cursor:pointer;">
+    <div class="video-wrap" id="videoWrap" role="button" tabindex="0" aria-label="Lancer la vidéo de présentation" style="position:relative;max-width:1100px;margin-left:auto;margin-right:auto;padding-bottom:min(56.25%, 618.75px);height:0;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,80,0,.2);background:linear-gradient(135deg,#0a2800,#041000);cursor:pointer;">
       <div id="videoPoster" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;background:radial-gradient(circle at center,#0a5f3b 0%,#062b1b 60%,#020806 100%);">
         <div style="width:110px;height:110px;border-radius:50%;background:rgba(51,204,0,.25);display:flex;align-items:center;justify-content:center;border:4px solid rgba(51,204,0,.7);margin-bottom:1.2rem;box-shadow:0 0 40px rgba(51,204,0,.5);animation:pulse-play 2s ease-in-out infinite;">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="#33CC00" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
@@ -1406,7 +1406,7 @@
 
 <!-- ════════════════ PARTENAIRES ════════════════ -->
 <section class="partners" id="partenaires" style="padding:4rem 2rem 3rem;background:linear-gradient(180deg,#fff,var(--off));">
-  <div style="max-width:1100px;margin:0 auto;text-align:center;">
+  <div style="max-width:min(1880px, 96vw);margin:0 auto;text-align:center;">
     <p style="font-size:.78rem;letter-spacing:2px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:2rem;">
       Nos partenaires & programmes
     </p>
@@ -1418,7 +1418,7 @@
       <div class="partner-card" style="opacity:.7;"><div class="pn-title" style="color:var(--green-deep);">Qualifelec IRVE</div><div class="pn-sub">Certification<br>(en cours)</div></div>
       <div class="partner-card" style="opacity:.7;"><div class="pn-title" style="color:var(--green-deep);">AFNOR</div><div class="pn-sub">Normalisation<br>(en cours)</div></div>
     </div>
-    <p style="margin-top:2rem;font-size:.75rem;color:var(--muted);font-style:italic;">
+    <p style="margin-top:2rem;font-size:.75rem;color:var(--muted);font-style:italic;max-width:95ch;margin-left:auto;margin-right:auto;">
       Les marques et références produits cités appartiennent à leurs propriétaires respectifs. ADVENIR est un programme de l'AVERE-France.
     </p>
   </div>
@@ -1493,7 +1493,7 @@
           <div class="fg"><label>Message</label><textarea name="message" placeholder="Décrivez votre projet ou votre demande..." required></textarea></div>
           <div class="fg" style="flex-direction:row;align-items:flex-start;gap:.6rem;">
             <input type="checkbox" id="rgpdConsent" required style="margin-top:.3rem;flex-shrink:0;width:auto;">
-            <label for="rgpdConsent" style="font-size:.78rem;line-height:1.4;font-weight:400;">
+            <label for="rgpdConsent" style="font-size:.78rem;line-height:1.4;font-weight:400;max-width:95ch;">
               J'accepte que mes données (nom, prénom, email) soient traitées par EGREENCITY'S dans le seul but de répondre à ma demande. Les données sont conservées 3 ans maximum. Conformément au RGPD, je dispose d'un droit d'accès, de rectification et d'effacement via <a href="mailto:egreencitys@gmail.com" style="color:var(--green-deep);">egreencitys@gmail.com</a>. Voir <a href="/pages/legal/mentions-legales.html#confidentialite" target="_blank" rel="noopener" style="color:var(--green-deep);">politique de confidentialité</a>. *
             </label>
           </div>

@@ -157,12 +157,13 @@
     /* REPLI SANS JAVASCRIPT (voir commentaire du bloc #acces-boutique) */
     .acces-repli{display:none;}
     .acces-repli:target{
-      display:block;max-width:1080px;margin:.4rem auto 1rem;
+      display:block;max-width:min(1880px,96vw);margin:.4rem auto 1rem;
       padding:1.2rem 1.5rem;background:#fff6e8;
       border:1px solid #e8bd7a;border-left:4px solid #d98a1a;border-radius:12px;
       color:#5a3a00;font-size:.88rem;line-height:1.65;scroll-margin-top:6rem;
     }
     .acces-repli h2{font-size:1.05rem;font-weight:800;color:#7a4b00;margin-bottom:.5rem;text-align:left;}
+    .acces-repli p{max-width:95ch;} /* lisibilité : le conteneur s'élargit, pas les lignes de texte */
     .acces-repli p + p{margin-top:.5rem;}
     .acces-repli a{color:#8a5200;font-weight:700;text-decoration:underline;}
     /* Adresse de secours : lisible et recopiable a la main si rien ne s execute */
@@ -190,7 +191,7 @@
     }
     .dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:blink 1.4s ease-in-out infinite;}
     @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
-    .hero h1{font-size:clamp(1.9rem,4vw,3.1rem);font-weight:800;line-height:1.12;margin-bottom:1rem;max-width:900px;margin-inline:auto;letter-spacing:-.02em;}
+    .hero h1{font-size:clamp(1.9rem,4vw,3.1rem);font-weight:800;line-height:1.12;margin-bottom:1rem;max-width:min(1880px,96vw);margin-inline:auto;letter-spacing:-.02em;}
     .hero h1 em{color:var(--green);font-style:normal;}
     .hero-sub{font-size:1.02rem;color:rgba(255,255,255,.8);line-height:1.6;max-width:740px;margin:0 auto 2rem;}
     .hero-cta{
@@ -205,7 +206,7 @@
 
     /* SECTIONS */
     .sec{padding:3.4rem 2.5rem;}
-    .sec-inner{max-width:1080px;margin:0 auto;}
+    .sec-inner{max-width:min(1880px,96vw);margin:0 auto;}
     .sec h2{font-size:clamp(1.5rem,2.6vw,2.1rem);font-weight:800;color:var(--green-deep);line-height:1.2;letter-spacing:-.01em;margin-bottom:.8rem;text-align:center;}
     .sec h2 em{color:var(--green);font-style:normal;}
     .sec-lead{text-align:center;color:var(--muted);font-size:.96rem;line-height:1.65;max-width:740px;margin:0 auto 2.4rem;}
@@ -242,7 +243,11 @@
     .etape-d{font-size:.8rem;color:var(--muted);line-height:1.55;}
 
     /* SÉPARATION DES UNIVERS */
-    .rappel{max-width:1080px;margin:0 auto;padding:1.3rem 1.6rem;background:#fff;
+    .rappel{max-width:min(1880px,96vw);margin:0 auto;background:#fff;
+      /* lisibilité : la bande s'élargit, mais les lignes de texte restent bornées
+         à ~95ch (même règle que les <p> de .acces-repli), centrées par le padding ;
+         sur petit écran le max() rend le padding d'origine de 1.6rem */
+      padding:1.3rem max(1.6rem,calc((min(1880px,96vw) - 95ch)/2));
       border:1px solid rgba(43,77,181,.22);border-left:4px solid var(--blue);border-radius:12px;
       font-size:.87rem;color:var(--muted);line-height:1.65;}
     .rappel strong{color:var(--blue-deep);}

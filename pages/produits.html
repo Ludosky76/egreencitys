@@ -178,7 +178,7 @@
     .ring:nth-child(4){width:880px;height:880px;animation-delay:1.8s;}
     @keyframes ringpulse{0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1);}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.04);}}
 
-    .hero-inner{position:relative;z-index:2;max-width:1200px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+    .hero-inner{position:relative;z-index:2;max-width:min(1880px, 96vw);width:100%;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
     .hero-badge{
       display:inline-flex;align-items:center;gap:.5rem;
       background:rgba(51,204,0,.12);border:1px solid rgba(51,204,0,.28);
@@ -211,14 +211,14 @@
 
     /* ── STATS BAR ───────────────────────────────────── */
     .stats{background:var(--green);padding:2rem 3rem;}
-    .stats-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;}
+    .stats-inner{max-width:min(1880px, 96vw);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;}
     .stat{text-align:center;color:#fff;}
     .stat-n{font-size:2.3rem;font-weight:800;line-height:1;display:block;}
     .stat-l{font-size:.78rem;opacity:.88;margin-top:.25rem;}
 
     /* ── SECTIONS ────────────────────────────────────── */
     section{padding:5.5rem 3rem;}
-    .section-inner{max-width:1200px;margin:0 auto;}
+    .section-inner{max-width:min(1880px, 96vw);margin:0 auto;}
     .badge{display:inline-block;background:rgba(51,204,0,.1);color:var(--green-deep);padding:.28rem .9rem;border-radius:50px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.9rem;}
     .title{font-size:clamp(1.8rem,2.8vw,2.5rem);font-weight:700;color:var(--dark);margin-bottom:1rem;line-height:1.2;}
     .sub{font-size:.94rem;color:var(--muted);max-width:580px;line-height:1.75;}
@@ -362,11 +362,11 @@
 
     /* ── FOOTER ──────────────────────────────────────── */
     footer{background:var(--dark);color:rgba(255,255,255,.6);padding:3rem 3rem 1.8rem;}
-    .foot-inner{max-width:1200px;margin:0 auto;}
+    .foot-inner{max-width:min(1880px, 96vw);margin:0 auto;}
     .foot-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem;}
     .fbrand .logo-name{font-size:1.35rem;color:var(--green);font-weight:800;}
     .fbrand .logo-tag{color:rgba(255,255,255,.4);margin-bottom:1rem;}
-    .fbrand p{font-size:.8rem;line-height:1.7;color:rgba(255,255,255,.42);}
+    .fbrand p{font-size:.8rem;line-height:1.7;color:rgba(255,255,255,.42);max-width:95ch;}
     .fcol h4{font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.35);margin-bottom:.9rem;}
     .fcol ul{list-style:none;display:flex;flex-direction:column;gap:.45rem;}
     .fcol ul a{text-decoration:none;font-size:.82rem;color:rgba(255,255,255,.55);transition:color .2s;}
@@ -457,7 +457,7 @@
 </nav>
 
 <!-- Fil d'Ariane -->
-<div style="max-width:1200px;margin:0 auto;padding:6rem 2rem 1rem;font-size:.85rem;">
+<div style="max-width:min(1880px, 96vw);margin:0 auto;padding:6rem 2rem 1rem;font-size:.85rem;">
   <a href="/" style="color:var(--green-deep);text-decoration:none;font-weight:500;">← Accueil</a>
   <span style="opacity:.5;margin:0 .5rem;">/</span>
   <span style="color:var(--text-soft);">Produits</span>
@@ -765,7 +765,7 @@
                   <span>Afficheur couleur 4,3" <span style="opacity:.55;font-size:.72rem;">(non tactile)</span></span><span style="font-weight:700;" data-price-id="opt-afficheur-43">420 €</span>
                 </div>
               </div>
-              <p style="margin:.7rem 0 0;font-size:.72rem;opacity:.55;font-style:italic;">Toutes les bornes e-City incluent Borne Inox, Prises T2S verrouillables, Lecteur RFID, Compteur MID, Protections différentielles. <strong>Frais de livraison non inclus.</strong></p>
+              <p style="margin:.7rem 0 0;font-size:.72rem;opacity:.55;font-style:italic;max-width:95ch;">Toutes les bornes e-City incluent Borne Inox, Prises T2S verrouillables, Lecteur RFID, Compteur MID, Protections différentielles. <strong>Frais de livraison non inclus.</strong></p>
             </div>
 
           </div>

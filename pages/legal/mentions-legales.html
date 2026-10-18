@@ -43,7 +43,7 @@
       position:sticky; top:0; z-index:10;
     }
     .ltopbar-inner {
-      max-width:1100px; margin:0 auto; padding:0 1.5rem;
+      max-width:min(1880px, 96vw); margin:0 auto; padding:0 1.5rem;
       display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
     }
     .lbrand { display:flex; align-items:center; gap:.75rem; }
@@ -58,7 +58,7 @@
     .lback:hover { background:#eef8ea; text-decoration:none; }
 
     /* Layout */
-    .lwrap { max-width:900px; margin:0 auto; padding:3rem 1.5rem 4rem; }
+    .lwrap { max-width:min(1880px, 96vw); margin:0 auto; padding:3rem 1.5rem 4rem; }
     .lwrap h1 {
       color:var(--green-deep); font-size:2.2rem; font-weight:800;
       margin-bottom:.5rem; line-height:1.2;
@@ -89,6 +89,7 @@
       margin:1.4rem 0 .5rem;
     }
     .lsection p { margin-bottom:.8rem; font-size:.92rem; color:var(--text); }
+    .lsection p, .lsection ul, .lsection ol { max-width:95ch; }
     .lsection em { color:var(--text-soft); font-size:.88rem; }
     .lsection code {
       background:#e8efe2; padding:.15rem .4rem; border-radius:4px;

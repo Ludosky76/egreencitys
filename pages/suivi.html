@@ -37,11 +37,11 @@
     .page-hero h1{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:800;margin-bottom:.4rem;letter-spacing:-.02em;}
     .page-hero p{color:rgba(255,255,255,.75);font-size:1rem;}
 
-    .container{max-width:900px;margin:-2rem auto 3rem;padding:0 2rem;position:relative;z-index:2;}
+    .container{max-width:min(1880px, 96vw);margin:-2rem auto 3rem;padding:0 2rem;position:relative;z-index:2;}
     .card{background:#fff;border-radius:20px;padding:2rem;box-shadow:0 12px 40px rgba(10,72,0,.1);margin-bottom:1.5rem;border:1px solid #e5f0dd;}
 
     /* Recherche */
-    .search-form{display:flex;gap:.7rem;flex-wrap:wrap;align-items:end;}
+    .search-form{display:flex;gap:.7rem;flex-wrap:wrap;align-items:end;max-width:900px;}
     .search-form .grow{flex:1;min-width:220px;}
     .search-form label{display:block;font-weight:600;color:var(--green-deep);font-size:.85rem;margin-bottom:.4rem;}
     .search-form input{width:100%;padding:.85rem 1rem;border:1px solid #d8e6cc;border-radius:10px;font-family:inherit;font-size:1rem;background:#fafffa;text-transform:uppercase;letter-spacing:.5px;}
@@ -86,7 +86,7 @@
     .tracking-box a:hover{text-decoration:underline;}
 
     /* Alerts */
-    .alert{padding:1rem 1.2rem;border-radius:10px;margin-top:1rem;font-size:.9rem;line-height:1.5;}
+    .alert{padding:1rem 1.2rem;border-radius:10px;margin-top:1rem;font-size:.9rem;line-height:1.5;max-width:95ch;}
     .alert-error{background:#ffebee;color:#c62828;border-left:4px solid #c62828;}
     .alert-info{background:#e3f2fd;color:#1565c0;border-left:4px solid #1976d2;}
 
