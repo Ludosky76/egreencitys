@@ -30,7 +30,9 @@
     '/compte':       '/pages/suivi.html',
     '/compte/suivi': '/pages/suivi.html',
     '/devis':        '/pages/devis.html',
-    '/cgv':          '/pages/legal/cgv.html'
+    /* CGV propres à la quincaillerie — les CGV bornes restent
+       /pages/legal/cgv.html et ne couvrent pas l'outillage. */
+    '/cgv':          '/pages/legal/cgv-quincaillerie.html'
   };
 
   /**
