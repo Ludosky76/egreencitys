@@ -1,8 +1,10 @@
-/* EGREENCITY'S — Service Worker v2.6 (2026-05) */
-const CACHE = 'egreencitys-v18';
+/* EGREENCITY'S — Service Worker v2.7 (2026-09) */
+const CACHE = 'egreencitys-v22';
 const ASSETS = [
   '/',
   '/index.html',
+  '/pages/boutique.html',
+  '/pages/quincaillerie.html',
   '/pages/produits.html',
   '/pages/devis.html',
   '/pages/reseau.html',
@@ -46,6 +48,14 @@ self.addEventListener('fetch', (e) => {
         return resp;
       }).catch(() => caches.match(req).then((r) => r || caches.match('/index.html')))
     );
+    return;
+  }
+  // Donnees dynamiques de la boutique quincaillerie (catalogue, stock, liens) :
+  // TOUJOURS le reseau. L'etat de stock conditionne le droit d'encaisser un
+  // paiement : il ne doit jamais provenir d'un cache. Hors-ligne : derniere
+  // copie connue, faute de mieux, mais rien n'est ajoute au cache ici.
+  if (url.pathname.startsWith('/assets/data/')) {
+    e.respondWith(fetch(req).catch(() => caches.match(req)));
     return;
   }
   // Cache-first for static assets

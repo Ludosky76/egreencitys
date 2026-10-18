@@ -24,11 +24,12 @@
     var navLinks = nav.querySelector('.nav-links');
 
     // Bouton "Boutique" toujours accessible dans la barre du haut
-    // (toutes les pages sauf la boutique elle-meme)
-    if (!/boutique-wallbox\.html/i.test(location.pathname)) {
+    // Mene a la page d'entree des deux univers (bornes / quincaillerie).
+    // (toutes les pages sauf les pages boutique elles-memes)
+    if (!/boutique(-wallbox)?\.html/i.test(location.pathname)) {
       var shop = document.createElement('a');
       shop.className = 'egc-shop-btn' + (navLinks ? '' : ' egc-shop-btn--always');
-      shop.href = '/pages/boutique-wallbox.html';
+      shop.href = '/pages/boutique.html';
       shop.innerHTML = '🛒 Boutique';
       var shopHost = nav.querySelector('.ltopbar-inner') || nav.querySelector('.topbar-inner') || nav;
       var backLink = shopHost.querySelector('.lback') || shopHost.querySelector('.back-btn');
@@ -76,11 +77,23 @@
     var panel = document.createElement('div');
     panel.className = 'egc-mnav-panel';
 
-    var c = window.EGCCustomer ? window.EGCCustomer.current() : null;
+    // Section « compte » du panneau mobile : elle mene TOUJOURS a l espace
+    // client des bornes de recharge (/pages/compte.html, /pages/suivi.html).
+    // Certaines pages proposent deja, dans .nav-links, les liens d un AUTRE
+    // espace client — la page quincaillerie donne compte, suivi et devis
+    // outillage. Ces liens sont recopies plus haut dans le panneau : y ajouter
+    // la section compte produirait un second bloc « compte » menant, lui, aux
+    // bornes. Ces pages posent donc data-egc-mnav-compte="non" sur <body>.
+    // Les autres pages du site ne portent pas l attribut : rien ne change.
+    var avecCompte = document.body.getAttribute('data-egc-mnav-compte') !== 'non';
+
+    var c = avecCompte && window.EGCCustomer ? window.EGCCustomer.current() : null;
     var loggedIn = !!(c && c.sessionActive);
 
     var accountHtml;
-    if (loggedIn) {
+    if (!avecCompte) {
+      accountHtml = '';
+    } else if (loggedIn) {
       accountHtml = ''
         + '<div class="egc-mnav-user">'
         +   '<div class="egc-mnav-avatar">' + initials(c) + '</div>'
@@ -105,7 +118,7 @@
       +   '<button type="button" class="egc-mnav-close" aria-label="Fermer">×</button>'
       + '</div>'
       + '<div class="egc-mnav-links">' + linksHtml + '</div>'
-      + '<div class="egc-mnav-account">' + accountHtml + '</div>';
+      + (accountHtml ? '<div class="egc-mnav-account">' + accountHtml + '</div>' : '');
 
     document.body.appendChild(overlay);
     document.body.appendChild(panel);

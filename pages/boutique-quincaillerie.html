@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quincaillerie Pro — 2 200+ références livrées en Guyane | EGREENCITY'S</title>
+  <meta name="description" content="EGREENCITY'S — PRO QUINCAILLERIE : outillage et quincaillerie professionnels livrés en Guyane. Prix tout compris : octroi de mer et transport inclus, paiement par carte.">
+  <meta name="robots" content="index, follow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://media.screwfix.fr https://*.google-analytics.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.googletagmanager.com; connect-src 'self' https://formsubmit.co https://*.google-analytics.com https://www.google-analytics.com https://*.googletagmanager.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="canonical" href="https://egreencitys.com/pages/boutique-quincaillerie.html">
+  <link rel="icon" type="image/png" href="/logo.png">
+  <meta name="theme-color" content="#0a4800">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Quincaillerie Pro — 2 200+ références livrées en Guyane | EGREENCITY'S">
+  <meta property="og:description" content="Outillage professionnel livré en Guyane, prix tout compris : octroi de mer et transport inclus.">
+  <meta property="og:url" content="https://egreencitys.com/pages/boutique-quincaillerie.html">
+  <meta property="og:image" content="https://egreencitys.com/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--green:#33CC00;--green-dark:#28a800;--green-deep:#0a4800;--white:#fff;--gray-bg:#f7f9f6;--text:#222;--muted:#5d6b58;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Poppins',system-ui,sans-serif;color:var(--text);background:var(--gray-bg);line-height:1.6;}
+    a{color:var(--green-deep);text-decoration:none;}
+
+    .ltopbar{background:linear-gradient(135deg,var(--green-deep),var(--green));color:#fff;padding:.9rem 0;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.12);}
+    .ltopbar-inner{max-width:1280px;margin:0 auto;padding:0 1rem;display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap;}
+    .lbrand{display:flex;align-items:center;gap:.65rem;color:#fff;}
+    .lbrand img{width:42px;height:42px;object-fit:contain;background:#fff;border-radius:8px;padding:4px;}
+    .lbrand-name{font-weight:800;font-size:1.02rem;line-height:1.15;}
+    .lbrand-tag{font-size:.68rem;opacity:.92;display:block;font-weight:500;}
+    .ltop-actions{display:flex;align-items:center;gap:.6rem;}
+    .lback{background:#fff;color:var(--green-deep);padding:.5rem 1rem;border-radius:50px;font-weight:700;font-size:.8rem;}
+    .cart-pill{position:relative;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.4);color:#fff;padding:.5rem 1rem;border-radius:50px;font-weight:700;font-size:.8rem;cursor:pointer;}
+    #q-pastille{position:absolute;top:-7px;right:-7px;background:#ff5722;color:#fff;font-size:.68rem;min-width:19px;height:19px;border-radius:10px;display:none;align-items:center;justify-content:center;padding:0 5px;}
+
+    .q-entete{max-width:1280px;margin:1.4rem auto .4rem;padding:0 1rem;}
+    .q-entete h1{font-size:clamp(1.25rem,3vw,1.7rem);font-weight:800;color:var(--green-deep);}
+    .q-entete p{font-size:.85rem;color:var(--muted);max-width:70ch;}
+    #q-stock-maj{display:block;font-size:.74rem;color:var(--muted);margin-top:.25rem;}
+
+    .q-filtres{max-width:1280px;margin:.8rem auto;padding: .8rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;position:sticky;top:64px;z-index:40;background:var(--gray-bg);}
+    .q-filtres input[type=search],.q-filtres select{padding:.6rem .9rem;border:1.5px solid #d5e2cd;border-radius:10px;font:inherit;font-size:.85rem;background:#fff;}
+    .q-filtres input[type=search]{flex:1;min-width:200px;}
+    .q-filtres label{font-size:.8rem;display:flex;align-items:center;gap:.35rem;color:var(--muted);font-weight:600;}
+    #q-compte{font-size:.78rem;color:var(--muted);margin-left:auto;}
+
+    #q-grille{max-width:1280px;margin:0 auto;padding:0 1rem 1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.9rem;}
+    .q-card{background:#fff;border:1px solid #e3ebdc;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:.18s;}
+    .q-card:hover{box-shadow:0 10px 26px rgba(10,72,0,.12);transform:translateY(-2px);}
+    .q-img{height:150px;display:flex;align-items:center;justify-content:center;background:#fff;padding:.7rem;}
+    .q-img img{max-height:100%;max-width:100%;object-fit:contain;}
+    .q-noimg img{display:none;}
+    .q-noimg::after{content:"🔧";font-size:2.2rem;opacity:.35;}
+    .q-body{padding: .75rem .85rem 1rem;display:flex;flex-direction:column;gap:.3rem;flex:1;}
+    .q-marque{font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+    .q-nom{font-size:.83rem;font-weight:600;line-height:1.35;min-height:2.6em;}
+    .qs{font-size:.68rem;font-weight:700;padding:.14rem .55rem;border-radius:50px;width:max-content;}
+    .qs-ok{background:#e4f6db;color:#17631a;}
+    .qs-faible{background:#fff3d6;color:#8a6100;}
+    .qs-cmd{background:#eef1f4;color:#49586a;}
+    .qs-off{background:#fdeaea;color:#a33;}
+    .q-prix{font-size:1.14rem;font-weight:800;color:var(--green-deep);margin-top:.15rem;}
+    .q-prix-note{font-size:.64rem;font-weight:600;color:var(--muted);margin-left:.35rem;}
+    .q-poids{font-size:.7rem;color:var(--muted);}
+    .q-actions{margin-top:auto;display:flex;flex-direction:column;gap:.4rem;padding-top:.5rem;}
+    .q-add{background:var(--green-deep);color:#fff;border:none;border-radius:10px;padding:.55rem;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;}
+    .q-add:hover{background:#063200;}
+    .q-pay{background:#635BFF;color:#fff;border:none;border-radius:10px;padding:.5rem;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;}
+    .q-pay-sub{display:block;font-size:.62rem;font-weight:500;opacity:.85;}
+    .q-verif{opacity:.6;cursor:wait;}
+    .q-vide{grid-column:1/-1;text-align:center;color:var(--muted);padding:2.5rem 1rem;font-size:.9rem;}
+    #q-plus{display:block;margin:0 auto 2rem;background:#fff;border:2px solid var(--green-deep);color:var(--green-deep);border-radius:50px;padding:.65rem 1.8rem;font:inherit;font-weight:700;cursor:pointer;}
+
+    /* tiroir panier */
+    #q-tiroir{position:fixed;inset:0 0 0 auto;width:min(430px,100%);background:#fff;z-index:2000;box-shadow:-12px 0 38px rgba(0,0,0,.22);transform:translateX(105%);transition:.28s;display:flex;flex-direction:column;}
+    #q-tiroir.ouvert{transform:none;}
+    .q-tiroir-tete{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.1rem;border-bottom:1px solid #e8eee3;}
+    .q-tiroir-tete h2{font-size:1rem;color:var(--green-deep);}
+    #q-fermer-panier{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--muted);}
+    #q-tiroir-corps{flex:1;overflow:auto;padding:1rem 1.1rem;}
+    .q-ligne{display:flex;gap:.6rem;align-items:center;padding:.5rem 0;border-bottom:1px solid #f0f3ec;}
+    .q-ligne img{width:46px;height:46px;object-fit:contain;}
+    .q-ligne-infos{flex:1;}
+    .q-ligne-nom{font-size:.77rem;font-weight:600;line-height:1.3;}
+    .q-ligne-prix{font-size:.76rem;color:var(--muted);margin-top:.15rem;}
+    .q-ligne-prix button{width:22px;height:22px;border:1px solid #cfdac6;background:#fff;border-radius:6px;cursor:pointer;font-weight:700;}
+    .q-suppr{background:none;border:none;font-size:1.1rem;color:#b55;cursor:pointer;}
+    #q-tiroir-pied{border-top:2px solid #e8eee3;padding:.9rem 1.1rem 1.1rem;font-size:.82rem;}
+    .q-total-ligne{display:flex;justify-content:space-between;margin:.15rem 0;color:var(--muted);}
+    .q-total-ligne.total{font-weight:800;color:var(--green-deep);font-size:1rem;margin:.4rem 0 .7rem;}
+    #q-payer-cb{width:100%;background:#635BFF;color:#fff;border:none;border-radius:10px;padding:.7rem;font:inherit;font-weight:700;cursor:pointer;margin-bottom:.5rem;}
+    #q-cb-indice{font-size:.7rem;color:var(--muted);margin-bottom:.5rem;}
+    #q-form input{width:100%;padding:.55rem .8rem;border:1.5px solid #d5e2cd;border-radius:10px;font:inherit;font-size:.82rem;margin-bottom:.45rem;}
+    #q-envoyer{width:100%;background:var(--green-deep);color:#fff;border:none;border-radius:10px;padding:.7rem;font:inherit;font-weight:700;cursor:pointer;}
+    .q-note-forfait{font-size:.68rem;color:var(--muted);margin-top:.5rem;}
+    .q-merci{background:#e4f6db;border-radius:10px;padding: .9rem;font-size:.82rem;color:#17631a;}
+
+    footer{background:var(--green-deep);color:#fff;padding:1.6rem 1rem;text-align:center;font-size:.78rem;margin-top:2rem;}
+    footer a{color:#9cf070;}
+    .q-mentions{max-width:1280px;margin:0 auto 1rem;padding:0 1rem;font-size:.7rem;color:var(--muted);}
+  </style>
+  <link rel="stylesheet" href="/assets/css/refonte.css?v=4">
+</head>
+<body data-egc-mnav-compte="non">
+  <header class="ltopbar">
+    <div class="ltopbar-inner">
+      <a href="/" class="lbrand">
+        <img src="/logo.png" alt="EGREENCITY'S">
+        <div>
+          <span class="lbrand-name">EGREENCITY'S — PRO QUINCAILLERIE</span>
+          <span class="lbrand-tag">Outillage &amp; quincaillerie livrés en Guyane</span>
+        </div>
+      </a>
+      <div class="ltop-actions">
+        <button type="button" class="cart-pill" id="q-ouvrir-panier">🛒 Panier<span id="q-pastille">0</span></button>
+        <a href="/pages/boutique.html" class="lback">← Boutiques</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="q-entete">
+    <h1>2 200+ références professionnelles, prix tout compris</h1>
+    <p>Chaque prix affiché comprend le produit, l'octroi de mer et le transport jusqu'en Guyane calculé au poids réel.
+       Un forfait d'expédition unique de 21,12&nbsp;€ s'ajoute une fois par commande.</p>
+    <span id="q-stock-maj"></span>
+  </div>
+
+  <div class="q-filtres">
+    <input type="search" id="q-recherche" placeholder="Rechercher : perforateur, Fluke, visserie…" aria-label="Rechercher un article">
+    <select id="q-cat" aria-label="Catégorie"><option value="">Toutes les catégories</option></select>
+    <select id="q-tri" aria-label="Tri">
+      <option value="pertinence">Tri : catalogue</option>
+      <option value="prix-asc">Prix croissant</option>
+      <option value="prix-desc">Prix décroissant</option>
+    </select>
+    <label><input type="checkbox" id="q-dispo"> En stock uniquement</label>
+    <span id="q-compte"></span>
+  </div>
+
+  <div id="q-grille"><p class="q-vide">Chargement du catalogue…</p></div>
+  <button type="button" id="q-plus">Afficher plus d'articles</button>
+
+  <p class="q-mentions">* Prix tout compris : article + octroi de mer (TGOM) + transport métropole → Guyane au poids réel. Forfait d'expédition 21,12&nbsp;€ par commande, inclus dans le montant des paiements par carte. Sans TVA — art.&nbsp;294 du CGI. Les paiements par carte ne sont proposés que sur les articles en stock chez notre fournisseur à l'instant de la commande ; toute commande passée par formulaire est vérifiée article par article avant encaissement. Délais indicatifs : préparation fournisseur puis acheminement maritime/aérien vers la Guyane.</p>
+
+  <aside id="q-tiroir" aria-label="Panier">
+    <div class="q-tiroir-tete"><h2>🛒 Votre panier</h2><button type="button" id="q-fermer-panier" aria-label="Fermer">×</button></div>
+    <div id="q-tiroir-corps"></div>
+    <div id="q-tiroir-pied">
+      <div class="q-total-ligne"><span>Articles</span><span id="q-total-articles">—</span></div>
+      <div class="q-total-ligne"><span>Forfait d'expédition (unique)</span><span id="q-total-forfait">—</span></div>
+      <div class="q-total-ligne total"><span>Total tout compris</span><span id="q-total">—</span></div>
+      <button type="button" id="q-payer-cb">💳 Payer par carte — vérification du stock avant paiement</button>
+      <p id="q-cb-indice">Le paiement par carte est disponible pour un article seul, en stock. Pour plusieurs articles : envoyez la commande, nous vérifions chaque référence chez le fournisseur et vous adressons le règlement — aucun encaissement avant validation.</p>
+      <div id="q-form-zone">
+        <form id="q-form">
+          <input type="email" id="q-email" placeholder="Votre email *" required>
+          <input type="tel" id="q-tel" placeholder="Téléphone (WhatsApp)">
+          <button type="submit" id="q-envoyer">Envoyer ma commande</button>
+        </form>
+      </div>
+      <p class="q-note-forfait">Livraison en Guyane incluse dans les prix. Retrait possible à Macouria sur rendez-vous.</p>
+    </div>
+  </aside>
+
+  <footer>
+    <p>© 2026 EGREENCITY'S — SAS · RCS Cayenne 878 682 954 · 97355 MACOURIA, Guyane française</p>
+    <p style="margin-top:.4rem;"><a href="/pages/legal/mentions-legales.html">Mentions légales</a> · <a href="/pages/legal/cgv.html">CGV</a> · <a href="/pages/boutique-wallbox.html">Bornes de recharge</a></p>
+  </footer>
+
+  <script src="/assets/js/site-config.js?v=2" defer></script>
+  <script src="/assets/js/quincaillerie-shop.js?v=1" defer></script>
+  <script src="/assets/js/mobile-nav.js?v=7" defer></script>
+  <script src="/assets/js/analytics.js?v=2" defer></script>
+  <script src="/assets/js/consent.js?v=1" defer></script>
+</body>
+</html>

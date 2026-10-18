@@ -60,7 +60,7 @@
       +   '<a href="/pages/compte.html" role="menuitem">👤 Mon compte</a>'
       +   '<a href="/pages/compte.html#commandes" role="menuitem">📦 Mes commandes</a>'
       +   '<a href="/pages/suivi.html" role="menuitem">🔍 Suivre une commande</a>'
-      +   '<a href="/pages/boutique-wallbox.html" role="menuitem">🛒 Boutique</a>'
+      +   '<a href="/pages/boutique.html" role="menuitem">🛒 Boutique</a>'
       +   '<button type="button" class="egc-logout" role="menuitem">🚪 Se déconnecter</button>'
       + '</div>';
 

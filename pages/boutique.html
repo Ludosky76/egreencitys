@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boutique EGREENCITY'S — Bornes de recharge & Quincaillerie en Guyane</title>
+  <meta name="description" content="Les deux boutiques en ligne EGREENCITY'S : bornes de recharge pour véhicules électriques (vente et installation) et quincaillerie & outillage livrés en Guyane. Choisissez votre univers.">
+  <meta name="author" content="EGREENCITY'S SAS">
+  <meta name="robots" content="index, follow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.google-analytics.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.googletagmanager.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://egreencitys-93e0b.firebaseapp.com https://*.google-analytics.com https://www.google-analytics.com https://*.googletagmanager.com; frame-src https://egreencitys-93e0b.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <link rel="canonical" href="https://egreencitys.com/pages/boutique.html">
+  <meta name="geo.region" content="FR-GF">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EGREENCITY'S">
+  <meta property="og:title" content="Boutique EGREENCITY'S — Bornes de recharge & Quincaillerie">
+  <meta property="og:description" content="Deux boutiques, un seul EGREENCITY'S : bornes de recharge pour véhicules électriques, et quincaillerie & outillage livrés en Guyane.">
+  <meta property="og:url" content="https://egreencitys.com/pages/boutique.html">
+  <meta property="og:image" content="https://egreencitys.com/logo.png">
+  <meta property="og:locale" content="fr_FR">
+
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4800">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/refonte.css?v=4">
+
+  <!-- Schema.org : fil d'Ariane -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Accueil","item":"https://egreencitys.com/"},
+      {"@type":"ListItem","position":2,"name":"Boutique","item":"https://egreencitys.com/pages/boutique.html"}
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      --green:#33CC00; --green-dark:#28a800; --green-deep:#0a4800;
+      --blue:#2B4DB5; --blue-deep:#16296b; --white:#fff; --off:#f4fff0;
+      --dark:#081a00; --text:#1a3a00; --muted:#4a6a40;
+      --shadow:rgba(0,80,0,.12);
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Poppins',system-ui,sans-serif;color:var(--text);background:#fff;overflow-x:hidden;}
+    a{text-decoration:none;}
+
+    /* NAV */
+    nav{
+      position:fixed;top:0;width:100%;z-index:1000;
+      padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;
+      background:rgba(255,255,255,.95);backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(51,204,0,.12);
+      transition:padding .3s,box-shadow .3s;
+    }
+    nav.scrolled{padding:.6rem 2.5rem;box-shadow:0 2px 24px var(--shadow);}
+    .nav-logo{display:flex;align-items:center;}
+    .nav-logo img{height:42px;}
+    .nav-links{display:flex;gap:1.5rem;list-style:none;align-items:center;}
+    .nav-links a{color:var(--text);font-size:.82rem;font-weight:500;transition:color .2s;}
+    .nav-links a:hover{color:var(--green);}
+    .btn-nav{background:var(--green);color:#fff!important;padding:.5rem 1.3rem;border-radius:50px;font-weight:700!important;}
+
+    /* BREADCRUMB */
+    .breadcrumb{padding:5.6rem 2.5rem .6rem;font-size:.8rem;color:var(--muted);background:#fff;}
+    .breadcrumb a{color:var(--green-deep);}
+    .breadcrumb a:hover{color:var(--green);text-decoration:underline;}
+
+    /* REPLI SANS JAVASCRIPT (voir commentaire du bloc #acces-boutique) */
+    .acces-repli{display:none;}
+    .acces-repli:target{
+      display:block;max-width:1080px;margin:.4rem auto 1rem;
+      padding:1.2rem 1.5rem;background:#fff6e8;
+      border:1px solid #e8bd7a;border-left:4px solid #d98a1a;border-radius:12px;
+      color:#5a3a00;font-size:.88rem;line-height:1.65;scroll-margin-top:6rem;
+    }
+    .acces-repli h2{font-size:1.05rem;font-weight:800;color:#7a4b00;margin-bottom:.5rem;}
+    .acces-repli p + p{margin-top:.5rem;}
+    .acces-repli a{color:#8a5200;font-weight:700;text-decoration:underline;}
+    /* Adresse de secours : lisible et recopiable a la main si rien ne s execute */
+    .acces-repli .acces-url{font-size:.95rem;}
+    .acces-repli .acces-url a{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all;}
+
+    /* HERO */
+    .hero{
+      padding:2.5rem 2.5rem 3.5rem;
+      background:linear-gradient(140deg,#041000 0%,#0b3300 45%,#0a2800 100%);
+      color:#fff;text-align:center;position:relative;overflow:hidden;
+    }
+    .hero::before{
+      content:'';position:absolute;inset:0;
+      background-image:radial-gradient(circle at 30% 70%, rgba(51,204,0,.08) 0%, transparent 50%),
+                       radial-gradient(circle at 70% 30%, rgba(43,77,181,.1) 0%, transparent 50%);
+    }
+    .hero > *{position:relative;z-index:2;}
+    .hero-badge{
+      display:inline-flex;align-items:center;gap:.5rem;
+      background:rgba(51,204,0,.15);border:1px solid rgba(51,204,0,.35);
+      color:var(--green);padding:.4rem 1.1rem;border-radius:50px;
+      font-size:.72rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+      margin-bottom:1.4rem;backdrop-filter:blur(10px);
+    }
+    .dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:blink 1.4s ease-in-out infinite;}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+    .hero h1{font-size:clamp(1.9rem,4vw,3.1rem);font-weight:800;line-height:1.12;margin-bottom:1rem;max-width:900px;margin-inline:auto;letter-spacing:-.02em;}
+    .hero h1 em{color:var(--green);font-style:normal;}
+    .hero-sub{font-size:1.02rem;color:rgba(255,255,255,.78);line-height:1.6;max-width:720px;margin:0 auto;}
+
+    /* CHOIX DES DEUX UNIVERS */
+    .univers{padding:3.5rem 2.5rem 1rem;background:#fff;}
+    .univers-grid{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:2rem;}
+
+    .uni-card{
+      display:flex;flex-direction:column;
+      border:2px solid #e3ecdb;border-radius:22px;overflow:hidden;background:#fff;
+      box-shadow:0 8px 30px rgba(0,60,0,.06);
+      transition:transform .25s,box-shadow .25s,border-color .25s;
+    }
+    .uni-card:hover{transform:translateY(-6px);box-shadow:0 18px 44px rgba(0,60,0,.14);}
+    .uni-card--bornes:hover{border-color:var(--green);}
+    .uni-card--quincaillerie:hover{border-color:var(--blue);}
+
+    .uni-head{padding:2.1rem 1.9rem 1.5rem;color:#fff;position:relative;}
+    .uni-card--bornes .uni-head{background:linear-gradient(140deg,#0a4800 0%,#33CC00 130%);}
+    .uni-card--quincaillerie .uni-head{background:linear-gradient(140deg,#16296b 0%,#2B4DB5 130%);}
+    .uni-emo{font-size:2.5rem;line-height:1;display:block;margin-bottom:.8rem;}
+    .uni-head h2{font-size:1.4rem;font-weight:800;line-height:1.25;letter-spacing:-.01em;}
+    .uni-tag{
+      display:inline-block;margin-top:.9rem;padding:.3rem .8rem;border-radius:50px;
+      background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);
+      font-size:.68rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+    }
+
+    .uni-body{padding:1.6rem 1.9rem 2rem;display:flex;flex-direction:column;flex:1;}
+    .uni-pitch{font-size:.95rem;line-height:1.6;color:var(--text);margin-bottom:1.2rem;}
+    .uni-list{list-style:none;margin-bottom:1.6rem;}
+    .uni-list li{font-size:.86rem;color:var(--muted);line-height:1.5;padding:.34rem 0 .34rem 1.5rem;position:relative;}
+    .uni-list li::before{content:'✔';position:absolute;left:0;font-weight:700;}
+    .uni-card--bornes .uni-list li::before{color:var(--green);}
+    .uni-card--quincaillerie .uni-list li::before{color:var(--blue);}
+
+    .uni-actions{margin-top:auto;display:flex;flex-direction:column;gap:.6rem;}
+    .uni-btn{
+      display:block;text-align:center;padding:.95rem 1.2rem;border-radius:50px;
+      font-weight:700;font-size:.92rem;color:#fff!important;transition:transform .18s,filter .18s;
+    }
+    .uni-btn:hover{transform:translateY(-2px);filter:brightness(1.07);}
+    .uni-card--bornes .uni-btn{background:var(--green);box-shadow:0 6px 20px rgba(51,204,0,.35);}
+    .uni-card--quincaillerie .uni-btn{background:var(--blue);box-shadow:0 6px 20px rgba(43,77,181,.32);}
+    .uni-lien{text-align:center;font-size:.8rem;font-weight:600;}
+    .uni-card--bornes .uni-lien{color:var(--green-deep);}
+    .uni-card--quincaillerie .uni-lien{color:var(--blue-deep);}
+    .uni-lien:hover{text-decoration:underline;}
+
+    /* NOTE DE SÉPARATION */
+    .separation{max-width:1080px;margin:2.4rem auto 0;padding:1.2rem 1.5rem;
+      background:var(--off);border:1px solid rgba(51,204,0,.18);border-radius:14px;
+      font-size:.85rem;color:var(--muted);line-height:1.6;text-align:center;}
+    .separation strong{color:var(--green-deep);}
+
+    /* RASSURANCE */
+    .reassure{padding:3rem 2.5rem 3.5rem;background:#fff;}
+    .reassure-grid{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;}
+    .re-item{background:var(--off);border-radius:14px;padding:1.3rem 1.2rem;text-align:center;border:1px solid rgba(51,204,0,.12);}
+    .re-emo{font-size:1.6rem;display:block;margin-bottom:.5rem;}
+    .re-t{font-weight:700;color:var(--green-deep);font-size:.88rem;margin-bottom:.3rem;}
+    .re-d{font-size:.78rem;color:var(--muted);line-height:1.5;}
+
+    /* FOOTER */
+    footer{background:#081a00;color:rgba(255,255,255,.72);padding:2.4rem 1.5rem;text-align:center;font-size:.85rem;line-height:1.8;}
+    footer a{color:#9cf070;}
+    footer a:hover{text-decoration:underline;}
+    footer .legal{font-size:.72rem;opacity:.6;margin-top:.6rem;}
+
+    @media(max-width:900px){
+      nav{padding:.8rem 1.2rem;}
+      .breadcrumb{padding:4.8rem 1.2rem .6rem;}
+      .hero{padding:2rem 1.2rem 2.6rem;}
+      .univers{padding:2.4rem 1.2rem .6rem;}
+      .univers-grid{grid-template-columns:1fr;gap:1.4rem;}
+      .reassure{padding:2.2rem 1.2rem 2.6rem;}
+      .reassure-grid{grid-template-columns:repeat(2,1fr);}
+    }
+    @media(max-width:520px){
+      .reassure-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo"><img src="/logo.png" alt="EGREENCITY'S"></a>
+  <ul class="nav-links">
+    <li><a href="/">Accueil</a></li>
+    <li><a href="/pages/produits.html">Produits</a></li>
+    <li><a href="/pages/boutique.html" class="btn-nav" style="box-shadow:0 4px 14px rgba(51,204,0,.45);">🛒 Boutique</a></li>
+    <li><a href="/pages/services.html">Services</a></li>
+    <!-- Page d'entrée des DEUX univers : ces trois liens mènent tous à l'espace
+         client et au formulaire de devis des BORNES de recharge. Le formulaire
+         /pages/devis.html est un devis d'installation IRVE, impossible à remplir
+         pour de l'outillage. Les libellés doivent donc le dire : l'espace client
+         et le devis outillage sont dans la boutique quincaillerie, et sont
+         accessibles depuis la carte « Quincaillerie & outillage » ci-dessous. -->
+    <li><a href="/pages/compte.html">👤 Mon compte bornes</a></li>
+    <li><a href="/pages/suivi.html">📦 Suivi commande bornes</a></li>
+    <li><a href="/pages/devis.html" class="btn-nav">Devis borne gratuit</a></li>
+  </ul>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="/">Accueil</a> / Boutique
+</div>
+
+<!--
+  REPLI SANS JAVASCRIPT — pourquoi une ancre et pas un lien vers une autre page.
+  L'adresse de la boutique quincaillerie ne doit exister qu'à UN seul endroit
+  (assets/js/site-config.js). Le href écrit en dur dans cette page n'est donc
+  qu'un repli, et il ne peut pas contenir cette adresse.
+  Avant : le repli pointait vers /pages/quincaillerie.html, dont le repli
+  pointait vers /pages/boutique.html — sans JavaScript, le visiteur tournait
+  entre les deux pages sans jamais atteindre la boutique.
+  Maintenant : le repli est cette ancre, sur la page même. Pas de boucle, pas de
+  duplication de l'adresse dans le reste de la page, et le visiteur reçoit une
+  explication honnête plus un moyen d'y aller. Le bloc est masqué tant qu'il
+  n'est pas visé (:target), ce qui couvre aussi le cas « JavaScript actif mais
+  site-config.js non chargé », que <noscript> ne couvrirait pas.
+
+  EXCEPTION ASSUMÉE : ce bloc-ci, et lui seul, écrit l'adresse de production en
+  clair (href + texte visible du lien ci-dessous). Un bloc de secours qui
+  n'indique pas où aller ne dépanne personne, et ce bloc s'affiche justement
+  quand site-config.js n'a PAS tourné, donc quand aucune réécriture n'est
+  possible. site-config.js réécrit quand même ce lien quand il tourne, grâce à
+  data-egc-quincaillerie (href) et data-egc-quincaillerie-texte (texte affiché) :
+  en recette locale l'adresse lue est donc bien localhost:3000. Si l'adresse de
+  production change, ce bloc fait partie des endroits à mettre à jour — la
+  procédure complète est rappelée en tête de assets/js/site-config.js.
+
+  CAUSE ANNONCÉE : ne pas écrire « JavaScript désactivé ». Ce n'est qu'une des
+  causes possibles ; le bloc s'affiche dès que site-config.js n'a pas été
+  exécuté (script bloqué par une extension ou un réseau filtrant, fichier non
+  chargé, JavaScript coupé). La formulation retenue couvre les quatre cas.
+-->
+<section id="acces-boutique" class="acces-repli" role="note" tabindex="-1">
+  <h2>Accéder à la boutique quincaillerie</h2>
+  <p>
+    La boutique quincaillerie se trouve à une adresse dédiée, que ce site compose
+    automatiquement au chargement. Cette fois, il n'a pas pu : le petit script chargé
+    de composer l'adresse n'a pas été exécuté — JavaScript désactivé, script bloqué par
+    une extension ou par un réseau filtrant, ou fichier non chargé. La boutique bornes
+    de recharge, elle, reste accessible <a href="/pages/boutique-wallbox.html">ici</a>.
+  </p>
+  <p class="acces-url">
+    Pour l'outillage, vous pouvez y aller directement :
+    <a href="/pages/boutique-quincaillerie.html"
+       data-egc-quincaillerie data-egc-quincaillerie-texte
+       rel="noopener">egreencitys.com/pages/boutique-quincaillerie.html</a>
+  </p>
+  <p>
+    Si ce lien ne répond pas non plus, écrivez-nous à
+    <a href="mailto:egreencitys@gmail.com">egreencitys@gmail.com</a> ou appelez le
+    <a href="tel:+33651141118">06 51 14 11 18</a> : nous pouvons enregistrer votre
+    commande avec vous.
+  </p>
+  <p>
+    Vous cherchiez les <strong>conditions générales de vente de l'outillage</strong> ? Elles sont publiées
+    dans la boutique quincaillerie elle-même. Demandez-les par le même contact, nous vous les envoyons.
+    Les <a href="/pages/legal/cgv.html">CGV publiées sur ce site</a> sont celles des bornes de recharge
+    et ne couvrent pas l'outillage.
+  </p>
+</section>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge"><span class="dot"></span> Boutiques en ligne · Guyane</div>
+  <h1>Deux boutiques,<br>un seul <em>EGREENCITY'S</em></h1>
+  <p class="hero-sub">
+    Nos deux univers sont totalement séparés : d'un côté la recharge de véhicules électriques,
+    de l'autre la quincaillerie et l'outillage professionnel. Choisissez celui qui vous intéresse.
+  </p>
+</section>
+
+<!-- LES DEUX UNIVERS -->
+<section class="univers">
+  <div class="univers-grid">
+
+    <!-- Univers 1 : bornes de recharge -->
+    <article class="uni-card uni-card--bornes">
+      <div class="uni-head">
+        <span class="uni-emo">⚡</span>
+        <h2>Bornes de recharge<br>&amp; installation</h2>
+        <span class="uni-tag">Mobilité électrique</span>
+      </div>
+      <div class="uni-body">
+        <p class="uni-pitch">
+          Toute la gamme de bornes de recharge pour véhicules électriques — de la WallBox domestique
+          à la borne 22 kW pour entreprise — avec options à la carte, pose IRVE et maintenance.
+        </p>
+        <ul class="uni-list">
+          <li>Gamme e-WallBox et e-Smart 7 &amp; 22 kW</li>
+          <li>Prix tout compris : octroi de mer et livraison en Guyane inclus</li>
+          <li>Paiement sécurisé, possibilité de 3× sans frais</li>
+          <li>Installation IRVE et contrat de maintenance en option</li>
+        </ul>
+        <div class="uni-actions">
+          <a href="/pages/boutique-wallbox.html" class="uni-btn">Entrer dans la boutique bornes →</a>
+          <a href="/pages/produits.html" class="uni-lien">Voir d'abord la gamme et les puissances</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Univers 2 : quincaillerie & outillage -->
+    <article class="uni-card uni-card--quincaillerie">
+      <div class="uni-head">
+        <span class="uni-emo">🧰</span>
+        <h2>Quincaillerie &amp; outillage<br>livré en Guyane</h2>
+        <span class="uni-tag">Nouveau</span>
+      </div>
+      <div class="uni-body">
+        <p class="uni-pitch">
+          Plus de 2 200 références d'outillage, d'électricité, de plomberie et de quincaillerie
+          de chantier, commandées en ligne et acheminées jusqu'en Guyane.
+        </p>
+        <ul class="uni-list">
+          <li>Électroportatif, électricité, plomberie, outillage à main</li>
+          <li>Octroi de mer et transport d'un colis au poids inclus dans chaque prix</li>
+          <li>Un seul colis facturé par commande : la différence vous est rendue en remise groupage</li>
+          <li>Disponibilité revérifiée au moment de la commande, et si elle ne peut pas l'être, vous êtes prévenu avant l'expédition</li>
+          <li>Commande en ligne, règlement confirmé avec notre équipe</li>
+          <li>Devis sur mesure au-delà de 30 kg ou pour les pièces hors colis</li>
+        </ul>
+        <div class="uni-actions">
+          <!-- href reecrit par assets/js/site-config.js (source unique de l'adresse) -->
+          <a href="#acces-boutique" data-egc-quincaillerie class="uni-btn" rel="noopener">Entrer dans la boutique quincaillerie →</a>
+          <a href="/pages/quincaillerie.html" class="uni-lien">En savoir plus sur cette boutique</a>
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+  <p class="separation">
+    <strong>Deux univers, deux paniers.</strong> Les bornes de recharge et la quincaillerie
+    se commandent séparément : vous ne trouverez pas d'outillage dans la boutique bornes,
+    ni de borne de recharge dans la boutique quincaillerie.
+  </p>
+</section>
+
+<!-- RASSURANCE -->
+<section class="reassure">
+  <div class="reassure-grid">
+    <div class="re-item"><span class="re-emo">🇬🇫</span><div class="re-t">Livré en Guyane</div><div class="re-d">Acheminement organisé depuis la métropole, suivi de commande en ligne.</div></div>
+    <div class="re-item"><span class="re-emo">💶</span><div class="re-t">Octroi de mer inclus</div><div class="re-d">Octroi de mer et transport intégrés aux prix affichés. Côté quincaillerie, un seul colis est facturé par commande : la différence vous est rendue en remise groupage.</div></div>
+    <div class="re-item"><span class="re-emo">🔒</span><div class="re-t">Règlement</div><div class="re-d">Bornes de recharge : paiement par carte en ligne, aucune donnée bancaire conservée par nos soins. Quincaillerie : commande en ligne, règlement confirmé avec notre équipe.</div></div>
+    <div class="re-item"><span class="re-emo">📞</span><div class="re-t">Une seule équipe</div><div class="re-d">Même interlocuteur pour les deux boutiques : 06 51 14 11 18.</div></div>
+  </div>
+</section>
+
+<footer>
+  <p><strong style="color:#fff;">EGREENCITY'S</strong> — Mobilité verte et quincaillerie en Guyane</p>
+  <p>1 rue Anangosi, Résidence La Rougerie — 97355 MACOURIA — Guyane française</p>
+  <p>Tél : +33 6 51 14 11 18 | <a href="mailto:egreencitys@gmail.com">egreencitys@gmail.com</a></p>
+  <!-- DEUX JEUX DE CGV, UN PAR BOUTIQUE.
+       - Bornes de recharge : pages/legal/cgv.html, sur ce site. Le lien reste
+         libelle « bornes de recharge » car ces CGV limitent leur champ, des l
+         article 1, a la fourniture, l installation et la maintenance IRVE.
+       - Quincaillerie : page /cgv DANS la boutique quincaillerie. Le lien passe
+         par le mecanisme d adresse unique (assets/js/site-config.js) : href de
+         repli #acces-boutique, adresse reelle composee au chargement. -->
+  <p>
+    <a href="/pages/boutique-wallbox.html">Boutique bornes</a> ·
+    <a href="/pages/quincaillerie.html">Quincaillerie &amp; outillage</a> ·
+    <a href="/pages/legal/mentions-legales.html">Mentions légales</a> ·
+    <a href="/pages/legal/cgv.html">CGV bornes de recharge</a> ·
+    <a href="#acces-boutique" data-egc-quincaillerie="/cgv" rel="noopener">CGV quincaillerie</a> ·
+    <!-- /pages/faq.html ne traite que des bornes de recharge. Les questions
+         outillage sont dans la FAQ de la page Quincaillerie & outillage. -->
+    <a href="/pages/faq.html">FAQ bornes de recharge</a> ·
+    <a href="/pages/quincaillerie.html#faq-quincaillerie">FAQ outillage</a>
+  </p>
+  <p class="legal">
+    Chaque boutique a ses propres conditions générales de vente : celles des bornes de recharge
+    sont publiées sur ce site, celles de l'outillage dans la boutique quincaillerie. Les unes ne
+    s'appliquent pas aux commandes de l'autre.
+  </p>
+  <p class="legal">SAS au capital de 250 € — RCS Cayenne 878 682 954</p>
+</footer>
+
+<!-- PWA Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function(e){console.warn('SW failed',e);});
+    });
+  }
+</script>
+<script src="/assets/js/site-config.js?v=2"></script>
+<script src="/assets/js/refonte.js?v=2" defer></script>
+  <script src="/assets/js/customer-account.js?v=2"></script>
+  <script src="/assets/js/firebase-config.js?v=2"></script>
+  <script src="/assets/js/firebase-auth.js?v=1"></script>
+  <script src="/assets/js/session-nav.js?v=2" defer></script>
+  <script src="/assets/js/mobile-nav.js?v=7" defer></script>
+  <script src="/assets/js/analytics.js?v=2" defer></script>
+  <script src="/assets/js/consent.js?v=1" defer></script>
+</body>
+</html>
