@@ -71,10 +71,10 @@
     var dispo = statutDe(a.ref) === 'disponible';
     var lien = etat.liens[a.ref];
     return '<article class="q-card" data-ref="' + esc(a.ref) + '">'
-      + '<div class="q-img"><img loading="lazy" src="' + esc(a.img) + '" alt="' + esc(a.nom) + '" onerror="this.parentNode.classList.add(\'q-noimg\')"></div>'
+      + '<div class="q-img" data-fiche="' + esc(a.ref) + '"><img loading="lazy" src="' + esc(a.img) + '" alt="' + esc(a.nom) + '" onerror="this.parentNode.classList.add(\'q-noimg\')"></div>'
       + '<div class="q-body">'
       + (a.marque ? '<div class="q-marque">' + esc(a.marque) + '</div>' : '')
-      + '<h3 class="q-nom">' + esc(a.nom) + '</h3>'
+      + '<h3 class="q-nom" data-fiche="' + esc(a.ref) + '">' + esc(a.nom) + '</h3>'
       + badgeStock(a.ref)
       + '<div class="q-prix">' + eur(a.prix) + '<span class="q-prix-note">tout compris*</span></div>'
       + (a.poids ? '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · livré sous ~' + (a.delai + 14) + ' j</div>' : '')
@@ -150,6 +150,73 @@
     $('q-cb-indice').style.display = ok ? 'none' : '';
   }
 
+  /* ---------------- fiche produit (modal) ---------------- */
+  var fichesCache = {};
+  function chargerTranche(ref) {
+    var cle = ref.charAt(ref.length - 1).toUpperCase();
+    if (fichesCache[cle]) return Promise.resolve(fichesCache[cle]);
+    return fetch('/assets/data/fiches/f-' + encodeURIComponent(cle) + '.json')
+      .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (j) { fichesCache[cle] = j; return j; })
+      .catch(function () { return {}; });
+  }
+
+  function fermerFiche() {
+    var m = $('q-fiche');
+    if (m) m.classList.remove('ouvert');
+    if (location.hash.indexOf('#a=') === 0) {
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+  }
+
+  function ouvrirFiche(ref) {
+    var a = article(ref);
+    if (!a) return;
+    var m = $('q-fiche');
+    if (!m) {
+      m = document.createElement('div');
+      m.id = 'q-fiche';
+      m.innerHTML = '<div class="q-fiche-fond"></div><div class="q-fiche-boite" role="dialog" aria-modal="true"><button type="button" class="q-fiche-fermer" aria-label="Fermer">\u00d7</button><div class="q-fiche-corps"></div></div>';
+      document.body.appendChild(m);
+      m.querySelector('.q-fiche-fond').addEventListener('click', fermerFiche);
+      m.querySelector('.q-fiche-fermer').addEventListener('click', fermerFiche);
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fermerFiche(); });
+    }
+    var dispo = statutDe(ref) === 'disponible';
+    var lien = etat.liens[ref];
+    var corps = m.querySelector('.q-fiche-corps');
+    corps.innerHTML = ''
+      + '<div class="q-fiche-haut">'
+      +   '<div class="q-fiche-img"><img src="' + esc(a.img) + '" alt="' + esc(a.nom) + '"></div>'
+      +   '<div class="q-fiche-infos">'
+      +     (a.marque ? '<div class="q-marque">' + esc(a.marque) + '</div>' : '')
+      +     '<h2>' + esc(a.nom) + '</h2>'
+      +     '<div class="q-fiche-ref">R\u00e9f. ' + esc(ref) + (a.poids ? ' \u00b7 ' + a.poids.toLocaleString('fr-FR') + ' kg' : '') + '</div>'
+      +     badgeStock(ref)
+      +     '<div class="q-prix">' + eur(a.prix) + '<span class="q-prix-note">tout compris*</span></div>'
+      +     '<div class="q-poids">octroi de mer et transport inclus \u00b7 livraison sous ~' + (a.delai + 14) + ' jours</div>'
+      +     '<div class="q-fiche-boutons">'
+      +       '<button type="button" class="q-add" data-add="' + esc(ref) + '">Ajouter au panier</button>'
+      +       ((dispo && lien) ? '<button type="button" class="q-pay" data-pay="' + esc(ref) + '">\ud83d\udcb3 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">forfait exp\u00e9dition inclus</span></button>' : '')
+      +     '</div>'
+      +   '</div>'
+      + '</div>'
+      + '<div class="q-fiche-detail"><p class="q-fiche-attente">Chargement de la fiche\u2026</p></div>';
+    m.classList.add('ouvert');
+    history.replaceState(null, '', '#a=' + encodeURIComponent(ref));
+    chargerTranche(ref).then(function (tranche) {
+      var f = tranche[ref] || {};
+      var detail = m.querySelector('.q-fiche-detail');
+      var html = '';
+      if (f.d) html += '<h3>Description</h3><p>' + esc(f.d).replace(/\n+/g, '</p><p>') + '</p>';
+      if (f.c && f.c.length) {
+        html += '<h3>Caract\u00e9ristiques</h3><ul>'
+          + f.c.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
+      }
+      detail.innerHTML = html || '<p class="q-fiche-attente">Fiche d\u00e9taill\u00e9e indisponible pour cet article \u2014 contactez-nous pour toute question technique.</p>';
+    });
+  }
+
   /* ---------------- paiement sécurisé ---------------- */
   function verifierPuisPayer(ref) {
     var bouton = document.querySelector('[data-pay="' + ref + '"]') || $('q-payer-cb');
@@ -218,8 +285,9 @@
     $('q-form').addEventListener('submit', envoyerCommande);
     $('q-payer-cb').addEventListener('click', function () { verifierPuisPayer(etat.panier[0].ref); });
     document.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-add],[data-pay],[data-plus],[data-moins],[data-suppr]');
+      var t = e.target.closest('[data-add],[data-pay],[data-plus],[data-moins],[data-suppr],[data-fiche]');
       if (!t) return;
+      if (t.dataset.fiche) { ouvrirFiche(t.dataset.fiche); return; }
       if (t.dataset.add) ajouter(t.dataset.add);
       if (t.dataset.pay) verifierPuisPayer(t.dataset.pay);
       if (t.dataset.plus) { etat.panier.find(function (x) { return x.ref === t.dataset.plus; }).q += 1; sauver(); rendrePanier(); majPastille(); }
@@ -245,6 +313,10 @@
       var o = document.createElement('option'); o.value = c.slug; o.textContent = c.nom; sel.appendChild(o);
     });
     charger(); initEvenements(); rendre(); rendrePanier();
+    if (location.hash.indexOf('#a=') === 0) {
+      var refInitiale = decodeURIComponent(location.hash.slice(3));
+      if (article(refInitiale)) ouvrirFiche(refInitiale);
+    }
   }).catch(function (e) {
     $('q-grille').innerHTML = '<p class="q-vide">Le catalogue ne se charge pas. Rafraîchissez la page ou contactez-nous : egreencitys@gmail.com</p>';
   });

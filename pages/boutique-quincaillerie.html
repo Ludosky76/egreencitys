@@ -99,6 +99,29 @@
     .q-note-forfait{font-size:.68rem;color:var(--muted);margin-top:.5rem;}
     .q-merci{background:#e4f6db;border-radius:10px;padding: .9rem;font-size:.82rem;color:#17631a;}
 
+    /* fiche produit */
+    #q-fiche{position:fixed;inset:0;z-index:3000;display:none;}
+    #q-fiche.ouvert{display:block;}
+    .q-fiche-fond{position:absolute;inset:0;background:rgba(10,20,8,.55);}
+    .q-fiche-boite{position:absolute;inset:3rem auto auto 50%;transform:translateX(-50%);width:min(880px,94vw);max-height:calc(100vh - 5rem);overflow:auto;background:#fff;border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.35);}
+    .q-fiche-fermer{position:sticky;top:.5rem;float:right;margin:.5rem .7rem 0 0;width:34px;height:34px;border:none;border-radius:50%;background:#eef3ea;font-size:1.25rem;cursor:pointer;color:#333;z-index:2;}
+    .q-fiche-corps{padding:1.3rem 1.5rem 1.6rem;}
+    .q-fiche-haut{display:flex;gap:1.3rem;flex-wrap:wrap;}
+    .q-fiche-img{flex:0 0 280px;max-width:280px;display:flex;align-items:flex-start;justify-content:center;}
+    .q-fiche-img img{max-width:100%;max-height:300px;object-fit:contain;}
+    .q-fiche-infos{flex:1;min-width:250px;display:flex;flex-direction:column;gap:.4rem;}
+    .q-fiche-infos h2{font-size:1.1rem;line-height:1.35;color:var(--text);}
+    .q-fiche-ref{font-size:.75rem;color:var(--muted);}
+    .q-fiche-boutons{display:flex;flex-direction:column;gap:.45rem;margin-top:.6rem;max-width:300px;}
+    .q-fiche-detail{margin-top:1.2rem;border-top:1px solid #e8eee3;padding-top:1rem;}
+    .q-fiche-detail h3{font-size:.9rem;color:var(--green-deep);margin:.8rem 0 .4rem;}
+    .q-fiche-detail p{font-size:.84rem;margin-bottom:.5rem;}
+    .q-fiche-detail ul{padding-left:1.2rem;font-size:.82rem;}
+    .q-fiche-detail li{margin-bottom:.25rem;}
+    .q-fiche-attente{color:var(--muted);font-size:.82rem;}
+    @media(max-width:620px){.q-fiche-boite{inset:1rem auto auto 50%;max-height:calc(100vh - 2rem);}.q-fiche-img{flex-basis:100%;max-width:100%;}}
+    .q-img,.q-nom{cursor:pointer;}
+    .q-nom:hover{color:var(--green-deep);text-decoration:underline;}
     footer{background:var(--green-deep);color:#fff;padding:1.6rem 1rem;text-align:center;font-size:.78rem;margin-top:2rem;}
     footer a{color:#9cf070;}
     .q-mentions{max-width:1280px;margin:0 auto 1rem;padding:0 1rem;font-size:.7rem;color:var(--muted);}
@@ -172,7 +195,7 @@
   </footer>
 
   <script src="/assets/js/site-config.js?v=2" defer></script>
-  <script src="/assets/js/quincaillerie-shop.js?v=1" defer></script>
+  <script src="/assets/js/quincaillerie-shop.js?v=2" defer></script>
   <script src="/assets/js/mobile-nav.js?v=7" defer></script>
   <script src="/assets/js/analytics.js?v=2" defer></script>
   <script src="/assets/js/consent.js?v=1" defer></script>
