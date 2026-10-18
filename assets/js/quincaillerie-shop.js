@@ -53,6 +53,15 @@
     return '<span class="qs ' + l[1] + '">' + l[0] + '</span>';
   }
 
+  /* Délai annoncé : un article DISPONIBLE chez le fournisseur est livré sous
+     7 jours ouvrés ; sinon, délai indicatif (approvisionnement + acheminement). */
+  function delaiTexte(ref, a, long) {
+    if (statutDe(ref) === 'disponible') {
+      return long ? 'livraison sous 7 jours ouvrés' : 'livré sous 7 j ouvrés';
+    }
+    return long ? 'livraison sous ~' + (a.delai + 14) + ' jours' : 'livré sous ~' + (a.delai + 14) + ' j';
+  }
+
   /* ---------------- rendu ---------------- */
   function filtres() {
     var q = etat.recherche.toLowerCase();
@@ -77,7 +86,7 @@
       + '<h3 class="q-nom" data-fiche="' + esc(a.ref) + '">' + esc(a.nom) + '</h3>'
       + badgeStock(a.ref)
       + '<div class="q-prix">' + eur(a.prix) + '<span class="q-prix-note">tout compris*</span></div>'
-      + (a.poids ? '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · livré sous ~' + (a.delai + 14) + ' j</div>' : '')
+      + (a.poids ? '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · ' + delaiTexte(a.ref, a) + '</div>' : '')
       + '<div class="q-actions">'
       + '<button type="button" class="q-add" data-add="' + esc(a.ref) + '">Ajouter au panier</button>'
       + ((dispo && lien) ? '<button type="button" class="q-pay" data-pay="' + esc(a.ref) + '">💳 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">forfait expédition inclus</span></button>' : '')
@@ -194,7 +203,7 @@
       +     '<div class="q-fiche-ref">R\u00e9f. ' + esc(ref) + (a.poids ? ' \u00b7 ' + a.poids.toLocaleString('fr-FR') + ' kg' : '') + '</div>'
       +     badgeStock(ref)
       +     '<div class="q-prix">' + eur(a.prix) + '<span class="q-prix-note">tout compris*</span></div>'
-      +     '<div class="q-poids">octroi de mer et transport inclus \u00b7 livraison sous ~' + (a.delai + 14) + ' jours</div>'
+      +     '<div class="q-poids">octroi de mer et transport inclus \u00b7 ' + delaiTexte(ref, a, true) + '</div>'
       +     '<div class="q-fiche-boutons">'
       +       '<button type="button" class="q-add" data-add="' + esc(ref) + '">Ajouter au panier</button>'
       +       ((dispo && lien) ? '<button type="button" class="q-pay" data-pay="' + esc(ref) + '">\ud83d\udcb3 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">forfait exp\u00e9dition inclus</span></button>' : '')
