@@ -20,6 +20,8 @@
 
   var PAR_PAGE = 24;
   var CLE_PANIER = 'egc_quinc_panier';
+  /* Chaque produit a sa propre page web (fiche) : */
+  var URL_FICHE = '/pages/produit-quincaillerie.html?ref=';
 
   var etat = {
     catalogue: null, stock: {}, stockMaj: 0, liens: {},
@@ -79,16 +81,19 @@
   function carte(a) {
     var dispo = statutDe(a.ref) === 'disponible';
     var lien = etat.liens[a.ref];
+    var fiche = URL_FICHE + encodeURIComponent(a.ref);
     return '<article class="q-card" data-ref="' + esc(a.ref) + '">'
-      + '<div class="q-img" data-fiche="' + esc(a.ref) + '"><img loading="lazy" src="' + esc(a.img) + '" alt="' + esc(a.nom) + '" onerror="this.parentNode.classList.add(\'q-noimg\')"></div>'
+      + '<a class="q-lien q-img" href="' + fiche + '"><img loading="lazy" src="' + esc(a.img) + '" alt="' + esc(a.nom) + '" onerror="this.parentNode.classList.add(\'q-noimg\')"></a>'
       + '<div class="q-body">'
+      + '<div class="q-ref">Réf. ' + esc(a.ref) + '</div>'
       + (a.marque ? '<div class="q-marque">' + esc(a.marque) + '</div>' : '')
-      + '<h3 class="q-nom" data-fiche="' + esc(a.ref) + '">' + esc(a.nom) + '</h3>'
+      + '<a class="q-lien" href="' + fiche + '"><h3 class="q-nom">' + esc(a.nom) + '</h3></a>'
       + badgeStock(a.ref)
-      + '<div class="q-prix">' + eur(a.prix) + '<span class="q-prix-note">tout compris*</span></div>'
+      + '<div class="q-prix">' + eur(a.prix) + '<span class="q-ttc">TTC</span></div>'
+      + '<div class="q-inclus">Octroi &amp; livraison inclus*</div>'
       + (a.poids ? '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · ' + delaiTexte(a.ref, a) + '</div>' : '')
       + '<div class="q-actions">'
-      + '<button type="button" class="q-add" data-add="' + esc(a.ref) + '">Ajouter au panier</button>'
+      + '<button type="button" class="q-add" data-add="' + esc(a.ref) + '">🛒 Ajouter au panier</button>'
       + ((dispo && lien) ? '<button type="button" class="q-pay" data-pay="' + esc(a.ref) + '">💳 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">forfait expédition inclus</span></button>' : '')
       + '</div></div></article>';
   }
@@ -159,71 +164,54 @@
     $('q-cb-indice').style.display = ok ? 'none' : '';
   }
 
-  /* ---------------- fiche produit (modal) ---------------- */
-  var fichesCache = {};
-  function chargerTranche(ref) {
-    var cle = ref.charAt(ref.length - 1).toUpperCase();
-    if (fichesCache[cle]) return Promise.resolve(fichesCache[cle]);
-    return fetch('/assets/data/fiches/f-' + encodeURIComponent(cle) + '.json')
-      .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-      .then(function (j) { fichesCache[cle] = j; return j; })
-      .catch(function () { return {}; });
+  /* ---------------- rayons (chips + menu burger) ---------------- */
+  function choisirRayon(slug) {
+    etat.cat = slug;
+    etat.visibles = PAR_PAGE;
+    $('q-cat').value = slug;
+    rendre(); majRayons(); fermerMenu();
   }
 
-  function fermerFiche() {
-    var m = $('q-fiche');
-    if (m) m.classList.remove('ouvert');
-    if (location.hash.indexOf('#a=') === 0) {
-      history.replaceState(null, '', location.pathname + location.search);
-    }
-  }
-
-  function ouvrirFiche(ref) {
-    var a = article(ref);
-    if (!a) return;
-    var m = $('q-fiche');
-    if (!m) {
-      m = document.createElement('div');
-      m.id = 'q-fiche';
-      m.innerHTML = '<div class="q-fiche-fond"></div><div class="q-fiche-boite" role="dialog" aria-modal="true"><button type="button" class="q-fiche-fermer" aria-label="Fermer">\u00d7</button><div class="q-fiche-corps"></div></div>';
-      document.body.appendChild(m);
-      m.querySelector('.q-fiche-fond').addEventListener('click', fermerFiche);
-      m.querySelector('.q-fiche-fermer').addEventListener('click', fermerFiche);
-      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fermerFiche(); });
-    }
-    var dispo = statutDe(ref) === 'disponible';
-    var lien = etat.liens[ref];
-    var corps = m.querySelector('.q-fiche-corps');
-    corps.innerHTML = ''
-      + '<div class="q-fiche-haut">'
-      +   '<div class="q-fiche-img"><img src="' + esc(a.img) + '" alt="' + esc(a.nom) + '"></div>'
-      +   '<div class="q-fiche-infos">'
-      +     (a.marque ? '<div class="q-marque">' + esc(a.marque) + '</div>' : '')
-      +     '<h2>' + esc(a.nom) + '</h2>'
-      +     '<div class="q-fiche-ref">R\u00e9f. ' + esc(ref) + (a.poids ? ' \u00b7 ' + a.poids.toLocaleString('fr-FR') + ' kg' : '') + '</div>'
-      +     badgeStock(ref)
-      +     '<div class="q-prix">' + eur(a.prix) + '<span class="q-prix-note">tout compris*</span></div>'
-      +     '<div class="q-poids">octroi de mer et transport inclus \u00b7 ' + delaiTexte(ref, a, true) + '</div>'
-      +     '<div class="q-fiche-boutons">'
-      +       '<button type="button" class="q-add" data-add="' + esc(ref) + '">Ajouter au panier</button>'
-      +       ((dispo && lien) ? '<button type="button" class="q-pay" data-pay="' + esc(ref) + '">\ud83d\udcb3 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">forfait exp\u00e9dition inclus</span></button>' : '')
-      +     '</div>'
-      +   '</div>'
-      + '</div>'
-      + '<div class="q-fiche-detail"><p class="q-fiche-attente">Chargement de la fiche\u2026</p></div>';
-    m.classList.add('ouvert');
-    history.replaceState(null, '', '#a=' + encodeURIComponent(ref));
-    chargerTranche(ref).then(function (tranche) {
-      var f = tranche[ref] || {};
-      var detail = m.querySelector('.q-fiche-detail');
-      var html = '';
-      if (f.d) html += '<h3>Description</h3><p>' + esc(f.d).replace(/\n+/g, '</p><p>') + '</p>';
-      if (f.c && f.c.length) {
-        html += '<h3>Caract\u00e9ristiques</h3><ul>'
-          + f.c.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
-      }
-      detail.innerHTML = html || '<p class="q-fiche-attente">Fiche d\u00e9taill\u00e9e indisponible pour cet article \u2014 contactez-nous pour toute question technique.</p>';
+  function majRayons() {
+    document.querySelectorAll('#q-rayons button').forEach(function (b) {
+      b.classList.toggle('actif', b.dataset.rayon === etat.cat);
     });
+    document.querySelectorAll('#q-menu-rayons a').forEach(function (a) {
+      a.classList.toggle('actif', a.dataset.rayon === etat.cat);
+    });
+  }
+
+  function ouvrirMenu() { document.body.classList.add('menu-ouvert'); $('q-burger').setAttribute('aria-expanded', 'true'); }
+  function fermerMenu() { document.body.classList.remove('menu-ouvert'); $('q-burger').setAttribute('aria-expanded', 'false'); }
+
+  function construireRayons() {
+    var comptes = {};
+    etat.catalogue.articles.forEach(function (a) { comptes[a.cat] = (comptes[a.cat] || 0) + 1; });
+    var total = etat.catalogue.articles.length;
+    var chips = '<button type="button" data-rayon="">Tous les rayons</button>';
+    var menu = '<div class="q-menu-titre">Rayons</div>'
+      + '<a href="#" data-rayon="">Tous les rayons <span class="nb">' + total.toLocaleString('fr-FR') + '</span></a>';
+    etat.catalogue.categories.forEach(function (c) {
+      if (!comptes[c.slug]) return; /* rayon vide : rien à montrer */
+      chips += '<button type="button" data-rayon="' + esc(c.slug) + '">' + esc(c.nom) + '</button>';
+      menu += '<a href="#" data-rayon="' + esc(c.slug) + '">' + esc(c.nom)
+        + ' <span class="nb">' + comptes[c.slug] + '</span></a>';
+    });
+    $('q-rayons').innerHTML = chips;
+    $('q-menu-rayons').innerHTML = menu;
+    $('q-rayons').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-rayon]');
+      if (b) choisirRayon(b.dataset.rayon);
+    });
+    $('q-menu-rayons').addEventListener('click', function (e) {
+      var a = e.target.closest('a[data-rayon]');
+      if (a) { e.preventDefault(); choisirRayon(a.dataset.rayon); }
+    });
+    $('q-burger').addEventListener('click', ouvrirMenu);
+    $('q-menu-fermer').addEventListener('click', fermerMenu);
+    $('q-menu-fond').addEventListener('click', fermerMenu);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fermerMenu(); });
+    majRayons();
   }
 
   /* ---------------- paiement sécurisé ---------------- */
@@ -285,7 +273,7 @@
   /* ---------------- init ---------------- */
   function initEvenements() {
     $('q-recherche').addEventListener('input', function () { etat.recherche = this.value; etat.visibles = PAR_PAGE; rendre(); });
-    $('q-cat').addEventListener('change', function () { etat.cat = this.value; etat.visibles = PAR_PAGE; rendre(); });
+    $('q-cat').addEventListener('change', function () { etat.cat = this.value; etat.visibles = PAR_PAGE; rendre(); majRayons(); });
     $('q-dispo').addEventListener('change', function () { etat.dispo = this.checked; etat.visibles = PAR_PAGE; rendre(); });
     $('q-tri').addEventListener('change', function () { etat.tri = this.value; rendre(); });
     $('q-plus').addEventListener('click', function () { etat.visibles += PAR_PAGE; rendre(); });
@@ -294,9 +282,8 @@
     $('q-form').addEventListener('submit', envoyerCommande);
     $('q-payer-cb').addEventListener('click', function () { verifierPuisPayer(etat.panier[0].ref); });
     document.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-add],[data-pay],[data-plus],[data-moins],[data-suppr],[data-fiche]');
+      var t = e.target.closest('[data-add],[data-pay],[data-plus],[data-moins],[data-suppr]');
       if (!t) return;
-      if (t.dataset.fiche) { ouvrirFiche(t.dataset.fiche); return; }
       if (t.dataset.add) ajouter(t.dataset.add);
       if (t.dataset.pay) verifierPuisPayer(t.dataset.pay);
       if (t.dataset.plus) { etat.panier.find(function (x) { return x.ref === t.dataset.plus; }).q += 1; sauver(); rendrePanier(); majPastille(); }
@@ -321,10 +308,21 @@
     etat.catalogue.categories.forEach(function (c) {
       var o = document.createElement('option'); o.value = c.slug; o.textContent = c.nom; sel.appendChild(o);
     });
-    charger(); initEvenements(); rendre(); rendrePanier();
+    /* rayon pré-sélectionné : ?cat=slug (liens du menu et de la fiche produit) */
+    var catInitiale = new URLSearchParams(location.search).get('cat');
+    if (catInitiale && etat.catalogue.categories.some(function (c) { return c.slug === catInitiale; })) {
+      etat.cat = catInitiale; sel.value = catInitiale;
+    }
+    charger(); initEvenements(); construireRayons(); rendre(); rendrePanier();
+    /* anciens liens #a=REF (modal) : chaque produit a désormais sa page */
     if (location.hash.indexOf('#a=') === 0) {
       var refInitiale = decodeURIComponent(location.hash.slice(3));
-      if (article(refInitiale)) ouvrirFiche(refInitiale);
+      if (article(refInitiale)) { location.replace(URL_FICHE + encodeURIComponent(refInitiale)); return; }
+    }
+    /* retour depuis une fiche produit : #panier rouvre le tiroir */
+    if (location.hash === '#panier') {
+      rendrePanier(); $('q-tiroir').classList.add('ouvert');
+      history.replaceState(null, '', location.pathname + location.search);
     }
   }).catch(function (e) {
     $('q-grille').innerHTML = '<p class="q-vide">Le catalogue ne se charge pas. Rafraîchissez la page ou contactez-nous : egreencitys@gmail.com</p>';

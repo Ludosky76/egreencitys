@@ -1,0 +1,206 @@
+/* ==========================================================================
+   EGREENCITY'S — PRO QUINCAILLERIE — habillage partagé
+   ==========================================================================
+   Chargé par pages/boutique-quincaillerie.html et pages/produit-quincaillerie.html.
+   Charte reprise de la boutique quincaillerie : bleus profonds (encre #141B52,
+   bleu #2A39C0) pour les fonds et les titres, vert logo (#4FBE17 / #33CC00)
+   réservé aux actions et aux mentions « inclus ».
+   ========================================================================== */
+:root{
+  --ink:#141B52;         /* bleu nuit — bandeau, titres, prix */
+  --navy:#1F2A8C;        /* bleu profond — survols */
+  --blue:#2A39C0;        /* bleu logo — boutons bleus, liens */
+  --blue-light:#3F8BF2;  /* bleu ciel — signature, highlights */
+  --sky:#E8F0FE;         /* fond bleu très clair — chips, fonds */
+  --green:#4FBE17;       /* vert CTA */
+  --green-dark:#3C9A10;
+  --green-deep:#2E7A0C;
+  --mint:#EAF8E4;
+  --egreen:#33CC00;      /* vert signature EGREENCITY'S */
+  --egreen-deep:#0E7A3F;
+  --coral:#F4664A;
+  --steel:#8895A2;
+  --line:#E2E8F5;        /* bordures froides */
+  --bg:#F5F7FC;          /* fond de page bleuté */
+  --text:#1C2430;
+  --muted:#5B6878;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',system-ui,sans-serif;color:var(--text);background:var(--bg);line-height:1.6;}
+a{color:var(--blue);text-decoration:none;}
+a:hover{color:var(--navy);}
+
+/* ── Bandeau haut ─────────────────────────────────────────── */
+.qtop{background:var(--ink);color:#fff;padding:.65rem 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 14px rgba(20,27,82,.35);}
+.qtop-inner{max-width:1280px;margin:0 auto;padding:0 1rem;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;}
+.q-burger{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:12px;padding:.55rem .85rem;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;transition:.15s;}
+.q-burger:hover{background:rgba(255,255,255,.16);}
+.q-burger .bars{display:inline-flex;flex-direction:column;gap:4px;}
+.q-burger .bars span{display:block;width:18px;height:2px;border-radius:2px;background:var(--egreen);}
+.q-burger .bars span:nth-child(2){background:var(--blue-light);}
+
+/* Logotype : nom en dégradé vert + signature PRO QUINCAILLERIE, sans la
+   mention « Borne De Rechargement » de l'ancien logo. */
+.qlogo{display:flex;align-items:center;gap:.6rem;margin-right:auto;}
+.qlogo svg.feuille{width:38px;height:38px;flex:none;}
+.qlogo-txt{display:flex;flex-direction:column;line-height:1;}
+.qlogo-nom{font-weight:800;font-size:1.14rem;letter-spacing:.01em;
+  background:linear-gradient(92deg,#6BDA1E 0%,var(--egreen) 45%,var(--egreen-deep) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--egreen);}
+.qlogo-sig{display:inline-flex;align-items:center;gap:.35rem;margin-top:.28rem;}
+.qlogo-pro{background:var(--green);color:#fff;font-size:.56rem;font-weight:800;letter-spacing:.14em;border-radius:50px;padding:.14rem .5rem .12rem;}
+.qlogo-quinc{font-size:.62rem;font-weight:800;letter-spacing:.3em;color:var(--blue-light);text-transform:uppercase;}
+.qtop-actions{display:flex;align-items:center;gap:.55rem;}
+.lback{background:#fff;color:var(--ink);padding:.5rem 1rem;border-radius:50px;font-weight:700;font-size:.78rem;}
+.lback:hover{background:var(--sky);color:var(--ink);}
+.cart-pill{position:relative;background:var(--green);border:none;color:#fff;padding:.52rem 1.05rem;border-radius:50px;font:inherit;font-weight:800;font-size:.8rem;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 2px 0 var(--green-deep);transition:.15s;}
+.cart-pill:hover{filter:brightness(1.07);}
+#q-pastille{position:absolute;top:-7px;right:-7px;background:var(--coral);color:#fff;font-size:.68rem;min-width:19px;height:19px;border-radius:10px;display:none;align-items:center;justify-content:center;padding:0 5px;}
+
+/* ── Menu burger (rayons) ─────────────────────────────────── */
+#q-menu-fond{position:fixed;inset:0;background:rgba(10,14,40,.55);z-index:1500;opacity:0;pointer-events:none;transition:.22s;}
+#q-menu{position:fixed;inset:0 auto 0 0;width:min(340px,88vw);background:#fff;z-index:1600;transform:translateX(-105%);transition:.26s;display:flex;flex-direction:column;box-shadow:14px 0 40px rgba(10,14,40,.25);}
+body.menu-ouvert #q-menu{transform:none;}
+body.menu-ouvert #q-menu-fond{opacity:1;pointer-events:auto;}
+.q-menu-tete{background:var(--ink);color:#fff;padding:1rem 1.1rem;display:flex;align-items:center;justify-content:space-between;}
+.q-menu-tete strong{font-size:.9rem;letter-spacing:.06em;}
+#q-menu-fermer{background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;line-height:1;}
+.q-menu-corps{flex:1;overflow:auto;padding:.6rem 0 1rem;}
+.q-menu-titre{font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--steel);padding:.8rem 1.15rem .3rem;}
+.q-menu-corps a{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.55rem 1.15rem;font-size:.86rem;font-weight:600;color:var(--ink);border-left:3px solid transparent;}
+.q-menu-corps a:hover{background:var(--sky);border-left-color:var(--blue);}
+.q-menu-corps a.actif{background:var(--sky);border-left-color:var(--green);color:var(--blue);}
+.q-menu-corps a .nb{font-size:.68rem;font-weight:700;color:var(--steel);background:var(--bg);border-radius:50px;padding:.05rem .5rem;}
+.q-menu-pied{border-top:1px solid var(--line);padding:.5rem 0 .8rem;}
+
+/* ── Bandeau d'entête (héro bleu) ─────────────────────────── */
+.q-hero{background:linear-gradient(130deg,var(--ink) 0%,var(--navy) 55%,var(--blue) 100%);color:#fff;padding:1.5rem 0 1.3rem;}
+.q-hero-inner{max-width:1280px;margin:0 auto;padding:0 1rem;}
+.q-hero h1{font-size:clamp(1.3rem,3vw,1.8rem);font-weight:800;line-height:1.25;}
+.q-hero p{font-size:.85rem;opacity:.92;max-width:75ch;margin-top:.3rem;}
+.q-hero .inclus{color:#8FE563;font-weight:700;}
+#q-stock-maj{display:block;font-size:.72rem;opacity:.75;margin-top:.3rem;}
+
+/* ── Rayons (chips horizontaux) ───────────────────────────── */
+.q-rayons{max-width:1280px;margin:.9rem auto 0;padding:0 1rem;display:flex;gap:.45rem;overflow-x:auto;scrollbar-width:thin;padding-bottom:.35rem;}
+.q-rayons button{flex:none;background:#fff;border:1.5px solid var(--line);color:var(--ink);border-radius:50px;padding:.42rem 1rem;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:.15s;white-space:nowrap;}
+.q-rayons button:hover{border-color:var(--blue-light);color:var(--blue);}
+.q-rayons button.actif{background:var(--blue);border-color:var(--blue);color:#fff;}
+
+/* ── Filtres ──────────────────────────────────────────────── */
+.q-filtres{max-width:1280px;margin:.6rem auto;padding:.6rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;position:sticky;top:60px;z-index:90;background:var(--bg);box-shadow:0 8px 10px -10px rgba(20,27,82,.18);}
+.q-filtres input[type=search],.q-filtres select{padding:.6rem .9rem;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:.85rem;background:#fff;color:var(--text);}
+.q-filtres input[type=search]:focus,.q-filtres select:focus{outline:none;border-color:var(--blue-light);box-shadow:0 0 0 3px rgba(63,139,242,.18);}
+.q-filtres input[type=search]{flex:1;min-width:200px;}
+.q-filtres label{font-size:.8rem;display:flex;align-items:center;gap:.35rem;color:var(--muted);font-weight:600;}
+#q-compte{font-size:.78rem;color:var(--muted);margin-left:auto;}
+
+/* ── Grille articles ──────────────────────────────────────── */
+#q-grille{max-width:1280px;margin:0 auto;padding:.4rem 1rem 1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:.9rem;}
+.q-card{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:.18s;}
+.q-card:hover{box-shadow:0 12px 30px rgba(31,42,140,.14);transform:translateY(-2px);border-color:#CBD7F2;}
+.q-img{height:150px;display:flex;align-items:center;justify-content:center;background:#fff;padding:.7rem;}
+.q-img img{max-height:100%;max-width:100%;object-fit:contain;}
+.q-noimg img{display:none;}
+.q-noimg::after{content:"🔧";font-size:2.2rem;opacity:.35;}
+.q-body{padding:.75rem .85rem 1rem;display:flex;flex-direction:column;gap:.3rem;flex:1;}
+.q-ref{font-size:.64rem;font-weight:700;letter-spacing:.08em;color:var(--steel);text-transform:uppercase;}
+.q-marque{font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);}
+.q-nom{font-size:.83rem;font-weight:600;line-height:1.35;min-height:2.6em;color:var(--ink);}
+a.q-lien{color:inherit;display:block;}
+a.q-lien:hover .q-nom{color:var(--blue);text-decoration:underline;}
+.qs{font-size:.68rem;font-weight:700;padding:.14rem .55rem;border-radius:50px;width:max-content;}
+.qs-ok{background:var(--mint);color:var(--green-deep);}
+.qs-faible{background:#FFF3D6;color:#8A6100;}
+.qs-cmd{background:var(--sky);color:var(--navy);}
+.qs-off{background:#FDEAEA;color:#A33;}
+.q-prix{font-size:1.22rem;font-weight:800;color:var(--ink);margin-top:.15rem;display:flex;align-items:center;gap:.4rem;}
+.q-ttc{font-size:.6rem;font-weight:800;letter-spacing:.06em;background:var(--sky);color:var(--navy);border-radius:6px;padding:.12rem .4rem;}
+.q-inclus{font-size:.66rem;font-weight:700;color:var(--egreen-deep);}
+.q-poids{font-size:.7rem;color:var(--muted);}
+.q-actions{margin-top:auto;display:flex;flex-direction:column;gap:.45rem;padding-top:.55rem;}
+
+/* ── Boutons d'achat (relief City's Tools) ────────────────── */
+.q-add{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border:none;border-radius:12px;padding:.6rem .9rem;font:inherit;font-size:.8rem;font-weight:800;color:#fff;cursor:pointer;line-height:1.2;
+  background-image:linear-gradient(180deg,rgba(255,255,255,.24) 0%,rgba(255,255,255,0) 48%,rgba(0,0,0,.10) 100%),linear-gradient(120deg,#3F8BF2 0%,#2DB07E 50%,#4FBE17 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -2px 0 rgba(0,0,0,.10),0 3px 0 #1E6F45,0 8px 18px rgba(63,139,242,.26);
+  text-shadow:0 1px 1px rgba(0,0,0,.18);transition:transform .15s ease,box-shadow .15s ease,filter .15s ease;}
+.q-add:hover{transform:translateY(-1px);filter:brightness(1.06);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 0 rgba(0,0,0,.10),0 4px 0 #1E6F45,0 12px 24px rgba(63,139,242,.34);}
+.q-add:active{transform:translateY(2px);filter:brightness(.98);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 2px 5px rgba(0,0,0,.18),0 1px 0 #1E6F45,0 4px 10px rgba(63,139,242,.22);}
+.q-pay{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:.55rem .9rem;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;flex-direction:column;line-height:1.25;box-shadow:0 2px 0 var(--ink),0 6px 14px rgba(42,57,192,.25);transition:.15s;}
+.q-pay:hover{background:var(--navy);transform:translateY(-1px);}
+.q-pay-sub{display:block;font-size:.62rem;font-weight:500;opacity:.85;}
+.q-verif{opacity:.6;cursor:wait;}
+.q-vide{grid-column:1/-1;text-align:center;color:var(--muted);padding:2.5rem 1rem;font-size:.9rem;}
+#q-plus{display:block;margin:0 auto 2rem;background:#fff;border:2px solid var(--blue);color:var(--blue);border-radius:50px;padding:.65rem 1.8rem;font:inherit;font-weight:700;cursor:pointer;transition:.15s;}
+#q-plus:hover{background:var(--blue);color:#fff;}
+
+/* ── Tiroir panier ────────────────────────────────────────── */
+#q-tiroir{position:fixed;inset:0 0 0 auto;width:min(430px,100%);background:#fff;z-index:2000;box-shadow:-12px 0 38px rgba(10,14,40,.28);transform:translateX(105%);transition:.28s;display:flex;flex-direction:column;}
+#q-tiroir.ouvert{transform:none;}
+.q-tiroir-tete{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.1rem;border-bottom:1px solid var(--line);background:var(--ink);color:#fff;}
+.q-tiroir-tete h2{font-size:1rem;color:#fff;}
+#q-fermer-panier{background:none;border:none;font-size:1.5rem;cursor:pointer;color:#fff;}
+#q-tiroir-corps{flex:1;overflow:auto;padding:1rem 1.1rem;}
+.q-ligne{display:flex;gap:.6rem;align-items:center;padding:.5rem 0;border-bottom:1px solid #EEF2FA;}
+.q-ligne img{width:46px;height:46px;object-fit:contain;}
+.q-ligne-infos{flex:1;}
+.q-ligne-nom{font-size:.77rem;font-weight:600;line-height:1.3;color:var(--ink);}
+.q-ligne-prix{font-size:.76rem;color:var(--muted);margin-top:.15rem;}
+.q-ligne-prix button{width:22px;height:22px;border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer;font-weight:700;color:var(--ink);}
+.q-suppr{background:none;border:none;font-size:1.1rem;color:var(--coral);cursor:pointer;}
+#q-tiroir-pied{border-top:2px solid var(--line);padding:.9rem 1.1rem 1.1rem;font-size:.82rem;}
+.q-total-ligne{display:flex;justify-content:space-between;margin:.15rem 0;color:var(--muted);}
+.q-total-ligne.total{font-weight:800;color:var(--ink);font-size:1rem;margin:.4rem 0 .7rem;}
+#q-payer-cb{width:100%;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:.7rem;font:inherit;font-weight:700;cursor:pointer;margin-bottom:.5rem;box-shadow:0 2px 0 var(--ink),0 6px 14px rgba(42,57,192,.25);transition:.15s;}
+#q-payer-cb:hover{background:var(--navy);}
+#q-cb-indice{font-size:.7rem;color:var(--muted);margin-bottom:.5rem;}
+#q-form input{width:100%;padding:.55rem .8rem;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:.82rem;margin-bottom:.45rem;}
+#q-form input:focus{outline:none;border-color:var(--blue-light);box-shadow:0 0 0 3px rgba(63,139,242,.18);}
+#q-envoyer{width:100%;border:none;border-radius:12px;padding:.7rem;font:inherit;font-weight:800;color:#fff;cursor:pointer;
+  background-image:linear-gradient(180deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,0) 50%,rgba(0,0,0,.10) 100%),linear-gradient(120deg,var(--green-deep) 0%,var(--green-dark) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 #1E5A08,0 6px 14px rgba(60,154,16,.3);transition:.15s;}
+#q-envoyer:hover{filter:brightness(1.07);}
+.q-note-forfait{font-size:.68rem;color:var(--muted);margin-top:.5rem;}
+.q-merci{background:var(--mint);border-radius:10px;padding:.9rem;font-size:.82rem;color:var(--green-deep);}
+
+/* ── Fiche produit (page dédiée) ──────────────────────────── */
+.qf-fil{max-width:1100px;margin:1rem auto 0;padding:0 1rem;font-size:.76rem;color:var(--muted);}
+.qf-fil a{font-weight:600;}
+.qf-haut{max-width:1100px;margin:1rem auto;padding:0 1rem;display:grid;grid-template-columns:minmax(260px,420px) 1fr;gap:1.4rem;align-items:start;}
+.qf-image{background:#fff;border:1px solid var(--line);border-radius:16px;padding:1.2rem;display:flex;align-items:center;justify-content:center;min-height:320px;}
+.qf-image img{max-width:100%;max-height:380px;object-fit:contain;}
+.qf-infos{display:flex;flex-direction:column;gap:.45rem;}
+.qf-infos h1{font-size:clamp(1.1rem,2.4vw,1.45rem);font-weight:800;line-height:1.3;color:var(--ink);}
+.qf-prixbloc{background:#fff;border:1px solid var(--line);border-radius:16px;padding:1rem 1.1rem;margin-top:.5rem;}
+.qf-prix{font-size:1.7rem;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:.5rem;}
+.qf-livraison{font-size:.78rem;color:var(--muted);margin-top:.3rem;}
+.qf-livraison strong{color:var(--egreen-deep);}
+.qf-boutons{display:flex;flex-direction:column;gap:.5rem;margin-top:.8rem;max-width:340px;}
+.qf-reassurance{margin-top:1rem;padding-left:0;list-style:none;font-size:.76rem;color:var(--muted);}
+.qf-reassurance li{margin-bottom:.3rem;}
+.qf-detail{max-width:1100px;margin:0 auto 1.5rem;padding:0 1rem;}
+.qf-detail-boite{background:#fff;border:1px solid var(--line);border-radius:16px;padding:1.2rem 1.4rem;}
+.qf-detail h2{font-size:1rem;color:var(--ink);margin:.6rem 0 .45rem;border-bottom:2px solid var(--sky);padding-bottom:.3rem;}
+.qf-detail p{font-size:.86rem;margin-bottom:.5rem;}
+.qf-detail ul{padding-left:1.2rem;font-size:.84rem;}
+.qf-detail li{margin-bottom:.25rem;}
+.qf-attente{color:var(--muted);font-size:.84rem;}
+.qf-meme{max-width:1100px;margin:0 auto 2rem;padding:0 1rem;}
+.qf-meme h2{font-size:1rem;color:var(--ink);margin-bottom:.7rem;}
+.qf-meme .liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.9rem;}
+@media(max-width:760px){.qf-haut{grid-template-columns:1fr;}.qf-image{min-height:240px;}}
+
+/* ── Pied de page ─────────────────────────────────────────── */
+footer{background:var(--ink);color:#fff;padding:1.6rem 1rem;text-align:center;font-size:.78rem;margin-top:2rem;}
+footer a{color:#8FE563;}
+footer a:hover{color:#B6F08C;}
+.q-mentions{max-width:1280px;margin:0 auto 1rem;padding:0 1rem;font-size:.7rem;color:var(--muted);}
+
+@media(max-width:640px){
+  .qlogo-nom{font-size:.98rem;}
+  .q-burger .txt{display:none;}
+  .q-filtres{top:104px;}
+}
