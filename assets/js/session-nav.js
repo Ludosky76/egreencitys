@@ -30,8 +30,8 @@
       if (loggedIn) {
         buildUserMenu(link, c);
       } else {
-        // Deconnecte : libelle clair
-        link.innerHTML = '👤 Connexion';
+        // Deconnecte : libelle clair (sans emoji : rendu net sur bandeau sombre)
+        link.innerHTML = 'Connexion';
         link.style.fontWeight = '600';
       }
     });
