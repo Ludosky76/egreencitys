@@ -53,8 +53,10 @@ a:hover{color:var(--navy);}
 .qtop-actions{display:flex;align-items:center;gap:.55rem;}
 .lback{background:#fff;color:var(--ink);padding:.5rem 1rem;border-radius:50px;font-weight:700;font-size:.78rem;}
 .lback:hover{background:var(--sky);color:var(--ink);}
-.cart-pill{position:relative;background:var(--green);border:none;color:#fff;padding:.52rem 1.05rem;border-radius:50px;font:inherit;font-weight:800;font-size:.8rem;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 2px 0 var(--green-deep);transition:.15s;}
-.cart-pill:hover{filter:brightness(1.07);}
+.cart-pill{position:relative;border:none;color:#fff;padding:.48rem 1.05rem;border-radius:50px;font:inherit;font-weight:700;font-size:.78rem;cursor:pointer;
+  background-image:linear-gradient(135deg,var(--green) 0%,#6BDA1E 100%);
+  box-shadow:0 3px 10px rgba(79,190,23,.35);transition:transform .15s ease,filter .15s ease;}
+.cart-pill:hover{filter:brightness(1.06);transform:translateY(-1px);}
 #q-pastille{position:absolute;top:-7px;right:-7px;background:var(--coral);color:#fff;font-size:.68rem;min-width:19px;height:19px;border-radius:10px;display:none;align-items:center;justify-content:center;padding:0 5px;}
 
 /* ── Menu burger (rayons) ─────────────────────────────────── */
@@ -120,22 +122,23 @@ a.q-lien:hover .q-nom{color:var(--blue);text-decoration:underline;}
 .q-poids{font-size:.7rem;color:var(--muted);}
 .q-actions{margin-top:auto;display:flex;flex-direction:column;gap:.45rem;padding-top:.55rem;}
 
-/* ── Boutons d'achat (relief City's Tools) ────────────────── */
-.q-add{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border:none;border-radius:12px;padding:.6rem .9rem;font:inherit;font-size:.8rem;font-weight:800;color:#fff;cursor:pointer;line-height:1.2;
-  background-image:linear-gradient(180deg,rgba(255,255,255,.24) 0%,rgba(255,255,255,0) 48%,rgba(0,0,0,.10) 100%),linear-gradient(120deg,#3F8BF2 0%,#2DB07E 50%,#4FBE17 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -2px 0 rgba(0,0,0,.10),0 3px 0 #1E6F45,0 8px 18px rgba(63,139,242,.26);
-  text-shadow:0 1px 1px rgba(0,0,0,.18);transition:transform .15s ease,box-shadow .15s ease,filter .15s ease;}
-.q-add:hover{transform:translateY(-1px);filter:brightness(1.06);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 0 rgba(0,0,0,.10),0 4px 0 #1E6F45,0 12px 24px rgba(63,139,242,.34);}
-.q-add:active{transform:translateY(2px);filter:brightness(.98);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 2px 5px rgba(0,0,0,.18),0 1px 0 #1E6F45,0 4px 10px rgba(63,139,242,.22);}
-.q-pay{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:.55rem .9rem;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;flex-direction:column;line-height:1.25;box-shadow:0 2px 0 var(--ink),0 6px 14px rgba(42,57,192,.25);transition:.15s;}
-.q-pay:hover{background:var(--navy);transform:translateY(-1px);}
+/* ── Boutons d'achat (fins, dégradés lisses) ──────────────── */
+.q-add{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border:none;border-radius:50px;padding:.48rem .95rem;font:inherit;font-size:.78rem;font-weight:700;letter-spacing:.01em;color:#fff;cursor:pointer;line-height:1.2;
+  background-image:linear-gradient(135deg,#3F8BF2 0%,#2DB07E 55%,#4FBE17 100%);
+  box-shadow:0 4px 12px rgba(45,176,126,.28);
+  transition:transform .15s ease,box-shadow .15s ease,filter .15s ease;}
+.q-add:hover{transform:translateY(-1px);filter:brightness(1.05);box-shadow:0 6px 16px rgba(45,176,126,.38);}
+.q-add:active{transform:translateY(0);filter:brightness(.97);box-shadow:0 2px 8px rgba(45,176,126,.25);}
+.q-pay{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;color:#fff;border:none;border-radius:50px;padding:.46rem .95rem;font:inherit;font-size:.76rem;font-weight:700;cursor:pointer;flex-direction:column;line-height:1.25;
+  background-image:linear-gradient(135deg,var(--blue) 0%,var(--blue-light) 100%);
+  box-shadow:0 4px 12px rgba(42,57,192,.25);transition:transform .15s ease,box-shadow .15s ease,filter .15s ease;}
+.q-pay:hover{transform:translateY(-1px);filter:brightness(1.06);box-shadow:0 6px 16px rgba(42,57,192,.35);}
+.q-pay:active{transform:translateY(0);filter:brightness(.97);}
 .q-pay-sub{display:block;font-size:.62rem;font-weight:500;opacity:.85;}
 .q-verif{opacity:.6;cursor:wait;}
 .q-vide{grid-column:1/-1;text-align:center;color:var(--muted);padding:2.5rem 1rem;font-size:.9rem;}
-#q-plus{display:block;margin:0 auto 2rem;background:#fff;border:2px solid var(--blue);color:var(--blue);border-radius:50px;padding:.65rem 1.8rem;font:inherit;font-weight:700;cursor:pointer;transition:.15s;}
-#q-plus:hover{background:var(--blue);color:#fff;}
+#q-plus{display:block;margin:0 auto 2rem;background:#fff;border:1.5px solid var(--blue);color:var(--blue);border-radius:50px;padding:.55rem 1.7rem;font:inherit;font-size:.84rem;font-weight:700;cursor:pointer;transition:.15s;}
+#q-plus:hover{background-image:linear-gradient(135deg,var(--blue) 0%,var(--blue-light) 100%);border-color:transparent;color:#fff;}
 
 /* ── Tiroir panier ────────────────────────────────────────── */
 #q-tiroir{position:fixed;inset:0 0 0 auto;width:min(430px,100%);background:#fff;z-index:2000;box-shadow:-12px 0 38px rgba(10,14,40,.28);transform:translateX(105%);transition:.28s;display:flex;flex-direction:column;}
@@ -154,15 +157,17 @@ a.q-lien:hover .q-nom{color:var(--blue);text-decoration:underline;}
 #q-tiroir-pied{border-top:2px solid var(--line);padding:.9rem 1.1rem 1.1rem;font-size:.82rem;}
 .q-total-ligne{display:flex;justify-content:space-between;margin:.15rem 0;color:var(--muted);}
 .q-total-ligne.total{font-weight:800;color:var(--ink);font-size:1rem;margin:.4rem 0 .7rem;}
-#q-payer-cb{width:100%;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:.7rem;font:inherit;font-weight:700;cursor:pointer;margin-bottom:.5rem;box-shadow:0 2px 0 var(--ink),0 6px 14px rgba(42,57,192,.25);transition:.15s;}
-#q-payer-cb:hover{background:var(--navy);}
+#q-payer-cb{width:100%;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;color:#fff;border:none;border-radius:50px;padding:.6rem 1rem;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;margin-bottom:.5rem;
+  background-image:linear-gradient(135deg,var(--blue) 0%,var(--blue-light) 100%);
+  box-shadow:0 4px 12px rgba(42,57,192,.25);transition:transform .15s ease,filter .15s ease;}
+#q-payer-cb:hover{filter:brightness(1.06);transform:translateY(-1px);}
 #q-cb-indice{font-size:.7rem;color:var(--muted);margin-bottom:.5rem;}
 #q-form input{width:100%;padding:.55rem .8rem;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:.82rem;margin-bottom:.45rem;}
 #q-form input:focus{outline:none;border-color:var(--blue-light);box-shadow:0 0 0 3px rgba(63,139,242,.18);}
-#q-envoyer{width:100%;border:none;border-radius:12px;padding:.7rem;font:inherit;font-weight:800;color:#fff;cursor:pointer;
-  background-image:linear-gradient(180deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,0) 50%,rgba(0,0,0,.10) 100%),linear-gradient(120deg,var(--green-deep) 0%,var(--green-dark) 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 #1E5A08,0 6px 14px rgba(60,154,16,.3);transition:.15s;}
-#q-envoyer:hover{filter:brightness(1.07);}
+#q-envoyer{width:100%;border:none;border-radius:50px;padding:.6rem 1rem;font:inherit;font-size:.82rem;font-weight:700;color:#fff;cursor:pointer;
+  background-image:linear-gradient(135deg,var(--green-dark) 0%,var(--green) 100%);
+  box-shadow:0 4px 12px rgba(60,154,16,.3);transition:transform .15s ease,filter .15s ease;}
+#q-envoyer:hover{filter:brightness(1.06);transform:translateY(-1px);}
 .q-note-forfait{font-size:.68rem;color:var(--muted);margin-top:.5rem;}
 .q-merci{background:var(--mint);border-radius:10px;padding:.9rem;font-size:.82rem;color:var(--green-deep);}
 
