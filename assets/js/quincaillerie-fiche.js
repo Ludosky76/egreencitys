@@ -42,8 +42,9 @@
   }
   function delaiTexte(ref, a) {
     if (statutDe(ref) === 'disponible') return 'livraison sous 7 jours ouvrés';
-    return 'livraison sous ~' + (a.delai + 14) + ' jours';
+    return 'disponibilité à confirmer — faites une demande';
   }
+  function urlDemande(ref) { return '/pages/demande-produit.html?ref=' + encodeURIComponent(ref); }
 
   /* ---------------- panier partagé avec la boutique ----------------
      Même format horodaté que quincaillerie-shop.js : { maj, lignes },
@@ -152,8 +153,10 @@
       +     '<div class="q-inclus">Octroi de mer &amp; transport vers la Guyane inclus*</div>'
       +     '<div class="qf-livraison"><strong>' + delaiTexte(ref, a) + '</strong> · partout en Guyane · retrait possible à Macouria</div>'
       +     '<div class="qf-boutons">'
-      +       '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>'
-      +       ((dispo && lien) ? '<button type="button" class="q-pay" data-pay="' + esc(ref) + '">💳 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">forfait expédition inclus — stock revérifié avant paiement</span></button>' : '')
+      +     (dispo
+      ?       '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>'
+      +       (lien ? '<button type="button" class="q-pay" data-pay="' + esc(ref) + '">💳 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">forfait expédition inclus — stock revérifié avant paiement</span></button>' : '')
+      :       '<a class="q-pay" href="' + urlDemande(ref) + '">✉️ Faire une demande<span class="q-pay-sub">nous confirmons prix et délai sous 24 h ouvrées — suivi dans votre espace client</span></a>')
       +     '</div>'
       +   '</div>'
       +   '<ul class="qf-reassurance">'

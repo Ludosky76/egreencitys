@@ -145,6 +145,9 @@ a.q-lien:hover .q-nom{color:var(--blue);text-decoration:underline;}
 .q-pay:hover{transform:translateY(-1px);filter:brightness(1.05);box-shadow:0 3px 9px rgba(42,57,192,.24);}
 .q-pay:active{transform:translateY(0);filter:brightness(.97);}
 .q-pay-sub{font-size:.58rem;}
+/* « Faire une demande » et autres liens habillés en bouton */
+a.q-add,a.q-pay{text-decoration:none;}
+a.q-add:hover,a.q-pay:hover{color:#fff;text-decoration:none;}
 .q-pay-sub{display:block;font-size:.62rem;font-weight:500;opacity:.85;}
 .q-verif{opacity:.6;cursor:wait;}
 .q-vide{grid-column:1/-1;text-align:center;color:var(--muted);padding:2.5rem 1rem;font-size:.9rem;}
@@ -208,6 +211,22 @@ a.q-lien:hover .q-nom{color:var(--blue);text-decoration:underline;}
 .qf-meme h2{font-size:1rem;color:var(--ink);margin-bottom:.7rem;}
 .qf-meme .liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.9rem;}
 @media(max-width:760px){.qf-haut{grid-template-columns:1fr;}.qf-image{min-height:240px;}}
+
+/* ── Demande produit (article indisponible) ───────────────── */
+.qd-form{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:1.2rem 1.4rem;max-width:760px;}
+.qd-form label{font-size:.76rem;font-weight:700;color:var(--muted);display:block;margin:.65rem 0 .25rem;}
+.qd-form input,.qd-form textarea{width:100%;padding:.6rem .8rem;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:.85rem;background:var(--surface);color:var(--text);}
+.qd-form input:focus,.qd-form textarea:focus{outline:none;border-color:var(--blue-light);box-shadow:0 0 0 3px rgba(63,139,242,.18);}
+.qd-form textarea{min-height:110px;resize:vertical;}
+.qd-envoyer{margin-top:.9rem;border:none;border-radius:50px;padding:.55rem 1.4rem;font:inherit;font-size:.8rem;font-weight:700;color:#fff;cursor:pointer;
+  background-image:linear-gradient(135deg,var(--green-dark) 0%,var(--green) 100%);
+  box-shadow:0 2px 6px rgba(60,154,16,.2);transition:transform .15s ease,filter .15s ease;}
+.qd-envoyer:hover{filter:brightness(1.05);transform:translateY(-1px);}
+.qd-envoyer:disabled{opacity:.6;cursor:wait;}
+.qd-note{font-size:.72rem;color:var(--muted);margin-top:.6rem;max-width:95ch;}
+.qd-ok{background:var(--mint);color:var(--green-deep);border-radius:12px;padding:1rem 1.1rem;font-size:.88rem;max-width:760px;}
+.qd-connexion{background:var(--sky);border-radius:12px;padding:.9rem 1.1rem;font-size:.82rem;margin-bottom:.9rem;max-width:760px;}
+html[data-theme="dark"] .qd-ok{background:#16321D;color:#86E25E;}
 
 /* ── Pied de page ─────────────────────────────────────────── */
 footer{background:var(--band);color:#fff;padding:1.6rem 1rem;text-align:center;font-size:.78rem;margin-top:2rem;}

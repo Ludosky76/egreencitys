@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demande produit — Quincaillerie Pro | EGREENCITY'S</title>
+  <meta name="description" content="Demandez un article actuellement indisponible de la boutique quincaillerie EGREENCITY'S : nous vérifions chez notre fournisseur et confirmons prix et délai avant toute commande.">
+  <meta name="robots" content="noindex, follow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://media.screwfix.fr https://*.google-analytics.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.googletagmanager.com; connect-src 'self' https://formsubmit.co https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://firestore.googleapis.com https://egreencitys-93e0b.firebaseapp.com https://*.google-analytics.com https://www.google-analytics.com https://*.googletagmanager.com; frame-src https://egreencitys-93e0b.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="icon" type="image/png" href="/logo.png">
+  <meta name="theme-color" content="#141B52">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/quincaillerie.css?v=7">
+  <script src="/assets/js/quincaillerie-theme.js?v=1"></script>
+</head>
+<body>
+  <header class="qtop">
+    <div class="qtop-inner">
+      <a href="/" class="qlogo" aria-label="EGREENCITY'S — PRO QUINCAILLERIE — Accueil">
+        <svg class="feuille" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <linearGradient id="qlg" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#0E7A3F"/><stop offset="1" stop-color="#6BDA1E"/>
+            </linearGradient>
+            <linearGradient id="qlb" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#2A39C0"/><stop offset="1" stop-color="#3F8BF2"/>
+            </linearGradient>
+          </defs>
+          <path transform="rotate(-56 32 58)" d="M32 58C22 42 25 18 32 6c7 12 10 36 0 52Z" fill="url(#qlg)"/>
+          <path transform="rotate(-28 32 58)" d="M32 58C22 42 25 18 32 6c7 12 10 36 0 52Z" fill="url(#qlb)"/>
+          <path d="M32 58C22 42 25 18 32 6c7 12 10 36 0 52Z" fill="url(#qlb)"/>
+          <path transform="rotate(28 32 58)" d="M32 58C22 42 25 18 32 6c7 12 10 36 0 52Z" fill="url(#qlb)"/>
+          <path transform="rotate(56 32 58)" d="M32 58C22 42 25 18 32 6c7 12 10 36 0 52Z" fill="url(#qlg)"/>
+        </svg>
+        <span class="qlogo-txt">
+          <span class="qlogo-nom">EGREENCITY'S</span>
+          <span class="qlogo-sig"><span class="qlogo-pro">PRO</span><span class="qlogo-quinc">Quincaillerie</span></span>
+        </span>
+      </a>
+      <div class="qtop-actions">
+        <button type="button" class="theme-btn" id="q-theme" aria-label="Basculer clair/sombre">🌙</button>
+        <a href="/" class="lghost" title="Retour à la page d'accueil — votre panier est conservé">Accueil</a>
+        <a href="/pages/boutique-quincaillerie.html" class="lback">← Catalogue</a>
+      </div>
+    </div>
+  </header>
+
+  <nav class="qf-fil" id="qd-fil" aria-label="Fil d'Ariane"><a href="/pages/boutique-quincaillerie.html">Boutique quincaillerie</a> › <span>Demande produit</span></nav>
+
+  <main class="qf-detail" style="margin-top:1rem;">
+    <h1 style="font-size:clamp(1.1rem,2.2vw,1.4rem);font-weight:800;color:var(--ink);margin-bottom:.3rem;">✉️ Demande de produit</h1>
+    <p style="font-size:.86rem;color:var(--muted);max-width:95ch;margin-bottom:1rem;">
+      Cet article n'est pas disponible immédiatement chez notre fournisseur. Envoyez-nous votre demande :
+      nous vérifions la référence et revenons vers vous <strong>sous 24&nbsp;h ouvrées</strong> avec le prix
+      et le délai confirmés — aucune commande ni aucun paiement avant votre accord.
+    </p>
+
+    <!-- Résumé de l'article demandé -->
+    <div id="qd-produit" class="qd-form" style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem;">
+      <p class="qf-attente" style="margin:0;">Chargement de l'article…</p>
+    </div>
+
+    <!-- Invitation connexion (masquée si connecté) -->
+    <div id="qd-connexion" class="qd-connexion" style="display:none;">
+      💡 <strong><a href="/pages/compte.html">Connectez-vous ou créez votre compte</a></strong> avant d'envoyer :
+      votre demande sera alors <strong>suivie dans votre espace client</strong>, avec notre réponse.
+      Sans compte, la réponse arrive uniquement par email.
+    </div>
+
+    <!-- Formulaire -->
+    <form id="qd-form" class="qd-form">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap: .8rem;">
+        <div><label for="qd-nom">Votre nom</label><input type="text" id="qd-nom" autocomplete="name"></div>
+        <div><label for="qd-email">Votre email *</label><input type="email" id="qd-email" required autocomplete="email"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:140px 1fr;gap:.8rem;">
+        <div><label for="qd-qte">Quantité</label><input type="number" id="qd-qte" min="1" value="1"></div>
+        <div><label for="qd-tel">Téléphone (WhatsApp)</label><input type="tel" id="qd-tel" autocomplete="tel"></div>
+      </div>
+      <label for="qd-message">Votre message (précisions, usage, échéance…)</label>
+      <textarea id="qd-message" placeholder="Ex. : il me le faut avant la fin du mois pour un chantier à Kourou."></textarea>
+      <button type="submit" class="qd-envoyer" id="qd-envoyer">Envoyer ma demande</button>
+      <p class="qd-note">Votre demande n'engage à rien : nous répondons avec la disponibilité réelle, le prix tout
+      compris et le délai de livraison en Guyane. Voir nos <a href="/pages/legal/cgv-quincaillerie.html">conditions de vente</a>.</p>
+    </form>
+
+    <div id="qd-merci" class="qd-ok" style="display:none;"></div>
+  </main>
+
+  <footer>
+    <p>© 2026 EGREENCITY'S — SAS · RCS Cayenne 878 682 954 · 97355 MACOURIA, Guyane française</p>
+    <p style="margin-top:.4rem;"><a href="/pages/legal/mentions-legales.html">Mentions légales</a> · <a href="/pages/legal/cgv-quincaillerie.html">Conditions de vente</a> · <a href="/pages/compte.html">Mon compte</a></p>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="/assets/js/firebase-config.js?v=2"></script>
+  <script>
+  (function () {
+    'use strict';
+    var ref = new URLSearchParams(location.search).get('ref') || '';
+    var article = null;
+    var utilisateur = null;
+
+    function $(id) { return document.getElementById(id); }
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function (m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+      });
+    }
+    function eur(n) { return n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; }
+
+    /* ---- Firebase (mêmes briques que compte.html / admin.html) ---- */
+    var fbOk = false;
+    try {
+      if (window.FIREBASE_ENABLED) {
+        if (!firebase.apps.length) firebase.initializeApp(window.FIREBASE_CONFIG);
+        fbOk = true;
+        firebase.auth().onAuthStateChanged(function (u) {
+          utilisateur = u || null;
+          $('qd-connexion').style.display = u ? 'none' : '';
+          if (u && !$('qd-email').value) $('qd-email').value = u.email || '';
+          if (u && !$('qd-nom').value) {
+            try {
+              var c = JSON.parse(localStorage.getItem('egc_customer') || 'null');
+              if (c) {
+                $('qd-nom').value = ((c.prenom || '') + ' ' + (c.nom || '')).trim();
+                if (c.telephone && !$('qd-tel').value) $('qd-tel').value = c.telephone;
+              }
+            } catch (e) {}
+          }
+        });
+      } else {
+        $('qd-connexion').style.display = '';
+      }
+    } catch (e) { $('qd-connexion').style.display = ''; }
+
+    /* ---- Article demandé ---- */
+    fetch('/assets/data/quincaillerie-catalogue.json')
+      .then(function (r) { return r.json(); })
+      .then(function (cat) {
+        article = cat.articles.find(function (a) { return a.ref === ref; }) || null;
+        var bloc = $('qd-produit');
+        if (!article) {
+          bloc.innerHTML = '<p style="margin:0;font-size:.86rem;">Référence inconnue — précisez l\'article voulu dans le message ci-dessous, ou <a href="/pages/boutique-quincaillerie.html">retournez au catalogue</a>.</p>';
+          return;
+        }
+        document.title = 'Demande : ' + article.nom + ' | EGREENCITY\'S PRO QUINCAILLERIE';
+        bloc.innerHTML = ''
+          + '<img src="' + esc(article.img) + '" alt="" style="width:74px;height:74px;object-fit:contain;background:#fff;border-radius:10px;flex:none;">'
+          + '<div><div class="q-ref">Réf. ' + esc(article.ref) + (article.marque ? ' · ' + esc(article.marque) : '') + '</div>'
+          + '<div style="font-weight:700;color:var(--ink);font-size:.92rem;line-height:1.35;">' + esc(article.nom) + '</div>'
+          + '<div style="font-size:.78rem;color:var(--muted);">Dernier prix connu : ' + eur(article.prix) + ' tout compris — à reconfirmer</div></div>';
+      })
+      .catch(function () {
+        $('qd-produit').innerHTML = '<p style="margin:0;font-size:.86rem;">Catalogue inaccessible — décrivez l\'article voulu dans le message.</p>';
+      });
+
+    /* ---- Envoi ---- */
+    function notifierParEmail(d) {
+      /* copie de notification pour EGREENCITY'S (non bloquant) */
+      return fetch('https://formsubmit.co/ajax/egreencitys@gmail.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          _subject: 'Demande produit quincaillerie — ' + d.ref,
+          _template: 'box',
+          reference: d.ref, produit: d.produit, quantite: d.qte,
+          nom: d.nom, email: d.email, telephone: d.tel,
+          message: d.message,
+          suivi: d.uid ? 'Compte client : demande enregistrée (espace admin > Demandes produits)' : 'Sans compte : répondre par email'
+        })
+      });
+    }
+
+    $('qd-form').addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var email = $('qd-email').value.trim();
+      if (!email) { alert('Indiquez votre email pour recevoir notre réponse.'); return; }
+      var d = {
+        ref: ref || '(non précisée)',
+        produit: article ? article.nom : '(voir message)',
+        qte: Math.max(1, parseInt($('qd-qte').value, 10) || 1),
+        nom: $('qd-nom').value.trim(),
+        email: email,
+        tel: $('qd-tel').value.trim(),
+        message: $('qd-message').value.trim(),
+        uid: utilisateur ? utilisateur.uid : null
+      };
+      var bouton = $('qd-envoyer');
+      bouton.disabled = true; bouton.textContent = 'Envoi…';
+
+      var enregistrement = Promise.resolve();
+      if (fbOk && utilisateur) {
+        enregistrement = firebase.firestore().collection('demandes').add({
+          uid: utilisateur.uid,
+          email: d.email, nom: d.nom, telephone: d.tel,
+          ref: d.ref, produit: d.produit, qte: d.qte,
+          message: d.message,
+          statut: 'nouvelle', reponse: '',
+          created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }
+      enregistrement
+        .then(function () { return notifierParEmail(d).catch(function () {}); })
+        .then(function () {
+          $('qd-form').style.display = 'none';
+          $('qd-merci').style.display = '';
+          $('qd-merci').innerHTML = utilisateur
+            ? '✅ Demande envoyée et enregistrée. Suivez-la — et lisez notre réponse — dans <a href="/pages/compte.html"><strong>votre espace client</strong></a>. Réponse sous 24 h ouvrées.'
+            : '✅ Demande envoyée. Nous vous répondons par email sous 24 h ouvrées. <a href="/pages/compte.html">Créez un compte</a> pour suivre vos prochaines demandes dans votre espace client.';
+          if (window.gtag) gtag('event', 'generate_lead', { currency: 'EUR', value: article ? article.prix : 0 });
+        })
+        .catch(function () {
+          /* Firestore indisponible : on retombe sur l'email seul */
+          notifierParEmail(d).then(function () {
+            $('qd-form').style.display = 'none';
+            $('qd-merci').style.display = '';
+            $('qd-merci').textContent = '✅ Demande envoyée par email. Nous vous répondons sous 24 h ouvrées.';
+          }).catch(function () {
+            bouton.disabled = false; bouton.textContent = 'Envoyer ma demande';
+            alert('Envoi impossible pour le moment. Écrivez-nous : egreencitys@gmail.com');
+          });
+        });
+    });
+  })();
+  </script>
+  <script src="/assets/js/analytics.js?v=2" defer></script>
+  <script src="/assets/js/consent.js?v=1" defer></script>
+</body>
+</html>

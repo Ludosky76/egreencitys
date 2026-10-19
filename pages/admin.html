@@ -65,6 +65,8 @@
       <div class="kpis" id="kpis"></div>
       <h2>🛒 Commandes</h2>
       <div class="tablewrap"><table id="ordersT"><thead><tr><th>N°</th><th>Client</th><th>Email</th><th>Montant</th><th>Statut</th><th>Date</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="ordersEmpty">Aucune commande enregistrée.<br><span style="font-size:.82rem;">L'enregistrement automatique des paiements Stripe nécessite l'activation du plan Blaze sur Firebase. En attendant, retrouvez vos paiements dans le tableau de bord Stripe.</span></div></div>
+      <h2>✉️ Demandes produits (quincaillerie)</h2>
+      <div class="tablewrap"><table id="demT"><thead><tr><th>Date</th><th>Client</th><th>Produit</th><th>Message</th><th>Réponse</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="demEmpty">Aucune demande produit. Elles arrivent ici quand un client clique « Faire une demande » sur un article indisponible.</div></div>
       <h2>📧 Leads</h2>
       <div class="tablewrap"><table id="leadsT"><thead><tr><th>Email</th><th>Panier / demande</th><th>Total</th><th>Source</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="leadsEmpty">Aucun lead pour le moment.</div></div>
     </div>
@@ -98,7 +100,51 @@
       else if (user){ var m=document.getElementById('msg'); m.style.color='#ff8574'; m.textContent='Ce compte n\'est pas administrateur.'; }
     });
 
-    window.loadAll = function(){ loadOrders(); loadLeads(); };
+    window.loadAll = function(){ loadOrders(); loadLeads(); loadDemandes(); };
+
+    // --- Demandes produits (boutique quincaillerie) ---
+    // La réponse saisie ici est enregistrée sur la demande (statut « repondu »)
+    // et apparaît dans l'espace client du demandeur (compte.html).
+    function loadDemandes(){
+      var db = firebase.firestore();
+      db.collection('demandes').orderBy('created_at','desc').limit(200).get().then(function(snap){
+        var tb = document.querySelector('#demT tbody'); tb.innerHTML=''; var n=0, nouvelles=0;
+        snap.forEach(function(d){
+          var x=d.data(); n++;
+          if (x.statut !== 'repondu') nouvelles++;
+          var date = x.created_at && x.created_at.toDate ? x.created_at.toDate().toLocaleDateString('fr-FR') : '—';
+          var pill = x.statut==='repondu'
+            ? '<span class="pill">répondu</span>'
+            : '<span class="pill" style="background:rgba(244,102,74,.18);color:#ffb3a3;">nouvelle</span>';
+          tb.innerHTML += '<tr>'
+            + '<td>'+date+'<div style="margin-top:.25rem;">'+pill+'</div></td>'
+            + '<td>'+esc(x.nom||'—')+'<div style="font-size:.72rem;color:#9db2a3;">'+esc(x.email||'')+(x.telephone?' · '+esc(x.telephone):'')+'</div></td>'
+            + '<td>'+esc(x.ref||'')+(x.qte>1?' × '+x.qte:'')+'<div style="font-size:.72rem;color:#9db2a3;">'+esc((x.produit||'').slice(0,70))+'</div></td>'
+            + '<td style="max-width:220px;font-size:.78rem;">'+esc(x.message||'—')+'</td>'
+            + '<td style="min-width:240px;">'
+            +   '<textarea data-dem="'+d.id+'" style="width:100%;min-height:60px;border:1px solid var(--line);border-radius:8px;background:#0c150d;color:var(--ink);font-family:inherit;font-size:.8rem;padding:.4rem .5rem;" placeholder="Votre réponse (prix, délai, alternative…)">'+esc(x.reponse||'')+'</textarea>'
+            +   '<button class="btn" style="margin-top:.35rem;padding:.4rem .8rem;font-size:.78rem;" onclick="repondreDemande(\''+d.id+'\')">Répondre</button>'
+            +   ' <a class="btn ghost" style="margin-top:.35rem;padding:.4rem .8rem;font-size:.78rem;text-decoration:none;display:inline-block;" href="mailto:'+esc(x.email||'')+'?subject='+encodeURIComponent('Votre demande produit — '+(x.ref||''))+'">Email</a>'
+            + '</td></tr>';
+        });
+        document.getElementById('demEmpty').classList.toggle('hidden', n>0);
+        window.__demandesNouvelles = nouvelles; renderKpis();
+      }).catch(function(e){
+        document.getElementById('demEmpty').classList.remove('hidden');
+        document.getElementById('demEmpty').textContent = 'Lecture impossible ('+(e.code||e.message)+'). Publiez les règles Firestore pour la collection « demandes ».';
+      });
+    }
+
+    window.repondreDemande = function(id){
+      var ta = document.querySelector('textarea[data-dem="'+id+'"]');
+      var texte = ta ? ta.value.trim() : '';
+      if (!texte) { alert('Écrivez votre réponse avant d\'enregistrer.'); return; }
+      firebase.firestore().collection('demandes').doc(id).update({
+        reponse: texte, statut: 'repondu',
+        repondu_at: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function(){ loadDemandes(); })
+        .catch(function(e){ alert('Enregistrement impossible : '+(e.code||e.message)); });
+    };
 
     function loadOrders(){
       var db = firebase.firestore();
@@ -134,6 +180,7 @@
       document.getElementById('kpis').innerHTML =
         '<div class="kpi"><div class="n">'+fmt(_ca)+'</div><div class="l">CA payé</div></div>'+
         '<div class="kpi"><div class="n">'+_orders+'</div><div class="l">Commandes</div></div>'+
+        '<div class="kpi"><div class="n">'+(window.__demandesNouvelles||0)+'</div><div class="l">Demandes à traiter</div></div>'+
         '<div class="kpi"><div class="n">'+(window.__leadsCount||0)+'</div><div class="l">Leads</div></div>';
     }
   </script>

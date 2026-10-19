@@ -56,13 +56,15 @@
   }
 
   /* Délai annoncé : un article DISPONIBLE chez le fournisseur est livré sous
-     7 jours ouvrés ; sinon, délai indicatif (approvisionnement + acheminement). */
+     7 jours ouvrés ; sinon, pas d'estimation affichée — le client fait une
+     demande et nous confirmons le délai avant toute commande. */
   function delaiTexte(ref, a, long) {
     if (statutDe(ref) === 'disponible') {
       return long ? 'livraison sous 7 jours ouvrés' : 'livré sous 7 j ouvrés';
     }
-    return long ? 'livraison sous ~' + (a.delai + 14) + ' jours' : 'livré sous ~' + (a.delai + 14) + ' j';
+    return long ? 'disponibilité à confirmer — faites une demande' : 'disponibilité sur demande';
   }
+  function urlDemande(ref) { return '/pages/demande-produit.html?ref=' + encodeURIComponent(ref); }
 
   /* ---------------- rendu ---------------- */
   function filtres() {
@@ -93,8 +95,10 @@
       + '<div class="q-inclus">Octroi &amp; livraison inclus*</div>'
       + (a.poids ? '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · ' + delaiTexte(a.ref, a) + '</div>' : '')
       + '<div class="q-actions">'
-      + '<button type="button" class="q-add" data-add="' + esc(a.ref) + '">🛒 Ajouter au panier</button>'
-      + ((dispo && lien) ? '<button type="button" class="q-pay" data-pay="' + esc(a.ref) + '">💳 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">forfait expédition inclus</span></button>' : '')
+      + (dispo
+          ? '<button type="button" class="q-add" data-add="' + esc(a.ref) + '">🛒 Ajouter au panier</button>'
+            + (lien ? '<button type="button" class="q-pay" data-pay="' + esc(a.ref) + '">💳 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">forfait expédition inclus</span></button>' : '')
+          : '<a class="q-pay" href="' + urlDemande(a.ref) + '">✉️ Faire une demande<span class="q-pay-sub">réponse sous 24 h ouvrées</span></a>')
       + '</div></div></article>';
   }
 

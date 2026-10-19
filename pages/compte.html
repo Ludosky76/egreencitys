@@ -311,6 +311,10 @@
     <h2 class="sec">📦 Historique de mes commandes</h2>
     <div id="orders-list" class="orders-list"></div>
 
+    <!-- Demandes produits (boutique quincaillerie) -->
+    <h2 class="sec">✉️ Mes demandes produits</h2>
+    <div id="demandes-list" class="orders-list"></div>
+
     <!-- Profil (form pré-rempli) -->
     <h2 class="sec">👤 Mon profil</h2>
     <form id="form-profile" onsubmit="handleProfileUpdate(event)">
@@ -583,6 +587,70 @@ function renderDashboard(c) {
 
   // Stats + orders (getOrders peut etre sync (local) ou async (firebase))
   Promise.resolve(window.EGCCustomer.getOrders()).then(renderOrders);
+
+  // Demandes produits (Firestore, boutique quincaillerie)
+  loadDemandes();
+}
+
+// --------- Demandes produits (quincaillerie) ---------
+// Collection Firestore « demandes » : une demande par article indisponible,
+// envoyée depuis /pages/demande-produit.html. L'admin répond depuis admin.html ;
+// la réponse apparaît ici.
+function loadDemandes(tentatives) {
+  var list = document.getElementById('demandes-list');
+  if (!list) return;
+  if (window.EGC_AUTH_BACKEND !== 'firebase') {
+    list.innerHTML = '<div class="empty-orders"><span class="icon">✉️</span>Le suivi des demandes nécessite un compte en ligne.</div>';
+    return;
+  }
+  // firebase-auth.js charge le SDK dynamiquement : on attend qu'il soit prêt
+  if (!(window.firebase && firebase.apps && firebase.apps.length && firebase.auth().currentUser)) {
+    if ((tentatives || 0) < 20) { setTimeout(function () { loadDemandes((tentatives || 0) + 1); }, 400); }
+    return;
+  }
+  var uid = firebase.auth().currentUser.uid;
+  firebase.firestore().collection('demandes').where('uid', '==', uid).get()
+    .then(function (snap) {
+      var ds = [];
+      snap.forEach(function (doc) { var x = doc.data(); x._id = doc.id; ds.push(x); });
+      ds.sort(function (a, b) {
+        var ta = a.created_at && a.created_at.toMillis ? a.created_at.toMillis() : 0;
+        var tb = b.created_at && b.created_at.toMillis ? b.created_at.toMillis() : 0;
+        return tb - ta;
+      });
+      if (!ds.length) {
+        list.innerHTML = '<div class="empty-orders"><span class="icon">✉️</span>Aucune demande pour le moment.<br>'
+          + 'Sur la <a href="/pages/boutique-quincaillerie.html" style="color:var(--green-dark);font-weight:700;">boutique quincaillerie</a>, '
+          + 'les articles indisponibles proposent « Faire une demande ».</div>';
+        return;
+      }
+      list.innerHTML = ds.map(function (d) {
+        var date = d.created_at && d.created_at.toDate ? d.created_at.toDate().toLocaleDateString('fr-FR') : '—';
+        var repondu = d.statut === 'repondu' && d.reponse;
+        return ''
+          + '<div class="order">'
+          +   '<div class="info" style="width:100%;">'
+          +     '<div class="id">Réf. ' + escD(d.ref) + (d.qte > 1 ? ' × ' + d.qte : '') + '</div>'
+          +     '<div class="date">' + date + '</div>'
+          +     '<div class="items">' + escD(d.produit) + '</div>'
+          +     (d.message ? '<div class="items" style="font-style:italic;">« ' + escD(d.message) + ' »</div>' : '')
+          +     '<span class="status">' + (repondu ? '✓ répondu' : 'en cours d\'étude') + '</span>'
+          +     (repondu
+              ? '<div style="margin-top:.5rem;background:#eef7e8;border-left:3px solid var(--green);border-radius:8px;padding:.6rem .8rem;font-size:.85rem;">'
+                + '<strong>Réponse EGREENCITY\'S :</strong><br>' + escD(d.reponse).replace(/\n/g, '<br>') + '</div>'
+              : '')
+          +   '</div>'
+          + '</div>';
+      }).join('');
+    })
+    .catch(function () {
+      list.innerHTML = '<div class="empty-orders"><span class="icon">✉️</span>Demandes momentanément indisponibles — réessayez dans un instant.</div>';
+    });
+}
+function escD(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+  });
 }
 
 function renderOrders(orders) {
