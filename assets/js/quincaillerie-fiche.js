@@ -67,8 +67,15 @@
     var p = panier();
     var l = p.find(function (x) { return x.ref === ref; });
     if (l) l.q += 1; else p.push({ ref: ref, q: 1 });
-    try { localStorage.setItem(CLE_PANIER, JSON.stringify({ maj: Date.now(), lignes: p })); } catch (e) {}
-    window.location.href = URL_BOUTIQUE + '#panier';
+    var paquet = { maj: Date.now(), lignes: p };
+    try { localStorage.setItem(CLE_PANIER, JSON.stringify(paquet)); } catch (e) {}
+    /* client connecté : pousser aussi sur le compte avant de partir
+       (au plus 900 ms d'attente pour ne pas bloquer la navigation) */
+    var attente = (window.EGCQCompte && window.EGCQCompte.utilisateur())
+      ? Promise.race([window.EGCQCompte.sauverPanier(paquet),
+                      new Promise(function (r) { setTimeout(r, 900); })])
+      : Promise.resolve();
+    attente.then(function () { window.location.href = URL_BOUTIQUE + '#panier'; });
   }
 
   /* ---------------- paiement sécurisé (stock revérifié) ------------ */
@@ -156,7 +163,8 @@
       +     (dispo
       ?       '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>'
       +       (lien ? '<button type="button" class="q-pay" data-pay="' + esc(ref) + '">💳 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">forfait expédition inclus — stock revérifié avant paiement</span></button>' : '')
-      :       '<a class="q-pay" href="' + urlDemande(ref) + '">✉️ Faire une demande<span class="q-pay-sub">nous confirmons prix et délai sous 24 h ouvrées — suivi dans votre espace client</span></a>')
+      :       '<a class="q-pay" href="' + urlDemande(ref) + '">✉️ Faire une demande<span class="q-pay-sub">nous confirmons prix et délai sous 24 h ouvrées — suivi dans votre espace client</span></a>'
+      +       '<button type="button" class="q-alerte" data-alerte="' + esc(ref) + '">🔔 M’alerter au retour en stock</button>')
       +     '</div>'
       +   '</div>'
       +   '<ul class="qf-reassurance">'
@@ -206,6 +214,16 @@
     }
   }
 
+  /* ---------------- alertes de disponibilité ------------------------- */
+  function majBoutonAlerte(actif) {
+    var b = document.querySelector('[data-alerte]');
+    if (!b) return;
+    b.classList.toggle('actif', !!actif);
+    b.innerHTML = actif
+      ? '🔕 Alerte active — cliquer pour la retirer'
+      : '🔔 M’alerter au retour en stock';
+  }
+
   /* ---------------- init --------------------------------------------- */
   function initEvenements() {
     $('q-ouvrir-panier').addEventListener('click', function () { window.location.href = URL_BOUTIQUE + '#panier'; });
@@ -214,10 +232,22 @@
     $('q-menu-fond').addEventListener('click', function () { document.body.classList.remove('menu-ouvert'); $('q-burger').setAttribute('aria-expanded', 'false'); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { document.body.classList.remove('menu-ouvert'); $('q-burger').setAttribute('aria-expanded', 'false'); } });
     document.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-add],[data-pay]');
+      var t = e.target.closest('[data-add],[data-pay],[data-alerte]');
       if (!t) return;
       if (t.dataset.add) ajouterPanier(t.dataset.add);
       if (t.dataset.pay) verifierPuisPayer(t.dataset.pay);
+      if (t.dataset.alerte) {
+        if (!(window.EGCQCompte && window.EGCQCompte.utilisateur())) {
+          if (confirm('Les alertes de retour en stock sont liées à votre espace client.\nCréer un compte ou se connecter maintenant ?')) {
+            window.location.href = '/pages/compte.html';
+          }
+          return;
+        }
+        window.EGCQCompte.basculerAlerte(t.dataset.alerte).then(function (actif) {
+          if (actif === null) alert('Enregistrement impossible — réessayez dans un instant.');
+          else majBoutonAlerte(actif);
+        });
+      }
     });
   }
 
@@ -233,6 +263,12 @@
     etat.liens = res[2] || {};
     initEvenements(); rendreMenu(); majPastille();
     if (ref) rendre(ref); else rendreIntrouvable();
+    /* état du bouton d'alerte une fois le compte connu */
+    if (window.EGCQCompte) {
+      window.EGCQCompte.pret.then(function (u) {
+        if (u && ref) majBoutonAlerte(window.EGCQCompte.alertes().indexOf(ref) > -1);
+      });
+    }
   }).catch(function () {
     $('qf-haut').innerHTML = '<p class="q-vide" style="grid-column:1/-1;">La fiche ne se charge pas. Rafraîchissez la page ou contactez-nous : egreencitys@gmail.com</p>';
   });

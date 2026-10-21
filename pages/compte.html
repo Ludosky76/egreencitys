@@ -318,6 +318,10 @@
     <h2 class="sec">✉️ Mes demandes produits</h2>
     <div id="demandes-list" class="orders-list"></div>
 
+    <!-- Alertes de retour en stock (boutique quincaillerie) -->
+    <h2 class="sec">🔔 Mes alertes de disponibilité</h2>
+    <div id="alertes-list" class="orders-list"></div>
+
     <!-- Profil (form pré-rempli) -->
     <h2 class="sec">👤 Mon profil</h2>
     <form id="form-profile" onsubmit="handleProfileUpdate(event)">
@@ -588,11 +592,62 @@ function renderDashboard(c) {
     }
   }
 
-  // Stats + orders (getOrders peut etre sync (local) ou async (firebase))
-  Promise.resolve(window.EGCCustomer.getOrders()).then(renderOrders);
+  // Stats + commandes : historique local + commandes suivies par EGREENCITY'S
+  chargerToutesCommandes();
 
-  // Demandes produits (Firestore, boutique quincaillerie)
+  // Demandes produits + alertes dispo (Firestore, boutique quincaillerie)
   loadDemandes();
+  loadAlertes();
+}
+
+// --------- Commandes (local + Firestore « orders » par email) ---------
+// Les commandes enregistrees par EGREENCITY'S (collection « orders ») portent
+// email, numero, articles, montant, statut (payee → en_preparation → expedie
+// → livre) et numero_suivi Chronopost. Elles sont fusionnees avec
+// l'historique local de l'appareil.
+function libelleStatut(s) {
+  return ({ paye: '✓ payée', payee: '✓ payée', en_attente: 'en attente',
+    en_preparation: '🔧 en préparation', expedie: '🚚 expédiée',
+    livre: '✅ livrée', annulee: '✖ annulée' })[s] || (s || 'en attente');
+}
+function chargerToutesCommandes(tentatives) {
+  Promise.resolve(window.EGCCustomer.getOrders()).then(function (locales) {
+    locales = locales || [];
+    var fbPret = window.EGC_AUTH_BACKEND === 'firebase'
+      && window.firebase && firebase.apps && firebase.apps.length && firebase.auth().currentUser;
+    if (!fbPret) {
+      renderOrders(locales);
+      if (window.EGC_AUTH_BACKEND === 'firebase' && (tentatives || 0) < 20) {
+        setTimeout(function () { chargerToutesCommandes((tentatives || 0) + 1); }, 400);
+      }
+      return;
+    }
+    var email = firebase.auth().currentUser.email;
+    firebase.firestore().collection('orders').where('email', '==', email).get()
+      .then(function (snap) {
+        var distantes = [];
+        snap.forEach(function (d) {
+          var o = d.data();
+          distantes.push({
+            id: o.numero || d.id,
+            date: o.created_at && o.created_at.toDate ? o.created_at.toDate().toISOString() : new Date().toISOString(),
+            items: (o.articles || []).map(function (a) {
+              return { name: (a.quantite > 1 ? a.quantite + '× ' : '') + (a.libelle || '') };
+            }),
+            total: Number(o.montant) || 0,
+            status: o.statut || 'payee',
+            suivi: o.numero_suivi || ''
+          });
+        });
+        var vus = {};
+        var tout = distantes.concat(locales).filter(function (o) {
+          if (vus[o.id]) return false; vus[o.id] = 1; return true;
+        });
+        tout.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+        renderOrders(tout);
+      })
+      .catch(function () { renderOrders(locales); });
+  });
 }
 
 // --------- Demandes produits (quincaillerie) ---------
@@ -642,6 +697,16 @@ function loadDemandes(tentatives) {
               ? '<div style="margin-top:.5rem;background:#eef7e8;border-left:3px solid var(--green);border-radius:8px;padding:.6rem .8rem;font-size:.85rem;">'
                 + '<strong>Réponse EGREENCITY\'S :</strong><br>' + escD(d.reponse).replace(/\n/g, '<br>') + '</div>'
               : '')
+          +     (d.reponse_client
+              ? '<div style="margin-top:.4rem;background:#f2f6ff;border-left:3px solid #2B4DB5;border-radius:8px;padding:.6rem .8rem;font-size:.85rem;">'
+                + '<strong>Votre message :</strong><br>' + escD(d.reponse_client).replace(/\n/g, '<br>') + '</div>'
+              : '')
+          +     (repondu
+              ? '<div style="margin-top:.5rem;display:flex;gap:.5rem;align-items:flex-start;">'
+                + '<textarea data-dem-rep="' + d._id + '" placeholder="Répondre à EGREENCITY\'S…" style="flex:1;min-height:52px;padding:.5rem .7rem;border:1.5px solid #d5e2cd;border-radius:9px;font:inherit;font-size:.82rem;"></textarea>'
+                + '<button type="button" onclick="repondreDemandeClient(\'' + d._id + '\')" style="background:var(--green-dark);color:#fff;border:none;border-radius:9px;padding:.55rem .9rem;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;">Envoyer</button>'
+                + '</div>'
+              : '')
           +   '</div>'
           + '</div>';
       }).join('');
@@ -655,6 +720,86 @@ function escD(s) {
     return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
   });
 }
+
+// Réponse du client sur une demande (fil de discussion). Les règles Firestore
+// n'autorisent que les champs reponse_client / maj_client / lu_client.
+window.repondreDemandeClient = function (id) {
+  var ta = document.querySelector('textarea[data-dem-rep="' + id + '"]');
+  var texte = ta ? ta.value.trim() : '';
+  if (!texte) { alert('Écrivez votre message avant d\'envoyer.'); return; }
+  firebase.firestore().collection('demandes').doc(id).update({
+    reponse_client: texte,
+    maj_client: firebase.firestore.FieldValue.serverTimestamp(),
+    lu_client: true
+  }).then(function () {
+    // notification à EGREENCITY'S (non bloquant)
+    fetch('https://formsubmit.co/ajax/egreencitys@gmail.com', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        _subject: 'Réponse client sur une demande produit',
+        demande: id, message: texte,
+        email: firebase.auth().currentUser ? firebase.auth().currentUser.email : ''
+      })
+    }).catch(function () {});
+    loadDemandes();
+  }).catch(function () { alert('Envoi impossible — réessayez dans un instant.'); });
+};
+
+// --------- Alertes de retour en stock (boutique quincaillerie) ---------
+// Les refs sous alerte vivent dans users/{uid}.alertes (posées depuis la
+// fiche produit). La disponibilité est relue en direct dans le stock publié.
+function loadAlertes(tentatives) {
+  var list = document.getElementById('alertes-list');
+  if (!list) return;
+  if (window.EGC_AUTH_BACKEND !== 'firebase') {
+    list.innerHTML = '<div class="empty-orders"><span class="icon">🔔</span>Les alertes nécessitent un compte en ligne.</div>';
+    return;
+  }
+  if (!(window.firebase && firebase.apps && firebase.apps.length && firebase.auth().currentUser)) {
+    if ((tentatives || 0) < 20) { setTimeout(function () { loadAlertes((tentatives || 0) + 1); }, 400); }
+    return;
+  }
+  var uid = firebase.auth().currentUser.uid;
+  Promise.all([
+    firebase.firestore().collection('users').doc(uid).get(),
+    fetch('/assets/data/quincaillerie-catalogue.json').then(function (r) { return r.json(); }).catch(function () { return null; }),
+    fetch('/assets/data/quincaillerie-stock.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return {}; })
+  ]).then(function (res) {
+    var alertes = (res[0].exists && res[0].data().alertes) || [];
+    var cat = res[1], stock = (res[2] && res[2].stock) || {};
+    if (!alertes.length) {
+      list.innerHTML = '<div class="empty-orders"><span class="icon">🔔</span>Aucune alerte. Sur la fiche d\'un article indisponible de la '
+        + '<a href="/pages/boutique-quincaillerie.html" style="color:var(--green-dark);font-weight:700;">boutique quincaillerie</a>, '
+        + 'cliquez « M\'alerter au retour en stock ».</div>';
+      return;
+    }
+    list.innerHTML = alertes.map(function (ref) {
+      var a = cat ? cat.articles.find(function (x) { return x.ref === ref; }) : null;
+      var st = (stock[ref] && stock[ref].s) || 'inconnu';
+      var dispo = st === 'disponible';
+      return ''
+        + '<div class="order">'
+        +   '<div class="info" style="width:100%;">'
+        +     '<div class="id">Réf. ' + escD(ref) + '</div>'
+        +     '<div class="items"><a href="/pages/produit-quincaillerie.html?ref=' + encodeURIComponent(ref) + '" style="color:var(--green-dark);font-weight:600;">'
+        +       escD(a ? a.nom : 'Article ' + ref) + '</a></div>'
+        +     '<span class="status" style="' + (dispo ? 'background:#e4f6db;color:#17631a;' : '') + '">'
+        +       (dispo ? '✅ De retour en stock — commandez vite !' : '⏳ toujours indisponible') + '</span>'
+        +   '</div>'
+        +   '<button type="button" onclick="retirerAlerte(\'' + escD(ref) + '\')" style="background:none;border:1px solid #cfdac6;border-radius:9px;padding:.4rem .8rem;font:inherit;font-size:.78rem;cursor:pointer;color:#555;align-self:center;">Retirer</button>'
+        + '</div>';
+    }).join('');
+  }).catch(function () {
+    list.innerHTML = '<div class="empty-orders"><span class="icon">🔔</span>Alertes momentanément indisponibles.</div>';
+  });
+}
+window.retirerAlerte = function (ref) {
+  var uid = firebase.auth().currentUser && firebase.auth().currentUser.uid;
+  if (!uid) return;
+  firebase.firestore().collection('users').doc(uid).update({
+    alertes: firebase.firestore.FieldValue.arrayRemove(ref)
+  }).then(loadAlertes).catch(function () { alert('Retrait impossible — réessayez.'); });
+};
 
 function renderOrders(orders) {
   orders = orders || [];
@@ -682,7 +827,12 @@ function renderOrders(orders) {
         +     '<div class="id">' + o.id + '</div>'
         +     '<div class="date">' + new Date(o.date).toLocaleString('fr-FR') + '</div>'
         +     '<div class="items">' + items + '</div>'
-        +     '<span class="status">' + (o.status === 'paye' ? '✓ payée' : 'en attente') + '</span>'
+        +     '<span class="status">' + libelleStatut(o.status) + '</span>'
+        +     (o.suivi
+            ? '<div class="items" style="margin-top:.3rem;">📦 Suivi Chronopost : <a href="https://www.chronopost.fr/tracking-no-cms/suivi-page?listeNumerosLT='
+              + encodeURIComponent(o.suivi) + '" target="_blank" rel="noopener" style="color:var(--green-dark);font-weight:700;">'
+              + o.suivi + '</a></div>'
+            : '')
         +   '</div>'
         +   '<div class="price">' + (o.total || 0).toLocaleString('fr-FR') + ' €</div>'
         + '</div>';

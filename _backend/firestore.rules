@@ -44,19 +44,73 @@ service cloud.firestore {
     }
 
     // --------------------------------------------------------------------
-    // COMMANDES — écrites uniquement par la Cloud Function (Admin SDK, qui
-    // contourne ces règles). Aucune écriture cliente possible.
+    // COMMANDES — créées par la Cloud Function Stripe (Admin SDK, qui
+    // contourne ces règles) OU manuellement par un admin depuis admin.html
+    // (statut, n° de suivi Chronopost). Chaque client lit les siennes,
+    // identifiées par l'email vérifié de son compte.
     // --------------------------------------------------------------------
     match /orders/{id} {
-      allow read: if isAdmin();
-      allow write: if false;
+      allow read: if isAdmin()
+                  || (request.auth != null
+                      && request.auth.token.email_verified == true
+                      && request.auth.token.email == resource.data.email);
+      allow create, update: if isAdmin();
+      allow delete: if false;
     }
 
     // --------------------------------------------------------------------
-    // PROFILS CLIENTS — chacun accède exclusivement à ses propres données.
+    // PROFILS CLIENTS — chacun accède exclusivement à ses propres données
+    // (profil, commandes locales, panier quincaillerie synchronisé
+    // « panier_quinc », alertes de retour en stock « alertes »).
+    // Les admins lisent (tableau de bord : paniers en cours, alertes).
     // --------------------------------------------------------------------
     match /users/{uid}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read: if isAdmin();
+    }
+
+    // --------------------------------------------------------------------
+    // DEMANDES PRODUIT (boutique quincaillerie) — un client authentifié
+    // crée sa propre demande (uid imposé, champs bornés, horodatage
+    // serveur) ; il lit les siennes ; l'admin lit tout et enregistre la
+    // réponse (statut « repondu »), affichée dans l'espace client.
+    // Fil de discussion : le client ne peut modifier QUE ses champs
+    // reponse_client / maj_client / lu_client.
+    // --------------------------------------------------------------------
+    match /demandes/{id} {
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.keys().hasOnly(
+                         ['uid', 'email', 'nom', 'telephone', 'ref', 'produit',
+                          'qte', 'message', 'statut', 'reponse', 'created_at'])
+                    && request.resource.data.email is string
+                    && request.resource.data.email.size() < 200
+                    && request.resource.data.nom is string
+                    && request.resource.data.nom.size() < 120
+                    && request.resource.data.telephone is string
+                    && request.resource.data.telephone.size() < 40
+                    && request.resource.data.ref is string
+                    && request.resource.data.ref.size() < 40
+                    && request.resource.data.produit is string
+                    && request.resource.data.produit.size() < 300
+                    && request.resource.data.qte is int
+                    && request.resource.data.qte >= 1
+                    && request.resource.data.qte <= 999
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() < 2000
+                    && request.resource.data.statut == 'nouvelle'
+                    && request.resource.data.reponse == ''
+                    && request.resource.data.created_at == request.time;
+      allow read: if request.auth != null
+                  && (resource.data.uid == request.auth.uid || isAdmin());
+      allow update: if isAdmin()
+                    || (request.auth != null
+                        && resource.data.uid == request.auth.uid
+                        && request.resource.data.diff(resource.data).affectedKeys()
+                             .hasOnly(['reponse_client', 'maj_client', 'lu_client'])
+                        && request.resource.data.reponse_client is string
+                        && request.resource.data.reponse_client.size() < 2000);
+      allow delete: if isAdmin();
     }
   }
 }

@@ -64,9 +64,28 @@
     <div class="wrap">
       <div class="kpis" id="kpis"></div>
       <h2>🛒 Commandes</h2>
-      <div class="tablewrap"><table id="ordersT"><thead><tr><th>N°</th><th>Client</th><th>Email</th><th>Montant</th><th>Statut</th><th>Date</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="ordersEmpty">Aucune commande enregistrée.<br><span style="font-size:.82rem;">L'enregistrement automatique des paiements Stripe nécessite l'activation du plan Blaze sur Firebase. En attendant, retrouvez vos paiements dans le tableau de bord Stripe.</span></div></div>
+      <details style="margin-bottom:.8rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem;">
+        <summary style="cursor:pointer;font-weight:700;font-size:.88rem;">➕ Enregistrer une commande manuelle (quincaillerie, virement…)</summary>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.6rem;margin-top:.8rem;">
+          <input id="no-email" type="email" placeholder="Email client *" style="padding:.55rem .7rem;border:1px solid var(--line);border-radius:8px;background:#0c150d;color:var(--ink);font-family:inherit;font-size:.85rem;">
+          <input id="no-nom" type="text" placeholder="Nom / société" style="padding:.55rem .7rem;border:1px solid var(--line);border-radius:8px;background:#0c150d;color:var(--ink);font-family:inherit;font-size:.85rem;">
+          <input id="no-montant" type="number" step="0.01" placeholder="Montant € *" style="padding:.55rem .7rem;border:1px solid var(--line);border-radius:8px;background:#0c150d;color:var(--ink);font-family:inherit;font-size:.85rem;">
+          <select id="no-statut" style="padding:.55rem .7rem;border:1px solid var(--line);border-radius:8px;background:#0c150d;color:var(--ink);font-family:inherit;font-size:.85rem;">
+            <option value="payee">payée</option><option value="en_attente">en attente</option>
+            <option value="en_preparation">en préparation</option><option value="expedie">expédiée</option>
+          </select>
+        </div>
+        <textarea id="no-articles" placeholder="Articles — une ligne par article, ex. : 2× [381HL] Coupe-boulons Knipex 460mm" style="width:100%;min-height:56px;margin-top:.6rem;padding:.55rem .7rem;border:1px solid var(--line);border-radius:8px;background:#0c150d;color:var(--ink);font-family:inherit;font-size:.82rem;"></textarea>
+        <button class="btn" style="margin-top:.6rem;" onclick="creerCommande()">Créer la commande</button>
+        <span id="no-msg" style="font-size:.78rem;margin-left:.6rem;color:#9db2a3;"></span>
+      </details>
+      <div class="tablewrap"><table id="ordersT"><thead><tr><th>N°</th><th>Client</th><th>Email</th><th>Montant</th><th>Statut · Suivi</th><th>Date</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="ordersEmpty">Aucune commande enregistrée.<br><span style="font-size:.82rem;">L'enregistrement automatique des paiements Stripe nécessite l'activation du plan Blaze sur Firebase. En attendant, créez les commandes manuellement ci-dessus — elles apparaissent dans l'espace client.</span></div></div>
       <h2>✉️ Demandes produits (quincaillerie)</h2>
       <div class="tablewrap"><table id="demT"><thead><tr><th>Date</th><th>Client</th><th>Produit</th><th>Message</th><th>Réponse</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="demEmpty">Aucune demande produit. Elles arrivent ici quand un client clique « Faire une demande » sur un article indisponible.</div></div>
+      <h2>🔔 Alertes de retour en stock</h2>
+      <div class="tablewrap"><table id="alertesT"><thead><tr><th>Client</th><th>Références surveillées</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="alertesEmpty">Aucune alerte active. Les clients en posent depuis la fiche d'un article indisponible.</div></div>
+      <h2>🛒 Paniers en cours (quincaillerie)</h2>
+      <div class="tablewrap"><table id="paniersT"><thead><tr><th>Client</th><th>Contenu</th><th>Dernière activité</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="paniersEmpty">Aucun panier en cours chez les clients connectés.</div></div>
       <h2>📧 Leads</h2>
       <div class="tablewrap"><table id="leadsT"><thead><tr><th>Email</th><th>Panier / demande</th><th>Total</th><th>Source</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="leadsEmpty">Aucun lead pour le moment.</div></div>
     </div>
@@ -100,7 +119,81 @@
       else if (user){ var m=document.getElementById('msg'); m.style.color='#ff8574'; m.textContent='Ce compte n\'est pas administrateur.'; }
     });
 
-    window.loadAll = function(){ loadOrders(); loadLeads(); loadDemandes(); };
+    window.loadAll = function(){ loadOrders(); loadLeads(); loadDemandes(); loadClients(); };
+
+    // --- Commandes : création manuelle + statut / n° de suivi -------------
+    // Visible côté client dans compte.html (collection « orders », lue par
+    // email). Statuts : en_attente → payee → en_preparation → expedie → livre.
+    window.creerCommande = function(){
+      var msg = document.getElementById('no-msg');
+      var email = document.getElementById('no-email').value.trim().toLowerCase();
+      var montant = parseFloat(document.getElementById('no-montant').value);
+      if (!email || !(montant >= 0)) { msg.textContent = 'Email et montant requis.'; return; }
+      var articles = document.getElementById('no-articles').value.split('\n')
+        .map(function(l){ return l.trim(); }).filter(Boolean)
+        .map(function(l){ return { libelle: l, quantite: 1 }; });
+      var numero = 'EGC-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + String(Date.now()).slice(-5);
+      msg.textContent = 'Création…';
+      firebase.firestore().collection('orders').add({
+        numero: numero, email: email,
+        nom: document.getElementById('no-nom').value.trim(),
+        articles: articles, montant: montant,
+        statut: document.getElementById('no-statut').value,
+        numero_suivi: '',
+        created_at: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function(){
+        msg.textContent = '✔ ' + numero + ' créée.';
+        document.getElementById('no-articles').value = '';
+        loadOrders();
+      }).catch(function(e){ msg.textContent = 'Erreur : ' + (e.code||e.message); });
+    };
+
+    window.majCommande = function(id){
+      var statut = document.querySelector('select[data-cmd-statut="'+id+'"]').value;
+      var suivi = document.querySelector('input[data-cmd-suivi="'+id+'"]').value.trim();
+      firebase.firestore().collection('orders').doc(id).update({
+        statut: statut, numero_suivi: suivi,
+        maj_at: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(loadOrders)
+        .catch(function(e){ alert('Enregistrement impossible : '+(e.code||e.message)+'\nPubliez les règles Firestore mises à jour.'); });
+    };
+
+    // --- Clients : alertes de retour en stock + paniers en cours ----------
+    function loadClients(){
+      var db = firebase.firestore();
+      Promise.all([
+        db.collection('users').limit(500).get(),
+        fetch('/assets/data/quincaillerie-stock.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return {};})
+      ]).then(function(res){
+        var stock = (res[1] && res[1].stock) || {};
+        var ta = document.querySelector('#alertesT tbody'); ta.innerHTML='';
+        var tp = document.querySelector('#paniersT tbody'); tp.innerHTML='';
+        var na=0, np=0;
+        res[0].forEach(function(d){
+          var u = d.data();
+          var email = u.email || '(email non renseigné)';
+          if (u.alertes && u.alertes.length){
+            na++;
+            var refs = u.alertes.map(function(r){
+              var st = (stock[r] && stock[r].s) || 'inconnu';
+              return esc(r) + (st==='disponible' ? ' <span class="pill">de retour ✔</span>' : '');
+            }).join(' · ');
+            ta.innerHTML += '<tr><td>'+esc(email)+'</td><td>'+refs+'</td></tr>';
+          }
+          if (u.panier_quinc && u.panier_quinc.lignes && u.panier_quinc.lignes.length){
+            np++;
+            var maj = u.panier_quinc.maj ? new Date(u.panier_quinc.maj).toLocaleDateString('fr-FR') : '—';
+            var contenu = u.panier_quinc.lignes.map(function(l){ return (l.q>1? l.q+'× ':'')+l.ref; }).join(', ');
+            tp.innerHTML += '<tr><td>'+esc(email)+'</td><td>'+esc(contenu)+'</td><td>'+maj+'</td></tr>';
+          }
+        });
+        document.getElementById('alertesEmpty').classList.toggle('hidden', na>0);
+        document.getElementById('paniersEmpty').classList.toggle('hidden', np>0);
+      }).catch(function(){
+        document.getElementById('alertesEmpty').classList.remove('hidden');
+        document.getElementById('alertesEmpty').textContent = 'Lecture impossible — publiez les règles Firestore mises à jour (lecture admin de « users »).';
+      });
+    }
 
     // --- Demandes produits (boutique quincaillerie) ---
     // La réponse saisie ici est enregistrée sur la demande (statut « repondu »)
@@ -120,7 +213,9 @@
             + '<td>'+date+'<div style="margin-top:.25rem;">'+pill+'</div></td>'
             + '<td>'+esc(x.nom||'—')+'<div style="font-size:.72rem;color:#9db2a3;">'+esc(x.email||'')+(x.telephone?' · '+esc(x.telephone):'')+'</div></td>'
             + '<td>'+esc(x.ref||'')+(x.qte>1?' × '+x.qte:'')+'<div style="font-size:.72rem;color:#9db2a3;">'+esc((x.produit||'').slice(0,70))+'</div></td>'
-            + '<td style="max-width:220px;font-size:.78rem;">'+esc(x.message||'—')+'</td>'
+            + '<td style="max-width:220px;font-size:.78rem;">'+esc(x.message||'—')
+            +   (x.reponse_client ? '<div style="margin-top:.35rem;padding:.35rem .5rem;background:#10231f;border-left:3px solid #3F8BF2;border-radius:6px;">💬 <b>Client :</b> '+esc(x.reponse_client)+'</div>' : '')
+            + '</td>'
             + '<td style="min-width:240px;">'
             +   '<textarea data-dem="'+d.id+'" style="width:100%;min-height:60px;border:1px solid var(--line);border-radius:8px;background:#0c150d;color:var(--ink);font-family:inherit;font-size:.8rem;padding:.4rem .5rem;" placeholder="Votre réponse (prix, délai, alternative…)">'+esc(x.reponse||'')+'</textarea>'
             +   '<button class="btn" style="margin-top:.35rem;padding:.4rem .8rem;font-size:.78rem;" onclick="repondreDemande(\''+d.id+'\')">Répondre</button>'
@@ -152,10 +247,18 @@
         var tb = document.querySelector('#ordersT tbody'); tb.innerHTML='';
         var ca=0, n=0;
         snap.forEach(function(d){
-          var o=d.data(); n++; if(o.statut==='payee') ca+=Number(o.montant)||0;
+          var o=d.data(); n++; if(['payee','en_preparation','expedie','livre'].indexOf(o.statut)>-1) ca+=Number(o.montant)||0;
           var date = o.created_at && o.created_at.toDate ? o.created_at.toDate().toLocaleDateString('fr-FR') : '—';
           var arts = (o.articles||[]).map(function(a){ return (a.quantite>1? a.quantite+'× ':'') + a.libelle; }).join(', ') || (o.produit||'');
-          tb.innerHTML += '<tr><td>'+esc(o.numero||d.id.slice(-8))+'</td><td>'+esc(o.nom||'—')+(arts?'<div style="font-size:.72rem;color:#9db2a3;margin-top:.15rem;">'+esc(arts)+'</div>':'')+'</td><td>'+esc(o.email||'—')+'</td><td>'+fmt(o.montant)+'</td><td><span class="pill">'+esc(o.statut||'?')+'</span></td><td>'+date+'</td></tr>';
+          var opts = ['en_attente','payee','en_preparation','expedie','livre','annulee'].map(function(s){
+            return '<option value="'+s+'"'+(o.statut===s?' selected':'')+'>'+s.replace('_',' ')+'</option>';
+          }).join('');
+          tb.innerHTML += '<tr><td>'+esc(o.numero||d.id.slice(-8))+'</td><td>'+esc(o.nom||'—')+(arts?'<div style="font-size:.72rem;color:#9db2a3;margin-top:.15rem;">'+esc(arts)+'</div>':'')+'</td><td>'+esc(o.email||'—')+'</td><td>'+fmt(o.montant)+'</td>'
+            + '<td style="min-width:190px;">'
+            +   '<select data-cmd-statut="'+d.id+'" style="width:100%;padding:.3rem .4rem;border:1px solid var(--line);border-radius:7px;background:#0c150d;color:var(--ink);font-family:inherit;font-size:.78rem;">'+opts+'</select>'
+            +   '<input data-cmd-suivi="'+d.id+'" value="'+esc(o.numero_suivi||'')+'" placeholder="N° suivi Chronopost" style="width:100%;margin-top:.3rem;padding:.3rem .4rem;border:1px solid var(--line);border-radius:7px;background:#0c150d;color:var(--ink);font-family:inherit;font-size:.78rem;">'
+            +   '<button class="btn" style="margin-top:.3rem;padding:.3rem .7rem;font-size:.74rem;" onclick="majCommande(\''+d.id+'\')">💾 Enregistrer</button>'
+            + '</td><td>'+date+'</td></tr>';
         });
         document.getElementById('ordersEmpty').classList.toggle('hidden', n>0);
         renderKpis(ca, n);

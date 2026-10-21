@@ -148,6 +148,12 @@ a.q-lien:hover .q-nom{color:var(--blue);text-decoration:underline;}
 /* « Faire une demande » et autres liens habillés en bouton */
 a.q-add,a.q-pay{text-decoration:none;}
 a.q-add:hover,a.q-pay:hover{color:#fff;text-decoration:none;}
+/* alerte de retour en stock (fiche produit indisponible) */
+.q-alerte{display:inline-flex;align-items:center;gap:.35rem;background:transparent;border:1.5px solid var(--blue-light);color:var(--blue);border-radius:50px;padding:.32rem .85rem;font:inherit;font-size:.72rem;font-weight:600;cursor:pointer;transition:.15s;width:auto;}
+.q-alerte:hover{background:var(--sky);}
+.q-alerte.actif{background:var(--mint);border-color:var(--green);color:var(--green-deep);}
+html[data-theme="dark"] .q-alerte{color:#9DB9F7;}
+html[data-theme="dark"] .q-alerte.actif{background:#16321D;border-color:var(--green);color:#86E25E;}
 .q-pay-sub{display:block;font-size:.62rem;font-weight:500;opacity:.85;}
 .q-verif{opacity:.6;cursor:wait;}
 .q-vide{grid-column:1/-1;text-align:center;color:var(--muted);padding:2.5rem 1rem;font-size:.9rem;}

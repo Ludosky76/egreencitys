@@ -6,7 +6,7 @@
   <title>Fiche produit — Quincaillerie Pro | EGREENCITY'S</title>
   <meta name="description" content="Fiche produit de la boutique quincaillerie EGREENCITY'S : prix tout compris (octroi de mer et transport inclus), disponibilité, délai de livraison en Guyane.">
   <meta name="robots" content="index, follow">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://media.screwfix.fr https://*.google-analytics.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://www.google-analytics.com https://*.googletagmanager.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://media.screwfix.fr https://*.google-analytics.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.googletagmanager.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://egreencitys-93e0b.firebaseapp.com https://*.google-analytics.com https://www.google-analytics.com https://*.googletagmanager.com; frame-src https://egreencitys-93e0b.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="canonical" href="https://egreencitys.com/pages/produit-quincaillerie.html">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/quincaillerie.css?v=7">
+  <link rel="stylesheet" href="/assets/css/quincaillerie.css?v=8">
   <link rel="stylesheet" href="/assets/css/refonte.css?v=6">
   <script src="/assets/js/quincaillerie-theme.js?v=1"></script>
 </head>
@@ -101,8 +101,13 @@
     <p style="margin-top:.4rem;"><a href="/pages/legal/mentions-legales.html">Mentions légales</a> · <a href="/pages/legal/cgv-quincaillerie.html">Conditions de vente</a> · <a href="/pages/boutique-wallbox.html">Bornes de recharge</a></p>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="/assets/js/firebase-config.js?v=2"></script>
+  <script src="/assets/js/quincaillerie-compte.js?v=1"></script>
   <script src="/assets/js/site-config.js?v=3" defer></script>
-  <script src="/assets/js/quincaillerie-fiche.js?v=3" defer></script>
+  <script src="/assets/js/quincaillerie-fiche.js?v=4" defer></script>
   <script src="/assets/js/mobile-nav.js?v=7" defer></script>
 <script src="/assets/js/protection.js?v=1" defer></script>
   <script src="/assets/js/analytics.js?v=2" defer></script>

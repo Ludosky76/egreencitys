@@ -121,16 +121,45 @@
      Conservé 7 jours sur l'appareil (à compter de la dernière activité) :
      enregistré horodaté { maj, lignes }, purgé au-delà de PANIER_RETENTION. */
   var PANIER_RETENTION = 7 * 24 * 3600 * 1000;
+  var syncTimer = null;
   function sauver() {
-    try { localStorage.setItem(CLE_PANIER, JSON.stringify({ maj: Date.now(), lignes: etat.panier })); } catch (e) {}
+    var p = { maj: Date.now(), lignes: etat.panier };
+    etat.panierMaj = p.maj;
+    try { localStorage.setItem(CLE_PANIER, JSON.stringify(p)); } catch (e) {}
+    /* client connecté : le panier suit le compte (users/{uid}.panier_quinc) */
+    if (window.EGCQCompte) {
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(function () { window.EGCQCompte.sauverPanier(p); }, 600);
+    }
   }
   function charger() {
     try {
       var j = JSON.parse(localStorage.getItem(CLE_PANIER) || 'null');
       if (!j) { etat.panier = []; return; }
       if (Array.isArray(j)) { etat.panier = j; sauver(); return; } /* ancien format, migré */
-      etat.panier = (j.maj && Date.now() - j.maj > PANIER_RETENTION) ? [] : (j.lignes || []);
+      var expire = j.maj && Date.now() - j.maj > PANIER_RETENTION;
+      etat.panier = expire ? [] : (j.lignes || []);
+      etat.panierMaj = expire ? 0 : (j.maj || 0);
     } catch (e) { etat.panier = []; }
+  }
+  /* Au chargement, si le client est connecté : le panier le plus récent
+     (appareil ou compte) gagne, dans la limite des 7 jours. */
+  function reconcilierPanierCompte() {
+    if (!window.EGCQCompte) return;
+    window.EGCQCompte.pret.then(function (u) {
+      if (!u) return;
+      var distant = window.EGCQCompte.lirePanier();
+      var distantOk = distant && distant.lignes && distant.lignes.length
+        && !(distant.maj && Date.now() - distant.maj > PANIER_RETENTION);
+      if (distantOk && (distant.maj || 0) > (etat.panierMaj || 0)) {
+        etat.panier = distant.lignes;
+        etat.panierMaj = distant.maj;
+        try { localStorage.setItem(CLE_PANIER, JSON.stringify(distant)); } catch (e) {}
+        rendre(); rendrePanier();
+      } else if (etat.panier.length) {
+        window.EGCQCompte.sauverPanier({ maj: etat.panierMaj || Date.now(), lignes: etat.panier });
+      }
+    });
   }
   function article(ref) {
     return etat.catalogue.articles.find(function (a) { return a.ref === ref; });
@@ -330,6 +359,7 @@
       etat.cat = catInitiale; sel.value = catInitiale;
     }
     charger(); initEvenements(); construireRayons(); rendre(); rendrePanier();
+    reconcilierPanierCompte();
     /* anciens liens #a=REF (modal) : chaque produit a désormais sa page */
     if (location.hash.indexOf('#a=') === 0) {
       var refInitiale = decodeURIComponent(location.hash.slice(3));
