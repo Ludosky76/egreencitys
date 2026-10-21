@@ -63,6 +63,14 @@ exports.stripeWebhook = onRequest(
     const annee = new Date().getFullYear();
     const numero = 'EGC-' + annee + '-' + String(s.id).slice(-8).toUpperCase();
 
+    // Libellé lisible pour l'espace client (compte.html liste "articles").
+    // QF-<ref> = boutique quincaillerie ; sinon identifiant produit bornes.
+    const libelle = produit
+      ? (produit.startsWith('QF-')
+          ? 'Quincaillerie — réf. ' + produit.slice(3)
+          : 'Borne de recharge — ' + produit)
+      : 'Commande en ligne';
+
     const donnees = {
       numero,
       email: (s.customer_details && s.customer_details.email) || s.customer_email || null,
@@ -70,7 +78,6 @@ exports.stripeWebhook = onRequest(
       telephone: (s.customer_details && s.customer_details.phone) || null,
       montant: (s.amount_total || 0) / 100,
       devise: s.currency,
-      statut: 'payee',
       produit,
       client_reference_id: refClient,
       stripe_session: s.id,
@@ -80,8 +87,12 @@ exports.stripeWebhook = onRequest(
     try {
       const snap = await ref.get();
       if (!snap.exists) {
-        // created_at posé une seule fois (les renvois Stripe ne le réécrasent pas)
+        // Posés une seule fois : les renvois Stripe ne doivent pas écraser
+        // created_at, ni un n° de suivi / des articles édités par l'admin.
         donnees.created_at = admin.firestore.FieldValue.serverTimestamp();
+        donnees.statut = 'payee';
+        donnees.articles = [{ libelle, quantite: 1 }];
+        donnees.numero_suivi = '';
       }
       await ref.set(donnees, { merge: true });
       console.log('Commande enregistrée :', numero, '-', donnees.montant, donnees.devise);
