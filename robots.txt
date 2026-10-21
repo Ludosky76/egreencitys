@@ -1,3 +1,12 @@
+# ============================================================
+# EGREENCITY'S — egreencitys.com
+# Les moteurs de recherche classiques (Google, Bing…) restent
+# autorisés : ils apportent les clients.
+# Les robots de collecte pour l'IA sont explicitement interdits
+# (opt-out fouille de textes et de données — art. L.122-5-3 CPI,
+# directive UE 2019/790 art. 4 ; voir aussi les mentions légales).
+# ============================================================
+
 User-agent: *
 Allow: /
 
@@ -5,5 +14,87 @@ Allow: /
 Disallow: /_tools/
 Disallow: /_dossiers/
 Disallow: /_archive/
+
+# --- Entraînement de modèles IA : interdit ---
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: OAI-SearchBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Perplexity-User
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: meta-externalagent
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: cohere-training-data-crawler
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: omgili
+Disallow: /
+
+User-agent: omgilibot
+Disallow: /
+
+User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: img2dataset
+Disallow: /
+
+User-agent: Meltwater
+Disallow: /
+
+User-agent: PanguBot
+Disallow: /
+
+User-agent: AI2Bot
+Disallow: /
+
+User-agent: DuckAssistBot
+Disallow: /
+
+User-agent: MistralAI-User
+Disallow: /
 
 Sitemap: https://egreencitys.com/sitemap.xml
