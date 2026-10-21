@@ -59,6 +59,23 @@
       return (etat.doc && etat.doc.alertes) || [];
     },
 
+    /* Option B (sans webhook) : commande enregistrée au retour de Stripe
+       dans users/{uid}/orders — visible dans compte.html. Déclaratif :
+       à recouper avec le tableau de bord Stripe avant préparation. */
+    enregistrerCommande: function (cmd) {
+      if (!etat.user) return Promise.resolve(false);
+      var id = 'QF-' + (cmd.ts || 0);
+      return refDoc().collection('orders').doc(id).set({
+        id: id,
+        date: new Date().toISOString(),
+        items: [{ name: 'Quincaillerie — ' + (cmd.nom || ('réf. ' + cmd.ref)) }],
+        total: Number(cmd.montant) || 0,
+        status: 'paye',
+        source: 'retour_stripe',
+        ref: cmd.ref || ''
+      }, { merge: true }).then(function () { return true; }).catch(function () { return false; });
+    },
+
     basculerAlerte: function (ref) {
       if (!etat.user) return Promise.resolve(null);
       var a = (etat.doc && etat.doc.alertes) ? etat.doc.alertes.slice() : [];

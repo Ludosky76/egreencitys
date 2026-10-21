@@ -275,10 +275,50 @@
         }
         var url = etat.liens[ref];
         var sep = url.indexOf('?') > -1 ? '&' : '?';
-        window.location.href = url + sep + 'client_reference_id=' + encodeURIComponent('QF-' + ref + '_' + Date.now());
+        var ts = Date.now();
+        /* mémorise l'achat en cours : au retour ?paiement=succes, la
+           commande est enregistrée dans l'espace client (option B) */
+        try {
+          var a = article(ref);
+          localStorage.setItem('egc_quinc_commande', JSON.stringify({
+            ref: ref, nom: a ? a.nom : '', montant: a ? a.lien_prix : 0, ts: ts
+          }));
+        } catch (e) {}
+        window.location.href = url + sep + 'client_reference_id=' + encodeURIComponent('QF-' + ref + '_' + ts);
       })
       .catch(function () { alert('Vérification de disponibilité impossible — réessayez dans un instant.'); })
       .finally(function () { if (bouton) { bouton.disabled = false; bouton.classList.remove('q-verif'); } });
+  }
+
+  /* ---------------- retour de paiement Stripe (option B) ----------------
+     Les liens de paiement renvoient sur ?paiement=succes : la ligne payée
+     sort du panier et, si le client est connecté, la commande est
+     enregistrée dans son espace (users/{uid}/orders via le pont). */
+  function traiterRetourPaiement() {
+    if (new URLSearchParams(location.search).get('paiement') !== 'succes') return;
+    var cmd = null;
+    try {
+      cmd = JSON.parse(localStorage.getItem('egc_quinc_commande') || 'null');
+      localStorage.removeItem('egc_quinc_commande');
+    } catch (e) {}
+    history.replaceState(null, '', location.pathname);
+    if (cmd && Date.now() - (cmd.ts || 0) < 2 * 3600 * 1000) {
+      /* la ligne payée (mono-article, qté 1) sort du panier */
+      etat.panier = etat.panier.filter(function (l) { return !(l.ref === cmd.ref && l.q === 1); });
+      sauver(); rendre(); rendrePanier();
+      if (window.EGCQCompte) {
+        window.EGCQCompte.pret.then(function (u) {
+          if (u) window.EGCQCompte.enregistrerCommande(cmd);
+        });
+      }
+    }
+    var bandeau = document.createElement('div');
+    bandeau.setAttribute('role', 'status');
+    bandeau.style.cssText = 'position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#17631a;color:#fff;padding:.7rem 1.3rem;border-radius:50px;font-weight:700;font-size:.85rem;z-index:99999;box-shadow:0 10px 28px rgba(0,0,0,.35);';
+    bandeau.textContent = '✅ Paiement validé — merci ! Article disponible : livraison sous 7 jours ouvrés.';
+    document.body.appendChild(bandeau);
+    setTimeout(function () { bandeau.remove(); }, 7000);
+    if (window.gtag) gtag('event', 'purchase_return', { currency: 'EUR', value: cmd ? cmd.montant : 0 });
   }
 
   /* ---------------- commande par formulaire ---------------- */
@@ -359,6 +399,7 @@
       etat.cat = catInitiale; sel.value = catInitiale;
     }
     charger(); initEvenements(); construireRayons(); rendre(); rendrePanier();
+    traiterRetourPaiement();
     reconcilierPanierCompte();
     /* anciens liens #a=REF (modal) : chaque produit a désormais sa page */
     if (location.hash.indexOf('#a=') === 0) {

@@ -59,6 +59,16 @@ service cloud.firestore {
     }
 
     // --------------------------------------------------------------------
+    // COMMANDES AUTO-ENREGISTRÉES (option B) — requête collectionGroup du
+    // tableau de bord admin sur toutes les sous-collections « orders »
+    // (users/{uid}/orders). Lecture admin uniquement ; l'écriture reste
+    // régie par la règle users/{uid} (chacun chez soi).
+    // --------------------------------------------------------------------
+    match /{path=**}/orders/{id} {
+      allow read: if isAdmin();
+    }
+
+    // --------------------------------------------------------------------
     // PROFILS CLIENTS — chacun accède exclusivement à ses propres données
     // (profil, commandes locales, panier quincaillerie synchronisé
     // « panier_quinc », alertes de retour en stock « alertes »).

@@ -1320,6 +1320,35 @@
   }
   // ---- Toast retour Stripe ---------------------------------------
   if (location.search.indexOf('paiement=succes') > -1) {
+    // Option B (sans webhook) : au retour de Stripe, la commande
+    // « en_attente » posée au clic passe à « paye » dans l'espace client
+    // (repli : création si aucune en attente). Marquée « retour_stripe » :
+    // à recouper avec le tableau de bord Stripe avant préparation.
+    try {
+      var panierPaye = JSON.parse(localStorage.getItem('egc_cart') || '[]');
+      if (panierPaye.length && window.EGCCustomer && window.EGCCustomer.isLoggedIn()) {
+        var totalPaye = Math.round(panierPaye.reduce(function (s, i) { return s + (Number(i.totalTTC) || 0); }, 0) * 100) / 100;
+        var creer = function () {
+          Promise.resolve(window.EGCCustomer.addOrder({
+            items: panierPaye.map(function (i) { return { name: i.name || i.productId || 'Borne de recharge' }; }),
+            total: totalPaye, status: 'paye', source: 'retour_stripe'
+          })).catch(function () {});
+        };
+        if (window.EGC_AUTH_BACKEND === 'firebase' && window.firebase && firebase.apps.length && firebase.auth().currentUser) {
+          var u = firebase.auth().currentUser;
+          firebase.firestore().collection('users').doc(u.uid).collection('orders')
+            .orderBy('date', 'desc').limit(5).get().then(function (snap) {
+              var doc = null;
+              snap.forEach(function (d) {
+                var o = d.data();
+                if (!doc && o.status === 'en_attente' && Math.abs((o.total || 0) - totalPaye) < 0.01) doc = d;
+              });
+              if (doc) doc.ref.update({ status: 'paye', paye_source: 'retour_stripe' }).catch(function () {});
+              else creer();
+            }).catch(creer);
+        } else { creer(); }
+      }
+    } catch (e) {}
     localStorage.removeItem('egc_cart');
     cart = [];
     showToast('✅ Paiement validé ! Votre borne est fabriquée sur mesure — livraison sous 4 à 5 semaines.');

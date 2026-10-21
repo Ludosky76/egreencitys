@@ -93,7 +93,15 @@
         }
         var url = etat.liens[ref];
         var sep = url.indexOf('?') > -1 ? '&' : '?';
-        window.location.href = url + sep + 'client_reference_id=' + encodeURIComponent('QF-' + ref + '_' + Date.now());
+        var ts = Date.now();
+        /* option B : mémorise l'achat, enregistré au retour sur la boutique */
+        try {
+          var art = etat.catalogue.articles.find(function (x) { return x.ref === ref; });
+          localStorage.setItem('egc_quinc_commande', JSON.stringify({
+            ref: ref, nom: art ? art.nom : '', montant: art ? art.lien_prix : 0, ts: ts
+          }));
+        } catch (e) {}
+        window.location.href = url + sep + 'client_reference_id=' + encodeURIComponent('QF-' + ref + '_' + ts);
       })
       .catch(function () { alert('Vérification de disponibilité impossible — réessayez dans un instant.'); })
       .finally(function () { if (bouton) { bouton.disabled = false; bouton.classList.remove('q-verif'); } });

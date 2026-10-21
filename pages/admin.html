@@ -82,6 +82,8 @@
       <div class="tablewrap"><table id="ordersT"><thead><tr><th>N°</th><th>Client</th><th>Email</th><th>Montant</th><th>Statut · Suivi</th><th>Date</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="ordersEmpty">Aucune commande enregistrée.<br><span style="font-size:.82rem;">L'enregistrement automatique des paiements Stripe nécessite l'activation du plan Blaze sur Firebase. En attendant, créez les commandes manuellement ci-dessus — elles apparaissent dans l'espace client.</span></div></div>
       <h2>✉️ Demandes produits (quincaillerie)</h2>
       <div class="tablewrap"><table id="demT"><thead><tr><th>Date</th><th>Client</th><th>Produit</th><th>Message</th><th>Réponse</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="demEmpty">Aucune demande produit. Elles arrivent ici quand un client clique « Faire une demande » sur un article indisponible.</div></div>
+      <h2>🧾 Commandes clients auto-enregistrées <span style="font-size:.72rem;color:var(--muted);font-weight:400;">(retour Stripe — à recouper avec le tableau de bord Stripe avant préparation)</span></h2>
+      <div class="tablewrap"><table id="autoT"><thead><tr><th>Date</th><th>Client</th><th>Contenu</th><th>Montant</th><th>Statut</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="autoEmpty">Aucune commande auto-enregistrée. Elles apparaissent quand un client connecté revient du paiement Stripe.</div></div>
       <h2>🔔 Alertes de retour en stock</h2>
       <div class="tablewrap"><table id="alertesT"><thead><tr><th>Client</th><th>Références surveillées</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="alertesEmpty">Aucune alerte active. Les clients en posent depuis la fiche d'un article indisponible.</div></div>
       <h2>🛒 Paniers en cours (quincaillerie)</h2>
@@ -158,6 +160,31 @@
         .catch(function(e){ alert('Enregistrement impossible : '+(e.code||e.message)+'\nPubliez les règles Firestore mises à jour.'); });
     };
 
+    // --- Commandes auto-enregistrées (users/*/orders, option B) -----------
+    function loadAutoOrders(usersEmails){
+      firebase.firestore().collectionGroup('orders').orderBy('date','desc').limit(100).get()
+        .then(function(snap){
+          var tb = document.querySelector('#autoT tbody'); tb.innerHTML=''; var n=0;
+          snap.forEach(function(d){
+            if (d.ref.path.indexOf('users/') !== 0) return; // exclut la collection racine « orders »
+            var o = d.data(); n++;
+            var uid = d.ref.parent.parent.id;
+            var email = (usersEmails && usersEmails[uid]) || (uid.slice(0,8)+'…');
+            var contenu = (o.items||[]).map(function(i){ return i.name; }).join(', ') || o.id || '—';
+            var date = o.date ? new Date(o.date).toLocaleString('fr-FR') : '—';
+            var pill = o.status === 'paye'
+              ? '<span class="pill">payé (déclaratif)</span>'
+              : '<span class="pill" style="background:rgba(244,102,74,.18);color:#ffb3a3;">'+esc(o.status||'?')+'</span>';
+            tb.innerHTML += '<tr><td>'+date+'</td><td>'+esc(email)+'</td><td style="max-width:280px;font-size:.78rem;">'+esc(contenu)+'</td><td>'+fmt(o.total)+'</td><td>'+pill+(o.source==='retour_stripe'?'<div style="font-size:.68rem;color:#9db2a3;margin-top:.2rem;">retour Stripe</div>':'')+'</td></tr>';
+          });
+          document.getElementById('autoEmpty').classList.toggle('hidden', n>0);
+        })
+        .catch(function(e){
+          document.getElementById('autoEmpty').classList.remove('hidden');
+          document.getElementById('autoEmpty').textContent = 'Lecture impossible ('+(e.code||e.message)+') — règles ou index collectionGroup « orders.date » à déployer.';
+        });
+    }
+
     // --- Clients : alertes de retour en stock + paniers en cours ----------
     function loadClients(){
       var db = firebase.firestore();
@@ -168,10 +195,11 @@
         var stock = (res[1] && res[1].stock) || {};
         var ta = document.querySelector('#alertesT tbody'); ta.innerHTML='';
         var tp = document.querySelector('#paniersT tbody'); tp.innerHTML='';
-        var na=0, np=0;
+        var na=0, np=0, emails={};
         res[0].forEach(function(d){
           var u = d.data();
           var email = u.email || '(email non renseigné)';
+          emails[d.id] = u.email || '';
           if (u.alertes && u.alertes.length){
             na++;
             var refs = u.alertes.map(function(r){
@@ -189,7 +217,9 @@
         });
         document.getElementById('alertesEmpty').classList.toggle('hidden', na>0);
         document.getElementById('paniersEmpty').classList.toggle('hidden', np>0);
+        loadAutoOrders(emails);
       }).catch(function(){
+        loadAutoOrders({});
         document.getElementById('alertesEmpty').classList.remove('hidden');
         document.getElementById('alertesEmpty').textContent = 'Lecture impossible — publiez les règles Firestore mises à jour (lecture admin de « users »).';
       });
