@@ -490,3 +490,31 @@ button, a, [role="button"], .clickable { cursor: pointer; }
 .rounded-xl  { border-radius: var(--radius-xl); }
 
 /* Fin refonte.css v1.0 */
+
+/* ── Onglet « Quincaillerie » : bleu scintillant, repérable sur toutes les
+   barres de navigation (ciblé par href, aucune classe à poser par page).
+   Reflet qui balaye le texte + halo bleu en thème sombre. ───────────── */
+.nav-links a[href="/pages/boutique-quincaillerie.html"] {
+  font-weight: 700;
+  background-image: linear-gradient(100deg, #2B4DB5 0%, #3F8BF2 35%, #9fd0ff 50%, #3F8BF2 65%, #2B4DB5 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: egc-quinc-scintille 2.8s linear infinite;
+}
+@keyframes egc-quinc-scintille {
+  0%   { background-position: 210% 0; }
+  100% { background-position: -110% 0; }
+}
+/* soulignement au survol en bleu (prime sur la règle verte des pages) */
+.nav-links a[href="/pages/boutique-quincaillerie.html"]:not(.btn-nav):not(.btn-ghost-nav)::after {
+  background: #3F8BF2;
+}
+/* thème sombre : halo lumineux pour ressortir sur le fond vert nuit */
+html[data-theme="dark"] .nav-links a[href="/pages/boutique-quincaillerie.html"] {
+  filter: drop-shadow(0 0 7px rgba(63, 139, 242, .65));
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-links a[href="/pages/boutique-quincaillerie.html"] { animation: none; background-position: 50% 0; }
+}
