@@ -135,7 +135,7 @@
 > avec accompagnement ADVENIR et maintenance 5 ans garantie. »
 
 **Incrustations texte** :
-- 🏠 WallBox 7 kW — dès 1 200 € HT
+- 🏠 WallBox 7 kW — dès 768,50 € tout compris
 - 🏢 Flotte entreprise — ADVENIR jusqu'à 50 %
 - 🏛️ Voirie publique — jusqu'à 9 000 €/point
 - 🏬 Parking client — +12 % de chiffre d'affaires *(source Qualifelec)*
