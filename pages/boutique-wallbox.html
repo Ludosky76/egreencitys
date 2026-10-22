@@ -618,7 +618,7 @@
 
 <!-- STRIPE + CATALOG + COMPTE CLIENT -->
 <script src="/assets/js/stripe-config.js?v=8"></script>
-<script src="/assets/js/catalog.js?v=12"></script>
+<script src="/assets/js/catalog.js?v=15"></script>
 <script src="/assets/js/customer-account.js?v=2"></script>
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/firebase-auth.js?v=1"></script>
@@ -747,6 +747,26 @@
     return ht;
   }
 
+  // Prix produit de la configuration : borne au coefficient plein (1,35)
+  // + chaque option cochee a la marge reduite (+10 % — priceOption).
+  function muralePrixProduit(prod) {
+    var produit = window.priceProduct(muraleBaseHt(prod));
+    prod.options.forEach(function (o) {
+      if (muraleState.opts[o.key]) produit += window.priceOption(o.ht);
+    });
+    return produit;
+  }
+
+  // Decomposition tout compris de la configuration courante
+  // Livraison au poids reel : mono 8 kg (85,50 €) / tri 9 kg (93,30 €) — grille A9
+  function muraleBreakdown(prod) {
+    var produit = muralePrixProduit(prod);
+    var octroi = window.octroiMer(produit);
+    var livraison = window.shippingFor(muraleState.phase === 'tri' ? 'wb-mur-22' : 'wb-mur');
+    return { produit: produit, octroi: octroi, livraison: livraison,
+             total: produit + octroi + livraison };
+  }
+
   // Id Stripe : 'wb-mur' + '22' si triphasé + suffixe des options (ordre catalogue)
   function muraleComboPid(prod) {
     var suffix = '';
@@ -762,9 +782,10 @@
     card.dataset.id = p.id;
     var specsHtml = p.specs.slice(0, 6).map(function (s) { return '<li>' + s + '</li>'; }).join('');
 
-    var basePrice = window.priceBreakdown(p.ht, p.id).total;   // borne nue tout compris
     var optsHtml = p.options.map(function (o) {
-      var supp = window.priceBreakdown(p.ht + o.ht, p.id).total - basePrice;  // supplement indicatif
+      // Supplement = option a +10 % de marge + octroi de mer (20 %)
+      var pOpt = window.priceOption(o.ht);
+      var supp = pOpt + window.octroiMer(pOpt);
       return ''
         + '<label class="mur-opt" style="display:flex;align-items:center;gap:.55rem;margin:.35rem 0;padding:.55rem .7rem;border:1px solid #d8e6cc;border-radius:10px;cursor:pointer;font-size:.85rem;">'
         +   '<input type="checkbox" data-optkey="' + o.key + '"' + (muraleState.opts[o.key] ? ' checked' : '') + ' onchange="toggleMuraleOpt(\'' + o.key + '\', this.checked)" style="width:auto;">'
@@ -813,10 +834,9 @@
   window.updateMuraleCard = function () {
     var prod = findProduct('wb-mur');
     if (!prod) return;
-    var ht = muraleHt(prod);
     var comboPid = muraleComboPid(prod);
-    var bd = window.priceBreakdown(ht, 'wb-mur');
-    var weight = window.weightFor('wb-mur');
+    var bd = muraleBreakdown(prod);
+    var weight = window.weightFor(muraleState.phase === 'tri' ? 'wb-mur-22' : 'wb-mur');
     var el = function (id) { return document.getElementById(id); };
     if (el('mur-price')) el('mur-price').textContent = window.formatPrice(bd.total);
     if (el('mur-split')) el('mur-split').textContent = window.formatPrice(Math.ceil(bd.total / 3));
@@ -844,9 +864,8 @@
   window.addMuraleToCart = function () {
     var prod = findProduct('wb-mur');
     if (!prod) return;
-    var ht = muraleHt(prod);
     var comboPid = muraleComboPid(prod);
-    var bd = window.priceBreakdown(ht, 'wb-mur');
+    var bd = muraleBreakdown(prod);
     var libelles = prod.options.filter(function (o) { return muraleState.opts[o.key]; })
                                .map(function (o) { return o.name; });
     var nom = prod.name + ' - ' + (muraleState.phase === 'tri' ? 'Triphase 22 kW' : 'Monophase 7 kW')
@@ -903,7 +922,7 @@
         // C'est exactement le prix de l'article optionnel correspondant sur la
         // page de paiement Stripe (affiche = paye). La livraison reste celle de
         // la borne : le leger surpoids eventuel est absorbe.
-        var optProd = window.priceTTC(opt.ht);
+        var optProd = window.priceOption(opt.ht); // marge reduite +10 % sur les options
         var optTTC = optProd + window.octroiMer(optProd);
         var row = document.createElement('div');
         row.className = 'opt-item';
@@ -983,7 +1002,7 @@
     var selected = [];
     document.querySelectorAll('#opt-list input[type="checkbox"]:checked').forEach(function (cb) {
       var ht = parseFloat(cb.dataset.optHt);
-      var pOpt = window.priceProduct(ht);
+      var pOpt = window.priceOption(ht); // marge reduite +10 % sur les options
       produits += pOpt;
       octroi += window.octroiMer(pOpt);
       selected.push({ id: cb.dataset.optId, ht: ht });

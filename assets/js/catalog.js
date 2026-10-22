@@ -31,8 +31,10 @@
      -> Le prix affiche en boutique = PRIX PRODUIT SEUL (hors livraison).
    ================================================================ */
 window.CATALOG_CONFIG = {
-  COEF_MARGE: 1.35,       // <-- Ajustez ici votre marge dropshipping (bornes)
-  COEF_SUPERVISION: 1.25, // <-- marge sur les services de supervision (E-TOTEM)
+  COEF_MARGE: 1.35,         // <-- Ajustez ici votre marge dropshipping (bornes)
+  COEF_MARGE_OPTIONS: 1.10, // <-- marge reduite sur les OPTIONS/accessoires (+10 %)
+                            //     pour diminuer le cout a l'achat des configurations
+  COEF_SUPERVISION: 1.25,   // <-- marge sur les services de supervision (E-TOTEM)
   DEVISE: '€',
   ARRONDI: 10,            // arrondi marketing a 10 € pres (donne 999, 1049, etc.)
 
@@ -72,19 +74,25 @@ window.octroiMer = function (montant) {
   return Math.round(montant * window.CATALOG_CONFIG.OCTROI_TOTAL);
 };
 
+/* Prix d'une OPTION/accessoire : marge reduite (+10 %), sans arrondi
+   marketing — c'est un supplement, pas un prix d'appel. */
+window.priceOption = function (htFournisseur) {
+  return Math.round(htFournisseur * (window.CATALOG_CONFIG.COEF_MARGE_OPTIONS || 1.10));
+};
+
 /* ================================================================
-   LIVRAISON FORFAITAIRE Chronopost DOM (littoral guyanais)
+   LIVRAISON Chronopost DOM — TARIF A9 (grille contractuelle)
    ================================================================
-   Grille par tranche de poids. Au-dela de 30 kg : transport palette.
-   Base : Cayenne / Matoury / Remire / Macouria / Kourou.
+   Colonne A9 (metropole -> DOM) : 23,10 € la tranche 0-0,5 kg puis
+   +3,90 € par tranche de 0,5 kg, borne basse incluse (8,00 kg =
+   tranche 8,00-8,50 = 85,50 €). Au-dela de 30 kg : +3,90 € par
+   0,5 kg supplementaire (« Pour tout 0,5 kg sup. » de la grille).
+   Tarif appliqué tel quel, sans majoration.
    Communes isolees (Maripasoula, Saint-Georges) : supplement sur devis.
    ================================================================ */
 window.shippingForWeight = function (kg) {
-  var grid = [[1,35],[2,48],[5,72],[10,115],[15,165],[20,215],[25,270],[30,330]];
-  for (var i = 0; i < grid.length; i++) {
-    if (kg <= grid[i][0]) return grid[i][1];
-  }
-  return Math.round(380 + (kg - 30) * 4.5); // palette
+  var n = Math.floor(kg / 0.5);           // 8,00 kg -> tranche 8,00-8,50
+  return (2310 + 390 * n) / 100;          // centimes : evite les flottants
 };
 
 /* Livraison forfaitaire pour un produit donne */
@@ -142,13 +150,20 @@ window.PRODUCT_WEIGHTS = {
   'prem-2x22':  60
 };
 window.weightFor = function (productId) {
-  if (productId && productId.indexOf('wb-mur') === 0) return 8;  // toutes les combinaisons murale
+  if (productId && productId.indexOf('wb-mur') === 0) {
+    // Murale : triphasee 22 kW = 9 kg (93,30 €), monophasee 7 kW = 8 kg (85,50 €)
+    return (productId.indexOf('wb-mur-22') === 0 || productId.indexOf('wb-mur22') === 0) ? 9 : 8;
+  }
   return window.PRODUCT_WEIGHTS[productId] || 15;
 };
 
-/* Formatage prix */
+/* Formatage prix — centimes affiches seulement si necessaires (85,50 €) */
 window.formatPrice = function (n) {
-  return n.toLocaleString('fr-FR') + ' ' + window.CATALOG_CONFIG.DEVISE;
+  var entier = Math.abs(n % 1) < 0.005;
+  return n.toLocaleString('fr-FR', {
+    minimumFractionDigits: entier ? 0 : 2,
+    maximumFractionDigits: 2
+  }) + ' ' + window.CATALOG_CONFIG.DEVISE;
 };
 
 
