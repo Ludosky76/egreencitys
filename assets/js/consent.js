@@ -19,8 +19,24 @@
 
   var VERT = '#0a4800', VERT_VIF = '#33CC00';
 
+  // Mode nuit : les styles du bandeau sont inline, d'où les !important.
+  function styleNuit() {
+    if (document.getElementById('egc-ck-nuit')) return;
+    var s = document.createElement('style');
+    s.id = 'egc-ck-nuit';
+    s.textContent = ''
+      + 'html[data-theme="dark"] #egc-cookie-banner{background:#122910!important;box-shadow:0 -4px 28px rgba(0,0,0,.55)!important;}'
+      + 'html[data-theme="dark"] #egc-cookie-banner .egc-ck-titre,'
+      + 'html[data-theme="dark"] #egc-cookie-banner .egc-ck-lien{color:#9fe870!important;}'
+      + 'html[data-theme="dark"] #egc-cookie-banner .egc-ck-txt{color:#cfe8c5!important;}'
+      + 'html[data-theme="dark"] #egc-cookie-banner .egc-ck-refus{background:transparent!important;color:#e8f5e0!important;border-color:rgba(232,245,224,.35)!important;}'
+      + 'html[data-theme="dark"] #egc-cookie-banner .egc-ck-ok{box-shadow:inset 0 0 0 1px rgba(51,204,0,.55);}';
+    document.head.appendChild(s);
+  }
+
   function construireBandeau() {
     if (document.getElementById('egc-cookie-banner')) return null;
+    styleNuit();
     var b = document.createElement('div');
     b.id = 'egc-cookie-banner';
     b.setAttribute('role', 'dialog');
@@ -32,17 +48,17 @@
     b.innerHTML = ''
       + '<div style="max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;gap:1.2rem;align-items:center;justify-content:space-between;">'
       +   '<div style="flex:1;min-width:260px;">'
-      +     '<div style="color:' + VERT + ';font-size:1rem;font-weight:700;margin-bottom:.35rem;">🍪 Respect de votre vie privée</div>'
-      +     '<p style="color:#1a3a00;font-size:.84rem;line-height:1.55;margin:0;">'
+      +     '<div class="egc-ck-titre" style="color:' + VERT + ';font-size:1rem;font-weight:700;margin-bottom:.35rem;">🍪 Respect de votre vie privée</div>'
+      +     '<p class="egc-ck-txt" style="color:#1a3a00;font-size:.84rem;line-height:1.55;margin:0;">'
       +       'Ce site utilise uniquement des cookies de <strong>mesure d\'audience anonymisée</strong> '
       +       '(Google Analytics 4, adresse IP anonymisée). <strong>Aucun cookie publicitaire</strong>, aucun profilage. '
       +       'Vous pouvez accepter ou refuser, et revenir sur votre choix à tout moment. '
-      +       '<a href="/pages/legal/mentions-legales.html#cookies" style="color:' + VERT + ';font-weight:600;">En savoir plus</a>'
+      +       '<a class="egc-ck-lien" href="/pages/legal/mentions-legales.html#cookies" style="color:' + VERT + ';font-weight:600;">En savoir plus</a>'
       +     '</p>'
       +   '</div>'
       +   '<div style="display:flex;gap:.6rem;flex-wrap:wrap;">'
-      +     '<button type="button" data-choix="refuse" style="padding:.7rem 1.3rem;background:#fff;color:#1a3a00;border:2px solid #ddd;border-radius:50px;font-weight:600;cursor:pointer;font-size:.85rem;font-family:inherit;">Tout refuser</button>'
-      +     '<button type="button" data-choix="accept" style="padding:.7rem 1.6rem;background:' + VERT + ';color:#fff;border:none;border-radius:50px;font-weight:700;cursor:pointer;font-size:.85rem;font-family:inherit;">Tout accepter ✓</button>'
+      +     '<button type="button" class="egc-ck-refus" data-choix="refuse" style="padding:.7rem 1.3rem;background:#fff;color:#1a3a00;border:2px solid #ddd;border-radius:50px;font-weight:600;cursor:pointer;font-size:.85rem;font-family:inherit;">Tout refuser</button>'
+      +     '<button type="button" class="egc-ck-ok" data-choix="accept" style="padding:.7rem 1.6rem;background:' + VERT + ';color:#fff;border:none;border-radius:50px;font-weight:700;cursor:pointer;font-size:.85rem;font-family:inherit;">Tout accepter ✓</button>'
       +   '</div>'
       + '</div>';
     document.body.appendChild(b);

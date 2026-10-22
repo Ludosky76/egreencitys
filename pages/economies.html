@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Économies VE — Calculateur personnalisé Guyane | EGREENCITY'S</title>
+  <script src="/assets/js/theme.js?v=1"></script>
   <meta name="description" content="Calculez en direct combien vous économisez en roulant électrique en Guyane. Tarifs carburant et EDF SEI d'avril 2026. Économies sur 10 ans.">
   <meta name="robots" content="index, follow">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.google-analytics.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.googletagmanager.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://egreencitys-93e0b.firebaseapp.com https://*.google-analytics.com https://www.google-analytics.com https://*.googletagmanager.com; frame-src https://egreencitys-93e0b.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
@@ -28,12 +29,13 @@
     body{font-family:'Poppins',system-ui,sans-serif;color:var(--text);background:#fff;line-height:1.6;}
     a{color:var(--green-deep);text-decoration:none;} a:hover{color:var(--green);}
     .ltopbar{background:linear-gradient(135deg,var(--green-deep),var(--green));color:#fff;padding:1rem 0;position:sticky;top:0;z-index:10;box-shadow:0 2px 10px rgba(0,0,0,.1);}
-    .ltopbar-inner{max-width:min(1880px, 96vw);margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+    .ltopbar-inner{max-width:min(2460px, 96vw);margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
     .lbrand{display:flex;align-items:center;gap:.75rem;}
     .lbrand img{width:44px;height:44px;object-fit:contain;background:#fff;border-radius:8px;padding:4px;}
     .lbrand-name{font-weight:800;font-size:1.1rem;} .lbrand-tag{font-size:.7rem;opacity:.9;display:block;}
     .lback{background:#fff;color:var(--green-deep);padding:.55rem 1.1rem;border-radius:50px;font-weight:700;font-size:.82rem;}
-    .lwrap{max-width:min(1880px, 96vw);margin:0 auto;padding:3rem 1.5rem 4rem;}
+    html[data-theme="dark"] .lback{background:#122910;color:#9fe870;border:1px solid rgba(51,204,0,.22);}
+    .lwrap{max-width:min(2460px, 96vw);margin:0 auto;padding:3rem 1.5rem 4rem;}
     .badge{display:inline-block;padding:.35rem .9rem;background:rgba(51,204,0,.1);color:var(--green-deep);border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem;}
     h1{font-size:2.2rem;font-weight:800;color:var(--green-deep);line-height:1.2;}
     h1 em{color:var(--green);font-style:normal;}
@@ -44,15 +46,41 @@
     input[type="range"]::-moz-range-thumb{width:22px;height:22px;background:#fff;border:3px solid var(--green);border-radius:50%;cursor:pointer;}
     @media(max-width:800px){.roi-grid{grid-template-columns:1fr;padding:1.5rem;}}
     .eco-section{padding:4rem 1.5rem;background:linear-gradient(180deg,#fff,var(--off));}
-    .eco-card-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-top:2rem;max-width:min(1880px, 96vw);margin-left:auto;margin-right:auto;}
+    .eco-card-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-top:2rem;max-width:min(2460px, 96vw);margin-left:auto;margin-right:auto;}
     .eco-card{background:#fff;border-radius:14px;padding:1.6rem;box-shadow:0 4px 18px rgba(0,80,0,.07);border:1px solid rgba(51,204,0,.1);text-align:center;}
     .eco-card .emoji{font-size:2rem;margin-bottom:.6rem;}
     .eco-card h3{color:var(--green-deep);font-size:1rem;margin-bottom:.5rem;}
     .eco-card p{font-size:.88rem;color:var(--muted);line-height:1.55;}
     footer{background:#0a4800;color:#fff;padding:2rem 1.5rem;text-align:center;font-size:.85rem;}
     footer a{color:#9cf070;}
+    .theme-btn{background:transparent;border:none;font-size:1.05rem;cursor:pointer;padding:.3rem .5rem;border-radius:50%;line-height:1;transition:background .2s}
+    .theme-btn:hover{background:rgba(0,0,0,.08)}
+    html[data-theme="dark"] .theme-btn:hover{background:rgba(255,255,255,.14)}
+    /* ===== MODE NUIT ===== */
+    html[data-theme="dark"]{color-scheme:dark;--off:#0f2408;--text:#e8f5e0;--muted:#a8c9a0;}
+    html[data-theme="dark"] body{background:#0a1a05;color:#e8f5e0;}
+    html[data-theme="dark"] a{color:#9fe870;} html[data-theme="dark"] a:hover{color:#c6f3a3;}
+    html[data-theme="dark"] .ltopbar{box-shadow:0 2px 10px rgba(0,0,0,.45);}
+    html[data-theme="dark"] h1{color:#fff;} html[data-theme="dark"] h1 em{color:#9fe870;}
+    html[data-theme="dark"] .badge{background:rgba(51,204,0,.18)!important;color:#9fe870!important;}
+    html[data-theme="dark"] main h3{color:#fff!important;}
+    html[data-theme="dark"] #roi-km-val,html[data-theme="dark"] #roi-10y{color:#9fe870!important;}
+    html[data-theme="dark"] .roi-grid{background:#122910;border-color:rgba(51,204,0,.22);box-shadow:0 8px 32px rgba(0,0,0,.45);}
+    html[data-theme="dark"] .roi-grid select{background:#1a3d15!important;color:#e8f5e0!important;border-color:rgba(51,204,0,.3)!important;}
+    html[data-theme="dark"] input[type="range"]::-webkit-slider-thumb{background:#122910;}
+    html[data-theme="dark"] input[type="range"]::-moz-range-thumb{background:#122910;}
+    html[data-theme="dark"] .roi-grid div[style*="background:#fff"]{background:#0f2408!important;border-color:rgba(51,204,0,.22)!important;}
+    html[data-theme="dark"] #roi-cost-fuel{color:#ff8a7a!important;}
+    html[data-theme="dark"] .roi-grid div[style*="rgba(43,77,181"]{background:rgba(43,77,181,.18)!important;}
+    html[data-theme="dark"] .roi-grid strong[style*="var(--blue)"]{color:#8fa8ff!important;}
+    html[data-theme="dark"] .eco-section{background:linear-gradient(180deg,#0a1a05,#0f2408);}
+    html[data-theme="dark"] .eco-section h2{color:#fff!important;}
+    html[data-theme="dark"] .eco-section h2 em{color:#9fe870!important;}
+    html[data-theme="dark"] .eco-card{background:#122910;border-color:rgba(51,204,0,.22);box-shadow:0 4px 18px rgba(0,0,0,.4);}
+    html[data-theme="dark"] .eco-card h3{color:#9fe870;}
+    html[data-theme="dark"] footer{background:#050e02;}
   </style>
-  <link rel="stylesheet" href="/assets/css/refonte.css?v=6">
+  <link rel="stylesheet" href="/assets/css/refonte.css?v=8">
 </head>
 <body>
   <header class="ltopbar">
@@ -61,7 +89,10 @@
         <img src="/logo.png" alt="EGREENCITY'S">
         <div><span class="lbrand-name">EGREENCITY'S</span><span class="lbrand-tag">Mobilité verte en Guyane</span></div>
       </a>
-      <a href="/" class="lback">← Accueil</a>
+      <div style="display:flex;align-items:center;gap:.6rem;">
+        <button id="q-theme" class="theme-btn" type="button">🌙</button>
+        <a href="/" class="lback">← Accueil</a>
+      </div>
     </div>
   </header>
   <main class="lwrap">
@@ -152,7 +183,7 @@
 
   <!-- Bloc pédagogique -->
   <section class="eco-section">
-    <div style="max-width:min(1880px, 96vw);margin:0 auto;text-align:center;">
+    <div style="max-width:min(2460px, 96vw);margin:0 auto;text-align:center;">
       <div class="badge" style="background:rgba(43,77,181,.1);color:var(--blue);">Pourquoi rouler électrique en Guyane ?</div>
       <h2 style="font-size:1.8rem;color:var(--green-deep);font-weight:800;">Au-delà du carburant, <em style="color:var(--green);font-style:normal;">4 leviers</em> d'économies</h2>
       <div class="eco-card-row">
@@ -217,9 +248,9 @@
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/firebase-auth.js?v=1"></script>
   <script src="/assets/js/session-nav.js?v=3" defer></script>
-  <script src="/assets/js/mobile-nav.js?v=7" defer></script>
+  <script src="/assets/js/mobile-nav.js?v=9" defer></script>
 <script src="/assets/js/protection.js?v=1" defer></script>
   <script src="/assets/js/analytics.js?v=2" defer></script>
-  <script src="/assets/js/consent.js?v=1" defer></script>
+  <script src="/assets/js/consent.js?v=2" defer></script>
 </body>
 </html>

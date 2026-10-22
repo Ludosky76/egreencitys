@@ -1,5 +1,5 @@
-/* EGREENCITY'S — Service Worker v2.7 (2026-09) */
-const CACHE = 'egreencitys-v22';
+/* EGREENCITY'S — Service Worker v2.8 (2026-10) */
+const CACHE = 'egreencitys-v23';
 const ASSETS = [
   '/',
   '/index.html',
@@ -58,12 +58,23 @@ self.addEventListener('fetch', (e) => {
     e.respondWith(fetch(req).catch(() => caches.match(req)));
     return;
   }
-  // Cache-first for static assets
+  // Fichiers statiques : copie en cache servie tout de suite, mais toujours
+  // re-telechargee en arriere-plan — une feuille modifiee sans changer son
+  // ?v= est donc a jour des la visite suivante (plus de version figee).
   e.respondWith(
-    caches.match(req).then((cached) => cached || fetch(req).then((resp) => {
-      const copy = resp.clone();
-      caches.open(CACHE).then((c) => c.put(req, copy));
-      return resp;
-    }).catch(() => cached))
+    caches.match(req).then((cached) => {
+      const frais = fetch(req).then((resp) => {
+        if (resp && resp.ok) {
+          const copy = resp.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy));
+        }
+        return resp;
+      });
+      if (cached) {
+        frais.catch(() => {});
+        return cached;
+      }
+      return frais;
+    })
   );
 });

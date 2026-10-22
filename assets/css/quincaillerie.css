@@ -7,7 +7,7 @@
    réservé aux actions et aux mentions « inclus ».
    ========================================================================== */
 :root{
-  --largeur:min(1880px,96vw); /* conteneurs : toute la largeur utile de l'écran */
+  --largeur:min(2460px,96vw); /* conteneurs : toute la largeur utile de l'écran */
   --ink:#141B52;         /* bleu nuit — bandeau, titres, prix */
   --navy:#1F2A8C;        /* bleu profond — survols */
   --blue:#2A39C0;        /* bleu logo — boutons bleus, liens */

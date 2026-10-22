@@ -146,6 +146,28 @@ nav.scrolled {
 .egc-shop-btn:hover {
   background: #063200 !important;
 }
+/* Mode nuit : les pages redéfinissent --green-deep en vert clair (textes) ;
+   les boutons pleins gardent donc un vert foncé fixe, avec liseré lumineux. */
+html[data-theme="dark"] .btn-nav,
+html[data-theme="dark"] .btn-primary,
+html[data-theme="dark"] .btn-hero,
+html[data-theme="dark"] .btn-add,
+html[data-theme="dark"] .btn-cta,
+html[data-theme="dark"] .btn-drawer:not(#btnStripeDirect):not(#btnCartStripe),
+html[data-theme="dark"] .egc-shop-btn {
+  background: #0a4800 !important;
+  color: #fff !important;
+  box-shadow: inset 0 0 0 1px rgba(51, 204, 0, 0.55);
+}
+html[data-theme="dark"] .btn-nav:hover,
+html[data-theme="dark"] .btn-primary:hover,
+html[data-theme="dark"] .btn-hero:hover,
+html[data-theme="dark"] .btn-add:hover,
+html[data-theme="dark"] .btn-cta:hover,
+html[data-theme="dark"] .btn-drawer:not(#btnStripeDirect):not(#btnCartStripe):hover,
+html[data-theme="dark"] .egc-shop-btn:hover {
+  background: #0d5c00 !important;
+}
 
 /* --------------------------------------------------------------------------
    6. BOUTONS — micro-interactions premium
@@ -462,6 +484,17 @@ button, a, [role="button"], .clickable { cursor: pointer; }
 [data-theme="dark"] ::-webkit-scrollbar-track { background: #0a1a00; }
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
   border-color: #0a1a00;
+}
+
+/* La nav « glass » blanche ci-dessus est en !important : en mode nuit elle
+   doit l'être aussi, sinon elle écrase le fond sombre posé par chaque page. */
+html[data-theme="dark"] nav {
+  background: rgba(10, 26, 5, 0.88) !important;
+  border-bottom: 1px solid rgba(51, 204, 0, 0.22) !important;
+}
+html[data-theme="dark"] nav.scrolled {
+  background: rgba(10, 26, 5, 0.95) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* --------------------------------------------------------------------------

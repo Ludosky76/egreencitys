@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Location de bornes — Devis en 48 h | EGREENCITY'S</title>
+  <script src="/assets/js/theme.js?v=1"></script>
   <meta name="description" content="Louez vos bornes de recharge e-WallBox 7 kW en Guyane : dès 99 €/mois par borne la première année, puis loyer réduit de 41 à 43 %. Simulateur et devis gratuit sous 48 h.">
   <meta name="author" content="EGREENCITY'S SAS">
   <meta name="robots" content="index, follow">
@@ -75,6 +76,12 @@
     .btn-nav:hover{background:var(--green-dark)!important;transform:translateY(-1px);}
     .btn-ghost-nav{border:1px solid rgba(51,204,0,.5);color:var(--green-deep)!important;padding:.44rem 1.05rem;border-radius:50px;font-size:.78rem;font-weight:600!important;transition:background .2s,border-color .2s;}
     .btn-ghost-nav:hover{background:rgba(51,204,0,.08);border-color:var(--green);}
+    /* Bouton bascule jour/nuit — hors liste repliable : reste visible en mobile */
+    .theme-btn{background:transparent;border:none;font-size:1.05rem;cursor:pointer;padding:.3rem .5rem;border-radius:50%;line-height:1;transition:background .2s}
+    .theme-btn:hover{background:rgba(0,0,0,.08)}
+    html[data-theme="dark"] .theme-btn:hover{background:rgba(255,255,255,.14)}
+    #nav .nav-links{margin-left:auto;} /* conserve les liens à droite malgré le 3e enfant */
+    #nav .theme-btn{margin-left:.6rem;flex-shrink:0;}
     @media(max-width:1060px){
       .nav-links{gap:.9rem;}
       .nav-links a{font-size:.76rem;}
@@ -85,7 +92,7 @@
     /* HERO */
     .hero{min-height:60vh;background:linear-gradient(140deg,#041000 0%,#0b3300 45%,#0a2800 75%,#030e00 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:8rem 3rem 4rem;color:#fff;}
     .hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 20% 80%, rgba(51,204,0,.08) 0%, transparent 50%),radial-gradient(circle at 80% 20%, rgba(43,77,181,.1) 0%, transparent 50%);}
-    .hero-inner{position:relative;z-index:2;max-width:min(1880px,96vw);width:100%;text-align:center;}
+    .hero-inner{position:relative;z-index:2;max-width:min(2460px,96vw);width:100%;text-align:center;}
     .hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(51,204,0,.15);border:1px solid rgba(51,204,0,.32);color:var(--green);padding:.42rem 1.1rem;border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:.7px;text-transform:uppercase;margin-bottom:1.4rem;}
     .badge-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:blink 1.5s ease-in-out infinite;}
     @keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
@@ -100,18 +107,18 @@
 
     /* TRUST BAR */
     .trust{background:var(--green);padding:1.5rem 2rem;color:#fff;}
-    .trust-inner{max-width:min(1880px,96vw);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;text-align:center;}
+    .trust-inner{max-width:min(2460px,96vw);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;text-align:center;}
     .trust-item{font-size:.85rem;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:.3rem;}
     .trust-icon{font-size:1.6rem;line-height:1;}
     @media(max-width:700px){.trust-inner{grid-template-columns:repeat(2,1fr);}}
 
     /* BREADCRUMB */
-    .breadcrumb{max-width:min(1880px,96vw);margin:0 auto;padding:1.4rem 2rem 0;font-size:.8rem;color:var(--muted);display:flex;gap:.5rem;align-items:center;}
+    .breadcrumb{max-width:min(2460px,96vw);margin:0 auto;padding:1.4rem 2rem 0;font-size:.8rem;color:var(--muted);display:flex;gap:.5rem;align-items:center;}
     .breadcrumb a{color:var(--green-deep);text-decoration:none;font-weight:600;}
 
     /* SECTION FORM + SIM */
     .form-section{padding:2.5rem 2rem 4rem;background:var(--gray-bg);}
-    .form-wrap{max-width:min(1880px,96vw);margin:0 auto;display:grid;grid-template-columns:1.3fr 1fr;gap:3rem;align-items:start;}
+    .form-wrap{max-width:min(2460px,96vw);margin:0 auto;display:grid;grid-template-columns:1.3fr 1fr;gap:3rem;align-items:start;}
     @media(max-width:880px){.form-wrap{grid-template-columns:1fr;}}
     .form-card{background:#fff;border-radius:18px;padding:2.5rem;box-shadow:0 6px 32px var(--shadow);border:1px solid rgba(51,204,0,.1);}
     .form-card h2{font-size:1.5rem;font-weight:800;color:var(--dark);margin-bottom:.4rem;}
@@ -173,7 +180,7 @@
 
     /* PROCESS */
     .process{background:#fff;padding:4rem 2rem;}
-    .process-inner{max-width:min(1880px,96vw);margin:0 auto;}
+    .process-inner{max-width:min(2460px,96vw);margin:0 auto;}
     .process-head{text-align:center;margin-bottom:2.2rem;}
     .process-head h2{font-size:clamp(1.6rem,2.8vw,2.2rem);font-weight:700;color:var(--dark);margin-bottom:.7rem;}
     .process-head p{color:var(--muted);font-size:.92rem;max-width:600px;margin:0 auto;}
@@ -199,6 +206,59 @@
     /* FOOTER */
     footer{background:#040f00;color:#fff;padding:2.2rem 2rem 1.5rem;text-align:center;font-size:.82rem;}
     footer a{color:#9cf070;text-decoration:none;}
+
+    /* ===== MODE NUIT ===== */
+    html[data-theme="dark"]{color-scheme:dark}
+    html[data-theme="dark"]{
+      --off:#122910;--gray-bg:#0f2408;--dark:#e8f5e0;--text:#e8f5e0;
+      --text-soft:#a8c9a0;--muted:#a8c9a0;--green-deep:#9fe870;--shadow:rgba(0,0,0,.45);
+    }
+    html[data-theme="dark"] body{background:#0a1a05;color:#e8f5e0;}
+    /* Nav */
+    html[data-theme="dark"] #nav{background:rgba(10,26,5,.95);border-bottom:1px solid rgba(51,204,0,.22);}
+    html[data-theme="dark"] #nav.scrolled{box-shadow:0 2px 24px rgba(0,0,0,.5);}
+    html[data-theme="dark"] .nav-links a{color:#e8f5e0;}
+    html[data-theme="dark"] .nav-links a:not(.btn-nav):not(.btn-ghost-nav):hover{color:#9fe870;}
+    html[data-theme="dark"] .nav-sep{background:rgba(51,204,0,.3);}
+    html[data-theme="dark"] .btn-ghost-nav{color:#9fe870!important;border-color:rgba(51,204,0,.5);}
+    html[data-theme="dark"] .btn-ghost-nav:hover{background:rgba(51,204,0,.15);border-color:#33cc00;}
+    /* Fil d'Ariane */
+    html[data-theme="dark"] .breadcrumb{color:#a8c9a0;}
+    html[data-theme="dark"] .breadcrumb a{color:#9fe870;}
+    /* Formulaire */
+    html[data-theme="dark"] .form-card{background:#122910;border-color:rgba(51,204,0,.22);box-shadow:0 6px 32px rgba(0,0,0,.45);}
+    html[data-theme="dark"] .form-card h2{color:#fff;}
+    html[data-theme="dark"] .step-pill{background:rgba(51,204,0,.16);color:#9fe870;}
+    html[data-theme="dark"] .fblock{border-bottom-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .fblock-title h3{color:#fff;}
+    html[data-theme="dark"] .fg input[type=text],html[data-theme="dark"] .fg input[type=email],html[data-theme="dark"] .fg input[type=tel],html[data-theme="dark"] .fg input[type=number],html[data-theme="dark"] .fg select,html[data-theme="dark"] .fg textarea{background:#1a3d15;border-color:rgba(51,204,0,.22);color:#e8f5e0;}
+    html[data-theme="dark"] .fg input:focus,html[data-theme="dark"] .fg select:focus,html[data-theme="dark"] .fg textarea:focus{background:#1a3d15;border-color:#33cc00;}
+    html[data-theme="dark"] .fg input::placeholder,html[data-theme="dark"] .fg textarea::placeholder{color:#a8c9a0;}
+    html[data-theme="dark"] .radio-card .rc-inner{background:#1a3d15;border-color:rgba(51,204,0,.22);color:#e8f5e0;}
+    html[data-theme="dark"] .radio-card input:checked + .rc-inner{background:rgba(51,204,0,.16);border-color:#33cc00;}
+    html[data-theme="dark"] .rgpd{background:rgba(51,204,0,.08);border-color:rgba(51,204,0,.22);color:#a8c9a0;}
+    html[data-theme="dark"] .rgpd a{color:#9fe870;}
+    html[data-theme="dark"] .btn-submit{background:linear-gradient(135deg,#0a4800,#33cc00);}
+    /* Simulateur (tableau de loyers) */
+    html[data-theme="dark"] .sim-card,html[data-theme="dark"] .side-card{background:#122910;border-color:rgba(51,204,0,.22);box-shadow:0 2px 14px rgba(0,0,0,.45);}
+    html[data-theme="dark"] .sim-card h4,html[data-theme="dark"] .side-card h4{color:#fff;}
+    html[data-theme="dark"] .sim-card h4 .si,html[data-theme="dark"] .side-card h4 .si{background:rgba(51,204,0,.18);}
+    html[data-theme="dark"] .sim-mensuel{background:linear-gradient(135deg,#0a4800,#33cc00);}
+    html[data-theme="dark"] .sim-ligne{color:#e8f5e0;border-bottom-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .sim-ligne strong{color:#9fe870;}
+    html[data-theme="dark"] .sim-alerte{background:rgba(212,175,55,.16);color:#e8d48a;}
+    /* Process (cartes contrats) */
+    html[data-theme="dark"] .process{background:#0a1a05;}
+    html[data-theme="dark"] .process-head h2,html[data-theme="dark"] .pstep h4{color:#fff;}
+    /* FAQ */
+    html[data-theme="dark"] details{background:#122910;border-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] details[open]{border-color:rgba(51,204,0,.45);box-shadow:0 4px 18px rgba(0,0,0,.5);}
+    html[data-theme="dark"] .faq h2{color:#fff;}
+    html[data-theme="dark"] summary{color:#e8f5e0;}
+    html[data-theme="dark"] summary::after{color:#9fe870;}
+    html[data-theme="dark"] details p{border-top-color:rgba(51,204,0,.22);}
+    /* Footer déjà sombre : lien conservé */
+    html[data-theme="dark"] footer{background:#050e02;}
   </style>
 </head>
 <body>
@@ -220,6 +280,7 @@
     <li><a href="/pages/devis.html" class="btn-ghost-nav">Devis gratuit</a></li>
     <li><a href="/pages/boutique.html" class="btn-nav">Boutique</a></li>
   </ul>
+  <button id="q-theme" class="theme-btn" type="button">🌙</button>
 </nav>
 
 <!-- HERO -->
@@ -564,9 +625,9 @@
 <script src="/assets/js/firebase-config.js?v=2"></script>
 <script src="/assets/js/firebase-auth.js?v=1"></script>
 <script src="/assets/js/session-nav.js?v=3" defer></script>
-<script src="/assets/js/mobile-nav.js?v=7" defer></script>
+<script src="/assets/js/mobile-nav.js?v=9" defer></script>
 <script src="/assets/js/protection.js?v=1" defer></script>
 <script src="/assets/js/analytics.js?v=2" defer></script>
-<script src="/assets/js/consent.js?v=1" defer></script>
+<script src="/assets/js/consent.js?v=2" defer></script>
 </body>
 </html>

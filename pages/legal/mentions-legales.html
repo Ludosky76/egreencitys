@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mentions légales & RGPD — EGREENCITY'S</title>
+  <script src="/assets/js/theme.js?v=1"></script>
   <meta name="description" content="Mentions légales, politique de confidentialité (RGPD) et gestion des cookies du site egreencitys.com — EGREENCITY'S SAS.">
   <meta name="robots" content="index, follow">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.google-analytics.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.googletagmanager.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://egreencitys-93e0b.firebaseapp.com https://*.google-analytics.com https://www.google-analytics.com https://*.googletagmanager.com; frame-src https://egreencitys-93e0b.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
@@ -43,7 +44,7 @@
       position:sticky; top:0; z-index:10;
     }
     .ltopbar-inner {
-      max-width:min(1880px, 96vw); margin:0 auto; padding:0 1.5rem;
+      max-width:min(2460px, 96vw); margin:0 auto; padding:0 1.5rem;
       display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
     }
     .lbrand { display:flex; align-items:center; gap:.75rem; }
@@ -58,7 +59,7 @@
     .lback:hover { background:#eef8ea; text-decoration:none; }
 
     /* Layout */
-    .lwrap { max-width:min(1880px, 96vw); margin:0 auto; padding:3rem 1.5rem 4rem; }
+    .lwrap { max-width:min(2460px, 96vw); margin:0 auto; padding:3rem 1.5rem 4rem; }
     .lwrap h1 {
       color:var(--green-deep); font-size:2.2rem; font-weight:800;
       margin-bottom:.5rem; line-height:1.2;
@@ -119,8 +120,36 @@
     .whatsapp-float:hover::before{opacity:1;}
     @keyframes wappulse{0%,100%{box-shadow:0 8px 24px rgba(37,211,102,.45),0 0 0 0 rgba(37,211,102,.6);}50%{box-shadow:0 8px 24px rgba(37,211,102,.45),0 0 0 14px rgba(37,211,102,0);}}
     @media(max-width:600px){.whatsapp-float{width:56px;height:56px;bottom:18px;right:18px;}.whatsapp-float svg{width:28px;height:28px;}.whatsapp-float::before{display:none;}}
+
+    .lactions{display:flex;align-items:center;gap:.5rem;}
+    .theme-btn{background:transparent;border:none;font-size:1.05rem;cursor:pointer;padding:.3rem .5rem;border-radius:50%;line-height:1;transition:background .2s}
+    .theme-btn:hover{background:rgba(0,0,0,.08)}
+    html[data-theme="dark"] .theme-btn:hover{background:rgba(255,255,255,.14)}
+    /* ===== MODE NUIT ===== */
+    html[data-theme="dark"]{color-scheme:dark}
+    html[data-theme="dark"]{--white:#0a1a05;--gray-bg:#122910;--text:#e8f5e0;--text-soft:#a8c9a0;}
+    html[data-theme="dark"] body{background:#0a1a05;color:#e8f5e0;}
+    html[data-theme="dark"] a{color:#9fe870;}
+    html[data-theme="dark"] a:hover{color:#33cc00;}
+    html[data-theme="dark"] .ltopbar{box-shadow:0 2px 10px rgba(0,0,0,.45);}
+    html[data-theme="dark"] .lback{background:#122910;color:#9fe870;border:1px solid rgba(51,204,0,.22);}
+    html[data-theme="dark"] .lback:hover{background:#0f2408;}
+    html[data-theme="dark"] .lwrap h1{color:#fff;}
+    html[data-theme="dark"] .lupdate{color:#a8c9a0;}
+    html[data-theme="dark"] .lnav{background:#122910;border-left-color:#33cc00;}
+    html[data-theme="dark"] .lnav span{color:#9fe870;}
+    html[data-theme="dark"] .lnav a{color:#e8f5e0;}
+    html[data-theme="dark"] .lsection{background:#122910;border:1px solid rgba(51,204,0,.22);}
+    html[data-theme="dark"] .lsection h2,
+    html[data-theme="dark"] .lsection h3{color:#fff;}
+    html[data-theme="dark"] .lsection h2{border-bottom-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .lsection p{color:#e8f5e0;}
+    html[data-theme="dark"] .lsection em{color:#a8c9a0;}
+    html[data-theme="dark"] .lsection code{background:#1a3d15;color:#9fe870;}
+    html[data-theme="dark"] .lfooter{background:#050e02;}
+    html[data-theme="dark"] .lfooter a{color:#9fe870;}
   </style>
-  <link rel="stylesheet" href="/assets/css/refonte.css?v=6">
+  <link rel="stylesheet" href="/assets/css/refonte.css?v=8">
 </head>
 <body>
 
@@ -133,7 +162,7 @@
         <span class="lbrand-tag">Bornes de recharge · Guyane</span>
       </div>
     </a>
-    <a href="/" class="lback">← Retour au site</a>
+    <div class="lactions"><a href="/" class="lback">← Retour au site</a><button id="q-theme" class="theme-btn" type="button">🌙</button></div>
   </div>
 </header>
 
@@ -257,9 +286,9 @@
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/firebase-auth.js?v=1"></script>
   <script src="/assets/js/session-nav.js?v=3" defer></script>
-  <script src="/assets/js/mobile-nav.js?v=7" defer></script>
+  <script src="/assets/js/mobile-nav.js?v=9" defer></script>
 <script src="/assets/js/protection.js?v=1" defer></script>
   <script src="/assets/js/analytics.js?v=2" defer></script>
-  <script src="/assets/js/consent.js?v=1" defer></script>
+  <script src="/assets/js/consent.js?v=2" defer></script>
 </body>
 </html>

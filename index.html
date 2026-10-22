@@ -26,7 +26,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Refonte visuelle (polish premium par-dessus les styles existants) -->
-  <link rel="stylesheet" href="/assets/css/refonte.css?v=6">
+  <link rel="stylesheet" href="/assets/css/refonte.css?v=8">
 
   <!-- SEO / Canonical -->
   <link rel="canonical" href="https://egreencitys.com/">
@@ -159,7 +159,9 @@
     .btn-nav:hover{background:var(--green-dark)!important;transform:translateY(-1px);}
     .btn-ghost-nav{border:1px solid rgba(51,204,0,.5);color:var(--green-deep)!important;padding:.44rem 1.05rem;border-radius:50px;font-size:.78rem;font-weight:600!important;transition:background .2s,border-color .2s;}
     .btn-ghost-nav:hover{background:rgba(51,204,0,.08);border-color:var(--green);}
-    #theme-toggle{background:none;border:none;cursor:pointer;font-size:1.05rem;line-height:1;padding:.3rem .45rem;border-radius:8px;transition:.2s;}
+    #theme-toggle{background:none;border:none;cursor:pointer;font-size:1.05rem;line-height:1;padding:.3rem .45rem;border-radius:8px;transition:.2s;margin-left:.6rem;}
+    /* bouton hors de la liste repliée en mobile : l'auto-marge garde liens + bouton à droite */
+    .nav-links{margin-left:auto;}
 
     /* ── HERO ────────────────────────────────────────── */
     .hero{
@@ -187,7 +189,7 @@
     .ring:nth-child(4){width:880px;height:880px;animation-delay:1.8s;}
     @keyframes ringpulse{0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1);}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.04);}}
 
-    .hero-inner{position:relative;z-index:2;max-width:min(1880px, 96vw);width:100%;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+    .hero-inner{position:relative;z-index:2;max-width:min(2460px, 96vw);width:100%;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
     .hero-badge{
       display:inline-flex;align-items:center;gap:.5rem;
       background:rgba(51,204,0,.12);border:1px solid rgba(51,204,0,.28);
@@ -220,7 +222,7 @@
 
     /* ── STATS BAR ───────────────────────────────────── */
     .stats{background:var(--green);padding:2rem 3rem;}
-    .stats-inner{max-width:min(1880px, 96vw);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;}
+    .stats-inner{max-width:min(2460px, 96vw);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;}
     .stat{text-align:center;color:#fff;}
     .stat-n{font-size:2.3rem;font-weight:800;line-height:1;display:block;}
     .stat-l{font-size:.78rem;opacity:.88;margin-top:.25rem;}
@@ -228,7 +230,7 @@
     /* ── BANNIÈRE BOUTIQUE ───────────────────────────── */
     .shop-banner{background:linear-gradient(135deg,var(--green-deep) 0%,#0d5c00 55%,var(--green-dark) 100%);padding:4rem 3rem;position:relative;overflow:hidden;}
     .shop-banner::after{content:"";position:absolute;top:-40%;right:-10%;width:480px;height:480px;background:radial-gradient(circle,rgba(51,204,0,.35) 0%,transparent 70%);pointer-events:none;}
-    .shop-inner{max-width:min(1880px, 96vw);margin:0 auto;display:grid;grid-template-columns:1.3fr 1fr;gap:3rem;align-items:center;position:relative;z-index:1;}
+    .shop-inner{max-width:min(2460px, 96vw);margin:0 auto;display:grid;grid-template-columns:1.3fr 1fr;gap:3rem;align-items:center;position:relative;z-index:1;}
     .shop-badge{display:inline-block;background:rgba(255,255,255,.15);color:#fff;padding:.35rem 1rem;border-radius:50px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:1rem;border:1px solid rgba(255,255,255,.25);}
     .shop-txt h2{font-size:clamp(1.6rem,2.6vw,2.2rem);font-weight:800;color:#fff;line-height:1.2;margin-bottom:.9rem;}
     .shop-txt p{font-size:.95rem;color:rgba(255,255,255,.9);line-height:1.7;margin-bottom:1.2rem;max-width:560px;}
@@ -245,7 +247,7 @@
 
     /* ── SECTIONS ────────────────────────────────────── */
     section{padding:5.5rem 3rem;}
-    .section-inner{max-width:min(1880px, 96vw);margin:0 auto;}
+    .section-inner{max-width:min(2460px, 96vw);margin:0 auto;}
     .badge{display:inline-block;background:rgba(51,204,0,.1);color:var(--green-deep);padding:.28rem .9rem;border-radius:50px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.9rem;}
     .title{font-size:clamp(1.8rem,2.8vw,2.5rem);font-weight:700;color:var(--dark);margin-bottom:1rem;line-height:1.2;}
     .sub{font-size:.94rem;color:var(--muted);max-width:580px;line-height:1.75;}
@@ -389,7 +391,7 @@
 
     /* ── FOOTER ──────────────────────────────────────── */
     footer{background:var(--dark);color:rgba(255,255,255,.6);padding:3rem 3rem 1.8rem;}
-    .foot-inner{max-width:min(1880px, 96vw);margin:0 auto;}
+    .foot-inner{max-width:min(2460px, 96vw);margin:0 auto;}
     .foot-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem;}
     .fbrand .logo-name{font-size:1.35rem;color:var(--green);font-weight:800;}
     .fbrand .logo-tag{color:rgba(255,255,255,.4);margin-bottom:1rem;}
@@ -479,6 +481,28 @@
     html[data-theme="dark"] #egc-cookie-banner{background:#122910;color:#e8f5e0;}
     html[data-theme="dark"] footer{background:#050e02;}
     #theme-toggle:hover{background:rgba(51,204,0,.15);}
+    /* Variables : textes et surfaces. --green-deep reste foncé (fonds des héros/bandeaux) */
+    html[data-theme="dark"]{--off:#0f2408;--dark:#e8f5e0;--text:#cfe8c5;--muted:#a8c9a0;--shadow:rgba(0,0,0,.45);}
+    /* Textes qui utilisaient le vert foncé de la marque */
+    html[data-theme="dark"] .badge,
+    html[data-theme="dark"] .warranty,
+    html[data-theme="dark"] .testi-name,
+    html[data-theme="dark"] .pn-title,
+    html[data-theme="dark"] .nav-links a:not(.btn-nav):not(.btn-ghost-nav):hover,
+    html[data-theme="dark"] [style*="color:var(--green-deep)"]{color:#9fe870 !important;}
+    html[data-theme="dark"] .badge,
+    html[data-theme="dark"] .warranty{background:rgba(51,204,0,.16);}
+    html[data-theme="dark"] .badge[style*="2B4DB5"],
+    html[data-theme="dark"] [style*="color:var(--blue)"],
+    html[data-theme="dark"] [style*="color:#2B4DB5"]{color:#9DB9F7 !important;}
+    html[data-theme="dark"] .pn-sub,
+    html[data-theme="dark"] .testi-role{color:#a8c9a0;}
+    /* Cartes et formulaire de contact restés blancs */
+    html[data-theme="dark"] .pillar,
+    html[data-theme="dark"] .cform{background:#122910;box-shadow:0 4px 28px rgba(0,0,0,.45);}
+    html[data-theme="dark"] .cform label{color:#cfe8c5;}
+    html[data-theme="dark"] div[style*="linear-gradient(135deg,var(--off),#fff)"]{background:linear-gradient(135deg,#0f2408,#122910) !important;border-color:rgba(51,204,0,.25) !important;}
+    html[data-theme="dark"] .shop-btn{background:#122910;color:#9fe870;}
 
     /* ════════ Bouton WhatsApp flottant ════════ */
     .whatsapp-float{
@@ -528,10 +552,10 @@
     <li class="nav-mob"><a href="/pages/faq.html">FAQ</a></li>
     <li class="nav-sep" aria-hidden="true"></li>
     <li><a href="/pages/compte.html">Mon compte</a></li>
-    <li><button id="theme-toggle" onclick="toggleTheme()" aria-label="Basculer clair/sombre" title="Basculer thème clair/sombre">🌙</button></li>
     <li><a href="/pages/devis.html" class="btn-ghost-nav">Devis gratuit</a></li>
     <li><a href="/pages/boutique.html" class="btn-nav">Boutique</a></li>
   </ul>
+  <button id="theme-toggle" onclick="toggleTheme()" aria-label="Basculer clair/sombre" title="Basculer thème clair/sombre">🌙</button>
 </nav>
 
 <!-- ════════════════ HERO ════════════════ -->
@@ -776,7 +800,7 @@
 
 <!-- ════════════════ TÉMOIGNAGES / CAS CLIENTS ════════════════ -->
 <section class="testimonials" id="temoignages" style="padding:5rem 2rem;background:linear-gradient(180deg,#fff,var(--off));">
-  <div style="max-width:min(1880px, 96vw);margin:0 auto;">
+  <div style="max-width:min(2460px, 96vw);margin:0 auto;">
     <div style="text-align:center;margin-bottom:3rem;">
       <div class="badge rv" style="display:inline-block;padding:.35rem .9rem;background:rgba(43,77,181,.1);color:var(--blue);border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem;">Jeune entreprise · pré-lancement</div>
       <h2 class="rv" style="font-size:2.2rem;font-weight:800;color:var(--green-deep);line-height:1.2;">Où nous en sommes<br><em style="color:var(--green);font-style:normal;">en toute transparence</em></h2>
@@ -840,7 +864,7 @@
 
 <!-- ════════════════ VIDEO PRÉSENTATION ════════════════ -->
 <section class="video-section" id="video" style="padding:5rem 2rem;background:linear-gradient(180deg,var(--off),#fff);">
-  <div style="max-width:min(1880px, 96vw);margin:0 auto;text-align:center;">
+  <div style="max-width:min(2460px, 96vw);margin:0 auto;text-align:center;">
     <div class="badge rv" style="display:inline-block;padding:.35rem .9rem;background:rgba(43,77,181,.1);color:var(--blue);border-radius:50px;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem;">Découvrir en vidéo</div>
     <h2 class="rv" style="font-size:2.2rem;font-weight:800;color:var(--green-deep);line-height:1.2;margin-bottom:2rem;">Le projet EGREENCITY'S<br><em style="color:var(--green);font-style:normal;">en 2 minutes</em></h2>
     <div class="video-wrap" id="videoWrap" role="button" tabindex="0" aria-label="Lancer la vidéo de présentation" style="position:relative;max-width:1100px;margin-left:auto;margin-right:auto;padding-bottom:min(56.25%, 618.75px);height:0;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,80,0,.2);background:linear-gradient(135deg,#0a2800,#041000);cursor:pointer;">
@@ -1412,7 +1436,7 @@
 
 <!-- ════════════════ PARTENAIRES ════════════════ -->
 <section class="partners" id="partenaires" style="padding:4rem 2rem 3rem;background:linear-gradient(180deg,#fff,var(--off));">
-  <div style="max-width:min(1880px, 96vw);margin:0 auto;text-align:center;">
+  <div style="max-width:min(2460px, 96vw);margin:0 auto;text-align:center;">
     <p style="font-size:.78rem;letter-spacing:2px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:2rem;">
       Nos partenaires & programmes
     </p>
@@ -1767,9 +1791,9 @@
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/firebase-auth.js?v=1"></script>
   <script src="/assets/js/session-nav.js?v=3" defer></script>
-  <script src="/assets/js/mobile-nav.js?v=7" defer></script>
+  <script src="/assets/js/mobile-nav.js?v=9" defer></script>
 <script src="/assets/js/protection.js?v=1" defer></script>
   <script src="/assets/js/analytics.js?v=2" defer></script>
-  <script src="/assets/js/consent.js?v=1" defer></script>
+  <script src="/assets/js/consent.js?v=2" defer></script>
 </body>
 </html>

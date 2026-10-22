@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Suivi de commande — EGREENCITY'S</title>
+  <script src="/assets/js/theme.js?v=1"></script>
   <meta name="description" content="Suivez l'avancement de votre commande de borne de recharge EGREENCITY'S en Guyane. Statut temps réel, numéro de suivi Chronopost DOM.">
   <meta name="robots" content="noindex,follow">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
@@ -11,7 +12,7 @@
   <link rel="canonical" href="https://egreencitys.com/pages/suivi.html">
   <link rel="icon" type="image/png" href="/logo.png">
   <meta name="theme-color" content="#0a4800">
-  <link rel="stylesheet" href="/assets/css/refonte.css?v=6">
+  <link rel="stylesheet" href="/assets/css/refonte.css?v=8">
 
   <style>
     :root { --green:#33CC00; --green-dark:#28a800; --green-deep:#0a4800; --blue:#2B4DB5;
@@ -32,12 +33,15 @@
     .btn-nav:hover{background:var(--green-dark)!important;transform:translateY(-1px);}
     .btn-ghost-nav{border:1px solid rgba(51,204,0,.5);color:var(--green-deep)!important;padding:.44rem 1.05rem;border-radius:50px;font-size:.78rem;font-weight:600!important;transition:background .2s,border-color .2s;}
     .btn-ghost-nav:hover{background:rgba(51,204,0,.08);border-color:var(--green);}
+    .theme-btn{background:transparent;border:none;font-size:1.05rem;cursor:pointer;padding:.3rem .5rem;border-radius:50%;line-height:1;transition:background .2s;margin-left:.6rem;}
+    .theme-btn:hover{background:rgba(0,0,0,.08);}
+    html[data-theme="dark"] .theme-btn:hover{background:rgba(255,255,255,.14);}
 
     .page-hero{padding:8rem 2rem 3rem;background:linear-gradient(140deg,#041000 0%,#0b3300 50%,#0a2800 100%);color:#fff;text-align:center;}
     .page-hero h1{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:800;margin-bottom:.4rem;letter-spacing:-.02em;}
     .page-hero p{color:rgba(255,255,255,.75);font-size:1rem;}
 
-    .container{max-width:min(1880px, 96vw);margin:-2rem auto 3rem;padding:0 2rem;position:relative;z-index:2;}
+    .container{max-width:min(2460px, 96vw);margin:-2rem auto 3rem;padding:0 2rem;position:relative;z-index:2;}
     .card{background:#fff;border-radius:20px;padding:2rem;box-shadow:0 12px 40px rgba(10,72,0,.1);margin-bottom:1.5rem;border:1px solid #e5f0dd;}
 
     /* Recherche */
@@ -105,6 +109,53 @@
       .card{padding:1.4rem 1.2rem;}
       .step{padding-left:52px;}
     }
+
+    /* ===== MODE NUIT ===== */
+    html[data-theme="dark"]{color-scheme:dark;}
+    html[data-theme="dark"]{
+      --text:#e8f5e0;
+      --muted:#a8c9a0;
+      --green-deep:#9fe870;
+      --off:#0a1a05;
+      --shadow:rgba(0,0,0,.45);
+    }
+    html[data-theme="dark"] body{background:#0a1a05;color:#e8f5e0;}
+    /* Nav */
+    html[data-theme="dark"] nav{background:rgba(10,26,5,.92);border-bottom-color:rgba(51,204,0,.25);}
+    html[data-theme="dark"] .nav-links a{color:#e8f5e0;}
+    html[data-theme="dark"] .nav-links a:not(.btn-nav):not(.btn-ghost-nav):hover{color:#9fe870;}
+    html[data-theme="dark"] .btn-nav{color:#fff!important;}
+    html[data-theme="dark"] .btn-ghost-nav{color:#9fe870!important;border-color:rgba(51,204,0,.55);}
+    html[data-theme="dark"] .btn-ghost-nav:hover{background:rgba(51,204,0,.14);}
+    html[data-theme="dark"] .nav-sep{background:rgba(232,245,224,.22);}
+    /* Héros : déjà sombre — inchangé. Cartes : */
+    html[data-theme="dark"] .card{background:#122910;border-color:rgba(51,204,0,.22);box-shadow:0 12px 40px rgba(0,0,0,.45);}
+    /* Recherche */
+    html[data-theme="dark"] .search-form input{background:#1a3d15;border-color:rgba(51,204,0,.3);color:#e8f5e0;}
+    html[data-theme="dark"] .search-form input:focus{background:#1a3d15;border-color:#33cc00;}
+    html[data-theme="dark"] .search-form input::placeholder{color:#7da375;}
+    /* En-tête commande */
+    html[data-theme="dark"] .order-header{border-bottom-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] h2.sec{color:#fff;}
+    /* Timeline */
+    html[data-theme="dark"] .timeline::before{background:rgba(51,204,0,.25);}
+    html[data-theme="dark"] .step .dot{background:#122910;border-color:rgba(51,204,0,.35);}
+    html[data-theme="dark"] .step.done .dot{background:#33cc00;border-color:#33cc00;box-shadow:0 0 0 6px rgba(51,204,0,.18);}
+    html[data-theme="dark"] .step.current .dot{background:#122910;border-color:#33cc00;}
+    html[data-theme="dark"] .step .content{background:#0f2408;border-left-color:rgba(51,204,0,.25);}
+    html[data-theme="dark"] .step.done .content,
+    html[data-theme="dark"] .step.current .content{background:#15320f;border-left-color:#33cc00;}
+    /* Infos commande */
+    html[data-theme="dark"] .info-block{background:#0f2408;border-color:rgba(51,204,0,.22);}
+    /* Suivi Chronopost : encart jaune, lisibilité conservée */
+    html[data-theme="dark"] .tracking-box{background:#2e2503;color:#ffe9a8;}
+    html[data-theme="dark"] .tracking-box strong{color:#ffd77a;}
+    html[data-theme="dark"] .tracking-box a{color:#ff8a80;}
+    /* Alertes */
+    html[data-theme="dark"] .alert-error{background:#3a1212;color:#ff9a9a;border-left-color:#e05555;}
+    html[data-theme="dark"] .alert-info{background:#0f1d33;color:#8ab8f0;border-left-color:#4a86d8;}
+    /* Footer (déjà sombre) : fond encore plus profond */
+    html[data-theme="dark"] footer{background:#050e02;}
   </style>
 </head>
 <body>
@@ -123,6 +174,7 @@
     <li><a href="/pages/devis.html" class="btn-ghost-nav">Devis gratuit</a></li>
     <li><a href="/pages/boutique.html" class="btn-nav">Boutique</a></li>
   </ul>
+  <button id="q-theme" class="theme-btn" type="button">🌙</button>
 </nav>
 
 <section class="page-hero">
@@ -306,9 +358,9 @@ function fmtDateTime(iso) {
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/firebase-auth.js?v=1"></script>
   <script src="/assets/js/session-nav.js?v=3" defer></script>
-  <script src="/assets/js/mobile-nav.js?v=7" defer></script>
+  <script src="/assets/js/mobile-nav.js?v=9" defer></script>
 <script src="/assets/js/protection.js?v=1" defer></script>
   <script src="/assets/js/analytics.js?v=2" defer></script>
-  <script src="/assets/js/consent.js?v=1" defer></script>
+  <script src="/assets/js/consent.js?v=2" defer></script>
 </body>
 </html>

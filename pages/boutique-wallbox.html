@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boutique WallBox — Commande en ligne 3× | EGREENCITY'S</title>
+  <script src="/assets/js/theme.js?v=1"></script>
   <meta name="description" content="Catalogue complet de bornes de recharge E-TOTEM en Guyane. Gamme e-WallBox, e-Smart 7 kW et 22 kW. Configurateur d'options, paiement en 3× sans frais, expédition Chronopost DOM.">
   <meta name="author" content="EGREENCITY'S SAS">
   <meta name="robots" content="index, follow">
@@ -26,7 +27,7 @@
   <link rel="icon" type="image/png" href="/logo.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#0a4800">
-  <link rel="stylesheet" href="/assets/css/refonte.css?v=6">
+  <link rel="stylesheet" href="/assets/css/refonte.css?v=8">
 
   <style>
     :root {
@@ -61,6 +62,9 @@
     .btn-nav:hover{background:var(--green-dark)!important;transform:translateY(-1px);}
     .btn-ghost-nav{border:1px solid rgba(51,204,0,.5);color:var(--green-deep)!important;padding:.44rem 1.05rem;border-radius:50px;font-size:.78rem;font-weight:600!important;transition:background .2s,border-color .2s;}
     .btn-ghost-nav:hover{background:rgba(51,204,0,.08);border-color:var(--green);}
+    .theme-btn{background:transparent;border:none;font-size:1.05rem;cursor:pointer;padding:.3rem .5rem;border-radius:50%;line-height:1;transition:background .2s;margin-left:.5rem;}
+    .theme-btn:hover{background:rgba(0,0,0,.08);}
+    html[data-theme="dark"] .theme-btn:hover{background:rgba(255,255,255,.14);}
 
     /* CART FAB — bouton flottant bas-droite (ne gene plus la nav) */
     .cart-pill{
@@ -99,7 +103,7 @@
     }
     .dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:blink 1.4s ease-in-out infinite;}
     @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
-    .hero h1{font-size:clamp(2rem,4vw,3.4rem);font-weight:800;line-height:1.1;margin-bottom:1rem;max-width:min(1880px,96vw);margin-inline:auto;letter-spacing:-.02em;}
+    .hero h1{font-size:clamp(2rem,4vw,3.4rem);font-weight:800;line-height:1.1;margin-bottom:1rem;max-width:min(2460px,96vw);margin-inline:auto;letter-spacing:-.02em;}
     .hero h1 em{color:var(--green);font-style:normal;}
     .hero-sub{font-size:1.05rem;color:rgba(255,255,255,.78);line-height:1.6;max-width:720px;margin:0 auto 2rem;}
     .hero-perks{display:flex;justify-content:center;gap:1.6rem;flex-wrap:wrap;font-size:.85rem;color:rgba(255,255,255,.9);}
@@ -108,7 +112,7 @@
 
     /* TABS FILTRE GAMMES */
     .tabs{background:#fff;padding:2.5rem 2rem 1rem;position:sticky;top:66px;z-index:900;border-bottom:1px solid #eef3e9;}
-    .tabs-wrap{max-width:min(1880px,96vw);margin:0 auto;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;}
+    .tabs-wrap{max-width:min(2460px,96vw);margin:0 auto;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;}
     .tab-btn{
       background:#f4fff0;border:2px solid #d8e6cc;color:var(--green-deep);
       padding:.75rem 1.4rem;border-radius:50px;font-family:inherit;font-weight:600;font-size:.85rem;
@@ -121,7 +125,7 @@
 
     /* TRUST BAR (réassurance paiement, sobre) */
     .trust-bar{
-      max-width:min(1880px,96vw);margin:1.6rem auto 2.4rem;padding:0 2rem;
+      max-width:min(2460px,96vw);margin:1.6rem auto 2.4rem;padding:0 2rem;
       display:flex;justify-content:center;align-items:center;gap:2.2rem;flex-wrap:wrap;
     }
     .trust-item{display:inline-flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--muted);white-space:nowrap;}
@@ -133,7 +137,7 @@
     }
 
     /* SECTIONS */
-    .container{max-width:min(1880px,96vw);margin:0 auto;padding:0 2rem;}
+    .container{max-width:min(2460px,96vw);margin:0 auto;padding:0 2rem;}
     .gamme-block{padding:2.5rem 0;}
     .gamme-block:not(:first-of-type){border-top:1px solid #eef3e9;}
     .gamme-header{margin-bottom:2rem;text-align:center;}
@@ -291,7 +295,7 @@
     /* SECTIONS INFO */
     section.info-section{padding:4rem 2rem;background:#fff;}
     section.info-section.alt{background:#f4fff0;}
-    .info-block{max-width:min(1880px,96vw);margin:0 auto;}
+    .info-block{max-width:min(2460px,96vw);margin:0 auto;}
     .info-title{text-align:center;font-size:1.9rem;font-weight:800;color:var(--green-deep);margin-bottom:.6rem;letter-spacing:-.02em;}
     .info-sub{text-align:center;font-size:.95rem;color:var(--muted);max-width:640px;margin:0 auto 2.5rem;}
 
@@ -311,7 +315,7 @@
     .gar-card p{color:var(--muted);font-size:.78rem;line-height:1.5;}
 
     /* BREADCRUMB */
-    .breadcrumb{max-width:min(1880px,96vw);margin:5rem auto 0;padding:.5rem 2rem;font-size:.78rem;color:var(--muted);}
+    .breadcrumb{max-width:min(2460px,96vw);margin:5rem auto 0;padding:.5rem 2rem;font-size:.78rem;color:var(--muted);}
     .breadcrumb a{color:var(--green-deep);text-decoration:none;}
     .breadcrumb a:hover{color:var(--green);}
 
@@ -333,6 +337,88 @@
       .hero-perks{gap:.6rem;}
       .hero-perks span{font-size:.75rem;padding:.35rem .7rem;}
     }
+
+    /* ===== MODE NUIT ===== */
+    html[data-theme="dark"]{color-scheme:dark;}
+    /* Variables : les styles (y compris inline) qui utilisent var(--…) suivent automatiquement */
+    html[data-theme="dark"]{
+      --off:#122910;
+      --text:#e8f5e0;
+      --muted:#a8c9a0;
+      --shadow:rgba(0,0,0,.45);
+      --green-deep:#9fe870; /* accents texte — les FONDS qui l'utilisaient sont refixés plus bas */
+    }
+    html[data-theme="dark"] body{background:#0a1a05;color:#e8f5e0;}
+    /* Nav fixe */
+    html[data-theme="dark"] nav{background:rgba(10,26,5,.93);border-bottom-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .nav-sep{background:rgba(255,255,255,.18);}
+    html[data-theme="dark"] .btn-ghost-nav{border-color:rgba(51,204,0,.55);}
+    html[data-theme="dark"] .egc-burger span{background:#e8f5e0;}
+    /* Fonds refixés en vert profond (la variable --green-deep est devenue claire) */
+    html[data-theme="dark"] .cart-pill{background:#0a4800;color:#fff;}
+    html[data-theme="dark"] .tab-btn.active,
+    html[data-theme="dark"] .phase-btn.active{background:#0a4800;border-color:#0a4800;color:#fff;}
+    html[data-theme="dark"] .drawer-head{background:#0a4800;color:#fff;}
+    html[data-theme="dark"] body>div[style*="3000"]{background:#0a4800!important;} /* toasts */
+    /* Barre d'onglets sticky */
+    html[data-theme="dark"] .tabs{background:#0a1a05;border-bottom-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .tab-btn{background:#122910;border-color:rgba(51,204,0,.25);}
+    /* Sections et titres */
+    html[data-theme="dark"] section.info-section{background:#0a1a05;}
+    html[data-theme="dark"] section.info-section.alt{background:#0f2408;}
+    html[data-theme="dark"] .step-card,
+    html[data-theme="dark"] .gar-card{background:#122910;border-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .gar-card:hover{box-shadow:0 12px 30px rgba(0,0,0,.5);}
+    html[data-theme="dark"] .gamme-header h2,
+    html[data-theme="dark"] .info-title,
+    html[data-theme="dark"] .product-body h3{color:#fff;}
+    html[data-theme="dark"] .gamme-block:not(:first-of-type){border-top-color:rgba(51,204,0,.22);}
+    /* Cartes produits */
+    html[data-theme="dark"] .product-card{background:#122910;border-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .product-card:hover{box-shadow:0 20px 50px rgba(0,0,0,.5);border-color:var(--green);}
+    html[data-theme="dark"] .product-card.featured{border-color:var(--green);}
+    html[data-theme="dark"] .product-img{background:linear-gradient(135deg,#0f2408 0%,#1a3d15 100%);}
+    html[data-theme="dark"] .product-meta span{background:#1a3d15;}
+    html[data-theme="dark"] .octroi-note{background:#0f2408;}
+    html[data-theme="dark"] .bd-total{border-top-color:rgba(51,204,0,.3);}
+    html[data-theme="dark"] .price-split,
+    html[data-theme="dark"] .drawer-total-split{color:#8fe563;}
+    html[data-theme="dark"] .phase-btn,
+    html[data-theme="dark"] .btn-details{background:#122910;border-color:rgba(51,204,0,.25);}
+    html[data-theme="dark"] .mur-opt{border-color:rgba(51,204,0,.25)!important;}
+    /* Tiroirs (options + panier) */
+    html[data-theme="dark"] .options-drawer{background:#122910;box-shadow:-4px 0 40px rgba(0,0,0,.55);}
+    html[data-theme="dark"] .drawer-summary{background:#0f2408;}
+    html[data-theme="dark"] .opt-item{border-bottom-color:rgba(51,204,0,.18);}
+    html[data-theme="dark"] .drawer-footer{background:#0f2408;border-top-color:rgba(51,204,0,.25);}
+    html[data-theme="dark"] #optPayHint{background:#241f08!important;border-color:rgba(249,168,37,.45)!important;color:#ffd54f!important;}
+    html[data-theme="dark"] .options-drawer [style*="color:#0a4800"]{color:#9fe870!important;}
+    html[data-theme="dark"] .cart-summary{background:#0f2408;border-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .cart-item{border-bottom-color:rgba(51,204,0,.18);}
+    html[data-theme="dark"] .cart-item-rm{color:#ff8a80;}
+    html[data-theme="dark"] #cartLead{background:#0f2408!important;border-color:rgba(51,204,0,.25)!important;}
+    html[data-theme="dark"] #cartLead input{background:#1a3d15!important;border-color:rgba(51,204,0,.3)!important;color:#e8f5e0!important;}
+    /* Formulaire commande */
+    html[data-theme="dark"] .form-block{background:#122910;border-color:rgba(51,204,0,.22);box-shadow:0 8px 32px rgba(0,0,0,.4);}
+    html[data-theme="dark"] .form-block input,
+    html[data-theme="dark"] .form-block select,
+    html[data-theme="dark"] .form-block textarea{background:#1a3d15;border-color:rgba(51,204,0,.3);color:#e8f5e0;}
+    html[data-theme="dark"] .form-block input:focus,
+    html[data-theme="dark"] .form-block select:focus,
+    html[data-theme="dark"] .form-block textarea:focus{background:#1a3d15;border-color:var(--green);}
+    html[data-theme="dark"] .order-summary-box{background:#0f2408;}
+    html[data-theme="dark"] .order-summary-box [style*="color:#5d4037"]{color:#cbbba9!important;}
+    html[data-theme="dark"] #account-hint{background:#0f2408!important;border-color:rgba(51,204,0,.25)!important;}
+    html[data-theme="dark"] #addr-suggestions{background:#122910!important;border-color:rgba(51,204,0,.3)!important;box-shadow:0 8px 24px rgba(0,0,0,.5)!important;}
+    html[data-theme="dark"] #addr-suggestions div{color:#e8f5e0!important;background:transparent!important;border-bottom-color:rgba(51,204,0,.18)!important;}
+    html[data-theme="dark"] #addr-suggestions div:hover{background:#1a3d15!important;}
+    /* Encart fiscal jaune : version sombre lisible */
+    html[data-theme="dark"] div[style*="background:#fff9c4"]{background:#241f08!important;border-left-color:#f9a825!important;color:#e8dcc0!important;}
+    html[data-theme="dark"] div[style*="background:#fff9c4"] strong{color:#ffd54f;}
+    /* Bandeau cookies (consent.js) */
+    html[data-theme="dark"] #egc-cookie-banner{background:#122910;color:#e8f5e0;}
+    /* Footer */
+    html[data-theme="dark"] footer{background:#050e02;}
   </style>
 </head>
 <body>
@@ -354,6 +440,7 @@
     <li><a href="/pages/devis.html" class="btn-ghost-nav">Devis gratuit</a></li>
     <li><a href="/pages/boutique.html" class="btn-nav">Boutique</a></li>
   </ul>
+  <button id="q-theme" class="theme-btn" type="button" aria-label="Basculer clair/sombre">🌙</button>
 </nav>
 
 <!-- CART PILL flottant -->
@@ -1479,9 +1566,9 @@
 <script src="https://js.stripe.com/v3/" defer></script>
 
   <script src="/assets/js/session-nav.js?v=3" defer></script>
-  <script src="/assets/js/mobile-nav.js?v=7" defer></script>
+  <script src="/assets/js/mobile-nav.js?v=9" defer></script>
 <script src="/assets/js/protection.js?v=1" defer></script>
   <script src="/assets/js/analytics.js?v=2" defer></script>
-  <script src="/assets/js/consent.js?v=1" defer></script>
+  <script src="/assets/js/consent.js?v=2" defer></script>
 </body>
 </html>

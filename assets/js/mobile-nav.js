@@ -33,7 +33,7 @@
       shop.innerHTML = '🛒 Boutique';
       var shopHost = nav.querySelector('.ltopbar-inner') || nav.querySelector('.topbar-inner') || nav;
       var backLink = shopHost.querySelector('.lback') || shopHost.querySelector('.back-btn');
-      if (backLink) shopHost.insertBefore(shop, backLink);
+      if (backLink) backLink.parentNode.insertBefore(shop, backLink);
       else shopHost.appendChild(shop);
     }
 
@@ -202,7 +202,19 @@
       '.egc-mnav-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#33CC00,#0a4800);',
       '  color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}',
       '.egc-mnav-name{font-weight:800;color:#0a4800;font-size:.95rem;}',
-      '.egc-mnav-email{font-size:.78rem;color:#4a6a40;}'
+      '.egc-mnav-email{font-size:.78rem;color:#4a6a40;}',
+      'html[data-theme="dark"] .egc-burger span{background:#9fe870;}',
+      'html[data-theme="dark"] .egc-mnav-overlay{background:rgba(0,0,0,.6);}',
+      'html[data-theme="dark"] .egc-mnav-panel{background:#0a1a05;box-shadow:-8px 0 40px rgba(0,0,0,.6);}',
+      'html[data-theme="dark"] .egc-mnav-head{border-bottom-color:rgba(51,204,0,.22);}',
+      'html[data-theme="dark"] .egc-mnav-close{color:#9fe870;}',
+      'html[data-theme="dark"] .egc-mnav-links a{color:#e8f5e0;}',
+      'html[data-theme="dark"] .egc-mnav-links a:hover{background:#122910;color:#9fe870;}',
+      'html[data-theme="dark"] .egc-mnav-account{background:#0f2408;border-top-color:rgba(51,204,0,.22);}',
+      'html[data-theme="dark"] .egc-mnav-account a,html[data-theme="dark"] .egc-mnav-logout{color:#e8f5e0;}',
+      'html[data-theme="dark"] .egc-mnav-logout{color:#ff8a80;border-top-color:rgba(51,204,0,.22);}',
+      'html[data-theme="dark"] .egc-mnav-name{color:#9fe870;}',
+      'html[data-theme="dark"] .egc-mnav-email{color:#a8c9a0;}'
     ].join('\n');
     document.head.appendChild(s);
   }

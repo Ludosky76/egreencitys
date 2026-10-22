@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Le Réseau — Maillage de bornes en Guyane | EGREENCITY'S</title>
+  <script src="/assets/js/theme.js?v=1"></script>
   <meta name="description" content="Découvrez le projet de réseau de bornes de recharge inter-communal en Guyane française : 20 points de charge en Phase 1, du littoral à l'Oyapock.">
   <meta name="author" content="EGREENCITY'S SAS">
   <meta name="robots" content="index, follow">
@@ -149,6 +150,12 @@
     .btn-nav:hover{background:var(--green-dark)!important;transform:translateY(-1px);}
     .btn-ghost-nav{border:1px solid rgba(51,204,0,.5);color:var(--green-deep)!important;padding:.44rem 1.05rem;border-radius:50px;font-size:.78rem;font-weight:600!important;transition:background .2s,border-color .2s;}
     .btn-ghost-nav:hover{background:rgba(51,204,0,.08);border-color:var(--green);}
+    /* Bouton bascule jour/nuit — hors de la liste repliable pour rester visible en mobile */
+    .nav-links{margin-left:auto;} /* garde les liens à droite malgré le 3e enfant du nav */
+    .theme-btn{background:transparent;border:none;font-size:1.05rem;cursor:pointer;padding:.3rem .5rem;border-radius:50%;line-height:1;transition:background .2s}
+    .theme-btn:hover{background:rgba(0,0,0,.08)}
+    html[data-theme="dark"] .theme-btn:hover{background:rgba(255,255,255,.14)}
+    nav>.theme-btn{margin-left:.8rem;flex-shrink:0;}
 
     /* ── HERO ────────────────────────────────────────── */
     .hero{
@@ -176,7 +183,7 @@
     .ring:nth-child(4){width:880px;height:880px;animation-delay:1.8s;}
     @keyframes ringpulse{0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1);}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.04);}}
 
-    .hero-inner{position:relative;z-index:2;max-width:min(1880px,96vw);width:100%;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+    .hero-inner{position:relative;z-index:2;max-width:min(2460px,96vw);width:100%;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
     .hero-badge{
       display:inline-flex;align-items:center;gap:.5rem;
       background:rgba(51,204,0,.12);border:1px solid rgba(51,204,0,.28);
@@ -209,14 +216,14 @@
 
     /* ── STATS BAR ───────────────────────────────────── */
     .stats{background:var(--green);padding:2rem 3rem;}
-    .stats-inner{max-width:min(1880px,96vw);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;}
+    .stats-inner{max-width:min(2460px,96vw);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;}
     .stat{text-align:center;color:#fff;}
     .stat-n{font-size:2.3rem;font-weight:800;line-height:1;display:block;}
     .stat-l{font-size:.78rem;opacity:.88;margin-top:.25rem;}
 
     /* ── SECTIONS ────────────────────────────────────── */
     section{padding:5.5rem 3rem;}
-    .section-inner{max-width:min(1880px,96vw);margin:0 auto;}
+    .section-inner{max-width:min(2460px,96vw);margin:0 auto;}
     .badge{display:inline-block;background:rgba(51,204,0,.1);color:var(--green-deep);padding:.28rem .9rem;border-radius:50px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.9rem;}
     .title{font-size:clamp(1.8rem,2.8vw,2.5rem);font-weight:700;color:var(--dark);margin-bottom:1rem;line-height:1.2;}
     .sub{font-size:.94rem;color:var(--muted);max-width:580px;line-height:1.75;}
@@ -360,7 +367,7 @@
 
     /* ── FOOTER ──────────────────────────────────────── */
     footer{background:var(--dark);color:rgba(255,255,255,.6);padding:3rem 3rem 1.8rem;}
-    .foot-inner{max-width:min(1880px,96vw);margin:0 auto;}
+    .foot-inner{max-width:min(2460px,96vw);margin:0 auto;}
     .foot-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem;}
     .fbrand .logo-name{font-size:1.35rem;color:var(--green);font-weight:800;}
     .fbrand .logo-tag{color:rgba(255,255,255,.4);margin-bottom:1rem;}
@@ -431,8 +438,53 @@
     .whatsapp-float:hover::before{opacity:1;}
     @keyframes wappulse{0%,100%{box-shadow:0 8px 24px rgba(37,211,102,.45),0 0 0 0 rgba(37,211,102,.6);}50%{box-shadow:0 8px 24px rgba(37,211,102,.45),0 0 0 14px rgba(37,211,102,0);}}
     @media(max-width:600px){.whatsapp-float{width:56px;height:56px;bottom:18px;right:18px;}.whatsapp-float svg{width:28px;height:28px;}.whatsapp-float::before{display:none;}}
+
+    /* ===== MODE NUIT ===== */
+    html[data-theme="dark"]{color-scheme:dark;--off:#0f2408;--dark:#e8f5e0;--text:#e8f5e0;--muted:#a8c9a0;--green-deep:#9fe870;--shadow:rgba(0,0,0,.5);--gray-bg:#0f2408;--text-soft:#a8c9a0;}
+    html[data-theme="dark"] body{background:#0a1a05;color:#e8f5e0;}
+    /* barre de navigation */
+    html[data-theme="dark"] nav{background:rgba(10,26,5,.92);border-bottom-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] nav.scrolled{box-shadow:0 2px 24px rgba(0,0,0,.55);}
+    html[data-theme="dark"] .logo-tag{color:#8fa8ff;}
+    html[data-theme="dark"] .nav-sep{background:rgba(159,232,112,.25);}
+    html[data-theme="dark"] .btn-ghost-nav{border-color:rgba(51,204,0,.5);}
+    html[data-theme="dark"] .btn-ghost-nav:hover{background:rgba(51,204,0,.15);}
+    /* titres & badges (le fil d'ariane et les styles inline via var() suivent les variables redéfinies) */
+    html[data-theme="dark"] .badge{background:rgba(51,204,0,.16);}
+    html[data-theme="dark"] .title{color:#fff;}
+    html[data-theme="dark"] .mission-text h2{color:#fff;}
+    /* section réseau : communes + démarche */
+    html[data-theme="dark"] .commune{background:#122910!important;border-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .commune:hover{border-color:var(--green);}
+    html[data-theme="dark"] .demarche{background:#122910;border:1px solid rgba(51,204,0,.22);}
+    html[data-theme="dark"] .demarche h3,html[data-theme="dark"] .step-t strong{color:#fff;}
+    /* section « zones d'intervention » (fond blanc inline) */
+    html[data-theme="dark"] section[style*="background:#fff"]{background:#0a1a05!important;}
+    html[data-theme="dark"] section a[style*="#dfe8d8"]{background:#122910!important;border-color:rgba(51,204,0,.22)!important;}
+    /* bloc CTA « Une question ? » : bouton plein conservé en vert marque */
+    html[data-theme="dark"] div[style*="var(--gray-bg)"] a{background:linear-gradient(135deg,#0a4800,#33cc00)!important;}
+    /* cartes, onglets, formulaires (styles partagés) */
+    html[data-theme="dark"] .pillar,html[data-theme="dark"] .pcard,html[data-theme="dark"] .icard,html[data-theme="dark"] .cform{background:#122910;border-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .tab{background:#122910;border-color:rgba(51,204,0,.3);color:#a8c9a0;}
+    html[data-theme="dark"] .av{background:rgba(51,204,0,.1);border-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .fg input,html[data-theme="dark"] .fg select,html[data-theme="dark"] .fg textarea{background:#1a3d15;border-color:rgba(51,204,0,.3);color:#e8f5e0;}
+    html[data-theme="dark"] #toast{background:#122910;color:#e8f5e0;border:1px solid rgba(51,204,0,.3);}
+    /* tiroir mobile injecté par mobile-nav.js */
+    html[data-theme="dark"] .egc-burger span{background:#9fe870;}
+    html[data-theme="dark"] .egc-mnav-panel{background:#122910;}
+    html[data-theme="dark"] .egc-mnav-head{border-bottom-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .egc-mnav-close{color:#9fe870;}
+    html[data-theme="dark"] .egc-mnav-links a{color:#e8f5e0;}
+    html[data-theme="dark"] .egc-mnav-links a:hover{background:#0f2408;border-left-color:#33cc00;color:#9fe870;}
+    html[data-theme="dark"] .egc-mnav-account{background:#0f2408;border-top-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .egc-mnav-account a{color:#e8f5e0;}
+    html[data-theme="dark"] .egc-mnav-logout{color:#ff8a7a;border-top-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .egc-mnav-name{color:#9fe870;}
+    html[data-theme="dark"] .egc-mnav-email{color:#a8c9a0;}
+    /* pied de page : var(--dark) redéfinie → fond explicite */
+    html[data-theme="dark"] footer{background:#050e02;}
   </style>
-  <link rel="stylesheet" href="/assets/css/refonte.css?v=6">
+  <link rel="stylesheet" href="/assets/css/refonte.css?v=8">
 </head>
 <body>
 <!-- Navigation -->
@@ -456,10 +508,11 @@
     <li><a href="/pages/devis.html" class="btn-ghost-nav">Devis gratuit</a></li>
     <li><a href="/pages/boutique.html" class="btn-nav">Boutique</a></li>
   </ul>
+  <button id="q-theme" class="theme-btn" type="button">🌙</button>
 </nav>
 
 <!-- Fil d'Ariane -->
-<div style="max-width:min(1880px,96vw);margin:0 auto;padding:6rem 2rem 1rem;font-size:.85rem;">
+<div style="max-width:min(2460px,96vw);margin:0 auto;padding:6rem 2rem 1rem;font-size:.85rem;">
   <a href="/" style="color:var(--green-deep);text-decoration:none;font-weight:500;">← Accueil</a>
   <span style="opacity:.5;margin:0 .5rem;">/</span>
   <span style="color:var(--text-soft);">Le Réseau</span>
@@ -525,7 +578,7 @@
 
 <!-- ZONES D'INTERVENTION (maillage SEO communes) -->
 <section style="padding:3.5rem 2rem;background:#fff;">
-  <div style="max-width:min(1880px,96vw);margin:0 auto;">
+  <div style="max-width:min(2460px,96vw);margin:0 auto;">
     <div style="text-align:center;margin-bottom:1.8rem;">
       <div style="display:inline-block;padding:.32rem .9rem;background:rgba(51,204,0,.1);color:var(--green-deep);border-radius:50px;font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:.8rem;">Nos zones d'intervention</div>
       <h2 style="font-size:1.8rem;font-weight:800;color:var(--green-deep);line-height:1.2;margin:0;">Installation &amp; maintenance près de chez vous</h2>
@@ -640,9 +693,9 @@
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/firebase-auth.js?v=1"></script>
   <script src="/assets/js/session-nav.js?v=3" defer></script>
-  <script src="/assets/js/mobile-nav.js?v=7" defer></script>
+  <script src="/assets/js/mobile-nav.js?v=9" defer></script>
 <script src="/assets/js/protection.js?v=1" defer></script>
   <script src="/assets/js/analytics.js?v=2" defer></script>
-  <script src="/assets/js/consent.js?v=1" defer></script>
+  <script src="/assets/js/consent.js?v=2" defer></script>
 </body>
 </html>

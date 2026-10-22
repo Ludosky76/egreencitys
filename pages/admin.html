@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin — EGREENCITY'S</title>
+  <script src="/assets/js/theme.js?v=1"></script>
   <meta name="robots" content="noindex, nofollow">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline' https://www.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://firestore.googleapis.com https://egreencitys-93e0b.firebaseapp.com; frame-ancestors 'none'; base-uri 'self';">
   <link rel="icon" type="image/png" href="/logo.png">
@@ -18,7 +19,7 @@
     .top .who{font-size:.8rem;color:#bfeeb0;}
     .btn{background:var(--green);color:#052e00;border:none;padding:.55rem 1.1rem;border-radius:8px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit;}
     .btn.ghost{background:transparent;color:#bfeeb0;border:1px solid #2f5a34;}
-    .wrap{max-width:1100px;margin:0 auto;padding:1.5rem;}
+    .wrap{max-width:min(2460px, 96vw);margin:0 auto;padding:1.5rem;}
     .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.6rem;}
     .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem;}
     .kpi .n{font-size:1.8rem;font-weight:800;color:#fff;line-height:1;}
@@ -39,6 +40,19 @@
     #msg{font-size:.82rem;margin-top:.7rem;min-height:1.1rem;}
     .hidden{display:none!important;}
     .note{font-size:.78rem;color:var(--muted);margin-top:1.2rem;}
+    .theme-btn{background:transparent;border:none;font-size:1.05rem;cursor:pointer;padding:.3rem .5rem;border-radius:50%;line-height:1;transition:background .2s}
+    .theme-btn:hover{background:rgba(0,0,0,.08)}
+    .top .theme-btn:hover,html[data-theme="dark"] .theme-btn:hover{background:rgba(255,255,255,.14)}
+
+    /* ===== MODE NUIT ===== */
+    /* Back-office nativement sombre : le bloc aligne la palette sur celle du site (index.html). */
+    html[data-theme="dark"]{color-scheme:dark}
+    html[data-theme="dark"]{--bg:#0a1a05;--card:#122910;--line:rgba(51,204,0,.22);--ink:#e8f5e0;--muted:#a8c9a0;}
+    html[data-theme="dark"] body{background:var(--bg);color:var(--ink)}
+    html[data-theme="dark"] h2{color:#fff}
+    html[data-theme="dark"] .kpi .n{color:#fff}
+    html[data-theme="dark"] a{color:#9fe870}
+    html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{background:#1a3d15!important;color:#e8f5e0!important;border-color:rgba(51,204,0,.22)!important}
   </style>
 </head>
 <body>
@@ -56,7 +70,8 @@
   <div id="app" class="hidden">
     <div class="top">
       <div><b>EGREENCITY'S · Admin</b> <span class="who" id="who"></span></div>
-      <div style="display:flex;gap:.5rem;">
+      <div style="display:flex;gap:.5rem;align-items:center;">
+        <button id="q-theme" class="theme-btn" type="button">🌙</button>
         <button class="btn ghost" onclick="loadAll()">↻ Actualiser</button>
         <button class="btn ghost" onclick="firebase.auth().signOut()">Se déconnecter</button>
       </div>

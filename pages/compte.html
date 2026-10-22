@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mon compte — EGREENCITY'S</title>
+  <script src="/assets/js/theme.js?v=1"></script>
   <meta name="description" content="Espace client EGREENCITY'S : gérez votre profil, consultez l'historique de vos commandes de bornes de recharge en Guyane.">
   <meta name="robots" content="noindex,follow">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.google-analytics.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.googletagmanager.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://egreencitys-93e0b.firebaseapp.com https://*.google-analytics.com https://www.google-analytics.com https://*.googletagmanager.com; frame-src https://egreencitys-93e0b.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
@@ -15,7 +16,7 @@
   <link rel="canonical" href="https://egreencitys.com/pages/compte.html">
   <link rel="icon" type="image/png" href="/logo.png">
   <meta name="theme-color" content="#0a4800">
-  <link rel="stylesheet" href="/assets/css/refonte.css?v=6">
+  <link rel="stylesheet" href="/assets/css/refonte.css?v=8">
 
   <style>
     :root {
@@ -48,6 +49,9 @@
     .btn-nav:hover{background:var(--green-dark)!important;transform:translateY(-1px);}
     .btn-ghost-nav{border:1px solid rgba(51,204,0,.5);color:var(--green-deep)!important;padding:.44rem 1.05rem;border-radius:50px;font-size:.78rem;font-weight:600!important;transition:background .2s,border-color .2s;}
     .btn-ghost-nav:hover{background:rgba(51,204,0,.08);border-color:var(--green);}
+    .theme-btn{background:transparent;border:none;font-size:1.05rem;cursor:pointer;padding:.3rem .5rem;border-radius:50%;line-height:1;transition:background .2s;margin-left:.6rem;}
+    .theme-btn:hover{background:rgba(0,0,0,.08);}
+    html[data-theme="dark"] .theme-btn:hover{background:rgba(255,255,255,.14);}
 
     /* HERO compte */
     .page-hero{
@@ -59,7 +63,7 @@
     .page-hero p{color:rgba(255,255,255,.75);font-size:1rem;}
 
     /* Container */
-    .container{max-width:min(1880px, 96vw);margin:-2rem auto 3rem;padding:0 2rem;position:relative;z-index:2;}
+    .container{max-width:min(2460px, 96vw);margin:-2rem auto 3rem;padding:0 2rem;position:relative;z-index:2;}
     .card{background:#fff;border-radius:20px;padding:2.5rem 2rem;box-shadow:0 12px 40px rgba(10,72,0,.1);margin-bottom:1.5rem;border:1px solid #e5f0dd;}
     /* Grand écran : la section s'élargit, mais les blocs de saisie gardent une largeur confortable */
     #view-guest{max-width:900px;margin-left:auto;margin-right:auto;}
@@ -151,6 +155,82 @@
       .card{padding:1.6rem 1.3rem;}
       form .row{grid-template-columns:1fr;}
     }
+
+    /* ===== MODE NUIT ===== */
+    html[data-theme="dark"]{color-scheme:dark;}
+    html[data-theme="dark"]{
+      --text:#e8f5e0;
+      --muted:#a8c9a0;
+      --green-deep:#9fe870;
+      --shadow:rgba(0,0,0,.45);
+    }
+    html[data-theme="dark"] body{background:#0a1a05;color:#e8f5e0;}
+    /* Nav */
+    html[data-theme="dark"] nav{background:rgba(10,26,5,.92);border-bottom-color:rgba(51,204,0,.25);}
+    html[data-theme="dark"] .nav-links a{color:#e8f5e0;}
+    html[data-theme="dark"] .nav-links a:not(.btn-nav):not(.btn-ghost-nav):hover{color:#9fe870;}
+    html[data-theme="dark"] .btn-nav{color:#fff!important;}
+    html[data-theme="dark"] .btn-ghost-nav{color:#9fe870!important;border-color:rgba(51,204,0,.55);}
+    html[data-theme="dark"] .btn-ghost-nav:hover{background:rgba(51,204,0,.14);}
+    html[data-theme="dark"] .nav-sep{background:rgba(232,245,224,.22);}
+    /* Héros : déjà sombre — inchangé. Cartes : */
+    html[data-theme="dark"] .card{background:#122910;border-color:rgba(51,204,0,.22);box-shadow:0 12px 40px rgba(0,0,0,.45);}
+    /* Onglets connexion / inscription */
+    html[data-theme="dark"] .auth-tabs{background:#0f2408;}
+    html[data-theme="dark"] .auth-tab-btn{color:#a8c9a0;}
+    html[data-theme="dark"] .auth-tab-btn.active{background:#33cc00;color:#04210a;box-shadow:0 4px 12px rgba(0,0,0,.4);}
+    /* Formulaires */
+    html[data-theme="dark"] form input,
+    html[data-theme="dark"] form select,
+    html[data-theme="dark"] form textarea{background:#1a3d15;border-color:rgba(51,204,0,.3);color:#e8f5e0;}
+    html[data-theme="dark"] form input:focus,
+    html[data-theme="dark"] form select:focus{background:#1a3d15;border-color:#33cc00;}
+    html[data-theme="dark"] form input::placeholder,
+    html[data-theme="dark"] form textarea::placeholder{color:#7da375;}
+    html[data-theme="dark"] #p-email[disabled]{background:#132a0f!important;color:#a8c9a0!important;}
+    html[data-theme="dark"] #recover-emails-list{background:#0f2408!important;}
+    html[data-theme="dark"] #recover-emails-list div{border-bottom-color:rgba(51,204,0,.25)!important;}
+    /* Encarts jaunes (info / vérification email) : lisibilité conservée */
+    html[data-theme="dark"] .info-box{background:#2e2503;color:#ffe9a8;}
+    html[data-theme="dark"] #email-verify-box{background:#2e2503!important;color:#ffe9a8!important;}
+    /* Dashboard */
+    html[data-theme="dark"] .dashboard-head{border-bottom-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .welcome{color:#fff;}
+    html[data-theme="dark"] .btn-signout{border-color:rgba(51,204,0,.3);color:#e8f5e0;}
+    html[data-theme="dark"] .btn-signout:hover{border-color:#ff8a80;color:#ff8a80;}
+    html[data-theme="dark"] .stat{background:#0f2408;border-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] h2.sec{color:#fff;}
+    /* Commandes / demandes / alertes */
+    html[data-theme="dark"] .order{background:#0f2408;border-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .order:hover{background:#163517;border-color:#33cc00;}
+    /* Badge statut : pastille sombre lisible ; le badge inline « de retour en stock » (clair) garde la main */
+    html[data-theme="dark"] .order .status{background:rgba(51,204,0,.2);color:#b6f0a4;}
+    html[data-theme="dark"] .order .info > div[style*="#eef7e8"]{background:#15320f!important;}
+    html[data-theme="dark"] .order .info > div[style*="#f2f6ff"]{background:#101d33!important;}
+    html[data-theme="dark"] .order textarea{background:#1a3d15!important;border-color:rgba(51,204,0,.3)!important;color:#e8f5e0!important;}
+    html[data-theme="dark"] .order > button{color:#a8c9a0!important;border-color:rgba(51,204,0,.3)!important;}
+    html[data-theme="dark"] .empty-orders{background:#0f2408;border-color:rgba(51,204,0,.25);color:#a8c9a0;}
+    /* Liens texte (y compris ceux générés en JS avec style inline) */
+    html[data-theme="dark"] .order a,
+    html[data-theme="dark"] .empty-orders a,
+    html[data-theme="dark"] .guest-cta a,
+    html[data-theme="dark"] #form-login a,
+    html[data-theme="dark"] #form-recover a,
+    html[data-theme="dark"] .info-box a,
+    html[data-theme="dark"] #email-verify-box a{color:#9fe870!important;}
+    html[data-theme="dark"] .guest-cta a{border-bottom-color:#9fe870;}
+    /* Actions RGPD */
+    html[data-theme="dark"] .rgpd-actions{border-top-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .btn-secondary{background:#0f2408;color:#9fe870;border-color:rgba(51,204,0,.3);}
+    html[data-theme="dark"] .btn-secondary:hover{border-color:#33cc00;color:#33cc00;}
+    html[data-theme="dark"] .btn-danger{background:transparent;color:#ff8a80;border-color:rgba(255,120,120,.4);}
+    html[data-theme="dark"] .btn-danger:hover{background:#3a1515;border-color:#ff8a80;}
+    html[data-theme="dark"] .guest-cta{border-top-color:rgba(51,204,0,.22);}
+    /* Alertes */
+    html[data-theme="dark"] .alert-error{background:#3a1212;color:#ff9a9a;border-left-color:#e05555;}
+    html[data-theme="dark"] .alert-success{background:#15320f;color:#b6f0a4;border-left-color:#33cc00;}
+    /* Footer (déjà sombre) : fond encore plus profond */
+    html[data-theme="dark"] footer{background:#050e02;}
   </style>
 </head>
 <body>
@@ -169,6 +249,7 @@
     <li><a href="/pages/devis.html" class="btn-ghost-nav">Devis gratuit</a></li>
     <li><a href="/pages/boutique.html" class="btn-nav">Boutique</a></li>
   </ul>
+  <button id="q-theme" class="theme-btn" type="button">🌙</button>
 </nav>
 
 <section class="page-hero">
@@ -917,9 +998,9 @@ setTimeout(function () {
 </script>
 
   <script src="/assets/js/session-nav.js?v=3" defer></script>
-  <script src="/assets/js/mobile-nav.js?v=7" defer></script>
+  <script src="/assets/js/mobile-nav.js?v=9" defer></script>
 <script src="/assets/js/protection.js?v=1" defer></script>
   <script src="/assets/js/analytics.js?v=2" defer></script>
-  <script src="/assets/js/consent.js?v=1" defer></script>
+  <script src="/assets/js/consent.js?v=2" defer></script>
 </body>
 </html>

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boutique EGREENCITY'S — Bornes de recharge & Quincaillerie en Guyane</title>
+  <script src="/assets/js/theme.js?v=1"></script>
   <meta name="description" content="Les deux boutiques en ligne EGREENCITY'S : bornes de recharge pour véhicules électriques (vente et installation) et quincaillerie & outillage livrés en Guyane. Choisissez votre univers.">
   <meta name="author" content="EGREENCITY'S SAS">
   <meta name="robots" content="index, follow">
@@ -28,7 +29,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/refonte.css?v=6">
+  <link rel="stylesheet" href="/assets/css/refonte.css?v=8">
 
   <!-- Schema.org : fil d'Ariane -->
   <script type="application/ld+json">
@@ -76,6 +77,9 @@
     .btn-nav:hover{background:var(--green-dark)!important;transform:translateY(-1px);}
     .btn-ghost-nav{border:1px solid rgba(51,204,0,.5);color:var(--green-deep)!important;padding:.44rem 1.05rem;border-radius:50px;font-size:.78rem;font-weight:600!important;transition:background .2s,border-color .2s;}
     .btn-ghost-nav:hover{background:rgba(51,204,0,.08);border-color:var(--green);}
+    .theme-btn{background:transparent;border:none;font-size:1.05rem;cursor:pointer;padding:.3rem .5rem;border-radius:50%;line-height:1;transition:background .2s;}
+    .theme-btn:hover{background:rgba(0,0,0,.08);}
+    html[data-theme="dark"] .theme-btn:hover{background:rgba(255,255,255,.14);}
 
     /* BREADCRUMB */
     .breadcrumb{padding:5.6rem 2.5rem .6rem;font-size:.8rem;color:var(--muted);background:#fff;}
@@ -85,7 +89,7 @@
     /* REPLI SANS JAVASCRIPT (voir commentaire du bloc #acces-boutique) */
     .acces-repli{display:none;}
     .acces-repli:target{
-      display:block;max-width:min(1880px, 96vw);margin:.4rem auto 1rem;
+      display:block;max-width:min(2460px, 96vw);margin:.4rem auto 1rem;
       padding:1.2rem 1.5rem;background:#fff6e8;
       border:1px solid #e8bd7a;border-left:4px solid #d98a1a;border-radius:12px;
       color:#5a3a00;font-size:.88rem;line-height:1.65;scroll-margin-top:6rem;
@@ -125,7 +129,7 @@
 
     /* CHOIX DES DEUX UNIVERS */
     .univers{padding:3.5rem 2.5rem 1rem;background:#fff;}
-    .univers-grid{max-width:min(1880px, 96vw);margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:2rem;}
+    .univers-grid{max-width:min(2460px, 96vw);margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:2rem;}
 
     .uni-card{
       display:flex;flex-direction:column;
@@ -170,14 +174,14 @@
     .uni-lien:hover{text-decoration:underline;}
 
     /* NOTE DE SÉPARATION */
-    .separation{max-width:min(1880px, 96vw);margin:2.4rem auto 0;padding:1.2rem max(1.5rem, calc((min(1880px, 96vw) - 95ch)/2));
+    .separation{max-width:min(2460px, 96vw);margin:2.4rem auto 0;padding:1.2rem max(1.5rem, calc((min(2460px, 96vw) - 95ch)/2));
       background:var(--off);border:1px solid rgba(51,204,0,.18);border-radius:14px;
       font-size:.85rem;color:var(--muted);line-height:1.6;text-align:center;}
     .separation strong{color:var(--green-deep);}
 
     /* RASSURANCE */
     .reassure{padding:3rem 2.5rem 3.5rem;background:#fff;}
-    .reassure-grid{max-width:min(1880px, 96vw);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;}
+    .reassure-grid{max-width:min(2460px, 96vw);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;}
     .re-item{background:var(--off);border-radius:14px;padding:1.3rem 1.2rem;text-align:center;border:1px solid rgba(51,204,0,.12);}
     .re-emo{font-size:1.6rem;display:block;margin-bottom:.5rem;}
     .re-t{font-weight:700;color:var(--green-deep);font-size:.88rem;margin-bottom:.3rem;}
@@ -201,6 +205,46 @@
     @media(max-width:520px){
       .reassure-grid{grid-template-columns:1fr;}
     }
+
+    /* ===== MODE NUIT ===== */
+    html[data-theme="dark"]{color-scheme:dark;}
+    html[data-theme="dark"] body{background:#0a1a05;color:#e8f5e0;}
+    /* Nav */
+    html[data-theme="dark"] nav{background:rgba(10,26,5,.95);border-bottom:1px solid rgba(51,204,0,.22);}
+    html[data-theme="dark"] nav.scrolled{box-shadow:0 2px 24px rgba(0,0,0,.5);}
+    html[data-theme="dark"] .nav-links a{color:#e8f5e0;}
+    html[data-theme="dark"] .nav-links a:not(.btn-nav):not(.btn-ghost-nav):hover{color:#9fe870;}
+    html[data-theme="dark"] .nav-sep{background:rgba(255,255,255,.18);}
+    html[data-theme="dark"] .btn-ghost-nav{color:#9fe870!important;border-color:rgba(51,204,0,.45);}
+    html[data-theme="dark"] .btn-ghost-nav:hover{background:rgba(51,204,0,.14);}
+    /* Fil d'Ariane */
+    html[data-theme="dark"] .breadcrumb{background:#0a1a05;color:#a8c9a0;}
+    html[data-theme="dark"] .breadcrumb a{color:#9fe870;}
+    /* Bloc de repli sans JavaScript (ambre adouci sur fond nuit) */
+    html[data-theme="dark"] .acces-repli:target{background:#241a06;border-color:#6b4e1a;border-left-color:#d98a1a;color:#e8d5a8;}
+    html[data-theme="dark"] .acces-repli h2{color:#f0c36a;}
+    html[data-theme="dark"] .acces-repli a{color:#f0b45a;}
+    /* Héros : déjà sombre en mode clair, inchangé */
+    /* Univers : fond nuit vert, accent bleu conservé côté quincaillerie */
+    html[data-theme="dark"] .univers{background:#0a1a05;}
+    html[data-theme="dark"] .uni-card{background:#122910;border-color:rgba(51,204,0,.22);box-shadow:0 8px 30px rgba(0,0,0,.35);}
+    html[data-theme="dark"] .uni-card:hover{box-shadow:0 18px 44px rgba(0,0,0,.5);}
+    html[data-theme="dark"] .uni-card--quincaillerie:hover{border-color:#5d7ce0;}
+    html[data-theme="dark"] .uni-pitch{color:#e8f5e0;}
+    html[data-theme="dark"] .uni-list li{color:#a8c9a0;}
+    html[data-theme="dark"] .uni-card--quincaillerie .uni-list li::before{color:#8fa8ff;}
+    html[data-theme="dark"] .uni-card--bornes .uni-lien{color:#9fe870;}
+    html[data-theme="dark"] .uni-card--quincaillerie .uni-lien{color:#8fa8ff;}
+    /* Note de séparation */
+    html[data-theme="dark"] .separation{background:#0f2408;border-color:rgba(51,204,0,.22);color:#a8c9a0;}
+    html[data-theme="dark"] .separation strong{color:#9fe870;}
+    /* Rassurance */
+    html[data-theme="dark"] .reassure{background:#0a1a05;}
+    html[data-theme="dark"] .re-item{background:#122910;border-color:rgba(51,204,0,.22);}
+    html[data-theme="dark"] .re-t{color:#9fe870;}
+    html[data-theme="dark"] .re-d{color:#a8c9a0;}
+    /* Pied de page : déjà sombre, harmonisé avec la palette nuit */
+    html[data-theme="dark"] footer{background:#050e02;}
   </style>
 </head>
 <body>
@@ -227,6 +271,7 @@
     <li><a href="/pages/devis.html" class="btn-ghost-nav">Devis borne gratuit</a></li>
     <li><a href="/pages/boutique.html" class="btn-nav" aria-current="page">Boutique</a></li>
   </ul>
+  <button id="q-theme" class="theme-btn" type="button">🌙</button>
 </nav>
 
 <!-- BREADCRUMB -->
@@ -422,9 +467,9 @@
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/firebase-auth.js?v=1"></script>
   <script src="/assets/js/session-nav.js?v=3" defer></script>
-  <script src="/assets/js/mobile-nav.js?v=7" defer></script>
+  <script src="/assets/js/mobile-nav.js?v=9" defer></script>
 <script src="/assets/js/protection.js?v=1" defer></script>
   <script src="/assets/js/analytics.js?v=2" defer></script>
-  <script src="/assets/js/consent.js?v=1" defer></script>
+  <script src="/assets/js/consent.js?v=2" defer></script>
 </body>
 </html>
