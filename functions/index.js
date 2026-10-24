@@ -33,6 +33,7 @@ admin.initializeApp();
 
 const STRIPE_WEBHOOK_SECRET = defineSecret('STRIPE_WEBHOOK_SECRET');
 const STRIPE_SECRET_KEY = defineSecret('STRIPE_SECRET_KEY'); // clé RESTREINTE (Checkout Sessions : écriture)
+const EVENEMENTS = ['checkout.session.completed', 'checkout.session.async_payment_succeeded'];
 
 exports.paiementPanier = onRequest(
   { secrets: [STRIPE_SECRET_KEY], region: 'europe-west1', cors: ['https://egreencitys.com', 'https://www.egreencitys.com'], maxInstances: 5, timeoutSeconds: 30 },
