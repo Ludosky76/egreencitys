@@ -219,7 +219,17 @@
     var ok = etat.panier.length === 1 && etat.panier[0].q === 1
           && statutDe(etat.panier[0].ref) === 'disponible' && etat.liens[etat.panier[0].ref];
     cb.style.display = ok ? '' : 'none';
-    $('q-cb-indice').style.display = ok ? 'none' : '';
+    // paiement par carte du PANIER (fonction serveur) : tous les articles disponibles, un seul colis ≤ 30 kg
+    var bp = $('q-payer-panier');
+    var poidsPanier = etat.panier.reduce(function (s, l) { var a = article(l.ref); return s + (a && a.poids ? a.poids * l.q : 0); }, 0);
+    var okPanier = !ok && !!(etat.paiement && etat.paiement.panier_cb && etat.paiement.fonction)
+      && etat.panier.every(function (l) { var a = article(l.ref); return a && !a.devis && statutDe(l.ref) === 'disponible'; })
+      && poidsPanier <= 30;
+    if (bp) {
+      bp.style.display = okPanier ? '' : 'none';
+      bp.textContent = '💳 Payer le panier par carte — ' + eur(t.total);
+    }
+    $('q-cb-indice').style.display = (ok || okPanier) ? 'none' : '';
   }
 
   /* ---------------- offre de lancement (assets/data/quincaillerie-offre.json) ----------------
@@ -362,6 +372,44 @@
       .finally(function () { if (bouton) { bouton.disabled = false; bouton.classList.remove('q-verif'); } });
   }
 
+  /* ---------------- paiement par carte du panier (fonction serveur) ----------------
+     Le serveur relit prix, stock, poids et offre dans les fichiers publiés : le navigateur
+     n'envoie que les références et quantités. */
+  function payerPanier() {
+    var bp = $('q-payer-panier');
+    bp.disabled = true; bp.classList.add('q-verif');
+    var t = totalPanier(), ts = Date.now();
+    fetch(etat.paiement.fonction, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ panier: etat.panier.map(function (l) { return { ref: l.ref, q: l.q }; }), email: ($('q-email').value || '').trim() })
+    }).then(function (r) { return r.json().then(function (j) { return { statut: r.status, j: j }; }); })
+      .then(function (x) {
+        if (x.statut === 200 && x.j.url) {
+          try {
+            localStorage.setItem('egc_quinc_commande', JSON.stringify({
+              panier: true, ref: etat.panier.map(function (l) { return l.q + 'x' + l.ref; }).join(','),
+              nom: 'panier de ' + etat.panier.reduce(function (s, l) { return s + l.q; }, 0) + ' article(s)', montant: t.total, ts: ts
+            }));
+          } catch (e) {}
+          window.location.href = x.j.url;
+          return;
+        }
+        if (x.statut === 409 && x.j.erreur === 'panier') {
+          alert('Certains articles ne sont plus disponibles :\n' + x.j.refus.map(function (r) { return '• ' + r.ref + ' : ' + r.motif; }).join('\n')
+            + '\nRetirez-les du panier, ou envoyez la commande : nous vous confirmons le délai.');
+          return fetch('/assets/data/quincaillerie-stock.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); })
+            .then(function (j) { etat.stock = j.stock || etat.stock; rendre(); rendrePanier(); });
+        }
+        if (x.statut === 409 && x.j.erreur === 'poids') {
+          alert('Votre commande pèse environ ' + x.j.poids + ' kg : au-delà de 30 kg, elle ne tient pas dans un colis. Envoyez-la par le formulaire, nous vous proposons un devis.');
+          return;
+        }
+        throw 0;
+      })
+      .catch(function () { alert('Paiement par carte momentanément indisponible. Envoyez la commande par le formulaire : nous vous recontactons sous 24 h ouvrées.'); })
+      .finally(function () { bp.disabled = false; bp.classList.remove('q-verif'); });
+  }
+
   /* ---------------- retour de paiement Stripe (option B) ----------------
      Les liens de paiement renvoient sur ?paiement=succes : la ligne payée
      sort du panier et, si le client est connecté, la commande est
@@ -375,8 +423,8 @@
     } catch (e) {}
     history.replaceState(null, '', location.pathname);
     if (cmd && Date.now() - (cmd.ts || 0) < 2 * 3600 * 1000) {
-      /* la ligne payée (mono-article, qté 1) sort du panier */
-      etat.panier = etat.panier.filter(function (l) { return !(l.ref === cmd.ref && l.q === 1); });
+      /* panier payé : il est vidé ; sinon la ligne payée (mono-article, qté 1) sort du panier */
+      etat.panier = cmd.panier ? [] : etat.panier.filter(function (l) { return !(l.ref === cmd.ref && l.q === 1); });
       sauver(); rendre(); rendrePanier();
       if (window.EGCQCompte) {
         window.EGCQCompte.pret.then(function (u) {
@@ -439,6 +487,7 @@
     $('q-fermer-panier').addEventListener('click', function () { $('q-tiroir').classList.remove('ouvert'); });
     $('q-form').addEventListener('submit', envoyerCommande);
     $('q-payer-cb').addEventListener('click', function () { verifierPuisPayer(etat.panier[0].ref); });
+    if ($('q-payer-panier')) $('q-payer-panier').addEventListener('click', payerPanier);
     document.addEventListener('click', function (e) {
       var t = e.target.closest('[data-add],[data-pay],[data-plus],[data-moins],[data-suppr]');
       if (!t) return;
@@ -458,10 +507,12 @@
     fetch('/assets/data/quincaillerie-catalogue.json').then(function (r) { return r.json(); }),
     fetch('/assets/data/quincaillerie-stock.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }),
     fetch('/assets/data/quincaillerie-liens.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
-    fetch('/assets/data/quincaillerie-offre.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    fetch('/assets/data/quincaillerie-offre.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+    fetch('/assets/data/quincaillerie-paiement.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
   ]).then(function (res) {
     etat.catalogue = res[0];
     etat.offre = res[3];
+    etat.paiement = res[4];
     etat.stock = res[1].stock || {}; etat.stockMaj = res[1].maj || 0;
     etat.liens = res[2] || {};
     var sel = $('q-cat');

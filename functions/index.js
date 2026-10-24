@@ -14,18 +14,34 @@
    La clé secrète d'API (sk_live_...) n'est PAS requise : la vérification de
    signature n'utilise que le secret du webhook, et le produit acheté est
    identifié via le client_reference_id transmis par la boutique.
+
+   paiementPanier : crée la page de paiement Stripe d'un PANIER de plusieurs
+   articles de la quincaillerie (un seul forfait d'expédition). Les prix, le
+   stock, la limite de 30 kg et l'offre de lancement sont relus côté serveur
+   dans les fichiers publiés du site : rien ne vient du navigateur, sauf les
+   références et quantités. Secret requis : une clé Stripe RESTREINTE
+   (droit « Checkout Sessions : écriture ») :
+     firebase functions:secrets:set STRIPE_SECRET_KEY
    ========================================================================== */
 const { onRequest } = require('firebase-functions/v2/https');
 const { defineSecret } = require('firebase-functions/params');
 const admin = require('firebase-admin');
 const Stripe = require('stripe');
+const { creerSessionPanier } = require('./panier');
 
 admin.initializeApp();
 
 const STRIPE_WEBHOOK_SECRET = defineSecret('STRIPE_WEBHOOK_SECRET');
+const STRIPE_SECRET_KEY = defineSecret('STRIPE_SECRET_KEY'); // clé RESTREINTE (Checkout Sessions : écriture)
 
-/* Événements traités : paiement immédiat, et paiement différé confirmé plus tard. */
-const EVENEMENTS = ['checkout.session.completed', 'checkout.session.async_payment_succeeded'];
+exports.paiementPanier = onRequest(
+  { secrets: [STRIPE_SECRET_KEY], region: 'europe-west1', cors: ['https://egreencitys.com', 'https://www.egreencitys.com'], maxInstances: 5, timeoutSeconds: 30 },
+  async (req, res) => {
+    if (req.method !== 'POST') return res.status(405).json({ erreur: 'methode' });
+    const r = await creerSessionPanier(req.body, STRIPE_SECRET_KEY.value());
+    return res.status(r.statut).json(r.json);
+  }
+);
 
 exports.stripeWebhook = onRequest(
   { secrets: [STRIPE_WEBHOOK_SECRET], region: 'europe-west1' },
@@ -68,8 +84,18 @@ exports.stripeWebhook = onRequest(
     const libelle = produit
       ? (produit.startsWith('QF-')
           ? 'Quincaillerie — réf. ' + produit.slice(3)
-          : 'Borne de recharge — ' + produit)
+          : produit.startsWith('QP-')
+            ? 'Quincaillerie — panier'
+            : 'Borne de recharge — ' + produit)
       : 'Commande en ligne';
+    // Panier (paiementPanier) : une ligne par référence, lue dans les métadonnées « 2x688HX,1x290HV ».
+    const panier = (s.metadata && s.metadata.panier) || '';
+    const articlesPanier = panier
+      ? panier.split(',').map((x) => {
+          const m = x.match(/^(\d+)x(.+)$/);
+          return m ? { libelle: 'Quincaillerie — réf. ' + m[2], quantite: Number(m[1]) } : null;
+        }).filter(Boolean)
+      : null;
 
     const donnees = {
       numero,
@@ -91,7 +117,7 @@ exports.stripeWebhook = onRequest(
         // created_at, ni un n° de suivi / des articles édités par l'admin.
         donnees.created_at = admin.firestore.FieldValue.serverTimestamp();
         donnees.statut = 'payee';
-        donnees.articles = [{ libelle, quantite: 1 }];
+        donnees.articles = (articlesPanier && articlesPanier.length) ? articlesPanier : [{ libelle, quantite: 1 }];
         donnees.numero_suivi = '';
       }
       await ref.set(donnees, { merge: true });

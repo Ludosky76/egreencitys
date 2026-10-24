@@ -6,7 +6,7 @@
   <title>Quincaillerie Pro — 2 200+ références livrées en Guyane | EGREENCITY'S</title>
   <meta name="description" content="EGREENCITY'S — PRO QUINCAILLERIE : outillage et quincaillerie professionnels livrés en Guyane. Prix tout compris : octroi de mer et transport inclus, paiement par carte.">
   <meta name="robots" content="index, follow">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://media.screwfix.fr https://*.google-analytics.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.googletagmanager.com; connect-src 'self' https://formsubmit.co https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://egreencitys-93e0b.firebaseapp.com https://*.google-analytics.com https://www.google-analytics.com https://*.googletagmanager.com; frame-src https://egreencitys-93e0b.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://media.screwfix.fr https://*.google-analytics.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.googletagmanager.com; connect-src 'self' https://formsubmit.co https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://egreencitys-93e0b.firebaseapp.com https://europe-west1-egreencitys-93e0b.cloudfunctions.net https://*.google-analytics.com https://www.google-analytics.com https://*.googletagmanager.com; frame-src https://egreencitys-93e0b.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="canonical" href="https://egreencitys.com/pages/boutique-quincaillerie.html">
@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/quincaillerie.css?v=12">
+  <link rel="stylesheet" href="/assets/css/quincaillerie.css?v=13">
   <link rel="stylesheet" href="/assets/css/refonte.css?v=8">
   <script src="/assets/js/quincaillerie-theme.js?v=1"></script>
 </head>
@@ -120,6 +120,7 @@
       <div class="q-total-ligne"><span>Forfait d'expédition (unique)</span><span id="q-total-forfait">—</span></div>
       <div class="q-total-ligne total"><span>Total tout compris</span><span id="q-total">—</span></div>
       <button type="button" id="q-payer-cb">💳 Payer par carte — vérification du stock avant paiement</button>
+      <button type="button" id="q-payer-panier" style="display:none">💳 Payer le panier par carte</button>
       <p id="q-cb-indice">Le paiement par carte est disponible pour un article seul, en stock. Pour plusieurs articles : envoyez la commande, nous vérifions chaque référence chez le fournisseur et vous adressons le règlement — aucun encaissement avant validation.</p>
       <div id="q-form-zone">
         <form id="q-form">
@@ -143,7 +144,7 @@
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/quincaillerie-compte.js?v=2"></script>
   <script src="/assets/js/site-config.js?v=3" defer></script>
-  <script src="/assets/js/quincaillerie-shop.js?v=12" defer></script>
+  <script src="/assets/js/quincaillerie-shop.js?v=13" defer></script>
   <script src="/assets/js/mobile-nav.js?v=9" defer></script>
 <script src="/assets/js/protection.js?v=1" defer></script>
   <script src="/assets/js/analytics.js?v=2" defer></script>

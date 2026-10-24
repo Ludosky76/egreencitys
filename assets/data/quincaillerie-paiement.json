@@ -1,0 +1,4 @@
+{
+ "panier_cb": false,
+ "fonction": "https://europe-west1-egreencitys-93e0b.cloudfunctions.net/paiementPanier"
+}
