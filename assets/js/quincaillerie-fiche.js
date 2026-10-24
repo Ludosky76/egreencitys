@@ -166,7 +166,7 @@
       +   '<div class="qf-prixbloc">'
       +     '<div class="qf-prix">' + eur(a.prix) + '<span class="q-ttc">TTC</span></div>'
       +     '<div class="q-inclus">Octroi de mer &amp; transport vers la Guyane inclus*</div>'
-      +     '<div class="qf-livraison"><strong>' + delaiTexte(ref, a) + '</strong> · partout en Guyane · retrait possible à Macouria</div>'
+      +     '<div class="qf-livraison"><strong>' + delaiTexte(ref, a) + '</strong> · livré à domicile partout en Guyane</div>'
       +     '<div class="qf-boutons">'
       +     (dispo
       ?       '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>'
