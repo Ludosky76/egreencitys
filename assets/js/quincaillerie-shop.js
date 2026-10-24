@@ -91,11 +91,17 @@
       + (a.marque ? '<div class="q-marque">' + esc(a.marque) + '</div>' : '')
       + '<a class="q-lien" href="' + fiche + '"><h3 class="q-nom">' + esc(a.nom) + '</h3></a>'
       + badgeStock(a.ref)
-      + '<div class="q-prix">' + eur(a.prix) + '<span class="q-ttc">TTC</span></div>'
-      + '<div class="q-inclus">Octroi &amp; livraison inclus*</div>'
-      + (a.poids ? '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · ' + delaiTexte(a.ref, a) + '</div>' : '')
+      + (a.devis
+          ? '<div class="q-prix q-prix-devis">Prix sur devis</div>'
+            + '<div class="q-inclus">Colis de plus de 30 kg : acheminement adapté</div>'
+            + '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · délai confirmé avec le devis</div>'
+          : '<div class="q-prix">' + eur(a.prix) + '<span class="q-ttc">TTC</span></div>'
+            + '<div class="q-inclus">Octroi &amp; livraison inclus*</div>'
+            + (a.poids ? '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · ' + delaiTexte(a.ref, a) + '</div>' : ''))
       + '<div class="q-actions">'
-      + (dispo
+      + (a.devis
+          ? '<a class="q-pay" href="' + urlDemande(a.ref) + '">📦 Demander un devis<span class="q-pay-sub">plus de 30 kg — réponse sous 24 h ouvrées</span></a>'
+          : dispo
           ? '<button type="button" class="q-add" data-add="' + esc(a.ref) + '">🛒 Ajouter au panier</button>'
             + (lien ? '<button type="button" class="q-pay" data-pay="' + esc(a.ref) + '">💳 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">forfait expédition inclus</span></button>' : '')
           : '<a class="q-pay" href="' + urlDemande(a.ref) + '">✉️ Faire une demande<span class="q-pay-sub">réponse sous 24 h ouvrées</span></a>')

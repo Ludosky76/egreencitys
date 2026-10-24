@@ -164,11 +164,17 @@
       +   '<div class="q-ref">Réf. ' + esc(ref) + (a.poids ? ' · ' + a.poids.toLocaleString('fr-FR') + ' kg' : '') + (cat ? ' · ' + esc(cat.nom) : '') + '</div>'
       +   badgeStock(ref)
       +   '<div class="qf-prixbloc">'
-      +     '<div class="qf-prix">' + eur(a.prix) + '<span class="q-ttc">TTC</span></div>'
-      +     '<div class="q-inclus">Octroi de mer &amp; transport vers la Guyane inclus*</div>'
-      +     '<div class="qf-livraison"><strong>' + delaiTexte(ref, a) + '</strong> · livré à domicile partout en Guyane</div>'
+      +     (a.devis
+      ?       '<div class="qf-prix q-prix-devis">Prix sur devis</div>'
+      +       '<div class="q-inclus">Colis de plus de 30&nbsp;kg : nous chiffrons un acheminement adapté (fret), octroi de mer compris</div>'
+      +       '<div class="qf-livraison"><strong>Délai confirmé avec le devis</strong> · livré à domicile partout en Guyane</div>'
+      :       '<div class="qf-prix">' + eur(a.prix) + '<span class="q-ttc">TTC</span></div>'
+      +       '<div class="q-inclus">Octroi de mer &amp; transport vers la Guyane inclus*</div>'
+      +       '<div class="qf-livraison"><strong>' + delaiTexte(ref, a) + '</strong> · livré à domicile partout en Guyane</div>')
       +     '<div class="qf-boutons">'
-      +     (dispo
+      +     (a.devis
+      ?       '<a class="q-pay" href="' + urlDemande(ref) + '">📦 Demander un devis<span class="q-pay-sub">article de plus de 30 kg — réponse sous 24 h ouvrées, suivi dans votre espace client</span></a>'
+      :     dispo
       ?       '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>'
       +       (lien ? '<button type="button" class="q-pay" data-pay="' + esc(ref) + '">💳 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">forfait expédition inclus — stock revérifié avant paiement</span></button>' : '')
       :       '<a class="q-pay" href="' + urlDemande(ref) + '">✉️ Faire une demande<span class="q-pay-sub">nous confirmons prix et délai sous 24 h ouvrées — suivi dans votre espace client</span></a>'
