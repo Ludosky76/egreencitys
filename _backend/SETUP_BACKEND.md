@@ -75,6 +75,30 @@ apparaît dans `admin.html`. Les journaux sont consultables via
 
 ---
 
+## Partie C — Paiement par carte des paniers quincaillerie ⏳ PRÊT (24/10/2026)
+
+**Ce que ça apporte :** un panier de plusieurs articles se paie par carte en une fois
+(un seul forfait d'expédition), au lieu du formulaire. Fonction `paiementPanier`
+(`functions/index.js` + `functions/panier.js`) : prix, stock, poids (≤ 30 kg) et offre
+de lancement relus côté serveur dans les fichiers publiés du site. Testée en réel
+(sessions Stripe créées puis expirées) : panier 4 × 688HX = 50,52 € (forfait offert),
+688HX + 290HV = 50,99 € (forfait payé), article en rupture / sur devis refusés.
+
+1. **Blaze activé** (Partie B, étape 1).
+2. **Clé Stripe restreinte** : Stripe → Développeurs → Clés API → *Créer une clé
+   restreinte* → nom « paiementPanier » → droit **Checkout Sessions : Écriture**
+   (tout le reste : Aucun) → copier la clé `rk_live_…` (affichée une seule fois).
+3. **Secrets** (le terminal demande la valeur, la coller puis Entrée) :
+   ```bash
+   firebase functions:secrets:set STRIPE_SECRET_KEY        # la clé rk_live_…
+   firebase functions:secrets:set STRIPE_WEBHOOK_SECRET    # whsec_placeholder si le webhook n'est pas encore branché
+   ```
+4. **Déployer** : `firebase deploy --only functions`
+   → URL : `https://europe-west1-egreencitys-93e0b.cloudfunctions.net/paiementPanier`
+5. **Activer sur le site** : `assets/data/quincaillerie-paiement.json` → `"panier_cb": true`.
+
+---
+
 ## Fichiers de référence
 - `_backend/firestore.rules` — règles publiées (copie de référence)
 - `functions/index.js` — la Cloud Function (source déployée)
