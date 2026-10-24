@@ -19,11 +19,16 @@
 
 ---
 
-## Partie B — Webhook Stripe → commandes automatiques ⏳ DÉPLOYÉ, RESTE L'ÉTAPE 5
+## Partie B — Webhook Stripe → commandes automatiques ✅ EN LIGNE (24/10/2026)
 
-> 24/10/2026 : étapes 1 à 4 faites (Blaze, secret provisoire, déploiement).
-> URL : `https://europe-west1-egreencitys-93e0b.cloudfunctions.net/stripeWebhook`.
-> Reste l'étape 5 (endpoint dans Stripe + vrai `whsec_…` + redéploiement).
+> Étapes 1 à 5 faites. Endpoint Stripe (mode réel) « Commande lien payement site
+> et stripe » → `https://europe-west1-egreencitys-93e0b.cloudfunctions.net/stripeWebhook`,
+> événements `checkout.session.completed` + `checkout.session.async_payment_succeeded`,
+> secret `whsec_…` en version 4, fonction redéployée dessus.
+> Vérifié en local avec des événements signés (panier QP, article QF, borne, impayé,
+> autre type, fausse signature, renvoi idempotent). **Test final = le premier vrai
+> paiement** : il doit apparaître dans `admin.html` (sinon : `firebase functions:log
+> --only stripeWebhook`, et Stripe → Webhooks → la destination → tentatives de livraison).
 
 **Ce que ça apporte :** chaque paiement crée automatiquement sa commande dans le
 tableau de bord (numéro, client, montant, produit). Fini la saisie manuelle de
@@ -84,9 +89,8 @@ apparaît dans `admin.html`. Les journaux sont consultables via
 > Blaze activé, secrets posés, fonctions `paiementPanier` et `stripeWebhook`
 > déployées (Node.js 22, europe-west1), purge des images à 1 jour, bouton activé
 > sur la boutique. Testé en réel après déploiement (sessions expirées, 0 encaissement).
-> Le webhook tourne avec `whsec_placeholder` : il refuse tout tant que la
-> Partie B, étape 5, n'est pas faite (les commandes ne s'enregistrent pas encore
-> seules dans `admin.html`).
+> Les paiements de panier s'enregistrent seuls dans `admin.html` via le webhook
+> (Partie B, en ligne).
 >
 > **Leçons du déploiement :**
 > - Saisie masquée peu fiable : passer la valeur par le presse-papiers
