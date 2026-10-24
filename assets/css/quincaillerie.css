@@ -284,3 +284,27 @@ html[data-theme="dark"] .q-ligne img{background:#fff;border-radius:6px;}
 html[data-theme="dark"] .q-filtres{box-shadow:0 8px 10px -10px rgba(0,0,0,.6);}
 html[data-theme="dark"] .q-rayons button:hover{color:#C3D4FA;}
 html[data-theme="dark"] .q-detail h2{border-bottom-color:var(--line);}
+
+/* ---- paniers groupés : un seul forfait d'expédition par commande ---- */
+.q-groupe{font-size:.74rem;line-height:1.45;color:var(--text);background:var(--sky);border-radius:10px;padding:.55rem .7rem;margin-bottom:.6rem;}
+.q-groupe-ok{background:var(--mint);}
+.q-groupe-ok strong{color:var(--egreen-deep);}
+.q-sugg{margin-top:.9rem;}
+.q-sugg-titre{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.3rem;}
+.q-sugg-ligne{display:flex;align-items:center;gap:.5rem;padding:.3rem 0;border-bottom:1px solid var(--line);}
+.q-sugg-ligne img{width:34px;height:34px;object-fit:contain;background:#fff;border-radius:6px;flex:0 0 34px;}
+.q-sugg-nom{flex:1;font-size:.72rem;line-height:1.3;color:var(--text);text-decoration:none;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.q-sugg-nom:hover{text-decoration:underline;}
+.q-sugg-prix{font-size:.74rem;font-weight:700;color:var(--ink);white-space:nowrap;}
+.q-sugg-add{width:28px;height:28px;border-radius:50%;border:none;background:var(--green);color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer;flex:0 0 28px;}
+.q-sugg-add:hover{background:var(--green-dark);}
+.qf-astuce{font-size:.74rem;line-height:1.45;color:var(--text);background:var(--sky);border-radius:10px;padding:.5rem .7rem;margin-top:.2rem;}
+html[data-theme="dark"] .q-groupe,html[data-theme="dark"] .qf-astuce{background:#1B2554;}
+html[data-theme="dark"] .q-groupe-ok{background:#16321D;}
+html[data-theme="dark"] .q-groupe-ok strong{color:#86E25E;}
+html[data-theme="dark"] .q-sugg-prix{color:#DCE4FF;}
+/* écrans peu hauts : le tiroir défile d'un bloc (la liste des articles n'est jamais écrasée par le pied) */
+@media (max-height:820px){
+  #q-tiroir{overflow-y:auto;}
+  #q-tiroir-corps{flex:0 0 auto;overflow:visible;}
+}

@@ -103,7 +103,7 @@
           ? '<a class="q-pay" href="' + urlDemande(a.ref) + '">📦 Demander un devis<span class="q-pay-sub">plus de 30 kg — réponse sous 24 h ouvrées</span></a>'
           : dispo
           ? '<button type="button" class="q-add" data-add="' + esc(a.ref) + '">🛒 Ajouter au panier</button>'
-            + (lien ? '<button type="button" class="q-pay" data-pay="' + esc(a.ref) + '">💳 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">forfait expédition inclus</span></button>' : '')
+            + (lien ? '<button type="button" class="q-pay" data-pay="' + esc(a.ref) + '">💳 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">dont ' + eur(etat.catalogue.forfait_expedition) + ' de forfait, unique par commande</span></button>' : '')
           : '<a class="q-pay" href="' + urlDemande(a.ref) + '">✉️ Faire une demande<span class="q-pay-sub">réponse sous 24 h ouvrées</span></a>')
       + '</div></div></article>';
   }
@@ -203,6 +203,10 @@
         + '<button type="button" class="q-suppr" data-suppr="' + esc(l.ref) + '" aria-label="Retirer">×</button>'
         + '</div>';
     }).join('');
+    var g = $('q-groupage');
+    if (!g) { g = document.createElement('div'); g.id = 'q-groupage'; $('q-tiroir-pied').insertBefore(g, $('q-tiroir-pied').firstChild); }
+    g.innerHTML = messageGroupage();
+    corps.insertAdjacentHTML('beforeend', blocSuggestions());  // zone défilante : ne réduit pas la liste
     var t = totalPanier();
     $('q-total-articles').textContent = eur(t.articles);
     $('q-total-forfait').textContent = eur(t.forfait);
@@ -213,6 +217,38 @@
           && statutDe(etat.panier[0].ref) === 'disponible' && etat.liens[etat.panier[0].ref];
     cb.style.display = ok ? '' : 'none';
     $('q-cb-indice').style.display = ok ? 'none' : '';
+  }
+
+  /* ---------------- paniers groupés : un seul forfait par commande ----------------
+     Le forfait d'expédition est dû une fois par colis : l'afficher comme une économie
+     dès le 2e article, et proposer de petits articles disponibles du même rayon. */
+  function empreinte(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }
+  function suggestions(n) {
+    var dans = {}, rayons = {}, cle = '';
+    etat.panier.forEach(function (l) { var a = article(l.ref); dans[l.ref] = true; cle += l.ref; if (a) rayons[a.cat] = true; });
+    return etat.catalogue.articles.filter(function (a) {
+      return !dans[a.ref] && !a.devis && rayons[a.cat] && a.prix <= 30 && statutDe(a.ref) === 'disponible';
+    }).sort(function (x, y) { return empreinte(x.ref + cle) - empreinte(y.ref + cle); }).slice(0, n);
+  }
+  function messageGroupage() {
+    var f = etat.catalogue.forfait_expedition;
+    var unites = etat.panier.reduce(function (s, l) { return s + l.q; }, 0);
+    return unites >= 2
+      ? '<p class="q-groupe q-groupe-ok">✅ Un seul forfait d’expédition pour vos ' + unites + ' articles : <strong>' + eur(f * (unites - 1)) + ' économisés</strong> par rapport à des commandes séparées.</p>'
+      : '<p class="q-groupe">💡 Le forfait d’expédition (' + eur(f) + ') couvre toute la commande : ajoutez d’autres articles, ils partent dans le même colis sans frais d’envoi en plus.</p>';
+  }
+  function blocSuggestions() {
+    var html = '';
+    var s = suggestions(3);
+    if (s.length) {
+      html += '<div class="q-sugg"><div class="q-sugg-titre">À glisser dans le même colis</div>' + s.map(function (a) {
+        return '<div class="q-sugg-ligne"><img src="' + esc(a.img) + '" alt="" loading="lazy">'
+          + '<a class="q-sugg-nom" href="' + URL_FICHE + encodeURIComponent(a.ref) + '">' + esc(a.nom) + '</a>'
+          + '<span class="q-sugg-prix">' + eur(a.prix) + '</span>'
+          + '<button type="button" class="q-sugg-add" data-add="' + esc(a.ref) + '" aria-label="Ajouter ' + esc(a.nom) + ' au panier">+</button></div>';
+      }).join('') + '</div>';
+    }
+    return html;
   }
 
   /* ---------------- rayons (chips + menu burger) ---------------- */

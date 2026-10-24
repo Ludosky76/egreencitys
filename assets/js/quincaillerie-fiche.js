@@ -177,7 +177,8 @@
       ?       '<a class="q-pay" href="' + urlDemande(ref) + '">📦 Demander un devis<span class="q-pay-sub">article de plus de 30 kg — réponse sous 24 h ouvrées, suivi dans votre espace client</span></a>'
       :     dispo
       ?       '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>'
-      +       (lien ? '<button type="button" class="q-pay" data-pay="' + esc(ref) + '">💳 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">forfait expédition inclus — stock revérifié avant paiement</span></button>' : '')
+      +       (lien ? '<button type="button" class="q-pay" data-pay="' + esc(ref) + '">💳 Payer cet article seul ' + eur(a.lien_prix) + '<span class="q-pay-sub">dont ' + eur(etat.catalogue.forfait_expedition) + ' de forfait d’expédition — stock revérifié avant paiement</span></button>' : '')
+      +       '<p class="qf-astuce">💡 Le forfait d’expédition (' + eur(etat.catalogue.forfait_expedition) + ') est <strong>unique par commande</strong> : ajoutez d’autres articles au panier, ils partent dans le même colis sans frais d’envoi en plus.</p>'
       :       '<a class="q-pay" href="' + urlDemande(ref) + '">✉️ Faire une demande<span class="q-pay-sub">nous confirmons prix et délai sous 24 h ouvrées — suivi dans votre espace client</span></a>'
       +       '<button type="button" class="q-alerte" data-alerte="' + esc(ref) + '">🔔 M’alerter au retour en stock</button>')
       +     '</div>'
