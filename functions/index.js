@@ -38,7 +38,8 @@ exports.paiementPanier = onRequest(
   { secrets: [STRIPE_SECRET_KEY], region: 'europe-west1', cors: ['https://egreencitys.com', 'https://www.egreencitys.com'], maxInstances: 5, timeoutSeconds: 30 },
   async (req, res) => {
     if (req.method !== 'POST') return res.status(405).json({ erreur: 'methode' });
-    const r = await creerSessionPanier(req.body, STRIPE_SECRET_KEY.value());
+    // trim : une valeur collée ou envoyée par pipe peut garder un retour à la ligne final
+    const r = await creerSessionPanier(req.body, STRIPE_SECRET_KEY.value().trim());
     return res.status(r.statut).json(r.json);
   }
 );
@@ -52,7 +53,7 @@ exports.stripeWebhook = onRequest(
     let event;
     try {
       // req.rawBody est fourni par Cloud Functions — indispensable pour la vérif de signature.
-      event = stripe.webhooks.constructEvent(req.rawBody, sig, STRIPE_WEBHOOK_SECRET.value());
+      event = stripe.webhooks.constructEvent(req.rawBody, sig, STRIPE_WEBHOOK_SECRET.value().trim());
     } catch (err) {
       console.error('Signature webhook invalide :', err.message);
       return res.status(400).send(`Webhook Error: ${err.message}`);

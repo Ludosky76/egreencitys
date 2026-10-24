@@ -19,7 +19,11 @@
 
 ---
 
-## Partie B — Webhook Stripe → commandes automatiques ⏳ EN ATTENTE
+## Partie B — Webhook Stripe → commandes automatiques ⏳ DÉPLOYÉ, RESTE L'ÉTAPE 5
+
+> 24/10/2026 : étapes 1 à 4 faites (Blaze, secret provisoire, déploiement).
+> URL : `https://europe-west1-egreencitys-93e0b.cloudfunctions.net/stripeWebhook`.
+> Reste l'étape 5 (endpoint dans Stripe + vrai `whsec_…` + redéploiement).
 
 **Ce que ça apporte :** chaque paiement crée automatiquement sa commande dans le
 tableau de bord (numéro, client, montant, produit). Fini la saisie manuelle de
@@ -75,7 +79,25 @@ apparaît dans `admin.html`. Les journaux sont consultables via
 
 ---
 
-## Partie C — Paiement par carte des paniers quincaillerie ⏳ PRÊT (24/10/2026)
+## Partie C — Paiement par carte des paniers quincaillerie ✅ EN LIGNE (24/10/2026)
+
+> Blaze activé, secrets posés, fonctions `paiementPanier` et `stripeWebhook`
+> déployées (Node.js 22, europe-west1), purge des images à 1 jour, bouton activé
+> sur la boutique. Testé en réel après déploiement (sessions expirées, 0 encaissement).
+> Le webhook tourne avec `whsec_placeholder` : il refuse tout tant que la
+> Partie B, étape 5, n'est pas faite (les commandes ne s'enregistrent pas encore
+> seules dans `admin.html`).
+>
+> **Leçons du déploiement :**
+> - Saisie masquée peu fiable : passer la valeur par le presse-papiers
+>   `Get-Clipboard | firebase functions:secrets:set NOM --data-file - --project egreencitys-93e0b`
+>   (la fonction fait `.trim()` sur les secrets, le retour à la ligne final est sans effet).
+> - Copier la clé avec le bouton de Stripe : une application de notes peut supprimer
+>   le `_` de `rk_live_` (Stripe répond alors « Invalid API Key provided: rk_live5… »).
+> - Une fonction reste liée à la version du secret lue au déploiement : après un
+>   nouveau `secrets:set`, **redéployer**.
+> - Si le déploiement échoue sur « User code failed to load… Timeout after 10000 »,
+>   relancer avec `FUNCTIONS_DISCOVERY_TIMEOUT=60` (premier chargement lent sous Windows).
 
 **Ce que ça apporte :** un panier de plusieurs articles se paie par carte en une fois
 (un seul forfait d'expédition), au lieu du formulaire. Fonction `paiementPanier`
