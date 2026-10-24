@@ -143,9 +143,10 @@
     var a = etat.catalogue.articles.find(function (x) { return x.ref === ref; });
     if (!a) { rendreIntrouvable(); return; }
 
-    document.title = a.nom + ' — ' + eur(a.prix) + ' tout compris | EGREENCITY\'S PRO QUINCAILLERIE';
+    var prixTexte = a.devis ? 'prix sur devis (colis de plus de 30 kg)' : eur(a.prix) + ' tout compris';
+    document.title = a.nom + ' — ' + (a.devis ? 'prix sur devis' : eur(a.prix) + ' tout compris') + ' | EGREENCITY\'S PRO QUINCAILLERIE';
     var meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute('content', a.nom + ' — ' + eur(a.prix) + ' tout compris (octroi de mer et transport inclus), livré en Guyane. Réf. ' + ref + '.');
+    if (meta) meta.setAttribute('content', a.nom + ' — ' + prixTexte + (a.devis ? '' : ' (octroi de mer et transport inclus)') + ', livré en Guyane. Réf. ' + ref + '.');
     var canon = document.querySelector('link[rel="canonical"]');
     if (canon) canon.setAttribute('href', 'https://egreencitys.com' + URL_FICHE + encodeURIComponent(ref));
 
