@@ -79,6 +79,15 @@
   }
 
   /* ---------------- paiement sécurisé (stock revérifié) ------------ */
+  /* ---------------- offre de lancement (assets/data/quincaillerie-offre.json) ----------------
+     Forfait d'expédition offert dès le seuil d'articles, jusqu'à la date de fin. Côté Stripe,
+     le code est pré-rempli sur le lien d'un article éligible (même seuil, même date). */
+  function offreActive() {
+    var o = etat.offre, t = Date.now();
+    return !!(o && o.actif && t >= Date.parse(o.debut) && t <= Date.parse(o.fin));
+  }
+  function forfaitOffert(montantArticles) { return offreActive() && montantArticles >= etat.offre.seuil; }
+
   function verifierPuisPayer(ref) {
     var bouton = document.querySelector('[data-pay="' + ref + '"]');
     if (bouton) { bouton.disabled = true; bouton.classList.add('q-verif'); }
@@ -95,13 +104,15 @@
         var sep = url.indexOf('?') > -1 ? '&' : '?';
         var ts = Date.now();
         /* option B : mémorise l'achat, enregistré au retour sur la boutique */
+        var art = etat.catalogue.articles.find(function (x) { return x.ref === ref; });
+        var offert = art && forfaitOffert(art.prix);
         try {
-          var art = etat.catalogue.articles.find(function (x) { return x.ref === ref; });
           localStorage.setItem('egc_quinc_commande', JSON.stringify({
-            ref: ref, nom: art ? art.nom : '', montant: art ? art.lien_prix : 0, ts: ts
+            ref: ref, nom: art ? art.nom : '', montant: art ? (offert ? art.prix : art.lien_prix) : 0, ts: ts
           }));
         } catch (e) {}
-        window.location.href = url + sep + 'client_reference_id=' + encodeURIComponent('QF-' + ref + '_' + ts);
+        window.location.href = url + sep + 'client_reference_id=' + encodeURIComponent('QF-' + ref + '_' + ts)
+          + (offert ? '&prefilled_promo_code=' + encodeURIComponent(etat.offre.code) : '');
       })
       .catch(function () { alert('Vérification de disponibilité impossible — réessayez dans un instant.'); })
       .finally(function () { if (bouton) { bouton.disabled = false; bouton.classList.remove('q-verif'); } });
@@ -177,8 +188,12 @@
       ?       '<a class="q-pay" href="' + urlDemande(ref) + '">📦 Demander un devis<span class="q-pay-sub">article de plus de 30 kg — réponse sous 24 h ouvrées, suivi dans votre espace client</span></a>'
       :     dispo
       ?       '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>'
-      +       (lien ? '<button type="button" class="q-pay" data-pay="' + esc(ref) + '">💳 Payer cet article seul ' + eur(a.lien_prix) + '<span class="q-pay-sub">dont ' + eur(etat.catalogue.forfait_expedition) + ' de forfait d’expédition — stock revérifié avant paiement</span></button>' : '')
-      +       '<p class="qf-astuce">💡 Le forfait d’expédition (' + eur(etat.catalogue.forfait_expedition) + ') est <strong>unique par commande</strong> : ajoutez d’autres articles au panier, ils partent dans le même colis sans frais d’envoi en plus.</p>'
+      +       (lien ? (forfaitOffert(a.prix)
+      ?         '<button type="button" class="q-pay" data-pay="' + esc(ref) + '">💳 Payer ' + eur(a.prix) + '<span class="q-pay-sub">🎁 forfait d’expédition offert (offre de lancement) — stock revérifié avant paiement</span></button>'
+      :         '<button type="button" class="q-pay" data-pay="' + esc(ref) + '">💳 Payer cet article seul ' + eur(a.lien_prix) + '<span class="q-pay-sub">dont ' + eur(etat.catalogue.forfait_expedition) + ' de forfait d’expédition — stock revérifié avant paiement</span></button>') : '')
+      +       (offreActive()
+      ?         '<p class="qf-astuce">🎁 <strong>' + esc(etat.offre.titre) + '</strong> : forfait d’expédition (' + eur(etat.offre.forfait) + ') <strong>offert dès ' + eur(etat.offre.seuil).replace(',00', '') + ' d’articles</strong>, jusqu’au ' + esc(etat.offre.fin_texte) + ' (' + etat.offre.max_commandes + ' premières commandes). Groupez vos achats : un seul colis.</p>'
+      :         '<p class="qf-astuce">💡 Le forfait d’expédition (' + eur(etat.catalogue.forfait_expedition) + ') est <strong>unique par commande</strong> : ajoutez d’autres articles au panier, ils partent dans le même colis sans frais d’envoi en plus.</p>')
       :       '<a class="q-pay" href="' + urlDemande(ref) + '">✉️ Faire une demande<span class="q-pay-sub">nous confirmons prix et délai sous 24 h ouvrées — suivi dans votre espace client</span></a>'
       +       '<button type="button" class="q-alerte" data-alerte="' + esc(ref) + '">🔔 M’alerter au retour en stock</button>')
       +     '</div>'
@@ -272,9 +287,11 @@
   Promise.all([
     fetch('/assets/data/quincaillerie-catalogue.json').then(function (r) { return r.json(); }),
     fetch('/assets/data/quincaillerie-stock.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }),
-    fetch('/assets/data/quincaillerie-liens.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
+    fetch('/assets/data/quincaillerie-liens.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
+    fetch('/assets/data/quincaillerie-offre.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
   ]).then(function (res) {
     etat.catalogue = res[0];
+    etat.offre = res[3];
     etat.stock = res[1].stock || {};
     etat.liens = res[2] || {};
     initEvenements(); rendreMenu(); majPastille();

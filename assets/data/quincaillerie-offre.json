@@ -1,0 +1,11 @@
+{
+ "actif": true,
+ "titre": "Offre de lancement",
+ "code": "LANCEMENT",
+ "forfait": 21.12,
+ "seuil": 50,
+ "debut": "2026-10-24T00:00:00-03:00",
+ "fin": "2026-11-30T23:59:59-03:00",
+ "fin_texte": "30 novembre 2026",
+ "max_commandes": 200
+}

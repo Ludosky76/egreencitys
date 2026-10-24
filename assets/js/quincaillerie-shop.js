@@ -103,7 +103,9 @@
           ? '<a class="q-pay" href="' + urlDemande(a.ref) + '">📦 Demander un devis<span class="q-pay-sub">plus de 30 kg — réponse sous 24 h ouvrées</span></a>'
           : dispo
           ? '<button type="button" class="q-add" data-add="' + esc(a.ref) + '">🛒 Ajouter au panier</button>'
-            + (lien ? '<button type="button" class="q-pay" data-pay="' + esc(a.ref) + '">💳 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">dont ' + eur(etat.catalogue.forfait_expedition) + ' de forfait, unique par commande</span></button>' : '')
+            + (lien ? (forfaitOffert(a.prix)
+                ? '<button type="button" class="q-pay" data-pay="' + esc(a.ref) + '">💳 Payer ' + eur(a.prix) + '<span class="q-pay-sub">🎁 forfait d’expédition offert</span></button>'
+                : '<button type="button" class="q-pay" data-pay="' + esc(a.ref) + '">💳 Payer ' + eur(a.lien_prix) + '<span class="q-pay-sub">dont ' + eur(etat.catalogue.forfait_expedition) + ' de forfait, unique par commande</span></button>') : '')
           : '<a class="q-pay" href="' + urlDemande(a.ref) + '">✉️ Faire une demande<span class="q-pay-sub">réponse sous 24 h ouvrées</span></a>')
       + '</div></div></article>';
   }
@@ -185,8 +187,9 @@
     var t = etat.panier.reduce(function (s, l) {
       var a = article(l.ref); return a ? s + a.prix * l.q : s;
     }, 0);
-    return { articles: t, forfait: etat.panier.length ? etat.catalogue.forfait_expedition : 0,
-             total: t + (etat.panier.length ? etat.catalogue.forfait_expedition : 0) };
+    var offert = etat.panier.length > 0 && forfaitOffert(t);
+    var f = etat.panier.length && !offert ? etat.catalogue.forfait_expedition : 0;
+    return { articles: t, forfait: f, offert: offert, total: t + f };
   }
   function rendrePanier() {
     var corps = $('q-tiroir-corps');
@@ -209,7 +212,7 @@
     corps.insertAdjacentHTML('beforeend', blocSuggestions());  // zone défilante : ne réduit pas la liste
     var t = totalPanier();
     $('q-total-articles').textContent = eur(t.articles);
-    $('q-total-forfait').textContent = eur(t.forfait);
+    $('q-total-forfait').textContent = t.offert ? 'offert 🎁' : eur(t.forfait);
     $('q-total').textContent = eur(t.total);
     // paiement CB direct : uniquement UN article, quantité 1, disponible, lien actif
     var cb = $('q-payer-cb');
@@ -217,6 +220,25 @@
           && statutDe(etat.panier[0].ref) === 'disponible' && etat.liens[etat.panier[0].ref];
     cb.style.display = ok ? '' : 'none';
     $('q-cb-indice').style.display = ok ? 'none' : '';
+  }
+
+  /* ---------------- offre de lancement (assets/data/quincaillerie-offre.json) ----------------
+     Forfait d'expédition offert dès le seuil d'articles, jusqu'à la date de fin. Côté Stripe,
+     le code est pré-rempli sur le lien d'un article éligible (même seuil, même date). */
+  function offreActive() {
+    var o = etat.offre, t = Date.now();
+    return !!(o && o.actif && t >= Date.parse(o.debut) && t <= Date.parse(o.fin));
+  }
+  function forfaitOffert(montantArticles) { return offreActive() && montantArticles >= etat.offre.seuil; }
+  function afficherOffre() {
+    if (!offreActive() || $('q-offre')) return;
+    var o = etat.offre, d = document.createElement('div');
+    d.id = 'q-offre'; d.className = 'q-offre';
+    d.innerHTML = '🎁 <strong>' + esc(o.titre) + '</strong> : forfait d’expédition (' + eur(o.forfait) + ') <strong>offert dès '
+      + eur(o.seuil).replace(',00', '') + ' d’articles</strong>, appliqué automatiquement (code <strong>' + esc(o.code) + '</strong>) — jusqu’au '
+      + esc(o.fin_texte) + ', pour les ' + o.max_commandes + ' premières commandes.';
+    var avant = $('q-rayons');
+    avant.parentNode.insertBefore(d, avant);
   }
 
   /* ---------------- paniers groupés : un seul forfait par commande ----------------
@@ -233,6 +255,12 @@
   function messageGroupage() {
     var f = etat.catalogue.forfait_expedition;
     var unites = etat.panier.reduce(function (s, l) { return s + l.q; }, 0);
+    if (offreActive()) {
+      var manque = etat.offre.seuil - totalPanier().articles;
+      return manque > 0
+        ? '<p class="q-groupe">🎁 Plus que <strong>' + eur(manque) + '</strong> d’articles et le forfait d’expédition (' + eur(f) + ') vous est offert — offre de lancement jusqu’au ' + esc(etat.offre.fin_texte) + '.</p>'
+        : '<p class="q-groupe q-groupe-ok">🎁 <strong>Forfait d’expédition offert</strong> sur cette commande — offre de lancement.</p>';
+    }
     return unites >= 2
       ? '<p class="q-groupe q-groupe-ok">✅ Un seul forfait d’expédition pour vos ' + unites + ' articles : <strong>' + eur(f * (unites - 1)) + ' économisés</strong> par rapport à des commandes séparées.</p>'
       : '<p class="q-groupe">💡 Le forfait d’expédition (' + eur(f) + ') couvre toute la commande : ajoutez d’autres articles, ils partent dans le même colis sans frais d’envoi en plus.</p>';
@@ -320,13 +348,15 @@
         var ts = Date.now();
         /* mémorise l'achat en cours : au retour ?paiement=succes, la
            commande est enregistrée dans l'espace client (option B) */
+        var a = article(ref);
+        var offert = a && forfaitOffert(a.prix);
         try {
-          var a = article(ref);
           localStorage.setItem('egc_quinc_commande', JSON.stringify({
-            ref: ref, nom: a ? a.nom : '', montant: a ? a.lien_prix : 0, ts: ts
+            ref: ref, nom: a ? a.nom : '', montant: a ? (offert ? a.prix : a.lien_prix) : 0, ts: ts
           }));
         } catch (e) {}
-        window.location.href = url + sep + 'client_reference_id=' + encodeURIComponent('QF-' + ref + '_' + ts);
+        window.location.href = url + sep + 'client_reference_id=' + encodeURIComponent('QF-' + ref + '_' + ts)
+          + (offert ? '&prefilled_promo_code=' + encodeURIComponent(etat.offre.code) : '');
       })
       .catch(function () { alert('Vérification de disponibilité impossible — réessayez dans un instant.'); })
       .finally(function () { if (bouton) { bouton.disabled = false; bouton.classList.remove('q-verif'); } });
@@ -378,7 +408,8 @@
       _subject: 'Commande quincaillerie — ' + eur(t.total),
       email: email, telephone: tel,
       panier: lignes,
-      total: eur(t.total) + ' dont forfait expédition ' + eur(t.forfait),
+      total: t.offert ? eur(t.total) + ' — forfait d’expédition OFFERT (offre de lancement, code ' + etat.offre.code + ')'
+                      : eur(t.total) + ' dont forfait expédition ' + eur(t.forfait),
       _template: 'box'
     };
     var bouton = $('q-envoyer');
@@ -426,9 +457,11 @@
   Promise.all([
     fetch('/assets/data/quincaillerie-catalogue.json').then(function (r) { return r.json(); }),
     fetch('/assets/data/quincaillerie-stock.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }),
-    fetch('/assets/data/quincaillerie-liens.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
+    fetch('/assets/data/quincaillerie-liens.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
+    fetch('/assets/data/quincaillerie-offre.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
   ]).then(function (res) {
     etat.catalogue = res[0];
+    etat.offre = res[3];
     etat.stock = res[1].stock || {}; etat.stockMaj = res[1].maj || 0;
     etat.liens = res[2] || {};
     var sel = $('q-cat');
@@ -440,7 +473,7 @@
     if (catInitiale && etat.catalogue.categories.some(function (c) { return c.slug === catInitiale; })) {
       etat.cat = catInitiale; sel.value = catInitiale;
     }
-    charger(); initEvenements(); construireRayons(); rendre(); rendrePanier();
+    charger(); initEvenements(); construireRayons(); afficherOffre(); rendre(); rendrePanier();
     traiterRetourPaiement();
     reconcilierPanierCompte();
     /* anciens liens #a=REF (modal) : chaque produit a désormais sa page */
