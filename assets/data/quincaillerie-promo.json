@@ -1,50 +1,310 @@
 {
  "actif": true,
  "etiquette": "Pack du moment",
- "regle": "Change chaque semaine. Prix = somme des prix normaux des articles (aucune remise, marge de chaque article conservée). Le site affiche la 1re variante de la semaine dont TOUS les articles sont disponibles au comptoir ; sinon la suivante ; sinon rien.",
+ "regle": "Change chaque semaine. Prix = somme des prix normaux des articles (aucune remise, marge de chaque article conservée). Le site affiche la 1re variante de la semaine dont TOUS les articles sont disponibles au comptoir ; sinon la suivante ; sinon rien. « brouillons » : packs de test, jamais affichés par le site tant qu'ils ne sont pas déplacés dans « semaines ».",
  "semaines": [
-  {"debut": "2026-10-25T00:00:00-03:00", "fin": "2026-11-01T23:59:59-03:00", "packs": [
-   {"titre": "Pack perçage béton & meulage", "sous_titre": "Perforateur SDS+ et meuleuse 230 mm filaires + 4 accessoires de perçage compatibles",
-    "articles": [{"ref": "349CJ", "nom": "Perforateur SDS+ brushless 3 kg"}, {"ref": "262PF", "nom": "Meuleuse d’angle 230 mm 2 000 W"},
-                 {"ref": "916KJ", "nom": "Coffret 102 accessoires"}, {"ref": "13353", "nom": "Jeu de 8 forets béton SDS+"},
-                 {"ref": "3606V", "nom": "Foret SDS+ 12 x 260 mm"}, {"ref": "7150V", "nom": "Foret SDS+ 16 x 260 mm"}]},
-   {"titre": "Pack perçage béton", "sous_titre": "Perforateur SDS+ filaire + 5 accessoires de perçage compatibles",
-    "articles": [{"ref": "349CJ", "nom": "Perforateur SDS+ brushless 3 kg"}, {"ref": "916KJ", "nom": "Coffret 102 accessoires"},
-                 {"ref": "13353", "nom": "Jeu de 8 forets béton SDS+"}, {"ref": "9881V", "nom": "Foret SDS+ 14 x 260 mm"},
-                 {"ref": "34514", "nom": "Foret SDS+ 10 x 160 mm"}, {"ref": "23524", "nom": "Foret SDS+ 10 x 460 mm"}]}
-  ]},
-  {"debut": "2026-11-02T00:00:00-03:00", "fin": "2026-11-08T23:59:59-03:00", "packs": [
-   {"titre": "Pack outillage à main", "sous_titre": "Les outils à main du quotidien sur chantier : vissage, serrage, coupe",
-    "articles": [{"ref": "585XR", "nom": "Set de 8 tournevis MaXFit"}, {"ref": "1638P", "nom": "Pince multiprise V-Jaw 254 mm"},
-                 {"ref": "334KY", "nom": "Pince universelle 200 mm"}, {"ref": "478KY", "nom": "Pince coupante 190 mm"},
-                 {"ref": "371EN", "nom": "Outil multifonction 8-en-1"}, {"ref": "719HJ", "nom": "Cisaille aviation 302 mm"}]},
-   {"titre": "Pack outillage à main", "sous_titre": "Vissage, serrage, démolition et traçage",
-    "articles": [{"ref": "763XR", "nom": "6 tournevis de démolition MaxFit"}, {"ref": "729XR", "nom": "Set de 2 tournevis MaXFit"},
-                 {"ref": "1638P", "nom": "Pince multiprise V-Jaw 254 mm"}, {"ref": "334KY", "nom": "Pince universelle 200 mm"},
-                 {"ref": "478KY", "nom": "Pince coupante 190 mm"}, {"ref": "166HV", "nom": "Cordeau 30 m"}]}
-  ]},
-  {"debut": "2026-11-09T00:00:00-03:00", "fin": "2026-11-15T23:59:59-03:00", "packs": [
-   {"titre": "Pack rangement TSTAK", "sous_titre": "6 éléments du même système TSTAK, qui s’empilent et se clipsent entre eux",
-    "articles": [{"ref": "681KY", "nom": "Boîte à outils TSTAK 2.0 440 mm"}, {"ref": "129JJ", "nom": "Coffret TSTAK IP54"},
-                 {"ref": "1254F", "nom": "Coffret TSTAK VI"}, {"ref": "9061F", "nom": "Coffret 2 tiroirs TSTAK IV"},
-                 {"ref": "472KJ", "nom": "Organiseur TSTAK"}, {"ref": "517HG", "nom": "Sac à outils TSTAK 45 cm"}]}
-  ]},
-  {"debut": "2026-11-16T00:00:00-03:00", "fin": "2026-11-22T23:59:59-03:00", "packs": [
-   {"titre": "Pack coupe & meulage", "sous_titre": "Scie circulaire 184 mm et 2 meuleuses filaires + outils de coupe",
-    "articles": [{"ref": "523PF", "nom": "Scie circulaire 184 mm 1 350 W"}, {"ref": "113LX", "nom": "2 meuleuses 230 et 125 mm"},
-                 {"ref": "511HJ", "nom": "Couteau pliant à lame rétractable"}, {"ref": "719HJ", "nom": "Cisaille aviation 302 mm"}]}
-  ]},
-  {"debut": "2026-11-23T00:00:00-03:00", "fin": "2026-11-29T23:59:59-03:00", "packs": [
-   {"titre": "Pack mesure & finition", "sous_titre": "Mesurer, tracer, agrafer et visser",
-    "articles": [{"ref": "245PV", "nom": "Télémètre laser de poche"}, {"ref": "166HV", "nom": "Cordeau 30 m"},
-                 {"ref": "3170P", "nom": "Agrafeuse-cloueuse 5-en-1"}, {"ref": "585XR", "nom": "Set de 8 tournevis MaXFit"},
-                 {"ref": "1638P", "nom": "Pince multiprise V-Jaw 254 mm"}, {"ref": "511HJ", "nom": "Couteau pliant à lame rétractable"}]}
-  ]},
-  {"debut": "2026-11-30T00:00:00-03:00", "fin": "2026-12-06T23:59:59-03:00", "packs": [
-   {"titre": "Pack perçage béton & meulage", "sous_titre": "Perforateur SDS+ et meuleuse 230 mm filaires + 4 accessoires de perçage compatibles",
-    "articles": [{"ref": "349CJ", "nom": "Perforateur SDS+ brushless 3 kg"}, {"ref": "262PF", "nom": "Meuleuse d’angle 230 mm 2 000 W"},
-                 {"ref": "916KJ", "nom": "Coffret 102 accessoires"}, {"ref": "13353", "nom": "Jeu de 8 forets béton SDS+"},
-                 {"ref": "3606V", "nom": "Foret SDS+ 12 x 260 mm"}, {"ref": "7150V", "nom": "Foret SDS+ 16 x 260 mm"}]}
-  ]}
+  {
+   "debut": "2026-10-25T00:00:00-03:00",
+   "fin": "2026-11-01T23:59:59-03:00",
+   "packs": [
+    {
+     "titre": "Pack perçage béton & meulage",
+     "sous_titre": "Perforateur SDS+ et meuleuse 230 mm filaires + 4 accessoires de perçage compatibles",
+     "articles": [
+      {
+       "ref": "349CJ",
+       "nom": "Perforateur SDS+ brushless 3 kg"
+      },
+      {
+       "ref": "262PF",
+       "nom": "Meuleuse d’angle 230 mm 2 000 W"
+      },
+      {
+       "ref": "916KJ",
+       "nom": "Coffret 102 accessoires"
+      },
+      {
+       "ref": "13353",
+       "nom": "Jeu de 8 forets béton SDS+"
+      },
+      {
+       "ref": "3606V",
+       "nom": "Foret SDS+ 12 x 260 mm"
+      },
+      {
+       "ref": "7150V",
+       "nom": "Foret SDS+ 16 x 260 mm"
+      }
+     ]
+    },
+    {
+     "titre": "Pack perçage béton",
+     "sous_titre": "Perforateur SDS+ filaire + 5 accessoires de perçage compatibles",
+     "articles": [
+      {
+       "ref": "349CJ",
+       "nom": "Perforateur SDS+ brushless 3 kg"
+      },
+      {
+       "ref": "916KJ",
+       "nom": "Coffret 102 accessoires"
+      },
+      {
+       "ref": "13353",
+       "nom": "Jeu de 8 forets béton SDS+"
+      },
+      {
+       "ref": "9881V",
+       "nom": "Foret SDS+ 14 x 260 mm"
+      },
+      {
+       "ref": "34514",
+       "nom": "Foret SDS+ 10 x 160 mm"
+      },
+      {
+       "ref": "23524",
+       "nom": "Foret SDS+ 10 x 460 mm"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "debut": "2026-11-02T00:00:00-03:00",
+   "fin": "2026-11-08T23:59:59-03:00",
+   "packs": [
+    {
+     "titre": "Pack outillage à main",
+     "sous_titre": "Les outils à main du quotidien sur chantier : vissage, serrage, coupe",
+     "articles": [
+      {
+       "ref": "585XR",
+       "nom": "Set de 8 tournevis MaXFit"
+      },
+      {
+       "ref": "1638P",
+       "nom": "Pince multiprise V-Jaw 254 mm"
+      },
+      {
+       "ref": "334KY",
+       "nom": "Pince universelle 200 mm"
+      },
+      {
+       "ref": "478KY",
+       "nom": "Pince coupante 190 mm"
+      },
+      {
+       "ref": "371EN",
+       "nom": "Outil multifonction 8-en-1"
+      },
+      {
+       "ref": "719HJ",
+       "nom": "Cisaille aviation 302 mm"
+      }
+     ]
+    },
+    {
+     "titre": "Pack outillage à main",
+     "sous_titre": "Vissage, serrage, démolition et traçage",
+     "articles": [
+      {
+       "ref": "763XR",
+       "nom": "6 tournevis de démolition MaxFit"
+      },
+      {
+       "ref": "729XR",
+       "nom": "Set de 2 tournevis MaXFit"
+      },
+      {
+       "ref": "1638P",
+       "nom": "Pince multiprise V-Jaw 254 mm"
+      },
+      {
+       "ref": "334KY",
+       "nom": "Pince universelle 200 mm"
+      },
+      {
+       "ref": "478KY",
+       "nom": "Pince coupante 190 mm"
+      },
+      {
+       "ref": "166HV",
+       "nom": "Cordeau 30 m"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "debut": "2026-11-09T00:00:00-03:00",
+   "fin": "2026-11-15T23:59:59-03:00",
+   "packs": [
+    {
+     "titre": "Pack rangement TSTAK",
+     "sous_titre": "6 éléments du même système TSTAK, qui s’empilent et se clipsent entre eux",
+     "articles": [
+      {
+       "ref": "681KY",
+       "nom": "Boîte à outils TSTAK 2.0 440 mm"
+      },
+      {
+       "ref": "129JJ",
+       "nom": "Coffret TSTAK IP54"
+      },
+      {
+       "ref": "1254F",
+       "nom": "Coffret TSTAK VI"
+      },
+      {
+       "ref": "9061F",
+       "nom": "Coffret 2 tiroirs TSTAK IV"
+      },
+      {
+       "ref": "472KJ",
+       "nom": "Organiseur TSTAK"
+      },
+      {
+       "ref": "517HG",
+       "nom": "Sac à outils TSTAK 45 cm"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "debut": "2026-11-16T00:00:00-03:00",
+   "fin": "2026-11-22T23:59:59-03:00",
+   "packs": [
+    {
+     "titre": "Pack coupe & meulage",
+     "sous_titre": "Scie circulaire 184 mm et 2 meuleuses filaires + outils de coupe",
+     "articles": [
+      {
+       "ref": "523PF",
+       "nom": "Scie circulaire 184 mm 1 350 W"
+      },
+      {
+       "ref": "113LX",
+       "nom": "2 meuleuses 230 et 125 mm"
+      },
+      {
+       "ref": "511HJ",
+       "nom": "Couteau pliant à lame rétractable"
+      },
+      {
+       "ref": "719HJ",
+       "nom": "Cisaille aviation 302 mm"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "debut": "2026-11-23T00:00:00-03:00",
+   "fin": "2026-11-29T23:59:59-03:00",
+   "packs": [
+    {
+     "titre": "Pack mesure & finition",
+     "sous_titre": "Mesurer, tracer, agrafer et visser",
+     "articles": [
+      {
+       "ref": "245PV",
+       "nom": "Télémètre laser de poche"
+      },
+      {
+       "ref": "166HV",
+       "nom": "Cordeau 30 m"
+      },
+      {
+       "ref": "3170P",
+       "nom": "Agrafeuse-cloueuse 5-en-1"
+      },
+      {
+       "ref": "585XR",
+       "nom": "Set de 8 tournevis MaXFit"
+      },
+      {
+       "ref": "1638P",
+       "nom": "Pince multiprise V-Jaw 254 mm"
+      },
+      {
+       "ref": "511HJ",
+       "nom": "Couteau pliant à lame rétractable"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "debut": "2026-11-30T00:00:00-03:00",
+   "fin": "2026-12-06T23:59:59-03:00",
+   "packs": [
+    {
+     "titre": "Pack perçage béton & meulage",
+     "sous_titre": "Perforateur SDS+ et meuleuse 230 mm filaires + 4 accessoires de perçage compatibles",
+     "articles": [
+      {
+       "ref": "349CJ",
+       "nom": "Perforateur SDS+ brushless 3 kg"
+      },
+      {
+       "ref": "262PF",
+       "nom": "Meuleuse d’angle 230 mm 2 000 W"
+      },
+      {
+       "ref": "916KJ",
+       "nom": "Coffret 102 accessoires"
+      },
+      {
+       "ref": "13353",
+       "nom": "Jeu de 8 forets béton SDS+"
+      },
+      {
+       "ref": "3606V",
+       "nom": "Foret SDS+ 12 x 260 mm"
+      },
+      {
+       "ref": "7150V",
+       "nom": "Foret SDS+ 16 x 260 mm"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "brouillons": [
+  {
+   "test": true,
+   "debut": "2026-12-07T00:00:00-03:00",
+   "fin": "2026-12-13T23:59:59-03:00",
+   "titre": "Pack 6 machines chantier",
+   "sous_titre": "6 machines filaires 230 V complètes, prêtes à l’emploi",
+   "articles": [
+    {
+     "ref": "349CJ",
+     "nom": "Perforateur SDS+ 3 kg + mandrin 13 mm"
+    },
+    {
+     "ref": "523PF",
+     "nom": "Scie circulaire 184 mm + lame"
+    },
+    {
+     "ref": "113LX",
+     "nom": "2 meuleuses 230 et 125 mm"
+    },
+    {
+     "ref": "993AK",
+     "nom": "Outil multifonction + 64 accessoires"
+    },
+    {
+     "ref": "826CN",
+     "nom": "Malaxeur 1 200 W"
+    },
+    {
+     "ref": "289KR",
+     "nom": "Hélice de malaxeur M14 120 mm"
+    }
+   ]
+  }
  ]
 }
