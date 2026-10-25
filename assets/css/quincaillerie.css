@@ -375,5 +375,6 @@ html[data-theme="dark"] #q-volet-btn[aria-expanded="true"]{background:#2A39C0;co
 .q-promo-inclus strong{color:#fff;}
 .q-promo-btn{flex:none;padding:.8rem 1.4rem;border:none;border-radius:12px;background:#33CC00;color:#04210A;font:inherit;font-size:.95rem;font-weight:800;cursor:pointer;}
 .q-promo-btn:hover{background:#2DB300;}
-@media (max-width:900px){.q-promo-grille{grid-template-columns:repeat(3,minmax(0,1fr));}}
+.q-promo-grille.n4{grid-template-columns:repeat(4,minmax(0,1fr));}
+@media (max-width:900px){.q-promo-grille,.q-promo-grille.n4{grid-template-columns:repeat(3,minmax(0,1fr));}}
 @media (max-width:700px){.q-promo{margin:.8rem 1rem 0;padding:1rem;}.q-promo-tete h2{font-size:1.2rem;}.q-promo-prix{font-size:1.8rem;}.q-promo-btn{width:100%;}}

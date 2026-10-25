@@ -421,30 +421,35 @@
     avant.parentNode.insertBefore(d, avant);
   }
 
-  /* ---------------- promo du moment (assets/data/quincaillerie-promo.json) ----------------
-     Un pack d'articles présenté en un seul prix : la SOMME des prix en vigueur (aucune remise
-     affichée), forfait d'expédition offert si l'offre de lancement s'applique. Le bouton met les
-     articles au panier, qui se paie comme d'habitude. Bloc masqué si un article est indisponible. */
-  function promoArticles() {
+  /* ---------------- pack du moment (assets/data/quincaillerie-promo.json) ----------------
+     Un pack par semaine, présenté en un seul prix : la SOMME des prix en vigueur (aucune remise,
+     la marge de chaque article est conservée), forfait d'expédition offert si l'offre de lancement
+     s'applique. On affiche la 1re variante de la semaine dont TOUS les articles sont disponibles au
+     comptoir (le panier se paie alors par carte) ; sinon la suivante ; sinon rien. */
+  function packDuMoment() {
     var p = etat.promo, t = Date.now();
-    if (!(p && p.actif && t >= Date.parse(p.debut) && t <= Date.parse(p.fin))) return null;
-    var L = (p.articles || []).map(function (x) { return { a: article(x.ref), nom: x.nom }; });
-    var ok = L.length && L.every(function (x) {
-      var s = (etat.stock[x.a && x.a.ref] || {}).s;
-      return x.a && !x.a.devis && s !== 'rupture' && s !== 'introuvable';
-    });
-    return ok ? L : null;
+    if (!(p && p.actif)) return null;
+    var sem = (p.semaines || []).find(function (s) { return t >= Date.parse(s.debut) && t <= Date.parse(s.fin); });
+    if (!sem) return null;
+    for (var i = 0; i < sem.packs.length; i++) {
+      var L = (sem.packs[i].articles || []).map(function (x) { return { a: article(x.ref), nom: x.nom }; });
+      if (L.length && L.every(function (x) { return x.a && !x.a.devis && statutDe(x.a.ref) === 'disponible'; })) {
+        return { pack: sem.packs[i], L: L };
+      }
+    }
+    return null;
   }
   function afficherPromo() {
-    var L = promoArticles();
-    if (!L || $('q-promo')) return;
+    var pm = packDuMoment();
+    if (!pm || $('q-promo')) return;
+    var L = pm.L;
     var total = L.reduce(function (s, x) { return s + x.a.prix; }, 0);
     var offert = forfaitOffert(total);
     var d = document.createElement('section');
     d.id = 'q-promo'; d.className = 'q-promo'; d.setAttribute('aria-label', etat.promo.etiquette);
     d.innerHTML = '<div class="q-promo-tete"><span class="q-promo-et">' + esc(etat.promo.etiquette) + '</span>'
-      + '<h2>' + esc(etat.promo.titre) + '</h2><p>' + esc(etat.promo.sous_titre) + '</p></div>'
-      + '<div class="q-promo-grille">' + L.map(function (x) {
+      + '<h2>' + esc(pm.pack.titre) + '</h2><p>' + esc(pm.pack.sous_titre) + '</p></div>'
+      + '<div class="q-promo-grille' + (L.length <= 4 ? ' n4' : '') + '">' + L.map(function (x) {
           return '<a class="q-promo-art" href="' + esc(ADR.fiche(x.a)) + '"><span class="q-promo-img"><img src="' + esc(x.a.img)
             + '" alt="" loading="lazy"></span><span>' + esc(x.nom) + '</span></a>';
         }).join('') + '</div>'
