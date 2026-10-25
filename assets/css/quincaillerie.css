@@ -352,3 +352,8 @@ html[data-theme="dark"] #q-volet-btn[aria-expanded="true"]{background:#2A39C0;co
   .q-zone.volet-mobile #q-volet{transform:none;}
   .q-zone.volet-mobile #q-volet-fond{display:block;position:fixed;inset:0;background:rgba(10,15,40,.45);z-index:1299;}
 }
+/* ---- accessoires compatibles (panier + fiche) ---- */
+.q-sugg-txt{flex:1;min-width:0;display:flex;flex-direction:column;}
+.q-sugg-pour{font-size:.64rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.qf-compat h2{display:flex;align-items:center;gap:.5rem;}
+.qf-compat .q-add{margin-top:.5rem;width:100%;}

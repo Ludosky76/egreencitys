@@ -29,7 +29,7 @@
   var etat = {
     catalogue: null, stock: {}, stockMaj: 0, liens: {},
     recherche: '', mots: [], cat: '', dispo: false, tri: 'pertinence',
-    f: { m: {}, a: {}, v: {}, b: {}, p: {}, pmin: '', pmax: '' }, facettes: {}, marquesToutes: false,
+    f: { m: {}, a: {}, v: {}, b: {}, p: {}, pmin: '', pmax: '' }, facettes: {}, compat: {}, marquesToutes: false,
     visibles: PAR_PAGE, panier: []
   };
 
@@ -423,14 +423,28 @@
 
   /* ---------------- paniers groupés : un seul forfait par commande ----------------
      Le forfait d'expédition est dû une fois par colis : l'afficher comme une économie
-     dès le 2e article, et proposer de petits articles disponibles du même rayon. */
-  function empreinte(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }
+     dès le 2e article, et proposer des accessoires compatibles disponibles. */
+  /* Accessoires COMPATIBLES uniquement (assets/data/quincaillerie-compat.json : table établie à partir des
+     caractéristiques — même plateforme de batterie, emmanchement, diamètre et alésage, gamme électrique… —
+     et contre-vérifiée) ; en stock, pas déjà au panier. Aucune compatibilité connue : aucune suggestion. */
   function suggestions(n) {
-    var dans = {}, rayons = {}, cle = '';
-    etat.panier.forEach(function (l) { var a = article(l.ref); dans[l.ref] = true; cle += l.ref; if (a) rayons[a.cat] = true; });
-    return etat.catalogue.articles.filter(function (a) {
-      return !dans[a.ref] && !a.devis && rayons[a.cat] && a.prix <= 30 && statutDe(a.ref) === 'disponible';
-    }).sort(function (x, y) { return empreinte(x.ref + cle) - empreinte(y.ref + cle); }).slice(0, n);
+    var dans = {};
+    etat.panier.forEach(function (l) { dans[l.ref] = true; });
+    var listes = etat.panier.slice().reverse().map(function (l) {  /* dernier article ajouté en premier */
+      return (etat.compat[l.ref] || []).map(function (r) { return { ref: r, pour: l.ref }; });
+    });
+    var res = [], vus = {};
+    for (var rang = 0; res.length < n && listes.some(function (x) { return x.length > rang; }); rang++) {
+      listes.forEach(function (x) {
+        var c = x[rang];
+        if (!c || res.length >= n || dans[c.ref] || vus[c.ref]) return;
+        var a = article(c.ref);
+        if (!a || a.devis || statutDe(c.ref) !== 'disponible') return;
+        vus[c.ref] = true;
+        res.push({ a: a, pour: article(c.pour) });
+      });
+    }
+    return res;
   }
   function messageGroupage() {
     var f = etat.catalogue.forfait_expedition;
@@ -448,10 +462,13 @@
   function blocSuggestions() {
     var html = '';
     var s = suggestions(3);
+    var plusieurs = etat.panier.length > 1;
     if (s.length) {
-      html += '<div class="q-sugg"><div class="q-sugg-titre">À glisser dans le même colis</div>' + s.map(function (a) {
+      html += '<div class="q-sugg"><div class="q-sugg-titre">Accessoires compatibles · même colis</div>' + s.map(function (x) {
+        var a = x.a;
         return '<div class="q-sugg-ligne"><img src="' + esc(a.img) + '" alt="" loading="lazy">'
-          + '<a class="q-sugg-nom" href="' + ADR.fiche(a) + '">' + esc(a.nom) + '</a>'
+          + '<span class="q-sugg-txt"><a class="q-sugg-nom" href="' + ADR.fiche(a) + '">' + esc(a.nom) + '</a>'
+          + (plusieurs && x.pour ? '<small class="q-sugg-pour">pour : ' + esc(x.pour.nom.length > 48 ? x.pour.nom.slice(0, 46) + '…' : x.pour.nom) + '</small>' : '') + '</span>'
           + '<span class="q-sugg-prix">' + eur(a.prix) + '</span>'
           + '<button type="button" class="q-sugg-add" data-add="' + esc(a.ref) + '" aria-label="Ajouter ' + esc(a.nom) + ' au panier">+</button></div>';
       }).join('') + '</div>';
@@ -688,9 +705,11 @@
     fetch('/assets/data/quincaillerie-liens.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
     fetch('/assets/data/quincaillerie-offre.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
     fetch('/assets/data/quincaillerie-paiement.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-    fetch('/assets/data/quincaillerie-facettes.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
+    fetch('/assets/data/quincaillerie-facettes.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
+    fetch('/assets/data/quincaillerie-compat.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
   ]).then(function (res) {
     etat.facettes = res[5] || {};
+    etat.compat = res[6] || {};
     etat.catalogue = res[0];
     etat.offre = res[3];
     etat.paiement = res[4];

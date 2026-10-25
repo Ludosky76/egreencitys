@@ -22,7 +22,7 @@
     rayon: function (s) { return '/pages/boutique-quincaillerie.html?cat=' + encodeURIComponent(s); }
   };
 
-  var etat = { catalogue: null, stock: {}, liens: {} };
+  var etat = { catalogue: null, stock: {}, liens: {}, compat: {} };
 
   function eur(n) { return n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; }
   function esc(s) {
@@ -70,6 +70,18 @@
     $('q-pastille').textContent = n;
     $('q-pastille').style.display = n ? '' : 'none';
   }
+  /* accessoire compatible : ajouté sans quitter la fiche (on peut prendre l'outil ensuite) */
+  function ajouterSurPlace(ref, bouton) {
+    var p = panier();
+    var l = p.find(function (x) { return x.ref === ref; });
+    if (l) l.q += 1; else p.push({ ref: ref, q: 1 });
+    var paquet = { maj: Date.now(), lignes: p };
+    try { localStorage.setItem(CLE_PANIER, JSON.stringify(paquet)); } catch (e) {}
+    if (window.EGCQCompte && window.EGCQCompte.utilisateur()) window.EGCQCompte.sauverPanier(paquet);
+    majPastille();
+    if (bouton) { bouton.textContent = '✓ Ajouté au panier'; bouton.disabled = true; }
+  }
+
   function ajouterPanier(ref) {
     var p = panier();
     var l = p.find(function (x) { return x.ref === ref; });
@@ -229,6 +241,8 @@
       +   '</ul>'
       + '</div>';
 
+    rendreCompat(a);
+
     /* page statique : description, caractéristiques et « même rayon » sont déjà dans la page ;
        on ajoute seulement la disponibilité en direct sur les cartes du même rayon */
     if (pageStatique) {
@@ -279,6 +293,36 @@
     }
   }
 
+  /* ---------------- accessoires compatibles ---------------------------
+     Table contre-vérifiée assets/data/quincaillerie-compat.json (même plateforme de batterie,
+     emmanchement, diamètre/alésage, gamme…) : rien n'est proposé sans compatibilité établie. */
+  function rendreCompat(a) {
+    var liste = (etat.compat[a.ref] || []).map(function (r) {
+      return etat.catalogue.articles.find(function (x) { return x.ref === r; });
+    }).filter(function (x) { return x && !x.devis; });
+    if (!liste.length) return;
+    liste.sort(function (x, y) { return (statutDe(y.ref) === 'disponible' ? 1 : 0) - (statutDe(x.ref) === 'disponible' ? 1 : 0); });
+    liste = liste.slice(0, 4);
+    var s = $('qf-compat');
+    if (!s) {
+      s = document.createElement('section');
+      s.className = 'qf-meme qf-compat'; s.id = 'qf-compat';
+      $('qf-detail').parentNode.insertBefore(s, $('qf-detail'));
+    }
+    s.innerHTML = '<h2>🔧 Accessoires compatibles</h2><div class="liste">' + liste.map(function (m) {
+      var fiche = ADR.fiche(m);
+      return '<article class="q-card">'
+        + '<a class="q-lien q-img" href="' + fiche + '"><img loading="lazy" src="' + esc(m.img) + '" alt="' + esc(m.nom) + '" onerror="this.parentNode.classList.add(\'q-noimg\')"></a>'
+        + '<div class="q-body">'
+        + (marqueDe(m) ? '<div class="q-marque">' + esc(marqueDe(m)) + '</div>' : '')
+        + '<a class="q-lien" href="' + fiche + '"><h3 class="q-nom">' + esc(m.nom) + '</h3></a>'
+        + badgeStock(m.ref)
+        + '<div class="q-prix">' + eur(m.prix) + '<span class="q-ttc">TTC</span></div>'
+        + (statutDe(m.ref) === 'disponible' ? '<button type="button" class="q-add" data-ajout="' + esc(m.ref) + '">🛒 Ajouter au panier</button>' : '')
+        + '</div></article>';
+    }).join('') + '</div>';
+  }
+
   /* ---------------- alertes de disponibilité ------------------------- */
   function majBoutonAlerte(actif) {
     var b = document.querySelector('[data-alerte]');
@@ -297,8 +341,9 @@
     $('q-menu-fond').addEventListener('click', function () { document.body.classList.remove('menu-ouvert'); $('q-burger').setAttribute('aria-expanded', 'false'); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { document.body.classList.remove('menu-ouvert'); $('q-burger').setAttribute('aria-expanded', 'false'); } });
     document.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-add],[data-pay],[data-alerte]');
+      var t = e.target.closest('[data-add],[data-pay],[data-alerte],[data-ajout]');
       if (!t) return;
+      if (t.dataset.ajout) { ajouterSurPlace(t.dataset.ajout, t); return; }
       if (t.dataset.add) ajouterPanier(t.dataset.add);
       if (t.dataset.pay) verifierPuisPayer(t.dataset.pay);
       if (t.dataset.alerte) {
@@ -339,9 +384,11 @@
     catalogue,
     fetch('/assets/data/quincaillerie-stock.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return { stock: {} }; }),
     fetch('/assets/data/quincaillerie-liens.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
-    fetch('/assets/data/quincaillerie-offre.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    fetch('/assets/data/quincaillerie-offre.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+    fetch('/assets/data/quincaillerie-compat.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
   ]).then(function (res) {
     if (redirection) return;
+    etat.compat = res[4] || {};
     etat.catalogue = res[0];
     etat.offre = res[3];
     etat.stock = res[1].stock || {};
