@@ -378,3 +378,25 @@ html[data-theme="dark"] #q-volet-btn[aria-expanded="true"]{background:#2A39C0;co
 .q-promo-grille.n4{grid-template-columns:repeat(4,minmax(0,1fr));}
 @media (max-width:900px){.q-promo-grille,.q-promo-grille.n4{grid-template-columns:repeat(3,minmax(0,1fr));}}
 @media (max-width:700px){.q-promo{margin:.8rem 1rem 0;padding:1rem;}.q-promo-tete h2{font-size:1.2rem;}.q-promo-prix{font-size:1.8rem;}.q-promo-btn{width:100%;}}
+
+/* ---- packs (cartes compactes côte à côte : pack du moment + packs permanents) ---- */
+.q-packs{max-width:var(--largeur,1400px);margin:1rem auto 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem;}
+.q-packs.n1{grid-template-columns:minmax(0,560px);}
+.q-packs.n2{grid-template-columns:repeat(2,minmax(0,1fr));}
+.q-pack{display:flex;flex-direction:column;padding:.8rem .9rem .9rem;border-radius:16px;color:#fff;
+  background:linear-gradient(135deg,#14206B 0%,#0E1A4F 65%,#0B3A12 100%);box-shadow:0 8px 22px rgba(10,20,80,.22);}
+.q-pack h2{margin:.35rem 0 .5rem;font-size:1.02rem;line-height:1.2;color:#fff;}
+.q-pack .q-promo-et{align-self:flex-start;font-size:.62rem;padding:.2rem .6rem;}
+.q-pack-vign{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.3rem;}
+.q-pack-vign a{display:flex;align-items:center;justify-content:center;aspect-ratio:1;border-radius:8px;background:#fff;padding:.2rem;}
+.q-pack-vign img{max-width:100%;max-height:100%;object-fit:contain;}
+.q-pack-vign a:hover{outline:2px solid #9FE870;}
+.q-pack-liste{margin:.5rem 0 0;font-size:.7rem;line-height:1.4;color:#C8D4FF;}
+.q-pack-pied{margin-top:auto;padding-top:.6rem;display:flex;align-items:flex-end;justify-content:space-between;gap:.6rem;}
+.q-pack .q-promo-prix{font-size:1.45rem;}
+.q-pack .q-promo-inclus{margin-top:.15rem;font-size:.7rem;}
+.q-pack .q-promo-btn{padding:.55rem .8rem;font-size:.8rem;border-radius:10px;white-space:nowrap;}
+@media (max-width:1000px){.q-packs,.q-packs.n2{grid-template-columns:minmax(0,1fr);}}
+@media (max-width:700px){.q-packs{margin:.8rem 1rem 0;}}
+.q-pack .q-promo-prix{white-space:nowrap;}
+@media (max-width:700px){.q-pack-pied{flex-wrap:wrap;align-items:center;}.q-pack-pied>div{flex:1 1 auto;}.q-pack .q-promo-btn{width:100%;}}

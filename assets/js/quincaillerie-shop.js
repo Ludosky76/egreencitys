@@ -426,42 +426,53 @@
      la marge de chaque article est conservée), forfait d'expédition offert si l'offre de lancement
      s'applique. On affiche la 1re variante de la semaine dont TOUS les articles sont disponibles au
      comptoir (le panier se paie alors par carte) ; sinon la suivante ; sinon rien. */
-  function packDuMoment() {
-    var p = etat.promo, t = Date.now();
-    if (!(p && p.actif)) return null;
+  function packDisponible(pack) {
+    var L = (pack.articles || []).map(function (x) { return { a: article(x.ref), nom: x.nom }; });
+    return L.length && L.every(function (x) { return x.a && !x.a.devis && statutDe(x.a.ref) === 'disponible'; }) ? L : null;
+  }
+  /* Packs affichés : le pack du moment de la semaine (1re variante disponible), puis les packs permanents disponibles. */
+  function packsAffiches() {
+    var p = etat.promo, t = Date.now(), out = [];
+    if (!(p && p.actif)) return out;
     var sem = (p.semaines || []).find(function (s) { return t >= Date.parse(s.debut) && t <= Date.parse(s.fin); });
-    if (!sem) return null;
-    for (var i = 0; i < sem.packs.length; i++) {
-      var L = (sem.packs[i].articles || []).map(function (x) { return { a: article(x.ref), nom: x.nom }; });
-      if (L.length && L.every(function (x) { return x.a && !x.a.devis && statutDe(x.a.ref) === 'disponible'; })) {
-        return { pack: sem.packs[i], L: L };
+    if (sem) {
+      for (var i = 0; i < sem.packs.length; i++) {
+        var L = packDisponible(sem.packs[i]);
+        if (L) { out.push({ pack: sem.packs[i], L: L, etiquette: p.etiquette }); break; }
       }
     }
-    return null;
+    (p.permanents || []).forEach(function (pk) {
+      var L = packDisponible(pk);
+      if (L) out.push({ pack: pk, L: L, etiquette: pk.etiquette || 'Pack' });
+    });
+    return out;
   }
   function afficherPromo() {
-    var pm = packDuMoment();
-    if (!pm || $('q-promo')) return;
-    var L = pm.L;
-    var total = L.reduce(function (s, x) { return s + x.a.prix; }, 0);
-    var offert = forfaitOffert(total);
+    var packs = packsAffiches();
+    if (!packs.length || $('q-promo')) return;
     var d = document.createElement('section');
-    d.id = 'q-promo'; d.className = 'q-promo'; d.setAttribute('aria-label', etat.promo.etiquette);
-    d.innerHTML = '<div class="q-promo-tete"><span class="q-promo-et">' + esc(etat.promo.etiquette) + '</span>'
-      + '<h2>' + esc(pm.pack.titre) + '</h2><p>' + esc(pm.pack.sous_titre) + '</p></div>'
-      + '<div class="q-promo-grille' + (L.length <= 4 ? ' n4' : '') + '">' + L.map(function (x) {
-          return '<a class="q-promo-art" href="' + esc(ADR.fiche(x.a)) + '"><span class="q-promo-img"><img src="' + esc(x.a.img)
-            + '" alt="" loading="lazy"></span><span>' + esc(x.nom) + '</span></a>';
-        }).join('') + '</div>'
-      + '<div class="q-promo-pied"><div><div class="q-promo-prix">' + eur(total) + '</div>'
-      + '<div class="q-promo-inclus">le pack complet · livré chez vous en Guyane · octroi de mer compris'
-      + (offert ? ' · <strong>forfait d’expédition offert</strong> (offre de lancement jusqu’au ' + esc(etat.offre.fin_texte) + ')'
-                : ' · + forfait d’expédition ' + eur(etat.catalogue.forfait_expedition) + ' par commande') + '</div></div>'
-      + '<button type="button" class="q-promo-btn" id="q-promo-btn">🛒 Ajouter le pack au panier</button></div>';
+    d.id = 'q-promo'; d.className = 'q-packs n' + packs.length; d.setAttribute('aria-label', 'Packs');
+    d.innerHTML = packs.map(function (pm, i) {
+      var total = pm.L.reduce(function (s, x) { return s + x.a.prix; }, 0);
+      return '<article class="q-pack">'
+        + '<span class="q-promo-et">' + esc(pm.etiquette) + '</span>'
+        + '<h2>' + esc(pm.pack.titre) + '</h2>'
+        + '<div class="q-pack-vign">' + pm.L.map(function (x) {
+            return '<a href="' + esc(ADR.fiche(x.a)) + '" title="' + esc(x.nom) + '"><img src="' + esc(x.a.img) + '" alt="' + esc(x.nom) + '" loading="lazy"></a>';
+          }).join('') + '</div>'
+        + '<p class="q-pack-liste">' + pm.L.map(function (x) { return esc(x.nom); }).join(' · ') + '</p>'
+        + '<div class="q-pack-pied"><div><div class="q-promo-prix">' + eur(total) + '</div>'
+        + '<div class="q-promo-inclus">livré, octroi de mer compris'
+        + (forfaitOffert(total) ? ' · <strong>forfait offert</strong>' : ' · + forfait ' + eur(etat.catalogue.forfait_expedition)) + '</div></div>'
+        + '<button type="button" class="q-promo-btn" data-pack="' + i + '">🛒 Ajouter le pack</button></div>'
+        + '</article>';
+    }).join('');
     var avant = $('q-rayons');
     avant.parentNode.insertBefore(d, avant);
-    $('q-promo-btn').addEventListener('click', function () {
-      L.forEach(function (x) {
+    d.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-pack]');
+      if (!b) return;
+      packs[+b.dataset.pack].L.forEach(function (x) {
         if (!etat.panier.some(function (l) { return l.ref === x.a.ref; })) etat.panier.push({ ref: x.a.ref, q: 1 });
       });
       sauver(); majPastille(); rendrePanier();

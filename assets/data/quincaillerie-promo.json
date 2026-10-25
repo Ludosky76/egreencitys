@@ -1,7 +1,7 @@
 {
  "actif": true,
  "etiquette": "Pack du moment",
- "regle": "Change chaque semaine. Prix = somme des prix normaux des articles (aucune remise, marge de chaque article conservée). Le site affiche la 1re variante de la semaine dont TOUS les articles sont disponibles au comptoir ; sinon la suivante ; sinon rien. « brouillons » : packs de test, jamais affichés par le site tant qu'ils ne sont pas déplacés dans « semaines ».",
+ "regle": "Le site affiche, côte à côte : le « Pack du moment » de la semaine (1re variante dont TOUS les articles sont disponibles, sinon la suivante), puis chaque pack « permanent » dont tous les articles sont disponibles. Prix = somme des prix normaux (aucune remise, marge de chaque article conservée). « brouillons » : packs de test jamais affichés.",
  "semaines": [
   {
    "debut": "2026-10-25T00:00:00-03:00",
@@ -272,11 +272,8 @@
    ]
   }
  ],
- "brouillons": [
+ "permanents": [
   {
-   "test": true,
-   "debut": "2026-12-07T00:00:00-03:00",
-   "fin": "2026-12-13T23:59:59-03:00",
    "titre": "Pack 6 machines chantier",
    "sous_titre": "6 machines filaires 230 V complètes, prêtes à l’emploi",
    "articles": [
@@ -304,7 +301,40 @@
      "ref": "289KR",
      "nom": "Hélice de malaxeur M14 120 mm"
     }
+   ],
+   "etiquette": "Pack machines"
+  },
+  {
+   "etiquette": "Petit prix",
+   "titre": "Pack perçage petit prix",
+   "sous_titre": "Perforateur SDS+ filaire complet + forets béton compatibles + tournevis et pince",
+   "articles": [
+    {
+     "ref": "790AG",
+     "nom": "Perforateur SDS+ 1 050 W + mallette"
+    },
+    {
+     "ref": "13353",
+     "nom": "Jeu de 8 forets béton SDS+"
+    },
+    {
+     "ref": "3606V",
+     "nom": "Foret SDS+ 12 x 260 mm"
+    },
+    {
+     "ref": "24332",
+     "nom": "Foret SDS+ 6 x 110 mm"
+    },
+    {
+     "ref": "729XR",
+     "nom": "Set de 2 tournevis MaXFit"
+    },
+    {
+     "ref": "334KY",
+     "nom": "Pince universelle 200 mm"
+    }
    ]
   }
- ]
+ ],
+ "brouillons": []
 }
