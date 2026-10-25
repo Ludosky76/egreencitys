@@ -28,7 +28,8 @@
 
   var etat = {
     catalogue: null, stock: {}, stockMaj: 0, liens: {},
-    recherche: '', cat: '', dispo: false, tri: 'pertinence',
+    recherche: '', mots: [], cat: '', dispo: false, tri: 'pertinence',
+    f: { m: {}, a: {}, v: {}, b: {}, p: {}, pmin: '', pmax: '' }, facettes: {}, marquesToutes: false,
     visibles: PAR_PAGE, panier: []
   };
 
@@ -69,18 +70,183 @@
   }
   function urlDemande(ref) { return '/pages/demande-produit.html?ref=' + encodeURIComponent(ref); }
 
-  /* ---------------- rendu ---------------- */
+  /* ---------------- filtres (volet masquable) ----------------
+     Valeurs par article dans quincaillerie-facettes.json (générées par _tools/quinc_pages_seo.py) :
+     m marque, a alimentation (s sans fil / f filaire), v tension, p puissance (W), b batteries incluses. */
+  var GROUPES = [
+    { cle: 'm', titre: 'Marque', valeur: function (f, a) { return f.m || ''; } },
+    { cle: 'a', titre: 'Alimentation', libelles: { s: 'Sans fil (batterie)', f: 'Filaire (secteur)' }, valeur: function (f) { return f.a || ''; } },
+    { cle: 'v', titre: 'Tension', ordre: ['12 V', '18 V', '36 V', '54 V', '230 V'], libelles: { '54 V': '54 V (FlexVolt)', '230 V': '230 V (secteur)' }, valeur: function (f) { return f.v || ''; } },
+    { cle: 'b', titre: 'Batterie', libelles: { 'avec': 'Livré avec batterie(s)', 'nu': 'Sans batterie (outil nu)' },
+      valeur: function (f) { return f.b === undefined ? '' : (f.b > 0 ? 'avec' : 'nu'); } },
+    { cle: 'p', titre: 'Puissance', ordre: ['<500', '500-999', '1000-1499', '1500-1999', '2000+'],
+      libelles: { '<500': 'Moins de 500 W', '500-999': '500 à 999 W', '1000-1499': '1 000 à 1 499 W', '1500-1999': '1 500 à 1 999 W', '2000+': '2 000 W et plus' },
+      valeur: function (f) { var w = f.p; return !w ? '' : w < 500 ? '<500' : w < 1000 ? '500-999' : w < 1500 ? '1000-1499' : w < 2000 ? '1500-1999' : '2000+'; } }
+  ];
+  function fac(a) { return etat.facettes[a.ref] || {}; }
+  function sansAccents(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  function texteRecherche(a) {
+    if (!a._q) { var f = fac(a); a._q = sansAccents([a.nom, f.m || a.marque, a.ref, f.v, f.v ? f.v.replace(' ', '') : ''].join(' ')); }
+    return a._q;
+  }
+  /* un article passe-t-il tous les filtres, sauf éventuellement le groupe « sauf » (pour compter les options) ? */
+  function passe(a, sauf) {
+    if (etat.cat && a.cat !== etat.cat) return false;
+    if (etat.dispo && statutDe(a.ref) !== 'disponible') return false;
+    if (etat.mots.length) {
+      var t = texteRecherche(a);
+      for (var i = 0; i < etat.mots.length; i++) if (t.indexOf(etat.mots[i]) === -1) return false;
+    }
+    if (sauf !== 'prix') {
+      if (etat.f.pmin !== '' && a.prix < +etat.f.pmin) return false;
+      if (etat.f.pmax !== '' && a.prix > +etat.f.pmax) return false;
+    }
+    var f = fac(a);
+    for (var g = 0; g < GROUPES.length; g++) {
+      var G = GROUPES[g], choisis = etat.f[G.cle];
+      if (G.cle === sauf || !Object.keys(choisis).length) continue;
+      if (!choisis[G.valeur(f, a)]) return false;
+    }
+    return true;
+  }
   function filtres() {
-    var q = etat.recherche.toLowerCase();
-    var res = etat.catalogue.articles.filter(function (a) {
-      if (etat.cat && a.cat !== etat.cat) return false;
-      if (etat.dispo && statutDe(a.ref) !== 'disponible') return false;
-      if (q && (a.nom + ' ' + a.marque + ' ' + a.ref).toLowerCase().indexOf(q) === -1) return false;
-      return true;
-    });
+    var res = etat.catalogue.articles.filter(function (a) { return passe(a); });
     if (etat.tri === 'prix-asc') res.sort(function (x, y) { return x.prix - y.prix; });
     if (etat.tri === 'prix-desc') res.sort(function (x, y) { return y.prix - x.prix; });
     return res;
+  }
+  function nbFiltres() {
+    var n = GROUPES.reduce(function (s, G) { return s + Object.keys(etat.f[G.cle]).length; }, 0);
+    return n + (etat.f.pmin !== '' || etat.f.pmax !== '' ? 1 : 0);
+  }
+  function libelle(G, v) { return (G.libelles && G.libelles[v]) || v; }
+  function rendreVolet() {
+    var html = '<div class="qv-tete"><strong>Filtres</strong>'
+      + (nbFiltres() ? '<button type="button" class="qv-effacer" data-effacer="1">Tout effacer</button>' : '')
+      + '<button type="button" class="qv-fermer" aria-label="Fermer les filtres">×</button></div>';
+    GROUPES.forEach(function (G) {
+      var comptes = {};
+      etat.catalogue.articles.forEach(function (a) {
+        if (!passe(a, G.cle)) return;
+        var v = G.valeur(fac(a), a);
+        if (v) comptes[v] = (comptes[v] || 0) + 1;
+      });
+      var valeurs = Object.keys(comptes);
+      Object.keys(etat.f[G.cle]).forEach(function (v) { if (valeurs.indexOf(v) === -1) { valeurs.push(v); comptes[v] = 0; } });
+      if (!valeurs.length) return;
+      if (G.ordre) valeurs.sort(function (x, y) { return G.ordre.indexOf(x) - G.ordre.indexOf(y); });
+      else valeurs.sort(function (x, y) { return (comptes[y] - comptes[x]) || x.localeCompare(y); });
+      var plie = G.cle === 'm' && !etat.marquesToutes && valeurs.length > 10;
+      var montrees = plie ? valeurs.filter(function (v, i) { return i < 10 || etat.f.m[v]; }) : valeurs;
+      html += '<fieldset class="qv-groupe"><legend>' + G.titre + '</legend>'
+        + montrees.map(function (v) {
+          return '<label class="qv-option"><input type="checkbox" data-groupe="' + G.cle + '" value="' + esc(v) + '"'
+            + (etat.f[G.cle][v] ? ' checked' : '') + '> <span>' + esc(libelle(G, v)) + '</span> <em>' + comptes[v] + '</em></label>';
+        }).join('')
+        + (plie ? '<button type="button" class="qv-plus" data-marques="toutes">Voir les ' + valeurs.length + ' marques</button>' : '')
+        + (G.cle === 'm' && etat.marquesToutes && valeurs.length > 10 ? '<button type="button" class="qv-plus" data-marques="top">Réduire la liste</button>' : '')
+        + '</fieldset>';
+    });
+    html += '<fieldset class="qv-groupe"><legend>Prix (€, tout compris)</legend><div class="qv-prix">'
+      + '<input type="number" min="0" step="1" inputmode="numeric" id="qv-pmin" placeholder="min" value="' + esc(etat.f.pmin) + '" aria-label="Prix minimum">'
+      + '<span>à</span><input type="number" min="0" step="1" inputmode="numeric" id="qv-pmax" placeholder="max" value="' + esc(etat.f.pmax) + '" aria-label="Prix maximum">'
+      + '</div></fieldset>';
+    var haut = $('q-volet').scrollTop; /* la case cochée reste sous les yeux */
+    $('q-volet').innerHTML = html;
+    $('q-volet').scrollTop = haut;
+    var n = nbFiltres();
+    $('q-volet-nb').textContent = n ? ' (' + n + ')' : '';
+  }
+  function rendreActifs() {
+    var puces = [];
+    GROUPES.forEach(function (G) {
+      Object.keys(etat.f[G.cle]).forEach(function (v) {
+        puces.push('<button type="button" class="qv-puce" data-retirer="' + G.cle + '" data-valeur="' + esc(v) + '">' + esc(libelle(G, v)) + ' ×</button>');
+      });
+    });
+    if (etat.f.pmin !== '' || etat.f.pmax !== '') {
+      puces.push('<button type="button" class="qv-puce" data-retirer="prix">' + (etat.f.pmin !== '' ? etat.f.pmin + ' €' : '0 €') + ' à ' + (etat.f.pmax !== '' ? etat.f.pmax + ' €' : '…') + ' ×</button>');
+    }
+    var dewalt = Object.keys(etat.f.m).length === 1 && etat.f.m.DeWalt;
+    $('q-actifs').innerHTML = (dewalt ? '<div class="q-bandeau-dewalt"><strong>DeWalt</strong> : outils filaires et sans fil, batteries 18 V XR et 54 V FlexVolt, accessoires — '
+        + 'prix tout compris livrés en Guyane. <a href="/quincaillerie-pro/marque/dewalt.html">Toute la gamme DeWalt</a></div>' : '')
+      + (puces.length ? '<div class="qv-puces">' + puces.join('') + '<button type="button" class="qv-puce qv-tout" data-effacer="1">Tout effacer</button></div>' : '');
+  }
+  /* état des filtres dans l'adresse : partageable, et conservé au retour depuis une fiche */
+  function syncUrl() {
+    var p = new URLSearchParams();
+    if (etat.recherche) p.set('q', etat.recherche);
+    if (etat.cat) p.set('cat', etat.cat);
+    GROUPES.forEach(function (G) { var v = Object.keys(etat.f[G.cle]); if (v.length) p.set(G.cle === 'm' ? 'marque' : G.cle, v.join(',')); });
+    if (etat.f.pmin !== '') p.set('pmin', etat.f.pmin);
+    if (etat.f.pmax !== '') p.set('pmax', etat.f.pmax);
+    if (etat.dispo) p.set('dispo', '1');
+    var q = p.toString();
+    try { history.replaceState(null, '', location.pathname + (q ? '?' + q : '') + location.hash); } catch (e) {}
+  }
+  function lireUrl() {
+    var p = new URLSearchParams(location.search);
+    if (p.get('q')) { etat.recherche = p.get('q'); $('q-recherche').value = etat.recherche; majMots(); }
+    GROUPES.forEach(function (G) {
+      var brut = p.get(G.cle === 'm' ? 'marque' : G.cle);
+      if (brut) brut.split(',').forEach(function (v) { if (v) etat.f[G.cle][v] = true; });
+    });
+    if (p.get('pmin')) etat.f.pmin = p.get('pmin');
+    if (p.get('pmax')) etat.f.pmax = p.get('pmax');
+    if (p.get('dispo') === '1') { etat.dispo = true; $('q-dispo').checked = true; }
+  }
+  function majMots() { etat.mots = sansAccents(etat.recherche).split(/\s+/).filter(Boolean); }
+  /* volet ouvert/fermé : retenu sur l'appareil (ordinateur) ; en tiroir sur téléphone */
+  var CLE_VOLET = 'egc_quinc_volet';
+  function mobile() { return window.matchMedia('(max-width: 900px)').matches; }
+  function appliquerVolet() {
+    var z = $('q-zone');
+    z.classList.toggle('sans-volet', !mobile() && !etat.voletOuvert);
+    z.classList.toggle('volet-mobile', mobile() && etat.voletMobile);
+    $('q-volet-btn').setAttribute('aria-expanded', String(mobile() ? etat.voletMobile : etat.voletOuvert));
+  }
+  function basculerVolet() {
+    if (mobile()) etat.voletMobile = !etat.voletMobile;
+    else {
+      etat.voletOuvert = !etat.voletOuvert;
+      try { localStorage.setItem(CLE_VOLET, etat.voletOuvert ? 'ouvert' : 'ferme'); } catch (e) {}
+    }
+    appliquerVolet();
+  }
+  function initVolet() {
+    var pref = null;
+    try { pref = localStorage.getItem(CLE_VOLET); } catch (e) {}
+    etat.voletOuvert = pref !== 'ferme';
+    etat.voletMobile = false;
+    appliquerVolet();
+    window.addEventListener('resize', appliquerVolet);
+    $('q-volet-btn').addEventListener('click', basculerVolet);
+    $('q-volet-fond').addEventListener('click', function () { etat.voletMobile = false; appliquerVolet(); });
+    function effacer() {
+      GROUPES.forEach(function (G) { etat.f[G.cle] = {}; });
+      etat.f.pmin = ''; etat.f.pmax = '';
+    }
+    function apres() { etat.visibles = PAR_PAGE; rendre(); majRayons(); }
+    $('q-volet').addEventListener('change', function (e) {
+      var t = e.target;
+      if (t.dataset.groupe) {
+        if (t.checked) etat.f[t.dataset.groupe][t.value] = true; else delete etat.f[t.dataset.groupe][t.value];
+        apres();
+      } else if (t.id === 'qv-pmin' || t.id === 'qv-pmax') {
+        etat.f[t.id === 'qv-pmin' ? 'pmin' : 'pmax'] = t.value === '' ? '' : String(Math.max(0, Math.round(+t.value)));
+        apres();
+      }
+    });
+    document.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-effacer],[data-retirer],[data-marques],.qv-fermer');
+      if (!t) return;
+      if (t.classList.contains('qv-fermer')) { if (mobile()) etat.voletMobile = false; else { etat.voletOuvert = false; try { localStorage.setItem(CLE_VOLET, 'ferme'); } catch (er) {} } appliquerVolet(); return; }
+      if (t.dataset.marques) { etat.marquesToutes = t.dataset.marques === 'toutes'; rendreVolet(); return; }
+      if (t.dataset.effacer) effacer();
+      if (t.dataset.retirer === 'prix') { etat.f.pmin = ''; etat.f.pmax = ''; }
+      else if (t.dataset.retirer) delete etat.f[t.dataset.retirer][t.dataset.valeur];
+      apres();
+    });
   }
 
   function carte(a) {
@@ -91,7 +257,7 @@
       + '<a class="q-lien q-img" href="' + fiche + '"><img loading="lazy" src="' + esc(a.img) + '" alt="' + esc(a.nom) + '" onerror="this.parentNode.classList.add(\'q-noimg\')"></a>'
       + '<div class="q-body">'
       + '<div class="q-ref">Réf. ' + esc(a.ref) + '</div>'
-      + (a.marque ? '<div class="q-marque">' + esc(a.marque) + '</div>' : '')
+      + (fac(a).m ? '<div class="q-marque">' + esc(fac(a).m) + '</div>' : '')
       + '<a class="q-lien" href="' + fiche + '"><h3 class="q-nom">' + esc(a.nom) + '</h3></a>'
       + badgeStock(a.ref)
       + (a.devis
@@ -120,6 +286,7 @@
       || '<p class="q-vide">Aucun article ne correspond. Élargissez la recherche ou <a href="/pages/devis.html">demandez un devis</a>.</p>';
     $('q-compte').textContent = res.length.toLocaleString('fr-FR') + ' article' + (res.length > 1 ? 's' : '');
     $('q-plus').style.display = res.length > etat.visibles ? '' : 'none';
+    rendreVolet(); rendreActifs(); syncUrl();
     var d = etat.stockMaj ? new Date(etat.stockMaj * 1000) : null;
     $('q-stock-maj').textContent = d
       ? 'Disponibilités vérifiées chez le fournisseur — dernière synchronisation le '
@@ -302,6 +469,7 @@
 
   function majRayons() {
     document.querySelectorAll('#q-rayons button').forEach(function (b) {
+      if (b.dataset.marque) { b.classList.toggle('actif', Object.keys(etat.f.m).length === 1 && !!etat.f.m[b.dataset.marque]); return; }
       b.classList.toggle('actif', b.dataset.rayon === etat.cat);
     });
     document.querySelectorAll('#q-menu-rayons a').forEach(function (a) {
@@ -316,7 +484,9 @@
     var comptes = {};
     etat.catalogue.articles.forEach(function (a) { comptes[a.cat] = (comptes[a.cat] || 0) + 1; });
     var total = etat.catalogue.articles.length;
-    var chips = '<button type="button" data-rayon="">Tous les rayons</button>';
+    var nbDewalt = etat.catalogue.articles.filter(function (a) { return fac(a).m === 'DeWalt'; }).length;
+    var chips = (nbDewalt ? '<button type="button" class="q-onglet-dewalt" data-marque="DeWalt" title="Toute la gamme DeWalt">DeWalt <span>' + nbDewalt + '</span></button>' : '')
+      + '<button type="button" data-rayon="">Tous les rayons</button>';
     var menu = '<div class="q-menu-titre">Rayons</div>'
       + '<a href="#" data-rayon="">Tous les rayons <span class="nb">' + total.toLocaleString('fr-FR') + '</span></a>';
     etat.catalogue.categories.forEach(function (c) {
@@ -328,6 +498,12 @@
     $('q-rayons').innerHTML = chips;
     $('q-menu-rayons').innerHTML = menu;
     $('q-rayons').addEventListener('click', function (e) {
+      var d = e.target.closest('button[data-marque]');
+      if (d) { /* onglet de marque : bascule le filtre marque seul */
+        var m = d.dataset.marque, seul = Object.keys(etat.f.m).length === 1 && etat.f.m[m];
+        etat.f.m = {}; if (!seul) etat.f.m[m] = true;
+        etat.visibles = PAR_PAGE; rendre(); majRayons(); return;
+      }
       var b = e.target.closest('button[data-rayon]');
       if (b) choisirRayon(b.dataset.rayon);
     });
@@ -481,7 +657,7 @@
 
   /* ---------------- init ---------------- */
   function initEvenements() {
-    $('q-recherche').addEventListener('input', function () { etat.recherche = this.value; etat.visibles = PAR_PAGE; rendre(); });
+    $('q-recherche').addEventListener('input', function () { etat.recherche = this.value; majMots(); etat.visibles = PAR_PAGE; rendre(); });
     $('q-cat').addEventListener('change', function () { etat.cat = this.value; etat.visibles = PAR_PAGE; rendre(); majRayons(); });
     $('q-dispo').addEventListener('change', function () { etat.dispo = this.checked; etat.visibles = PAR_PAGE; rendre(); });
     $('q-tri').addEventListener('change', function () { etat.tri = this.value; rendre(); });
@@ -511,8 +687,10 @@
     fetch('/assets/data/quincaillerie-stock.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }),
     fetch('/assets/data/quincaillerie-liens.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
     fetch('/assets/data/quincaillerie-offre.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-    fetch('/assets/data/quincaillerie-paiement.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    fetch('/assets/data/quincaillerie-paiement.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+    fetch('/assets/data/quincaillerie-facettes.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
   ]).then(function (res) {
+    etat.facettes = res[5] || {};
     etat.catalogue = res[0];
     etat.offre = res[3];
     etat.paiement = res[4];
@@ -527,7 +705,8 @@
     if (catInitiale && etat.catalogue.categories.some(function (c) { return c.slug === catInitiale; })) {
       etat.cat = catInitiale; sel.value = catInitiale;
     }
-    charger(); initEvenements(); construireRayons(); afficherOffre(); rendre(); rendrePanier();
+    lireUrl(); /* ?q= &marque= &v= … : recherche et filtres repris de l'adresse */
+    charger(); initEvenements(); initVolet(); construireRayons(); afficherOffre(); rendre(); rendrePanier();
     traiterRetourPaiement();
     reconcilierPanierCompte();
     /* anciens liens #a=REF (modal) : chaque produit a désormais sa page */

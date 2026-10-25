@@ -186,7 +186,7 @@
 
     var cat = categorie(a.cat);
     $('qf-fil').innerHTML = '<a href="' + URL_BOUTIQUE + '">Boutique quincaillerie</a>'
-      + (cat ? ' › <a href="' + ADR.rayon(cat.slug) + '">' + esc(cat.nom) + '</a>' : '')
+      + (cat ? ' › <a href="' + URL_BOUTIQUE + '?cat=' + encodeURIComponent(cat.slug) + '">' + esc(cat.nom) + '</a>' : '')  /* boutique filtrée : recherche et filtres */
       + ' › <span>Réf. ' + esc(ref) + '</span>';
 
     var dispo = statutDe(ref) === 'disponible';

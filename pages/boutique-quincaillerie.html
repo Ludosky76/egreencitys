@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/quincaillerie.css?v=13">
+  <link rel="stylesheet" href="/assets/css/quincaillerie.css?v=14">
   <link rel="stylesheet" href="/assets/css/refonte.css?v=8">
   <script src="/assets/js/quincaillerie-theme.js?v=1"></script>
 </head>
@@ -96,7 +96,8 @@
   <nav class="q-rayons" id="q-rayons" aria-label="Rayons de la boutique"></nav>
 
   <div class="q-filtres">
-    <input type="search" id="q-recherche" placeholder="Rechercher : perforateur, Fluke, visserie…" aria-label="Rechercher un article">
+    <button type="button" id="q-volet-btn" aria-controls="q-volet" aria-expanded="true">⚙ Filtres<span id="q-volet-nb"></span></button>
+    <input type="search" id="q-recherche" placeholder="Rechercher : perceuse 18 V, foret béton, Fluke…" aria-label="Rechercher un article">
     <select id="q-cat" aria-label="Catégorie"><option value="">Toutes les catégories</option></select>
     <select id="q-tri" aria-label="Tri">
       <option value="pertinence">Tri : catalogue</option>
@@ -107,8 +108,16 @@
     <span id="q-compte"></span>
   </div>
 
-  <div id="q-grille"><p class="q-vide">Chargement du catalogue…</p></div>
-  <button type="button" id="q-plus">Afficher plus d'articles</button>
+  <!-- volet de filtres (masquable) + résultats -->
+  <div class="q-zone" id="q-zone">
+    <div id="q-volet-fond"></div>
+    <aside id="q-volet" aria-label="Filtres"></aside>
+    <div class="q-zone-droite">
+      <div id="q-actifs"></div>
+      <div id="q-grille"><p class="q-vide">Chargement du catalogue…</p></div>
+      <button type="button" id="q-plus">Afficher plus d'articles</button>
+    </div>
+  </div>
 
   <p class="q-mentions">* Prix tout compris : article + octroi de mer (TGOM) + transport métropole → Guyane au poids réel. Forfait d'expédition 21,12&nbsp;€ par commande, inclus dans le montant des paiements par carte. Sans TVA — art.&nbsp;294 du CGI. Les paiements par carte ne sont proposés que sur les articles en stock chez notre fournisseur à l'instant de la commande ; toute commande passée par formulaire est vérifiée article par article avant encaissement. Délais : article disponible livré sous <strong>7 jours ouvrés</strong> ; article non disponible : envoyez une <strong>demande</strong> depuis sa fiche — nous confirmons prix et délai avant toute commande, avec un suivi dans votre espace client. Voir les <a href="/pages/legal/cgv-quincaillerie.html">conditions de vente</a>.</p>
 
@@ -134,7 +143,7 @@
   </aside>
 
   <!-- RAYONS-SEO (généré par _tools/quinc_pages_seo.py) -->
-  <div class="q-rayons-seo" role="navigation" aria-label="Tous les rayons" style="max-width:1100px;margin:1.5rem auto;padding:0 1rem;font-size:.8rem;line-height:1.9;text-align:center"><strong>Rayons :</strong> <a href="/quincaillerie-pro/rayon/batiment.html">Bâtiment &amp; Gros œuvre</a> · <a href="/quincaillerie-pro/rayon/epi-securite.html">EPI &amp; Sécurité</a> · <a href="/quincaillerie-pro/rayon/mesure-tracage.html">Mesure &amp; Traçage</a> · <a href="/quincaillerie-pro/rayon/outillage-main.html">Outillage à main</a> · <a href="/quincaillerie-pro/rayon/peinture.html">Peinture &amp; Finition</a> · <a href="/quincaillerie-pro/rayon/plomberie.html">Plomberie</a> · <a href="/quincaillerie-pro/rayon/rangement.html">Rangement</a> · <a href="/quincaillerie-pro/rayon/sciage-coupe.html">Sciage &amp; Coupe</a> · <a href="/quincaillerie-pro/rayon/electricite.html">Électricité</a> · <a href="/quincaillerie-pro/rayon/electroportatif.html">Électroportatif</a></div>
+  <div class="q-rayons-seo" role="navigation" aria-label="Tous les rayons" style="max-width:1100px;margin:1.5rem auto;padding:0 1rem;font-size:.8rem;line-height:1.9;text-align:center"><strong>Rayons :</strong> <a href="/quincaillerie-pro/marque/dewalt.html"><strong>DeWalt</strong></a> · <a href="/quincaillerie-pro/rayon/batiment.html">Bâtiment &amp; Gros œuvre</a> · <a href="/quincaillerie-pro/rayon/epi-securite.html">EPI &amp; Sécurité</a> · <a href="/quincaillerie-pro/rayon/mesure-tracage.html">Mesure &amp; Traçage</a> · <a href="/quincaillerie-pro/rayon/outillage-main.html">Outillage à main</a> · <a href="/quincaillerie-pro/rayon/peinture.html">Peinture &amp; Finition</a> · <a href="/quincaillerie-pro/rayon/plomberie.html">Plomberie</a> · <a href="/quincaillerie-pro/rayon/rangement.html">Rangement</a> · <a href="/quincaillerie-pro/rayon/sciage-coupe.html">Sciage &amp; Coupe</a> · <a href="/quincaillerie-pro/rayon/electricite.html">Électricité</a> · <a href="/quincaillerie-pro/rayon/electroportatif.html">Électroportatif</a></div>
   <!-- /RAYONS-SEO -->
   <footer>
     <p>© 2026 EGREENCITY'S — SAS · RCS Cayenne 878 682 954 · 97355 MACOURIA, Guyane française</p>
@@ -148,7 +157,7 @@
   <script src="/assets/js/quincaillerie-compte.js?v=2"></script>
   <script src="/assets/js/site-config.js?v=3" defer></script>
   <script src="/assets/js/quincaillerie-url.js?v=1" defer></script>
-  <script src="/assets/js/quincaillerie-shop.js?v=14" defer></script>
+  <script src="/assets/js/quincaillerie-shop.js?v=15" defer></script>
   <script src="/assets/js/mobile-nav.js?v=9" defer></script>
 <script src="/assets/js/protection.js?v=1" defer></script>
   <script src="/assets/js/analytics.js?v=2" defer></script>

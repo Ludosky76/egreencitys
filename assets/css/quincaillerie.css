@@ -313,3 +313,42 @@ html[data-theme="dark"] .q-sugg-prix{color:#DCE4FF;}
   color:#04210a;background:linear-gradient(90deg,#9fe870,#6BDA1E);box-shadow:0 8px 24px rgba(51,204,0,.25);}
 .q-offre strong{font-weight:800;}
 @media (max-width:700px){.q-offre{margin:.7rem 1rem 0;font-size:.8rem;}}
+
+/* ---- volet de filtres (masquable) + onglet DeWalt ---- */
+#q-volet-btn{flex:none;padding:.6rem 1rem;border:1.5px solid var(--blue);border-radius:10px;background:var(--surface);color:var(--blue);font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;}
+#q-volet-btn[aria-expanded="true"]{background:var(--blue);color:#fff;}
+.q-zone{max-width:var(--largeur);margin:0 auto;padding:0 1rem;display:grid;grid-template-columns:260px minmax(0,1fr);gap:1rem;align-items:start;}
+.q-zone.sans-volet{grid-template-columns:minmax(0,1fr);}
+.q-zone.sans-volet #q-volet{display:none;}
+.q-zone #q-grille{max-width:none;padding:.4rem 0 1rem;}
+#q-volet{position:sticky;top:128px;max-height:calc(100vh - 140px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:.8rem .9rem;font-size:.82rem;}
+#q-volet-fond{display:none;}
+.qv-tete{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;}
+.qv-tete strong{flex:1;font-size:.95rem;}
+.qv-effacer,.qv-plus{background:none;border:0;color:var(--blue);font:inherit;font-size:.76rem;font-weight:700;cursor:pointer;padding:.2rem 0;}
+.qv-fermer{background:none;border:0;font-size:1.3rem;line-height:1;cursor:pointer;color:var(--muted);}
+.qv-groupe{border:0;border-top:1px solid var(--line);margin:0;padding:.6rem 0 .4rem;}
+.qv-groupe legend{font-weight:800;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:0;margin-bottom:.3rem;}
+.qv-option{display:flex;align-items:center;gap:.45rem;padding:.18rem 0;cursor:pointer;}
+.qv-option span{flex:1;}
+.qv-option em{font-style:normal;color:var(--muted);font-size:.74rem;}
+.qv-prix{display:flex;align-items:center;gap:.4rem;}
+.qv-prix input{width:100%;min-width:0;padding:.45rem .55rem;border:1.5px solid var(--line);border-radius:8px;font:inherit;background:var(--surface);color:var(--text);}
+.qv-puces{display:flex;flex-wrap:wrap;gap:.4rem;margin:.2rem 0 .6rem;}
+.qv-puce{border:1.5px solid var(--blue);background:var(--surface);color:var(--blue);border-radius:50px;padding:.28rem .75rem;font:inherit;font-size:.76rem;font-weight:700;cursor:pointer;}
+.qv-puce.qv-tout{border-color:var(--line);color:var(--muted);}
+.q-rayons .q-onglet-dewalt{background:#FEBD17;border-color:#1A1A1A;color:#1A1A1A;}
+.q-rayons .q-onglet-dewalt span{font-weight:600;opacity:.75;margin-left:.25rem;}
+.q-rayons .q-onglet-dewalt.actif{background:#1A1A1A;color:#FEBD17;border-color:#1A1A1A;}
+.q-bandeau-dewalt{margin:.2rem 0 .7rem;padding:.65rem .9rem;border-radius:12px;background:#FFF4D1;border-left:6px solid #FEBD17;color:#1A1A1A;font-size:.84rem;line-height:1.5;}
+.q-bandeau-dewalt a{color:#1A1A1A;font-weight:700;}
+html[data-theme="dark"] .q-bandeau-dewalt{background:#2A2410;color:#F6E7B5;}
+html[data-theme="dark"] .q-bandeau-dewalt a{color:#FEBD17;}
+html[data-theme="dark"] #q-volet-btn{color:#9DB9F7;border-color:#3E4C8F;}
+html[data-theme="dark"] #q-volet-btn[aria-expanded="true"]{background:#2A39C0;color:#fff;}
+@media (max-width:900px){
+  .q-zone{grid-template-columns:minmax(0,1fr);}
+  #q-volet{position:fixed;top:0;left:0;bottom:0;width:min(320px,88vw);max-height:none;border-radius:0 16px 16px 0;z-index:1300;transform:translateX(-105%);transition:transform .2s;box-shadow:0 0 40px rgba(0,0,0,.25);}
+  .q-zone.volet-mobile #q-volet{transform:none;}
+  .q-zone.volet-mobile #q-volet-fond{display:block;position:fixed;inset:0;background:rgba(10,15,40,.45);z-index:1299;}
+}
