@@ -357,3 +357,23 @@ html[data-theme="dark"] #q-volet-btn[aria-expanded="true"]{background:#2A39C0;co
 .q-sugg-pour{font-size:.64rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .qf-compat h2{display:flex;align-items:center;gap:.5rem;}
 .qf-compat .q-add{margin-top:.5rem;width:100%;}
+
+/* ---- promo du moment (pack, piloté par assets/data/quincaillerie-promo.json) ---- */
+.q-promo{max-width:var(--largeur,1400px);margin:1rem auto 0;padding:1.1rem 1.2rem 1.2rem;border-radius:18px;
+  background:linear-gradient(135deg,#14206B 0%,#0E1A4F 60%,#0B3A12 100%);color:#fff;box-shadow:0 12px 32px rgba(10,20,80,.28);}
+.q-promo-tete h2{margin:.45rem 0 .15rem;font-size:1.45rem;line-height:1.15;color:#fff;}
+.q-promo-tete p{margin:0;color:#C8D4FF;font-size:.9rem;font-weight:600;}
+.q-promo-et{display:inline-block;padding:.28rem .8rem;border-radius:50px;background:#FFC457;color:#2A1600;font-size:.72rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase;}
+.q-promo-grille{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.6rem;margin-top:.9rem;}
+.q-promo-art{display:flex;flex-direction:column;gap:.35rem;text-decoration:none;color:#fff;font-size:.78rem;font-weight:700;line-height:1.25;text-align:center;}
+.q-promo-img{display:flex;align-items:center;justify-content:center;aspect-ratio:1;border-radius:12px;background:#fff;padding:.4rem;}
+.q-promo-img img{max-width:100%;max-height:100%;object-fit:contain;}
+.q-promo-art:hover .q-promo-img{outline:3px solid #9FE870;}
+.q-promo-pied{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:1rem;padding-top:.9rem;border-top:1px solid rgba(255,255,255,.18);}
+.q-promo-prix{font-size:2.2rem;font-weight:900;letter-spacing:-.02em;line-height:1;color:#fff;}
+.q-promo-inclus{margin-top:.3rem;font-size:.8rem;color:#C8F7A8;max-width:46rem;line-height:1.45;}
+.q-promo-inclus strong{color:#fff;}
+.q-promo-btn{flex:none;padding:.8rem 1.4rem;border:none;border-radius:12px;background:#33CC00;color:#04210A;font:inherit;font-size:.95rem;font-weight:800;cursor:pointer;}
+.q-promo-btn:hover{background:#2DB300;}
+@media (max-width:900px){.q-promo-grille{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media (max-width:700px){.q-promo{margin:.8rem 1rem 0;padding:1rem;}.q-promo-tete h2{font-size:1.2rem;}.q-promo-prix{font-size:1.8rem;}.q-promo-btn{width:100%;}}

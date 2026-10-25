@@ -421,6 +421,49 @@
     avant.parentNode.insertBefore(d, avant);
   }
 
+  /* ---------------- promo du moment (assets/data/quincaillerie-promo.json) ----------------
+     Un pack d'articles présenté en un seul prix : la SOMME des prix en vigueur (aucune remise
+     affichée), forfait d'expédition offert si l'offre de lancement s'applique. Le bouton met les
+     articles au panier, qui se paie comme d'habitude. Bloc masqué si un article est indisponible. */
+  function promoArticles() {
+    var p = etat.promo, t = Date.now();
+    if (!(p && p.actif && t >= Date.parse(p.debut) && t <= Date.parse(p.fin))) return null;
+    var L = (p.articles || []).map(function (x) { return { a: article(x.ref), nom: x.nom }; });
+    var ok = L.length && L.every(function (x) {
+      var s = (etat.stock[x.a && x.a.ref] || {}).s;
+      return x.a && !x.a.devis && s !== 'rupture' && s !== 'introuvable';
+    });
+    return ok ? L : null;
+  }
+  function afficherPromo() {
+    var L = promoArticles();
+    if (!L || $('q-promo')) return;
+    var total = L.reduce(function (s, x) { return s + x.a.prix; }, 0);
+    var offert = forfaitOffert(total);
+    var d = document.createElement('section');
+    d.id = 'q-promo'; d.className = 'q-promo'; d.setAttribute('aria-label', etat.promo.etiquette);
+    d.innerHTML = '<div class="q-promo-tete"><span class="q-promo-et">' + esc(etat.promo.etiquette) + '</span>'
+      + '<h2>' + esc(etat.promo.titre) + '</h2><p>' + esc(etat.promo.sous_titre) + '</p></div>'
+      + '<div class="q-promo-grille">' + L.map(function (x) {
+          return '<a class="q-promo-art" href="' + esc(ADR.fiche(x.a)) + '"><span class="q-promo-img"><img src="' + esc(x.a.img)
+            + '" alt="" loading="lazy"></span><span>' + esc(x.nom) + '</span></a>';
+        }).join('') + '</div>'
+      + '<div class="q-promo-pied"><div><div class="q-promo-prix">' + eur(total) + '</div>'
+      + '<div class="q-promo-inclus">le pack complet · livré chez vous en Guyane · octroi de mer compris'
+      + (offert ? ' · <strong>forfait d’expédition offert</strong> (offre de lancement jusqu’au ' + esc(etat.offre.fin_texte) + ')'
+                : ' · + forfait d’expédition ' + eur(etat.catalogue.forfait_expedition) + ' par commande') + '</div></div>'
+      + '<button type="button" class="q-promo-btn" id="q-promo-btn">🛒 Ajouter le pack au panier</button></div>';
+    var avant = $('q-rayons');
+    avant.parentNode.insertBefore(d, avant);
+    $('q-promo-btn').addEventListener('click', function () {
+      L.forEach(function (x) {
+        if (!etat.panier.some(function (l) { return l.ref === x.a.ref; })) etat.panier.push({ ref: x.a.ref, q: 1 });
+      });
+      sauver(); majPastille(); rendrePanier();
+      $('q-tiroir').classList.add('ouvert');
+    });
+  }
+
   /* ---------------- paniers groupés : un seul forfait par commande ----------------
      Le forfait d'expédition est dû une fois par colis : l'afficher comme une économie
      dès le 2e article, et proposer des accessoires compatibles disponibles. */
@@ -706,8 +749,10 @@
     fetch('/assets/data/quincaillerie-offre.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
     fetch('/assets/data/quincaillerie-paiement.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
     fetch('/assets/data/quincaillerie-facettes.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
-    fetch('/assets/data/quincaillerie-compat.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
+    fetch('/assets/data/quincaillerie-compat.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
+    fetch('/assets/data/quincaillerie-promo.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
   ]).then(function (res) {
+    etat.promo = res[7];
     etat.facettes = res[5] || {};
     etat.compat = res[6] || {};
     etat.catalogue = res[0];
@@ -725,7 +770,7 @@
       etat.cat = catInitiale; sel.value = catInitiale;
     }
     lireUrl(); /* ?q= &marque= &v= … : recherche et filtres repris de l'adresse */
-    charger(); initEvenements(); initVolet(); construireRayons(); afficherOffre(); rendre(); rendrePanier();
+    charger(); initEvenements(); initVolet(); construireRayons(); afficherOffre(); afficherPromo(); rendre(); rendrePanier();
     traiterRetourPaiement();
     reconcilierPanierCompte();
     /* anciens liens #a=REF (modal) : chaque produit a désormais sa page */
