@@ -1,8 +1,11 @@
 /* ==========================================================================
    EGREENCITY'S — PRO QUINCAILLERIE — fiche produit (page dédiée)
    ==========================================================================
-   Chaque produit a sa propre page web :
-     /pages/produit-quincaillerie.html?ref=REF
+   Chaque produit a sa propre page web, statique (générée pour Google par
+   _tools/quinc_pages_seo.py, <body data-ref="REF">) :
+     /quincaillerie-pro/produit/<nom>-<ref>.html
+   L'ancienne adresse /pages/produit-quincaillerie.html?ref=REF y renvoie
+   (paramètres utm conservés).
    Données : mêmes fichiers que la boutique (catalogue, stock horaire, liens
    CB, tranches de fiches détaillées). Le panier est partagé avec la boutique
    via localStorage : « Ajouter au panier » renvoie au catalogue, tiroir
@@ -13,7 +16,11 @@
 
   var CLE_PANIER = 'egc_quinc_panier';
   var URL_BOUTIQUE = '/pages/boutique-quincaillerie.html';
-  var URL_FICHE = '/pages/produit-quincaillerie.html?ref=';
+  /* quincaillerie-url.js ; repli sur les anciennes adresses si une page en cache ne l'a pas chargé */
+  var ADR = window.EGCQUrl || {
+    fiche: function (a) { return '/pages/produit-quincaillerie.html?ref=' + encodeURIComponent(a.ref); },
+    rayon: function (s) { return '/pages/boutique-quincaillerie.html?cat=' + encodeURIComponent(s); }
+  };
 
   var etat = { catalogue: null, stock: {}, liens: {} };
 
@@ -145,7 +152,18 @@
     $('q-menu-rayons').innerHTML = html;
   }
 
+  /* marques mal saisies chez le fournisseur : même table que ALIAS_MARQUES dans _tools/quinc_pages_seo.py */
+  var MARQUES = { 'FatMax': 'Stanley FatMax', 'LOutil Parfait': 'L\'Outil Parfait', 'Triton Electrical': 'Triton', 'Triton Power Tools': 'Triton' };
+  function marqueDe(a) {
+    var m = String(a.marque || '').trim();
+    return /^(sans marque)?$/i.test(m) ? '' : (MARQUES[m] || m);
+  }
+  /* caractéristiques propres au fournisseur, sans objet ici (SPRINT 60 min, retrait comptoir…) */
+  var CAR_EXCLUES = /^(contact fabricant|adresse du fabr|nom du fabricant|livraison sprint|options de retrait)/i;
+
   function rendreIntrouvable() {
+    var rob = document.querySelector('meta[name="robots"]');
+    if (rob) rob.setAttribute('content', 'noindex, follow');
     $('qf-haut').innerHTML = '<p class="q-vide" style="grid-column:1/-1;">Article introuvable dans le catalogue.<br><a href="'
       + URL_BOUTIQUE + '">← Retour au catalogue</a></p>';
   }
@@ -154,16 +172,21 @@
     var a = etat.catalogue.articles.find(function (x) { return x.ref === ref; });
     if (!a) { rendreIntrouvable(); return; }
 
-    var prixTexte = a.devis ? 'prix sur devis (colis de plus de 30 kg)' : eur(a.prix) + ' tout compris';
-    document.title = a.nom + ' — ' + (a.devis ? 'prix sur devis' : eur(a.prix) + ' tout compris') + ' | EGREENCITY\'S PRO QUINCAILLERIE';
-    var meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute('content', a.nom + ' — ' + prixTexte + (a.devis ? '' : ' (octroi de mer et transport inclus)') + ', livré en Guyane. Réf. ' + ref + '.');
-    var canon = document.querySelector('link[rel="canonical"]');
-    if (canon) canon.setAttribute('href', 'https://egreencitys.com' + URL_FICHE + encodeURIComponent(ref));
+    /* page statique : titre, description et canonique sont déjà justes (générés) — on n'y touche pas */
+    if (!pageStatique) {
+      document.title = a.nom + ' — ' + (a.devis ? 'sur devis' : eur(a.prix)) + ' | EGREENCITY\'S PRO QUINCAILLERIE';
+      var meta = document.querySelector('meta[name="description"]');
+      if (meta) meta.setAttribute('content', a.nom + ' : ' + (a.devis ? 'prix sur devis (colis de plus de 30 kg)'
+        : eur(a.prix) + ' octroi de mer et transport inclus, + forfait d’expédition unique de ' + eur(etat.catalogue.forfait_expedition) + ' par commande')
+        + '. Livré en Guyane. Réf. ' + ref + '.');
+      var canon = document.querySelector('link[rel="canonical"]');
+      if (canon) canon.setAttribute('href', 'https://egreencitys.com' + ADR.fiche(a));
+    }
+    var mq = marqueDe(a);
 
     var cat = categorie(a.cat);
     $('qf-fil').innerHTML = '<a href="' + URL_BOUTIQUE + '">Boutique quincaillerie</a>'
-      + (cat ? ' › <a href="' + URL_BOUTIQUE + '?cat=' + encodeURIComponent(cat.slug) + '">' + esc(cat.nom) + '</a>' : '')
+      + (cat ? ' › <a href="' + ADR.rayon(cat.slug) + '">' + esc(cat.nom) + '</a>' : '')
       + ' › <span>Réf. ' + esc(ref) + '</span>';
 
     var dispo = statutDe(ref) === 'disponible';
@@ -171,7 +194,7 @@
     $('qf-haut').innerHTML = ''
       + '<div class="qf-image' + (a.img ? '' : ' q-noimg') + '"><img src="' + esc(a.img) + '" alt="' + esc(a.nom) + '" onerror="this.parentNode.classList.add(\'q-noimg\')"></div>'
       + '<div class="qf-infos">'
-      +   (a.marque ? '<div class="q-marque">' + esc(a.marque) + '</div>' : '')
+      +   (mq ? '<div class="q-marque">' + esc(mq) + '</div>' : '')
       +   '<h1>' + esc(a.nom) + '</h1>'
       +   '<div class="q-ref">Réf. ' + esc(ref) + (a.poids ? ' · ' + a.poids.toLocaleString('fr-FR') + ' kg' : '') + (cat ? ' · ' + esc(cat.nom) : '') + '</div>'
       +   badgeStock(ref)
@@ -206,15 +229,26 @@
       +   '</ul>'
       + '</div>';
 
+    /* page statique : description, caractéristiques et « même rayon » sont déjà dans la page ;
+       on ajoute seulement la disponibilité en direct sur les cartes du même rayon */
+    if (pageStatique) {
+      Array.prototype.forEach.call(document.querySelectorAll('#qf-meme-liste .q-card[data-ref]'), function (c) {
+        var nom = c.querySelector('.q-nom');
+        if (nom && !c.querySelector('.qs')) nom.parentNode.insertAdjacentHTML('afterend', badgeStock(c.getAttribute('data-ref')));
+      });
+      return;
+    }
+
     /* description + caractéristiques */
     chargerTranche(ref).then(function (tranche) {
       var f = tranche[ref] || {};
       var html = '';
       var d = f.d || a.desc;
       if (d) html += '<h2>Description</h2><p>' + esc(d).replace(/\n+/g, '</p><p>') + '</p>';
-      if (f.c && f.c.length) {
+      var car = (f.c || []).filter(function (x) { return !CAR_EXCLUES.test(x); });
+      if (car.length) {
         html += '<h2>Caractéristiques</h2><ul>'
-          + f.c.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
+          + car.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
       }
       if (html) {
         $('qf-detail-boite').innerHTML = html;
@@ -230,11 +264,11 @@
     memes = memes.slice(0, 4);
     if (memes.length) {
       $('qf-meme-liste').innerHTML = memes.map(function (m) {
-        var fiche = URL_FICHE + encodeURIComponent(m.ref);
+        var fiche = ADR.fiche(m);
         return '<article class="q-card">'
           + '<a class="q-lien q-img" href="' + fiche + '"><img loading="lazy" src="' + esc(m.img) + '" alt="' + esc(m.nom) + '" onerror="this.parentNode.classList.add(\'q-noimg\')"></a>'
           + '<div class="q-body">'
-          + (m.marque ? '<div class="q-marque">' + esc(m.marque) + '</div>' : '')
+          + (marqueDe(m) ? '<div class="q-marque">' + esc(marqueDe(m)) + '</div>' : '')
           + '<a class="q-lien" href="' + fiche + '"><h3 class="q-nom">' + esc(m.nom) + '</h3></a>'
           + badgeStock(m.ref)
           + '<div class="q-prix">' + eur(m.prix) + '<span class="q-ttc">TTC</span></div>'
@@ -282,14 +316,32 @@
     });
   }
 
-  var ref = new URLSearchParams(location.search).get('ref') || '';
+  var refParam = new URLSearchParams(location.search).get('ref');
+  var pageStatique = document.body.getAttribute('data-ref');
+  var ref = pageStatique || refParam || '';
+
+  var catalogue = fetch('/assets/data/quincaillerie-catalogue.json').then(function (r) { return r.json(); });
+  /* ancienne adresse ?ref= : départ vers la page statique dès l'arrivée du catalogue (sans attendre
+     stock, liens ni offre), en gardant utm et ancre */
+  var redirection = false;
+  if (!pageStatique && refParam && window.EGCQUrl) {
+    catalogue.then(function (c) {
+      var art = c.articles.find(function (x) { return x.ref === refParam; });
+      if (!art) return;
+      redirection = true;
+      var p = new URLSearchParams(location.search); p.delete('ref');
+      var q = p.toString();
+      location.replace(ADR.fiche(art) + (q ? '?' + q : '') + location.hash);
+    }).catch(function () {});
+  }
 
   Promise.all([
-    fetch('/assets/data/quincaillerie-catalogue.json').then(function (r) { return r.json(); }),
-    fetch('/assets/data/quincaillerie-stock.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }),
+    catalogue,
+    fetch('/assets/data/quincaillerie-stock.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return { stock: {} }; }),
     fetch('/assets/data/quincaillerie-liens.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
     fetch('/assets/data/quincaillerie-offre.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
   ]).then(function (res) {
+    if (redirection) return;
     etat.catalogue = res[0];
     etat.offre = res[3];
     etat.stock = res[1].stock || {};
@@ -303,6 +355,12 @@
       });
     }
   }).catch(function () {
+    /* page statique : la fiche reste lisible, seule la disponibilité en direct manque */
+    if (pageStatique) {
+      var b = document.querySelector('.qf-boutons');
+      if (b) b.insertAdjacentHTML('beforeend', '<p class="qf-astuce">Disponibilité en direct momentanément indisponible : rafraîchissez la page.</p>');
+      return;
+    }
     $('qf-haut').innerHTML = '<p class="q-vide" style="grid-column:1/-1;">La fiche ne se charge pas. Rafraîchissez la page ou contactez-nous : egreencitys@gmail.com</p>';
   });
 })();

@@ -20,8 +20,11 @@
 
   var PAR_PAGE = 24;
   var CLE_PANIER = 'egc_quinc_panier';
-  /* Chaque produit a sa propre page web (fiche) : */
-  var URL_FICHE = '/pages/produit-quincaillerie.html?ref=';
+  /* Chaque produit a sa propre page web statique (quincaillerie-url.js) */
+  var ADR = window.EGCQUrl || { /* repli si une page en cache n'a pas chargé quincaillerie-url.js */
+    fiche: function (a) { return '/pages/produit-quincaillerie.html?ref=' + encodeURIComponent(a.ref); },
+    rayon: function (s) { return '/pages/boutique-quincaillerie.html?cat=' + encodeURIComponent(s); }
+  };
 
   var etat = {
     catalogue: null, stock: {}, stockMaj: 0, liens: {},
@@ -83,7 +86,7 @@
   function carte(a) {
     var dispo = statutDe(a.ref) === 'disponible';
     var lien = etat.liens[a.ref];
-    var fiche = URL_FICHE + encodeURIComponent(a.ref);
+    var fiche = ADR.fiche(a);
     return '<article class="q-card" data-ref="' + esc(a.ref) + '">'
       + '<a class="q-lien q-img" href="' + fiche + '"><img loading="lazy" src="' + esc(a.img) + '" alt="' + esc(a.nom) + '" onerror="this.parentNode.classList.add(\'q-noimg\')"></a>'
       + '<div class="q-body">'
@@ -281,7 +284,7 @@
     if (s.length) {
       html += '<div class="q-sugg"><div class="q-sugg-titre">À glisser dans le même colis</div>' + s.map(function (a) {
         return '<div class="q-sugg-ligne"><img src="' + esc(a.img) + '" alt="" loading="lazy">'
-          + '<a class="q-sugg-nom" href="' + URL_FICHE + encodeURIComponent(a.ref) + '">' + esc(a.nom) + '</a>'
+          + '<a class="q-sugg-nom" href="' + ADR.fiche(a) + '">' + esc(a.nom) + '</a>'
           + '<span class="q-sugg-prix">' + eur(a.prix) + '</span>'
           + '<button type="button" class="q-sugg-add" data-add="' + esc(a.ref) + '" aria-label="Ajouter ' + esc(a.nom) + ' au panier">+</button></div>';
       }).join('') + '</div>';
@@ -530,7 +533,7 @@
     /* anciens liens #a=REF (modal) : chaque produit a désormais sa page */
     if (location.hash.indexOf('#a=') === 0) {
       var refInitiale = decodeURIComponent(location.hash.slice(3));
-      if (article(refInitiale)) { location.replace(URL_FICHE + encodeURIComponent(refInitiale)); return; }
+      if (article(refInitiale)) { location.replace(ADR.fiche(article(refInitiale))); return; }
     }
     /* retour depuis une fiche produit : #panier rouvre le tiroir */
     if (location.hash === '#panier') {

@@ -98,3 +98,4 @@ User-agent: MistralAI-User
 Disallow: /
 
 Sitemap: https://egreencitys.com/sitemap.xml
+Sitemap: https://egreencitys.com/sitemap-quincaillerie.xml

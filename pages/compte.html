@@ -453,6 +453,7 @@
   <p><a href="mailto:egreencitys@gmail.com">egreencitys@gmail.com</a> · +33 6 51 14 11 18 · <a href="/pages/legal/mentions-legales.html">Mentions légales</a> · <a href="/pages/legal/cgv.html">CGV</a></p>
 </footer>
 
+<script src="/assets/js/quincaillerie-url.js?v=1"></script>
 <script src="/assets/js/customer-account.js?v=2"></script>
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/firebase-auth.js?v=1"></script>
@@ -862,7 +863,7 @@ function loadAlertes(tentatives) {
         + '<div class="order">'
         +   '<div class="info" style="width:100%;">'
         +     '<div class="id">Réf. ' + escD(ref) + '</div>'
-        +     '<div class="items"><a href="/pages/produit-quincaillerie.html?ref=' + encodeURIComponent(ref) + '" style="color:var(--green-dark);font-weight:600;">'
+        +     '<div class="items"><a href="' + (a && window.EGCQUrl ? window.EGCQUrl.fiche(a) : '/pages/produit-quincaillerie.html?ref=' + encodeURIComponent(ref)) + '" style="color:var(--green-dark);font-weight:600;">'
         +       escD(a ? a.nom : 'Article ' + ref) + '</a></div>'
         +     '<span class="status" style="' + (dispo ? 'background:#e4f6db;color:#17631a;' : '') + '">'
         +       (dispo ? '✅ De retour en stock — commandez vite !' : '⏳ toujours indisponible') + '</span>'
