@@ -188,7 +188,7 @@
     if (!pageStatique) {
       document.title = a.nom + ' — ' + (a.devis ? 'sur devis' : eur(a.prix)) + ' | EGREENCITY\'S PRO QUINCAILLERIE';
       var meta = document.querySelector('meta[name="description"]');
-      if (meta) meta.setAttribute('content', a.nom + ' : ' + (a.devis ? 'prix sur devis (colis de plus de 30 kg)'
+      if (meta) meta.setAttribute('content', a.nom + ' : ' + (a.devis ? 'prix sur devis (colis de plus de 30 kg ou hors format)'
         : eur(a.prix) + ' octroi de mer et transport inclus, + forfait d’expédition unique de ' + eur(etat.catalogue.forfait_expedition) + ' par commande')
         + '. Livré en Guyane. Réf. ' + ref + '.');
       var canon = document.querySelector('link[rel="canonical"]');
@@ -213,14 +213,14 @@
       +   '<div class="qf-prixbloc">'
       +     (a.devis
       ?       '<div class="qf-prix q-prix-devis">Prix sur devis</div>'
-      +       '<div class="q-inclus">Colis de plus de 30&nbsp;kg : nous chiffrons un acheminement adapté (fret), octroi de mer compris</div>'
+      +       '<div class="q-inclus">Colis de plus de 30&nbsp;kg ou hors format : nous chiffrons un acheminement adapté (fret), octroi de mer compris</div>'
       +       '<div class="qf-livraison"><strong>Délai confirmé avec le devis</strong> · livré à domicile partout en Guyane</div>'
       :       '<div class="qf-prix">' + eur(a.prix) + '<span class="q-ttc">TTC</span></div>'
       +       '<div class="q-inclus">Octroi de mer &amp; transport vers la Guyane inclus*</div>'
       +       '<div class="qf-livraison"><strong>' + delaiTexte(ref, a) + '</strong> · livré à domicile partout en Guyane</div>')
       +     '<div class="qf-boutons">'
       +     (a.devis
-      ?       '<a class="q-pay" href="' + urlDemande(ref) + '">📦 Demander un devis<span class="q-pay-sub">article de plus de 30 kg — réponse sous 24 h ouvrées, suivi dans votre espace client</span></a>'
+      ?       '<a class="q-pay" href="' + urlDemande(ref) + '">📦 Demander un devis<span class="q-pay-sub">article de plus de 30 kg ou hors format — réponse sous 24 h ouvrées, suivi dans votre espace client</span></a>'
       :     dispo
       ?       '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>'
       +       (lien ? (forfaitOffert(a.prix)
