@@ -334,6 +334,99 @@
      "nom": "Pince universelle 200 mm"
     }
    ]
+  },
+  {
+   "etiquette": "Pack électricien",
+   "titre": "Pack électricien isolé 1 000 V",
+   "sous_titre": "Tournevis et pinces isolés VDE + testeur de tension",
+   "articles": [
+    {
+     "ref": "271LF",
+     "nom": "7 tournevis isolés VDE Tri-Lobe"
+    },
+    {
+     "ref": "93793",
+     "nom": "Pince universelle VDE 185 mm"
+    },
+    {
+     "ref": "67857",
+     "nom": "Pince coupante VDE 160 mm"
+    },
+    {
+     "ref": "161EH",
+     "nom": "Pince à dénuder VDE 160 mm"
+    },
+    {
+     "ref": "355YN",
+     "nom": "Tournevis électricien isolé 1 000 V"
+    },
+    {
+     "ref": "159YM",
+     "nom": "Testeur de tension 400 V"
+    }
+   ]
+  },
+  {
+   "etiquette": "Pack serrage",
+   "titre": "Pack clés & serrage",
+   "sous_titre": "Clés mixtes, clé à molette, clés mâles, cliquet, multiprise et tournevis",
+   "articles": [
+    {
+     "ref": "825YM",
+     "nom": "Jeu de 8 clés mixtes"
+    },
+    {
+     "ref": "65176",
+     "nom": "Clé à molette 250 mm"
+    },
+    {
+     "ref": "471YM",
+     "nom": "9 clés mâles longues"
+    },
+    {
+     "ref": "504KY",
+     "nom": "Clé à cliquet 4-en-1"
+    },
+    {
+     "ref": "9144X",
+     "nom": "Pince multiprise Cobra 250 mm"
+    },
+    {
+     "ref": "413YM",
+     "nom": "Jeu de 5 tournevis"
+    }
+   ]
+  },
+  {
+   "etiquette": "Petit prix",
+   "titre": "Pack outillage à main petit prix",
+   "sous_titre": "L'essentiel du chantier : vissage, serrage, frappe et traçage",
+   "articles": [
+    {
+     "ref": "265XH",
+     "nom": "Assortiment de 12 tournevis"
+    },
+    {
+     "ref": "7362V",
+     "nom": "3 pinces"
+    },
+    {
+     "ref": "582XH",
+     "nom": "Clé à molette 210 mm"
+    },
+    {
+     "ref": "8113V",
+     "nom": "9 clés hexagonales"
+    },
+    {
+     "ref": "2472V",
+     "nom": "Maillet caoutchouc 16 oz"
+    },
+    {
+     "ref": "856PR",
+     "nom": "Cordeau à tracer 30 m"
+    }
+   ]
   }
  ],
  "brouillons": []
