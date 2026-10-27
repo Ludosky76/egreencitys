@@ -106,7 +106,8 @@
         var stock = r[2].stock || {};
         if (!pack) { $('titre').textContent = 'Offre terminée'; $('dispo').textContent = 'Ce carton n’est plus proposé.'; return; }
         var L = pack.articles.map(function (x) { return { a: cat[x.ref], nom: x.nom, ref: x.ref }; });
-        var manquants = L.filter(function (x) { return !x.a || x.a.devis || (stock[x.ref] || {}).s !== 'disponible'; });
+        var manquants = L.filter(function (x) { var s = (stock[x.ref] || {}).s; return !x.a || x.a.devis || (s !== 'disponible' && s !== 'faible'); });
+        var limites = L.filter(function (x) { return x.a && (stock[x.ref] || {}).s === 'faible'; });
         var total = L.reduce(function (s, x) { return s + (x.a ? x.a.prix : 0); }, 0);
         document.title = pack.titre + ' — Promo | EGREENCITY’S Pro Quincaillerie';
         $('titre').textContent = pack.titre;
@@ -128,7 +129,7 @@
           $('dispo').textContent = '⚠ ' + manquants.length + ' article(s) momentanément indisponible(s) : le carton ne peut pas être commandé pour l’instant.';
           return;
         }
-        $('dispo').textContent = '✓ Tous les articles sont disponibles';
+        $('dispo').textContent = limites.length ? '✓ Disponible — stock limité sur ' + limites.length + ' article(s) : nous confirmons la disponibilité sous 24 h ouvrées avant tout encaissement' : '✓ Tous les articles sont disponibles';
         $('ajout').disabled = false;
         $('ajout').addEventListener('click', function () {
           var p = lire().filter(function (l) { return l.pack !== ID; });
