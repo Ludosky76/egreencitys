@@ -436,7 +436,7 @@
    "test": true,
    "etiquette": "Promo",
    "titre": "Carton chantier DeWalt",
-   "sous_titre": "Le sac à outils ToughSystem 2.0 garni : 19 outils et accessoires DeWalt pour visser, agrafer, couper, percer et tracer",
+   "sous_titre": "Le sac à outils ToughSystem 2.0 garni : meuleuse 125 mm et son disque, pinces, embouts et tournevis DeWalt",
    "colis": "1 carton 40 x 30 x 30 cm, environ 9 kg",
    "articles": [
     {
@@ -444,12 +444,12 @@
      "nom": "Sac à outils ToughSystem 2.0 300 mm"
     },
     {
-     "ref": "585XR",
-     "nom": "Set de 8 tournevis MaXFit"
+     "ref": "264PF",
+     "nom": "Meuleuse d’angle 125 mm 800 W"
     },
     {
-     "ref": "3170P",
-     "nom": "Agrafeuse-cloueuse 5-en-1"
+     "ref": "5823R",
+     "nom": "Disque diamant béton/pierre 125 mm"
     },
     {
      "ref": "1638P",
@@ -464,16 +464,8 @@
      "nom": "Pince coupante 190 mm"
     },
     {
-     "ref": "719HJ",
-     "nom": "Cisaille aviation 302 mm"
-    },
-    {
      "ref": "371EN",
      "nom": "Outil multifonction 8-en-1"
-    },
-    {
-     "ref": "166HV",
-     "nom": "Cordeau 30 m"
     },
     {
      "ref": "424HP",
@@ -485,39 +477,97 @@
     },
     {
      "ref": "13265",
-     "nom": "Coffret 25 embouts PZ2"
+     "nom": "Coffret 25 embouts PZ2 25 mm"
     },
     {
-     "ref": "73700",
-     "nom": "10 lames de scie sauteuse"
+     "ref": "33178",
+     "nom": "Coffret 15 embouts PZ2 50 mm"
     },
     {
-     "ref": "2425F",
-     "nom": "Lame plongeante bois 30 mm"
+     "ref": "729XR",
+     "nom": "Set de 2 tournevis MaXFit"
+    }
+   ]
+  },
+  {
+   "id": "carton-outillage",
+   "test": true,
+   "etiquette": "Promo",
+   "titre": "Carton outillage à main",
+   "sous_titre": "Le sac à outils DeWalt garni : tournevis Facom, clés Facom et Bahco, pinces Knipex, C.K et Wiha, mallette de 102 accessoires",
+   "colis": "1 carton 40 x 30 x 30 cm, environ 9 kg",
+   "articles": [
+    {
+     "ref": "845JW",
+     "nom": "Sac à outils ToughSystem 2.0 300 mm"
     },
     {
-     "ref": "13353",
-     "nom": "Jeu de 8 forets béton SDS+"
+     "ref": "916KJ",
+     "nom": "Mallette de 102 accessoires de vissage et perçage"
     },
     {
-     "ref": "3189X",
-     "nom": "Jeu de 8 forets béton queue droite"
+     "ref": "413YM",
+     "nom": "Jeu de 5 tournevis Facom Protwist"
     },
     {
-     "ref": "64247",
-     "nom": "Jeu de 5 forets à bois"
+     "ref": "954KW",
+     "nom": "Tournevis porte-embout + 7 embouts"
     },
     {
-     "ref": "77143",
-     "nom": "Foret SDS+ 6 x 160 mm"
+     "ref": "355YN",
+     "nom": "Tournevis électricien isolé 1 000 V Facom"
     },
     {
-     "ref": "23663",
-     "nom": "Foret SDS+ 8 x 160 mm"
+     "ref": "680YN",
+     "nom": "Tournevis Torx TX15 Facom"
     },
     {
-     "ref": "34514",
-     "nom": "Foret SDS+ 10 x 160 mm"
+     "ref": "363YN",
+     "nom": "Tournevis Torx TX20 Facom"
+    },
+    {
+     "ref": "825YM",
+     "nom": "Jeu de 8 clés mixtes Facom"
+    },
+    {
+     "ref": "471YM",
+     "nom": "Jeu de 9 clés mâles longues Facom"
+    },
+    {
+     "ref": "775YM",
+     "nom": "Clé mixte à cliquet 13 mm Facom"
+    },
+    {
+     "ref": "114YM",
+     "nom": "Clé mixte à cliquet articulée 10 mm Facom"
+    },
+    {
+     "ref": "65176",
+     "nom": "Clé à molette 250 mm Bahco"
+    },
+    {
+     "ref": "9144X",
+     "nom": "Pince multiprise Cobra 250 mm Knipex"
+    },
+    {
+     "ref": "6629F",
+     "nom": "Pince à dénuder automatique Knipex"
+    },
+    {
+     "ref": "270HL",
+     "nom": "Pince électronique Super Knips Knipex"
+    },
+    {
+     "ref": "93793",
+     "nom": "Pince universelle isolée 185 mm C.K"
+    },
+    {
+     "ref": "67857",
+     "nom": "Pince coupante isolée 160 mm C.K"
+    },
+    {
+     "ref": "161EH",
+     "nom": "Pince à dénuder isolée 160 mm Wiha"
     }
    ]
   }
