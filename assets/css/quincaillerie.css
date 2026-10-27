@@ -418,3 +418,8 @@ html[data-theme="dark"] #q-volet-btn[aria-expanded="true"]{background:#2A39C0;co
 @media (max-width:1300px){.q-packs:is(.n4,.n5,.n6){grid-template-columns:repeat(3,minmax(0,1fr));}}
 @media (max-width:1000px){.q-packs:is(.n4,.n5,.n6){grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media (max-width:520px){.q-packs:is(.n4,.n5,.n6){grid-template-columns:minmax(0,1fr);}.q-packs:is(.n4,.n5,.n6) .q-pack-vign{grid-template-columns:repeat(6,minmax(0,1fr));}}
+/* carton promo dans le panier : une ligne, détail sans prix unitaire */
+.q-ligne-pack .q-pack-promo{display:inline-block;padding:.05rem .45rem;border-radius:20px;background:#ff4d4d;color:#fff;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;vertical-align:middle}
+.q-pack-detail{margin-top:.3rem;font-size:.75rem}
+.q-pack-detail summary{cursor:pointer;color:#2A39C0;font-weight:600}
+.q-pack-detail ul{margin:.3rem 0 0;padding-left:1.1rem;max-height:220px;overflow:auto}

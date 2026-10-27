@@ -429,5 +429,169 @@
    ]
   }
  ],
- "brouillons": []
+ "brouillons": [],
+ "cartons": [
+  {
+   "id": "carton-dewalt",
+   "test": true,
+   "etiquette": "Promo",
+   "titre": "Carton chantier DeWalt",
+   "sous_titre": "Le sac à outils ToughSystem 2.0 garni : 37 outils et accessoires DeWalt pour visser, percer, couper et tracer",
+   "colis": "1 carton 40 x 30 x 30 cm, environ 9 kg",
+   "articles": [
+    {
+     "ref": "845JW",
+     "nom": "Sac à outils ToughSystem 2.0 300 mm"
+    },
+    {
+     "ref": "585XR",
+     "nom": "Set de 8 tournevis MaXFit"
+    },
+    {
+     "ref": "1638P",
+     "nom": "Pince multiprise V-Jaw 254 mm"
+    },
+    {
+     "ref": "334KY",
+     "nom": "Pince universelle 200 mm"
+    },
+    {
+     "ref": "478KY",
+     "nom": "Pince coupante 190 mm"
+    },
+    {
+     "ref": "371EN",
+     "nom": "Outil multifonction 8-en-1"
+    },
+    {
+     "ref": "166HV",
+     "nom": "Cordeau 30 m"
+    },
+    {
+     "ref": "13353",
+     "nom": "Jeu de 8 forets béton SDS+"
+    },
+    {
+     "ref": "3189X",
+     "nom": "Jeu de 8 forets béton queue droite"
+    },
+    {
+     "ref": "64247",
+     "nom": "Jeu de 5 forets à bois"
+    },
+    {
+     "ref": "13265",
+     "nom": "Coffret 25 embouts PZ2 25 mm"
+    },
+    {
+     "ref": "33178",
+     "nom": "Coffret 15 embouts PZ2 50 mm"
+    },
+    {
+     "ref": "73700",
+     "nom": "10 lames de scie sauteuse"
+    },
+    {
+     "ref": "2425F",
+     "nom": "Lame plongeante bois 30 mm"
+    },
+    {
+     "ref": "6761V",
+     "nom": "Mèche plate 22 mm"
+    },
+    {
+     "ref": "1109V",
+     "nom": "Mèche plate 28 mm"
+    },
+    {
+     "ref": "3978V",
+     "nom": "Mèche plate 32 mm"
+    },
+    {
+     "ref": "3837V",
+     "nom": "Foret SDS+ 4 x 110 mm"
+    },
+    {
+     "ref": "79461",
+     "nom": "Foret SDS+ 5 x 160 mm"
+    },
+    {
+     "ref": "24332",
+     "nom": "Foret SDS+ 6 x 110 mm"
+    },
+    {
+     "ref": "77143",
+     "nom": "Foret SDS+ 6 x 160 mm"
+    },
+    {
+     "ref": "8685V",
+     "nom": "Foret SDS+ 6 x 210 mm"
+    },
+    {
+     "ref": "75217",
+     "nom": "Foret SDS+ 7 x 210 mm"
+    },
+    {
+     "ref": "23663",
+     "nom": "Foret SDS+ 8 x 160 mm"
+    },
+    {
+     "ref": "34514",
+     "nom": "Foret SDS+ 10 x 160 mm"
+    },
+    {
+     "ref": "3606V",
+     "nom": "Foret SDS+ 12 x 260 mm"
+    },
+    {
+     "ref": "9881V",
+     "nom": "Foret SDS+ 14 x 260 mm"
+    },
+    {
+     "ref": "7150V",
+     "nom": "Foret SDS+ 16 x 260 mm"
+    },
+    {
+     "ref": "3912V",
+     "nom": "Foret métal cobalt 5,5 mm"
+    },
+    {
+     "ref": "8419V",
+     "nom": "Foret métal cobalt 6 mm"
+    },
+    {
+     "ref": "808KY",
+     "nom": "Lame de scie circulaire 165 mm 40 dents"
+    },
+    {
+     "ref": "5267X",
+     "nom": "Foret béton 14 x 150 mm"
+    },
+    {
+     "ref": "9497X",
+     "nom": "Foret béton 16 x 150 mm"
+    },
+    {
+     "ref": "8019X",
+     "nom": "Foret béton 5,5 x 85 mm"
+    },
+    {
+     "ref": "3430X",
+     "nom": "Foret béton 6 x 100 mm"
+    },
+    {
+     "ref": "6607X",
+     "nom": "Foret béton 6,5 x 100 mm"
+    },
+    {
+     "ref": "2428X",
+     "nom": "Foret béton 7 x 100 mm"
+    },
+    {
+     "ref": "7824V",
+     "nom": "Foret béton 6 x 150 mm"
+    }
+   ]
+  }
+ ]
 }

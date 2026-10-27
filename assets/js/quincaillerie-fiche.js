@@ -66,14 +66,15 @@
     } catch (e) { return []; }
   }
   function majPastille() {
-    var n = panier().reduce(function (s, l) { return s + l.q; }, 0);
+    var vus = {};
+    var n = panier().reduce(function (s, l) { if (l.pack) { if (vus[l.pack]) return s; vus[l.pack] = 1; return s + 1; } return s + l.q; }, 0);
     $('q-pastille').textContent = n;
     $('q-pastille').style.display = n ? '' : 'none';
   }
   /* accessoire compatible : ajouté sans quitter la fiche (on peut prendre l'outil ensuite) */
   function ajouterSurPlace(ref, bouton) {
     var p = panier();
-    var l = p.find(function (x) { return x.ref === ref; });
+    var l = p.find(function (x) { return x.ref === ref && !x.pack; });
     if (l) l.q += 1; else p.push({ ref: ref, q: 1 });
     var paquet = { maj: Date.now(), lignes: p };
     try { localStorage.setItem(CLE_PANIER, JSON.stringify(paquet)); } catch (e) {}
@@ -84,7 +85,7 @@
 
   function ajouterPanier(ref) {
     var p = panier();
-    var l = p.find(function (x) { return x.ref === ref; });
+    var l = p.find(function (x) { return x.ref === ref && !x.pack; });
     if (l) l.q += 1; else p.push({ ref: ref, q: 1 });
     var paquet = { maj: Date.now(), lignes: p };
     try { localStorage.setItem(CLE_PANIER, JSON.stringify(paquet)); } catch (e) {}

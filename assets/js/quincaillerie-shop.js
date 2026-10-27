@@ -343,12 +343,14 @@
     return etat.catalogue.articles.find(function (a) { return a.ref === ref; });
   }
   function majPastille() {
-    var n = etat.panier.reduce(function (s, l) { return s + l.q; }, 0);
+    /* un carton (lignes « pack ») compte pour 1 */
+    var packs = {};
+    var n = etat.panier.reduce(function (s, l) { if (l.pack) { if (packs[l.pack]) return s; packs[l.pack] = 1; return s + 1; } return s + l.q; }, 0);
     $('q-pastille').textContent = n;
     $('q-pastille').style.display = n ? '' : 'none';
   }
   function ajouter(ref) {
-    var l = etat.panier.find(function (x) { return x.ref === ref; });
+    var l = etat.panier.find(function (x) { return x.ref === ref && !x.pack; });
     if (l) l.q += 1; else etat.panier.push({ ref: ref, q: 1 });
     sauver(); majPastille(); rendrePanier();
     $('q-tiroir').classList.add('ouvert');
@@ -365,8 +367,25 @@
     var corps = $('q-tiroir-corps');
     if (!etat.panier.length) { corps.innerHTML = '<p class="q-vide">Votre panier est vide.</p>'; $('q-tiroir-pied').style.display = 'none'; return; }
     $('q-tiroir-pied').style.display = '';
+    /* carton promo (lignes marquées « pack ») : UNE ligne, détail des articles sans prix unitaire, prix final seul */
+    var vusPack = {};
     corps.innerHTML = etat.panier.map(function (l) {
       var a = article(l.ref); if (!a) return '';
+      if (l.pack) {
+        if (vusPack[l.pack]) return '';
+        vusPack[l.pack] = true;
+        var lp = etat.panier.filter(function (x) { return x.pack === l.pack && article(x.ref); });
+        var tp = lp.reduce(function (s, x) { return s + article(x.ref).prix * x.q; }, 0);
+        return '<div class="q-ligne q-ligne-pack">'
+          + '<img src="' + esc(a.img) + '" alt="">'
+          + '<div class="q-ligne-infos"><div class="q-ligne-nom"><span class="q-pack-promo">Promo</span> ' + esc(l.packTitre || 'Pack') + '</div>'
+          + '<div class="q-ligne-prix"><strong>' + eur(tp) + '</strong> · ' + lp.length + ' articles, 1 colis</div>'
+          + '<details class="q-pack-detail"><summary>Voir le détail des articles</summary><ul>'
+          + lp.map(function (x) { return '<li>' + (x.q > 1 ? x.q + ' × ' : '') + esc(article(x.ref).nom) + '</li>'; }).join('')
+          + '</ul></details></div>'
+          + '<button type="button" class="q-suppr" data-suppr-pack="' + esc(l.pack) + '" aria-label="Retirer le carton">×</button>'
+          + '</div>';
+      }
       return '<div class="q-ligne">'
         + '<img src="' + esc(a.img) + '" alt="">'
         + '<div class="q-ligne-infos"><div class="q-ligne-nom">' + esc(a.nom) + '</div>'
@@ -744,17 +763,18 @@
     $('q-payer-cb').addEventListener('click', function () { verifierPuisPayer(etat.panier[0].ref); });
     if ($('q-payer-panier')) $('q-payer-panier').addEventListener('click', payerPanier);
     document.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-add],[data-pay],[data-plus],[data-moins],[data-suppr]');
+      var t = e.target.closest('[data-add],[data-pay],[data-plus],[data-moins],[data-suppr],[data-suppr-pack]');
       if (!t) return;
       if (t.dataset.add) ajouter(t.dataset.add);
       if (t.dataset.pay) verifierPuisPayer(t.dataset.pay);
-      if (t.dataset.plus) { etat.panier.find(function (x) { return x.ref === t.dataset.plus; }).q += 1; sauver(); rendrePanier(); majPastille(); }
+      if (t.dataset.plus) { etat.panier.find(function (x) { return x.ref === t.dataset.plus && !x.pack; }).q += 1; sauver(); rendrePanier(); majPastille(); }
       if (t.dataset.moins) {
-        var l = etat.panier.find(function (x) { return x.ref === t.dataset.moins; });
+        var l = etat.panier.find(function (x) { return x.ref === t.dataset.moins && !x.pack; });
         l.q -= 1; if (l.q <= 0) etat.panier = etat.panier.filter(function (x) { return x !== l; });
         sauver(); rendrePanier(); majPastille();
       }
-      if (t.dataset.suppr) { etat.panier = etat.panier.filter(function (x) { return x.ref !== t.dataset.suppr; }); sauver(); rendrePanier(); majPastille(); }
+      if (t.dataset.suppr) { etat.panier = etat.panier.filter(function (x) { return x.pack || x.ref !== t.dataset.suppr; }); sauver(); rendrePanier(); majPastille(); }
+      if (t.dataset.supprPack) { etat.panier = etat.panier.filter(function (x) { return x.pack !== t.dataset.supprPack; }); sauver(); rendrePanier(); majPastille(); }
     });
   }
 
