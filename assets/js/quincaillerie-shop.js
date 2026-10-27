@@ -378,7 +378,7 @@
         var tp = lp.reduce(function (s, x) { return s + article(x.ref).prix * x.q; }, 0);
         return '<div class="q-ligne q-ligne-pack">'
           + '<img src="' + esc(a.img) + '" alt="">'
-          + '<div class="q-ligne-infos"><div class="q-ligne-nom"><span class="q-pack-promo">Promo</span> ' + esc(l.packTitre || 'Pack') + '</div>'
+          + '<div class="q-ligne-infos"><div class="q-ligne-nom"><span class="q-pack-promo">Offre spéciale</span> ' + esc(l.packTitre || 'Pack') + '</div>'
           + '<div class="q-ligne-prix"><strong>' + eur(tp) + '</strong> · ' + lp.length + ' articles, 1 colis</div>'
           + '<details class="q-pack-detail"><summary>Voir le détail des articles</summary><ul>'
           + lp.map(function (x) { return '<li>' + (x.q > 1 ? x.q + ' × ' : '') + esc(article(x.ref).nom) + '</li>'; }).join('')

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carton outillage à main — Promo | EGREENCITY'S Pro Quincaillerie</title>
+  <title>Carton outillage à main — Offre spéciale | EGREENCITY'S Pro Quincaillerie</title>
   <meta name="description" content="Tournevis, clés, pinces et mallette d’accessoires, livré en Guyane en un seul colis, octroi de mer compris.">
   <!-- page de TEST : non indexée tant que l'offre n'est pas validée -->
   <meta name="robots" content="noindex, nofollow">
@@ -63,7 +63,7 @@
     <section class="entete">
       <div class="photo"><img id="photo" alt=""></div>
       <div>
-        <span class="et">Promo</span>
+        <span class="et">Offre spéciale</span>
         <h1 id="titre">Carton outillage à main</h1>
         <p class="sous" id="sous"></p>
         <div class="prix-bloc">
@@ -109,7 +109,7 @@
         var manquants = L.filter(function (x) { var s = (stock[x.ref] || {}).s; return !x.a || x.a.devis || (s !== 'disponible' && s !== 'faible'); });
         var limites = L.filter(function (x) { return x.a && (stock[x.ref] || {}).s === 'faible'; });
         var total = L.reduce(function (s, x) { return s + (x.a ? x.a.prix : 0); }, 0);
-        document.title = pack.titre + ' — Promo | EGREENCITY’S Pro Quincaillerie';
+        document.title = pack.titre + ' — Offre spéciale | EGREENCITY’S Pro Quincaillerie';
         $('titre').textContent = pack.titre;
         $('sous').textContent = pack.sous_titre;
         $('colis').textContent = (pack.colis || '') + ' · ' + L.length + ' articles';

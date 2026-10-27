@@ -434,7 +434,7 @@
   {
    "id": "carton-dewalt",
    "test": true,
-   "etiquette": "Promo",
+   "etiquette": "Offre spéciale",
    "titre": "Carton chantier DeWalt",
    "sous_titre": "Le sac à outils ToughSystem 2.0 garni : meuleuse 125 mm et son disque, pinces, embouts et tournevis DeWalt",
    "colis": "1 carton 40 x 30 x 30 cm, environ 9 kg",
@@ -492,7 +492,7 @@
   {
    "id": "carton-outillage",
    "test": true,
-   "etiquette": "Promo",
+   "etiquette": "Offre spéciale",
    "titre": "Carton outillage à main",
    "sous_titre": "Le sac à outils DeWalt garni : tournevis Facom, clés Facom et Bahco, pinces Knipex, C.K et Wiha, mallette de 102 accessoires",
    "colis": "1 carton 40 x 30 x 30 cm, environ 9 kg",
