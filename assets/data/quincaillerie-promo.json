@@ -571,5 +571,50 @@
     }
    ]
   }
- ]
+ ],
+ "packs_pro": [
+  {
+   "id": "duo-m18-fuel-pro",
+   "etiquette": "Nouveau pack",
+   "titre": "Duo M18 FUEL Pro",
+   "marque": "Milwaukee",
+   "sous_titre": "Perceuse à percussion + visseuse à choc M18 FUEL, 2 batteries 5 Ah, chargeur et coffret, avec 38 embouts à choc et 19 forets métal",
+   "prix": 989,
+   "colis": "1 colis, environ 8 kg",
+   "articles": [
+    {
+     "ref": "557KN",
+     "nom": "Kit Milwaukee M18 FUEL : perceuse à percussion + visseuse à choc, 2 batteries 5 Ah, chargeur, coffret"
+    },
+    {
+     "ref": "698GE",
+     "nom": "Coffret de 38 embouts à choc Milwaukee Shockwave"
+    },
+    {
+     "ref": "693KY",
+     "nom": "Coffret de 19 forets métal"
+    }
+   ]
+  },
+  {
+   "id": "laser-vert-trepied",
+   "etiquette": "Nouveau pack",
+   "titre": "Pack laser vert + trépied",
+   "marque": "Stanley · Bosch",
+   "sous_titre": "Niveau laser croix vert autonivelant Cross90 avec équerrage, et trépied Bosch Professional BT 150",
+   "prix": 299,
+   "colis": "1 colis, environ 2,6 kg",
+   "articles": [
+    {
+     "ref": "729KJ",
+     "nom": "Niveau laser croix vert autonivelant Cross90 Stanley"
+    },
+    {
+     "ref": "8348K",
+     "nom": "Trépied pour niveau laser Bosch Professional BT 150"
+    }
+   ]
+  }
+ ],
+ "regle_packs_pro": "packs_pro : prix FIXE du pack (champ prix), validé par le gérant le 30/10/2026 ; commande par formulaire (vérification fournisseur sous 24 h ouvrées, aucun encaissement avant confirmation) ; page /packs-pro/."
 }

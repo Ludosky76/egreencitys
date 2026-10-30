@@ -355,8 +355,15 @@
     sauver(); majPastille(); rendrePanier();
     $('q-tiroir').classList.add('ouvert');
   }
+  /* pack à prix fixe (lignes avec packPrix, page /packs-pro/) : compté UNE fois à son prix */
+  function prixPack(id) {
+    var l = etat.panier.find(function (x) { return x.pack === id; });
+    return l && typeof l.packPrix === 'number' ? l.packPrix : null;
+  }
   function totalPanier() {
+    var vus = {};
     var t = etat.panier.reduce(function (s, l) {
+      if (l.pack && prixPack(l.pack) !== null) { if (vus[l.pack]) return s; vus[l.pack] = 1; return s + prixPack(l.pack); }
       var a = article(l.ref); return a ? s + a.prix * l.q : s;
     }, 0);
     var offert = etat.panier.length > 0 && forfaitOffert(t);
@@ -375,7 +382,7 @@
         if (vusPack[l.pack]) return '';
         vusPack[l.pack] = true;
         var lp = etat.panier.filter(function (x) { return x.pack === l.pack && article(x.ref); });
-        var tp = lp.reduce(function (s, x) { return s + article(x.ref).prix * x.q; }, 0);
+        var tp = prixPack(l.pack) !== null ? prixPack(l.pack) : lp.reduce(function (s, x) { return s + article(x.ref).prix * x.q; }, 0);
         return '<div class="q-ligne q-ligne-pack">'
           + '<img src="' + esc(a.img) + '" alt="">'
           + '<div class="q-ligne-infos"><div class="q-ligne-nom"><span class="q-pack-promo">Offre spéciale</span> ' + esc(l.packTitre || 'Pack') + '</div>'
@@ -413,7 +420,9 @@
     var poidsPanier = etat.panier.reduce(function (s, l) { var a = article(l.ref); return s + (a && a.poids ? a.poids * l.q : 0); }, 0);
     var okPanier = !ok && !!(etat.paiement && etat.paiement.panier_cb && etat.paiement.fonction)
       && etat.panier.every(function (l) { var a = article(l.ref); return a && !a.devis && statutDe(l.ref) === 'disponible'; })
-      && poidsPanier <= 30;
+      && poidsPanier <= 30
+      /* prix fixe de pack inconnu du serveur de paiement : ces packs passent par le formulaire */
+      && !etat.panier.some(function (l) { return l.pack && typeof l.packPrix === 'number'; });
     if (bp) {
       bp.style.display = okPanier ? '' : 'none';
       bp.textContent = '💳 Payer le panier par carte — ' + eur(t.total);
@@ -722,10 +731,17 @@
     var tel = $('q-tel').value.trim();
     if (!email) { alert('Indiquez votre email pour recevoir la confirmation.'); return; }
     var t = totalPanier();
+    var vusPack = {};
     var lignes = etat.panier.map(function (l) {
       var a = article(l.ref);
+      if (l.pack && prixPack(l.pack) !== null) {
+        if (vusPack[l.pack]) return null;
+        vusPack[l.pack] = 1;
+        return '1 × PACK [' + l.pack + '] ' + (l.packTitre || 'Pack') + ' — ' + eur(prixPack(l.pack)) + ' (prix fixe) : '
+          + etat.panier.filter(function (x) { return x.pack === l.pack; }).map(function (x) { return x.q + ' × ' + x.ref; }).join(', ');
+      }
       return l.q + ' × [' + l.ref + '] ' + a.nom + ' — ' + eur(a.prix * l.q) + ' (' + statutDe(l.ref) + ')';
-    }).join('\n');
+    }).filter(function (x) { return x; }).join('\n');
     var corps = {
       _subject: 'Commande quincaillerie — ' + eur(t.total),
       email: email, telephone: tel,
