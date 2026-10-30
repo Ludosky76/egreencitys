@@ -209,7 +209,7 @@
       + '<div class="qf-infos">'
       +   (mq ? '<div class="q-marque">' + esc(mq) + '</div>' : '')
       +   '<h1>' + esc(a.nom) + '</h1>'
-      +   '<div class="q-ref">Réf. ' + esc(ref) + (a.poids ? ' · ' + a.poids.toLocaleString('fr-FR') + ' kg' : '') + (cat ? ' · ' + esc(cat.nom) : '') + '</div>'
+      +   '<div class="q-ref">Réf. ' + esc(ref) + (a.ean ? ' · EAN ' + esc(a.ean) : '') + (a.poids ? ' · ' + a.poids.toLocaleString('fr-FR') + ' kg' : '') + (cat ? ' · ' + esc(cat.nom) : '') + '</div>'
       +   badgeStock(ref)
       +   '<div class="qf-prixbloc">'
       +     (a.devis

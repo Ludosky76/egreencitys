@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Packs pro — Nouveaux packs | EGREENCITY'S Pro Quincaillerie</title>
-  <meta name="description" content="Nouveaux packs pro livrés en Guyane : Duo Milwaukee M18 FUEL avec accessoires, pack laser vert + trépied. Un prix tout compris, octroi de mer et transport inclus.">
+  <title>Packs pro — Machines et accessoires | EGREENCITY'S Pro Quincaillerie</title>
+  <meta name="description" content="Packs pro livrés en Guyane : duo Milwaukee M18 FUEL, meuleuse Milwaukee M18, trios DeWalt 18 V, duo Makita LXT, avec accessoires. Un prix tout compris, octroi de mer et transport inclus.">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://media.screwfix.fr; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="canonical" href="https://egreencitys.com/packs-pro/">
@@ -12,47 +12,72 @@
   <meta name="theme-color" content="#141B52">
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    :root{--bleu:#141B52;--vert:#33CC00;--vert-clair:#9FE870;--texte:#1B2140;--gris:#5B6385;--fond:#F3F5FC;--carte:#fff;--bord:#DDE3F5}
-    @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--texte:#E9ECFA;--gris:#A9B1D6;--fond:#0B1033;--carte:#141B52;--bord:#26307A}}
-    :root[data-theme="dark"]{--texte:#E9ECFA;--gris:#A9B1D6;--fond:#0B1033;--carte:#141B52;--bord:#26307A}
+    :root{--bleu:#141B52;--vert:#33CC00;--vert-clair:#9FE870;--jaune:#ffc457;--texte:#1B2140;--gris:#5B6385;--fond:#F3F5FC;--carte:#fff;--bord:#DDE3F5;--puce:#E8ECFA}
+    @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--texte:#E9ECFA;--gris:#A9B1D6;--fond:#0B1033;--carte:#141B52;--bord:#26307A;--puce:#1C2466}}
+    :root[data-theme="dark"]{--texte:#E9ECFA;--gris:#A9B1D6;--fond:#0B1033;--carte:#141B52;--bord:#26307A;--puce:#1C2466}
     *{box-sizing:border-box}
     body{margin:0;font-family:Poppins,system-ui,sans-serif;background:var(--fond);color:var(--texte)}
     a{color:inherit}
-    .haut{background:linear-gradient(135deg,#0B1033,#1B2A8C);color:#fff}
-    .haut-in{max-width:1100px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .logo{font-weight:900;letter-spacing:.02em;text-decoration:none;font-size:1.05rem}
+    .haut{background:linear-gradient(135deg,#0B1033,#1B2A8C);color:#fff;position:sticky;top:0;z-index:20}
+    .haut-in{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .logo{font-weight:900;letter-spacing:.02em;text-decoration:none;font-size:1rem}
     .logo span{color:var(--vert-clair)}
+    .nav{display:flex;align-items:center;gap:10px}
+    .nav a.lien{font-size:.82rem;font-weight:600;text-decoration:none;opacity:.85}
     .panier-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem .9rem;border-radius:30px;background:#fff;color:var(--bleu);font-weight:700;text-decoration:none;font-size:.9rem}
     .panier-btn b{display:inline-block;min-width:1.4em;padding:0 .35em;border-radius:20px;background:var(--vert);color:#fff;text-align:center}
-    .bandeau{background:linear-gradient(170deg,#070C1F,#0E1650 60%,#081030);color:#fff;padding:34px 16px 30px;text-align:center;position:relative;overflow:hidden}
-    .bandeau::after{content:"";position:absolute;left:-40px;right:-40px;bottom:0;height:14px;background:repeating-linear-gradient(135deg,#ffc457 0 22px,#111 22px 44px);opacity:.9}
+    .bandeau{background:radial-gradient(700px 400px at 90% 0%,rgba(63,139,242,.35),transparent 60%),radial-gradient(600px 400px at 0% 100%,rgba(51,204,0,.22),transparent 60%),linear-gradient(170deg,#070C1F,#0E1650 60%,#081030);color:#fff;padding:38px 16px 40px;text-align:center;position:relative;overflow:hidden}
+    .bandeau::after{content:"";position:absolute;left:-40px;right:-40px;bottom:0;height:14px;background:repeating-linear-gradient(135deg,var(--jaune) 0 22px,#111 22px 44px);opacity:.9}
     .bandeau .k{display:inline-block;padding:.3rem 1rem;border-radius:30px;border:2px solid rgba(159,232,112,.6);color:#c8f7a8;font-weight:700;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase}
-    .bandeau h1{font-family:Anton,Poppins,sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(2.3rem,7vw,4rem);line-height:1.05;margin:.6rem 0 .3rem}
+    .bandeau h1{font-family:Anton,Poppins,sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(2.3rem,7vw,4.2rem);line-height:1.05;margin:.6rem 0 .3rem}
     .bandeau h1 em{font-style:normal;color:var(--vert)}
-    .bandeau p{margin:0;color:#C8D4FF}
-    main{max-width:1100px;margin:0 auto;padding:24px 16px 60px}
-    .packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
-    .pk{background:var(--carte);border:1px solid var(--bord);border-radius:22px;overflow:hidden;display:flex;flex-direction:column}
-    .pk .photos{position:relative;background:#fff;display:grid;grid-template-columns:2fr 1fr;grid-auto-rows:120px;gap:6px;padding:12px}
+    .bandeau p{margin:0 auto;max-width:640px;color:#C8D4FF}
+    .atouts{max-width:1180px;margin:-1px auto 0;padding:18px 16px 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+    .atout{background:var(--carte);border:1px solid var(--bord);border-radius:14px;padding:10px 12px;font-size:.8rem;color:var(--gris);display:flex;gap:10px;align-items:center}
+    .atout b{display:block;color:var(--texte);font-size:.88rem}
+    .atout i{font-style:normal;font-size:1.4rem}
+    main{max-width:1180px;margin:0 auto;padding:18px 16px 60px}
+    .filtres{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 18px}
+    .filtres button{border:1px solid var(--bord);background:var(--carte);color:var(--texte);border-radius:30px;padding:.5rem 1rem;font:inherit;font-weight:700;font-size:.85rem;cursor:pointer}
+    .filtres button[aria-pressed="true"]{background:var(--bleu);border-color:var(--bleu);color:#fff}
+    .filtres button span{opacity:.6;font-weight:600}
+    h2.sec{font-family:Anton,Poppins,sans-serif;font-weight:400;text-transform:uppercase;font-size:1.7rem;margin:26px 0 12px;display:flex;align-items:center;gap:10px}
+    h2.sec small{font-family:Poppins,sans-serif;text-transform:none;font-size:.85rem;color:var(--gris);font-weight:600}
+    .packs{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:20px}
+    .pk{background:var(--carte);border:1px solid var(--bord);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s}
+    .pk:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(20,27,82,.14)}
+    .pk .photos{position:relative;background:#fff;display:grid;grid-template-columns:2fr 1fr;grid-auto-rows:115px;gap:6px;padding:12px}
     .pk .photos img{width:100%;height:100%;object-fit:contain}
     .pk .photos .p0{grid-row:span 2}
-    .pk .photos.n2{grid-template-columns:1fr 1fr;grid-auto-rows:220px}
-    .pk .photos.n2 .p0{grid-row:auto}
+    .pk .photos.n1{grid-template-columns:1fr;grid-auto-rows:236px}
+    .pk .photos.n2{grid-template-columns:1fr 1fr;grid-auto-rows:236px}.pk .photos.n2 .p0{grid-row:auto}
     .pk .et{position:absolute;top:12px;left:12px;padding:.25rem .8rem;border-radius:30px;background:#ff4d4d;color:#fff;font-weight:800;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}
+    .pk .nb{position:absolute;bottom:12px;left:12px;padding:.2rem .7rem;border-radius:30px;background:var(--bleu);color:#fff;font-weight:700;font-size:.72rem}
     .pk .corps{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
-    .pk .mq{font-weight:800;color:#e0473b;letter-spacing:.18em;text-transform:uppercase;font-size:.75rem}
-    .pk h2{margin:0;font-family:Anton,Poppins,sans-serif;font-weight:400;text-transform:uppercase;font-size:1.9rem;line-height:1.05}
-    .pk .sous{margin:0;color:var(--gris);font-size:.9rem}
-    .pk ul{margin:.2rem 0 0;padding-left:1.1em;font-size:.88rem;line-height:1.45}
+    .pk .mq{font-weight:800;color:#e0473b;letter-spacing:.16em;text-transform:uppercase;font-size:.72rem}
+    .pk h3{margin:0;font-family:Anton,Poppins,sans-serif;font-weight:400;text-transform:uppercase;font-size:1.85rem;line-height:1.05}
+    .pk .acc{font-weight:700;color:var(--vert);font-size:.9rem;margin-top:-4px}
+    .pk .sous{margin:0;color:var(--gris);font-size:.86rem}
+    .pk ul{margin:.1rem 0 0;padding-left:1.1em;font-size:.84rem;line-height:1.45}
+    .pk ul a{text-decoration:none;border-bottom:1px dotted var(--gris)}
     .pk .prix-bloc{margin-top:auto;border-radius:16px;padding:14px 16px;background:linear-gradient(180deg,#0E3A12,#062406);color:#fff;border:2px solid rgba(159,232,112,.7)}
-    .pk .prix{font-family:Anton,Poppins,sans-serif;font-size:2.8rem;line-height:1;text-shadow:0 0 22px rgba(51,204,0,.6)}
-    .pk .inclus{margin-top:.3rem;color:#C8F7A8;font-weight:600;font-size:.82rem}
-    .pk .ajout{margin-top:12px;width:100%;padding:.85rem 1rem;border:0;border-radius:14px;background:var(--vert);color:#fff;font:inherit;font-weight:800;font-size:1rem;cursor:pointer}
+    .pk .prix{font-family:Anton,Poppins,sans-serif;font-size:2.7rem;line-height:1;text-shadow:0 0 22px rgba(51,204,0,.6)}
+    .pk .inclus{margin-top:.3rem;color:#C8F7A8;font-weight:600;font-size:.8rem}
+    .pk .ajout{margin-top:12px;width:100%;padding:.85rem 1rem;border:0;border-radius:14px;background:var(--vert);color:#fff;font:inherit;font-weight:800;font-size:1rem;cursor:pointer;text-align:center;text-decoration:none;display:block}
     .pk .ajout:disabled{background:#7A8199;cursor:not-allowed}
-    .pk .note{margin-top:.5rem;font-size:.75rem;color:#C8D4FF}
-    .mentions{margin-top:30px;font-size:.75rem;color:var(--gris);line-height:1.5}
-    .retour{display:inline-block;margin-top:18px;font-weight:700}
-    @media (max-width:420px){.pk .photos{grid-auto-rows:95px}.pk .photos.n2{grid-auto-rows:160px}}
+    .pk .ajout.ok{background:#1f8a00}
+    .pk .note{margin-top:.5rem;font-size:.74rem;color:#C8D4FF}
+    .vide{color:var(--gris)}
+    .faq{margin-top:34px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+    .faq details{background:var(--carte);border:1px solid var(--bord);border-radius:14px;padding:12px 14px;font-size:.86rem}
+    .faq summary{font-weight:700;cursor:pointer}
+    .faq p{margin:.5rem 0 0;color:var(--gris)}
+    .mentions{margin-top:26px;font-size:.75rem;color:var(--gris);line-height:1.5}
+    .retour{display:inline-block;margin-top:14px;font-weight:700}
+    .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#17631a;color:#fff;padding:.7rem 1.2rem;border-radius:40px;font-weight:700;font-size:.88rem;box-shadow:0 10px 28px rgba(0,0,0,.3);z-index:50;display:none}
+    .toast a{color:#fff;margin-left:.6rem}
+    @media (max-width:760px){.atouts{grid-template-columns:repeat(2,minmax(0,1fr))}.nav a.lien{display:none}}
+    @media (max-width:400px){.packs{grid-template-columns:minmax(0,1fr)}.pk .photos{grid-auto-rows:95px}.pk .photos.n2,.pk .photos.n1{grid-auto-rows:180px}}
   </style>
   <script src="/assets/js/quincaillerie-theme.js?v=1"></script>
 </head>
@@ -60,22 +85,40 @@
   <header class="haut">
     <div class="haut-in">
       <a class="logo" href="/pages/boutique-quincaillerie.html">EGREENCITY'S <span>PRO QUINCAILLERIE</span></a>
-      <a class="panier-btn" href="/pages/boutique-quincaillerie.html#panier">🛒 Panier <b id="pastille">0</b></a>
+      <nav class="nav">
+        <a class="lien" href="/pages/boutique-quincaillerie.html">Boutique</a>
+        <a class="panier-btn" href="/pages/boutique-quincaillerie.html#panier">🛒 Panier <b id="pastille">0</b></a>
+      </nav>
     </div>
   </header>
   <section class="bandeau">
-    <span class="k">Nouveaux packs</span>
+    <span class="k">Espace packs</span>
     <h1>Les packs pro <em>tout équipés</em></h1>
-    <p>Un seul prix, livré chez vous en Guyane, octroi de mer compris.</p>
+    <p>Machines prêtes à l’emploi, accessoires inclus : un seul prix, livré chez vous en Guyane, octroi de mer compris.</p>
   </section>
+  <div class="atouts">
+    <div class="atout"><i>💶</i><div><b>Un seul prix</b>octroi de mer et transport inclus</div></div>
+    <div class="atout"><i>📦</i><div><b>1 colis par pack</b>préparé et expédié ensemble</div></div>
+    <div class="atout"><i>✅</i><div><b>Confirmation sous 24 h</b>disponibilité et délai vérifiés</div></div>
+    <div class="atout"><i>🔒</i><div><b>Aucun encaissement</b>avant votre confirmation</div></div>
+  </div>
   <main>
-    <div class="packs" id="packs"><p>Chargement…</p></div>
-    <p class="mentions">Prix tout compris : transport jusqu’en Guyane et octroi de mer inclus, 1 colis par pack. Commande par le panier : nous vérifions la disponibilité chez le fournisseur et vous confirmons le délai et le règlement sous 24 h ouvrées — aucun encaissement avant confirmation. Batteries lithium expédiées uniquement avec leur machine. Selon disponibilité.</p>
+    <div class="filtres" id="filtres" role="group" aria-label="Filtrer les packs"></div>
+    <div id="contenu"><p class="vide">Chargement…</p></div>
+    <div class="faq">
+      <details><summary>Comment commander un pack ?</summary><p>Ajoutez le pack au panier puis envoyez la commande. Nous vérifions chaque article chez le fournisseur et vous confirmons le délai et le règlement sous 24 h ouvrées. Rien n’est encaissé avant.</p></details>
+      <details><summary>Les batteries sont-elles incluses ?</summary><p>Oui quand c’est indiqué (« 2 batteries 4 Ah », « 2 batteries 5 Ah »…). Les machines notées « machine seule » sont livrées sans batterie : elles utilisent les batteries du même pack, ou les vôtres quand le pack n’en contient pas (Duo Makita LXT, pour batteries Makita 18 V LXT). Les batteries lithium sont expédiées uniquement avec leur machine.</p></details>
+      <details><summary>Que comprend le prix ?</summary><p>Les articles, l’octroi de mer et le transport jusqu’en Guyane (littoral). Le prix affiché est le prix final du pack.</p></details>
+    </div>
+    <p class="mentions">Prix tout compris : transport jusqu’en Guyane et octroi de mer inclus, 1 colis par pack. Selon disponibilité ; délai de livraison confirmé à la commande. Batteries lithium expédiées uniquement avec leur machine.</p>
     <a class="retour" href="/pages/boutique-quincaillerie.html">← Toute la boutique quincaillerie</a>
   </main>
+  <div class="toast" id="toast" role="status"></div>
   <script>
   (function () {
     var CLE = 'egc_quinc_panier', RET = 7 * 24 * 3600 * 1000;
+    var CATS = [['tous', 'Tous les packs'], ['machines', 'Packs machines'], ['cartons', 'Cartons d’outillage']];
+    var etat = { cat: 'tous', packs: [], cartons: [], art: {} };
     function $(i) { return document.getElementById(i); }
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
     function eur(v) { return v.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ' €'; }
@@ -87,47 +130,99 @@
         return (j.maj && Date.now() - j.maj > RET) ? [] : (j.lignes || []);
       } catch (e) { return []; }
     }
+    function ecrire(lignes) { try { localStorage.setItem(CLE, JSON.stringify({ maj: Date.now(), lignes: lignes })); } catch (e) {} }
     function pastille() {
       var vus = {}, n = lire().reduce(function (s, l) { if (l.pack) { if (vus[l.pack]) return s; vus[l.pack] = 1; return s + 1; } return s + l.q; }, 0);
       $('pastille').textContent = n;
     }
+    function dansPanier(id) { return lire().some(function (l) { return l.pack === id; }); }
+    function photos(L, et, nb) {
+      var imgs = L.filter(function (x) { return x.a; }).slice(0, 3);
+      return '<div class="photos n' + imgs.length + '"><span class="et">' + esc(et) + '</span>'
+        + imgs.map(function (x, j) { return '<img class="p' + j + '" src="' + esc(x.a.img) + '" alt="' + esc(x.nom) + '" loading="lazy">'; }).join('')
+        + (nb ? '<span class="nb">' + esc(nb) + '</span>' : '') + '</div>';
+    }
+    function liste(L) {
+      return '<ul>' + L.map(function (x) {
+        var lien = x.a && window.EGCQUrl ? window.EGCQUrl.fiche(x.a) : null;
+        return '<li>' + (lien ? '<a href="' + esc(lien) + '">' + esc(x.nom) + '</a>' : esc(x.nom)) + '</li>';
+      }).join('') + '</ul>';
+    }
+    function cartePack(p, i) {
+      var L = p.articles.map(function (x) { return { a: etat.art[x.ref], nom: x.nom }; });
+      var ok = L.every(function (x) { return x.a && !x.a.devis; });
+      var deja = dansPanier(p.id);
+      return '<article class="pk" data-cat="' + esc(p.categorie || 'machines') + '">'
+        + photos(L, p.etiquette || 'Nouveau', L.length + (L.length > 1 ? ' articles' : ' article'))
+        + '<div class="corps"><span class="mq">' + esc(p.marque || '') + '</span><h3>' + esc(p.titre) + '</h3>'
+        + (p.accroche ? '<div class="acc">' + esc(p.accroche) + '</div>' : '')
+        + '<p class="sous">' + esc(p.sous_titre) + '</p>' + liste(L)
+        + '<div class="prix-bloc"><div class="prix">' + eur(p.prix) + '</div>'
+        + '<div class="inclus">' + esc(p.prix_txt || 'le pack complet') + ', livré chez vous en Guyane, octroi de mer compris</div>'
+        + '<button type="button" class="ajout' + (deja ? ' ok' : '') + '" data-i="' + i + '"' + (ok ? '' : ' disabled') + '>'
+        + (!ok ? 'Momentanément indisponible' : deja ? '✓ Dans le panier — voir le panier' : '🛒 Ajouter le pack au panier') + '</button>'
+        + '<div class="note">' + esc(p.colis || '') + ' · délai confirmé sous 24 h ouvrées</div></div></div></article>';
+    }
+    function carteCarton(c) {
+      var L = c.articles.map(function (x) { return { a: etat.art[x.ref], nom: x.nom }; });
+      var total = L.reduce(function (s, x) { return s + (x.a ? x.a.prix : 0); }, 0);
+      return '<article class="pk" data-cat="cartons">' + photos(L, c.etiquette || 'Carton', L.length + ' articles')
+        + '<div class="corps"><span class="mq">Carton d’outillage</span><h3>' + esc(c.titre) + '</h3>'
+        + '<p class="sous">' + esc(c.sous_titre) + '</p>'
+        + '<div class="prix-bloc"><div class="prix">' + eur(total) + '</div>'
+        + '<div class="inclus">le carton complet, livré chez vous en Guyane, octroi de mer compris</div>'
+        + '<a class="ajout" href="/' + esc(c.id) + '/">Voir le contenu du carton →</a>'
+        + '<div class="note">' + esc(c.colis || '') + '</div></div></div></article>';
+    }
+    function rendre() {
+      var machines = etat.packs.filter(function (p) { return (p.categorie || 'machines') === 'machines'; });
+      var cartons = etat.cartons;
+      var n = { tous: machines.length + cartons.length, machines: machines.length, cartons: cartons.length };
+      $('filtres').innerHTML = CATS.filter(function (c) { return n[c[0]] > 0; }).map(function (c) {
+        return '<button type="button" data-cat="' + c[0] + '" aria-pressed="' + (etat.cat === c[0]) + '">' + c[1] + ' <span>' + n[c[0]] + '</span></button>';
+      }).join('');
+      var h = '';
+      if ((etat.cat === 'tous' || etat.cat === 'machines') && machines.length)
+        h += '<h2 class="sec">Packs machines <small>batteries et accessoires inclus selon le pack</small></h2><div class="packs">'
+          + machines.map(function (p) { return cartePack(p, etat.packs.indexOf(p)); }).join('') + '</div>';
+      if ((etat.cat === 'tous' || etat.cat === 'cartons') && cartons.length)
+        h += '<h2 class="sec">Cartons d’outillage <small>un carton garni, un seul colis</small></h2><div class="packs">'
+          + cartons.map(carteCarton).join('') + '</div>';
+      $('contenu').innerHTML = h || '<p class="vide">Aucun pack en ce moment.</p>';
+    }
+    function toast(txt) {
+      var t = $('toast'); t.innerHTML = txt; t.style.display = 'block';
+      clearTimeout(toast.h); toast.h = setTimeout(function () { t.style.display = 'none'; }, 5000);
+    }
     function json(u) { return fetch(u + '?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }); }
     Promise.all([json('/assets/data/quincaillerie-promo.json'), json('/assets/data/quincaillerie-catalogue.json')])
       .then(function (r) {
-        var packs = r[0].packs_pro || [];
-        var cat = {}; r[1].articles.forEach(function (a) { cat[a.ref] = a; });
-        if (!packs.length) { $('packs').innerHTML = '<p>Aucun pack en ce moment.</p>'; return; }
-        $('packs').innerHTML = packs.map(function (p, i) {
-          var L = p.articles.map(function (x) { return { a: cat[x.ref], nom: x.nom, ref: x.ref }; });
-          var ok = L.every(function (x) { return x.a && !x.a.devis; });
-          var imgs = L.filter(function (x) { return x.a; }).slice(0, 3);
-          return '<article class="pk">'
-            + '<div class="photos n' + imgs.length + '"><span class="et">' + esc(p.etiquette || 'Nouveau') + '</span>'
-            + imgs.map(function (x, j) { return '<img class="p' + j + '" src="' + esc(x.a.img) + '" alt="' + esc(x.nom) + '" loading="lazy">'; }).join('') + '</div>'
-            + '<div class="corps"><span class="mq">' + esc(p.marque || '') + '</span><h2>' + esc(p.titre) + '</h2>'
-            + '<p class="sous">' + esc(p.sous_titre) + '</p>'
-            + '<ul>' + L.map(function (x) {
-                var lien = x.a && window.EGCQUrl ? window.EGCQUrl.fiche(x.a) : null;
-                return '<li>' + (lien ? '<a href="' + esc(lien) + '">' + esc(x.nom) + '</a>' : esc(x.nom)) + '</li>';
-              }).join('') + '</ul>'
-            + '<div class="prix-bloc"><div class="prix">' + eur(p.prix) + '</div>'
-            + '<div class="inclus">le pack complet, livré chez vous en Guyane, octroi de mer compris</div>'
-            + '<button type="button" class="ajout" data-i="' + i + '"' + (ok ? '' : ' disabled') + '>' + (ok ? '🛒 Ajouter le pack au panier' : 'Momentanément indisponible') + '</button>'
-            + '<div class="note">' + esc(p.colis || '') + ' · délai confirmé sous 24 h ouvrées, aucun encaissement avant confirmation</div></div>'
-            + '</div></article>';
-        }).join('');
-        $('packs').addEventListener('click', function (e) {
-          var b = e.target.closest('button[data-i]');
-          if (!b || b.disabled) return;
-          var p = packs[+b.dataset.i];
-          var lignes = lire().filter(function (l) { return l.pack !== p.id; });
-          p.articles.forEach(function (x) { lignes.push({ ref: x.ref, q: 1, pack: p.id, packTitre: p.titre, packPrix: p.prix }); });
-          try { localStorage.setItem(CLE, JSON.stringify({ maj: Date.now(), lignes: lignes })); } catch (er) {}
-          if (window.gtag) gtag('event', 'add_to_cart', { currency: 'EUR', value: p.prix, items: [{ item_id: p.id, item_name: p.titre }] });
-          window.location.href = '/pages/boutique-quincaillerie.html#panier';
-        });
+        r[1].articles.forEach(function (a) { etat.art[a.ref] = a; });
+        etat.packs = r[0].packs_pro || [];
+        etat.cartons = (r[0].cartons || []).filter(function (c) { return !c.test; });
+        var q = (location.hash.match(/cat=(\w+)/) || [])[1];
+        if (q && CATS.some(function (c) { return c[0] === q; })) etat.cat = q;
+        rendre();
       })
-      .catch(function () { $('packs').innerHTML = '<p>Chargement impossible, réessayez dans un instant.</p>'; });
+      .catch(function () { $('contenu').innerHTML = '<p class="vide">Chargement impossible, réessayez dans un instant.</p>'; });
+    $('filtres').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-cat]');
+      if (!b) return;
+      etat.cat = b.dataset.cat;
+      try { history.replaceState(null, '', '#cat=' + etat.cat); } catch (er) {}
+      rendre();
+    });
+    $('contenu').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-i]');
+      if (!b || b.disabled) return;
+      var p = etat.packs[+b.dataset.i];
+      if (dansPanier(p.id)) { window.location.href = '/pages/boutique-quincaillerie.html#panier'; return; }
+      var lignes = lire().filter(function (l) { return l.pack !== p.id; });
+      p.articles.forEach(function (x) { lignes.push({ ref: x.ref, q: 1, pack: p.id, packTitre: p.titre, packPrix: p.prix }); });
+      ecrire(lignes); pastille(); rendre();
+      if (window.gtag) gtag('event', 'add_to_cart', { currency: 'EUR', value: p.prix, items: [{ item_id: p.id, item_name: p.titre }] });
+      toast('✓ ' + esc(p.titre) + ' ajouté au panier <a href="/pages/boutique-quincaillerie.html#panier">Voir le panier →</a>');
+    });
     pastille();
   })();
   </script>

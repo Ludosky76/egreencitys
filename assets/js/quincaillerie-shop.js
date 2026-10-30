@@ -86,7 +86,7 @@
   function fac(a) { return etat.facettes[a.ref] || {}; }
   function sansAccents(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
   function texteRecherche(a) {
-    if (!a._q) { var f = fac(a); a._q = sansAccents([a.nom, f.m || a.marque, a.ref, f.v, f.v ? f.v.replace(' ', '') : ''].join(' ')); }
+    if (!a._q) { var f = fac(a); a._q = sansAccents([a.nom, f.m || a.marque, a.ref, a.ean || '', f.v, f.v ? f.v.replace(' ', '') : ''].join(' '));  /* EAN : recherche par code-barres */ }
     return a._q;
   }
   /* un article passe-t-il tous les filtres, sauf éventuellement le groupe « sauf » (pour compter les options) ? */
@@ -256,7 +256,7 @@
     return '<article class="q-card" data-ref="' + esc(a.ref) + '">'
       + '<a class="q-lien q-img" href="' + fiche + '"><img loading="lazy" src="' + esc(a.img) + '" alt="' + esc(a.nom) + '" onerror="this.parentNode.classList.add(\'q-noimg\')"></a>'
       + '<div class="q-body">'
-      + '<div class="q-ref">Réf. ' + esc(a.ref) + '</div>'
+      + '<div class="q-ref">Réf. ' + esc(a.ref) + (a.ean ? '<span class="q-ean"> · EAN ' + esc(a.ean) + '</span>' : '') + '</div>'
       + (fac(a).m ? '<div class="q-marque">' + esc(fac(a).m) + '</div>' : '')
       + '<a class="q-lien" href="' + fiche + '"><h3 class="q-nom">' + esc(a.nom) + '</h3></a>'
       + badgeStock(a.ref)
@@ -366,9 +366,11 @@
       if (l.pack && prixPack(l.pack) !== null) { if (vus[l.pack]) return s; vus[l.pack] = 1; return s + prixPack(l.pack); }
       var a = article(l.ref); return a ? s + a.prix * l.q : s;
     }, 0);
-    var offert = etat.panier.length > 0 && forfaitOffert(t);
-    var f = etat.panier.length && !offert ? etat.catalogue.forfait_expedition : 0;
-    return { articles: t, forfait: f, offert: offert, total: t + f };
+    /* packs pro à prix fixe : prix annoncé « tout compris, livré » = prix final, forfait inclus (seuls au panier) */
+    var inclus = etat.panier.length > 0 && etat.panier.every(function (l) { return l.pack && prixPack(l.pack) !== null; });
+    var offert = !inclus && etat.panier.length > 0 && forfaitOffert(t);
+    var f = etat.panier.length && !offert && !inclus ? etat.catalogue.forfait_expedition : 0;
+    return { articles: t, forfait: f, offert: offert, inclus: inclus, total: t + f };
   }
   function rendrePanier() {
     var corps = $('q-tiroir-corps');
@@ -385,12 +387,12 @@
         var tp = prixPack(l.pack) !== null ? prixPack(l.pack) : lp.reduce(function (s, x) { return s + article(x.ref).prix * x.q; }, 0);
         return '<div class="q-ligne q-ligne-pack">'
           + '<img src="' + esc(a.img) + '" alt="">'
-          + '<div class="q-ligne-infos"><div class="q-ligne-nom"><span class="q-pack-promo">Offre spéciale</span> ' + esc(l.packTitre || 'Pack') + '</div>'
+          + '<div class="q-ligne-infos"><div class="q-ligne-nom"><span class="q-pack-promo">' + (prixPack(l.pack) !== null ? 'Pack pro' : 'Offre spéciale') + '</span> ' + esc(l.packTitre || 'Pack') + '</div>'
           + '<div class="q-ligne-prix"><strong>' + eur(tp) + '</strong> · ' + lp.length + ' articles, 1 colis</div>'
           + '<details class="q-pack-detail"><summary>Voir le détail des articles</summary><ul>'
           + lp.map(function (x) { return '<li>' + (x.q > 1 ? x.q + ' × ' : '') + esc(article(x.ref).nom) + '</li>'; }).join('')
           + '</ul></details></div>'
-          + '<button type="button" class="q-suppr" data-suppr-pack="' + esc(l.pack) + '" aria-label="Retirer le carton">×</button>'
+          + '<button type="button" class="q-suppr" data-suppr-pack="' + esc(l.pack) + '" aria-label="Retirer le pack">×</button>'
           + '</div>';
       }
       return '<div class="q-ligne">'
@@ -408,7 +410,7 @@
     corps.insertAdjacentHTML('beforeend', blocSuggestions());  // zone défilante : ne réduit pas la liste
     var t = totalPanier();
     $('q-total-articles').textContent = eur(t.articles);
-    $('q-total-forfait').textContent = t.offert ? 'offert 🎁' : eur(t.forfait);
+    $('q-total-forfait').textContent = t.inclus ? 'inclus dans le prix du pack' : t.offert ? 'offert 🎁' : eur(t.forfait);
     $('q-total').textContent = eur(t.total);
     // paiement CB direct : uniquement UN article, quantité 1, disponible, lien actif
     var cb = $('q-payer-cb');
@@ -475,36 +477,154 @@
     });
     return out;
   }
+  /* Packs « pro » à prix fixe (promo.json → packs_pro, page /packs-pro/) : affichés si tous leurs articles sont au catalogue. */
+  function packsPro() {
+    var p = etat.promo;
+    return ((p && p.packs_pro) || []).map(function (pk) {
+      var L = (pk.articles || []).map(function (x) { return { a: article(x.ref), nom: x.nom }; });
+      return L.length && L.every(function (x) { return x.a && !x.a.devis; }) ? { pack: pk, L: L } : null;
+    }).filter(Boolean);
+  }
+  function vignettes(L) {
+    return '<div class="q-pack-vign">' + L.slice(0, 6).map(function (x) {
+      return '<a href="' + esc(ADR.fiche(x.a)) + '" title="' + esc(x.nom) + '"><img src="' + esc(x.a.img) + '" alt="' + esc(x.nom) + '" loading="lazy"></a>';
+    }).join('') + '</div>';
+  }
+  function cartePackMoment(pm, i) {
+    var total = pm.L.reduce(function (s, x) { return s + x.a.prix; }, 0);
+    return '<article class="q-pack q-pack-l">'
+      + '<div class="q-pack-info"><span class="q-promo-et">' + esc(pm.etiquette) + '</span><h2>' + esc(pm.pack.titre) + '</h2>'
+      + '<p class="q-pack-liste">' + pm.L.map(function (x) { return esc(x.nom); }).join(' · ') + '</p></div>'
+      + vignettes(pm.L)
+      + '<div class="q-pack-pied"><div><div class="q-promo-prix">' + eur(total) + '</div>'
+      + '<div class="q-promo-inclus">livré, octroi de mer compris'
+      + (forfaitOffert(total) ? ' · <strong>forfait offert</strong>' : ' · + forfait ' + eur(etat.catalogue.forfait_expedition)) + '</div></div>'
+      + '<button type="button" class="q-promo-btn" data-pack="' + i + '">🛒 Ajouter le pack</button></div>'
+      + '</article>';
+  }
+  function cartePackPro(pp, j) {
+    var p = pp.pack;
+    return '<article class="q-pack q-pack-l q-pack-pro">'
+      + '<div class="q-pack-info"><span class="q-promo-et">' + esc(p.marque || 'Pack pro') + '</span><h2>' + esc(p.titre) + '</h2>'
+      + '<p class="q-pack-liste">' + esc(p.accroche ? p.accroche + ' — ' : '') + pp.L.length + ' articles · ' + esc(p.colis || '1 colis') + '</p></div>'
+      + vignettes(pp.L)
+      + '<div class="q-pack-pied"><div><div class="q-promo-prix">' + eur(p.prix) + '</div>'
+      + '<div class="q-promo-inclus">' + esc(p.prix_txt || 'le pack complet') + ', livré, octroi de mer compris · <a href="/packs-pro/">détails</a></div></div>'
+      + '<button type="button" class="q-promo-btn" data-pro="' + j + '">🛒 Ajouter le pack</button></div>'
+      + '</article>';
+  }
+  /* Défilement vertical automatique, une carte à la fois (copie de la 1re carte en fin de piste pour boucler sans retour visible). */
+  var mouvementReduit = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function defileur(panneau) {
+    var fen = panneau.querySelector('.q-defil'), piste = panneau.querySelector('.q-defil-piste');
+    var items = [].slice.call(piste.children), n = items.length, i = 0, timer = null, vu = true;
+    var pts = panneau.querySelector('.q-defil-points');
+    if (n > 1) piste.appendChild(items[0].cloneNode(true)).setAttribute('aria-hidden', 'true');
+    var tous = [].slice.call(piste.children);
+    tous[n] && (tous[n].inert = true);
+    function pas() { return n > 1 ? tous[1].offsetTop - tous[0].offsetTop : 0; }
+    function placer(k, sec) {
+      piste.style.transition = sec || mouvementReduit ? 'none' : '';
+      piste.style.transform = 'translateY(' + (-k * pas()) + 'px)';
+    }
+    function aller(k, sec) {
+      if (n < 2) return;
+      if (i >= n) { placer(0, true); piste.offsetHeight; i = 0; }  /* clic pendant le passage sur la copie : recaler d'abord */
+      if (k >= n && (sec || mouvementReduit)) k = 0;                /* sans transition, pas de transitionend : aller directement au 1er */
+      if (k < 0) { placer(n, true); piste.offsetHeight; k = n - 1; }
+      i = k; placer(i, sec);
+      var reel = i % n;
+      items.forEach(function (it, j) { it.inert = j !== reel; it.setAttribute('aria-hidden', j !== reel ? 'true' : 'false'); });
+      if (pts) [].forEach.call(pts.children, function (b, j) { b.setAttribute('aria-current', j === reel ? 'true' : 'false'); });
+    }
+    piste.addEventListener('transitionend', function (e) { if (e.target === piste && i >= n) aller(0, true); });
+    function hauteur() {
+      var h = 0;
+      tous.forEach(function (it) { it.style.minHeight = ''; });
+      tous.forEach(function (it) { h = Math.max(h, it.offsetHeight); });
+      tous.forEach(function (it) { it.style.minHeight = h + 'px'; });
+      fen.style.height = h + 'px';
+      aller(i % n, true);
+    }
+    var survol = 0, toucher = 0;
+    function tic() { if (!survol && !toucher && !panneau.contains(document.activeElement) && vu && !panneau.hidden && !document.hidden) aller(i + 1); }
+    function demarrer() { clearInterval(timer); if (n > 1 && !mouvementReduit) timer = setInterval(tic, 4500); }
+    panneau.addEventListener('mouseenter', function () { survol = 1; });
+    panneau.addEventListener('mouseleave', function () { survol = 0; });
+    panneau.addEventListener('touchstart', function () { toucher = 1; clearTimeout(panneau._rep); panneau._rep = setTimeout(function () { toucher = 0; }, 9000); }, { passive: true });
+    panneau.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-dir],[data-aller]');
+      if (!b) return;
+      if (b.dataset.dir) aller(i % n + (+b.dataset.dir)); else aller(+b.dataset.aller);
+      demarrer();
+    });
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { vu = e[0].isIntersecting; }).observe(fen);
+    window.addEventListener('resize', function () { clearTimeout(panneau._rz); panneau._rz = setTimeout(hauteur, 150); });
+    return { hauteur: hauteur, demarrer: demarrer };
+  }
+  function panneauPacks(cle, cartes) {
+    var n = cartes.length;
+    return '<div class="q-op-panneau" id="q-op-' + cle + '" role="tabpanel" aria-labelledby="q-op-t-' + cle + '" hidden>'
+      + '<div class="q-defil"><div class="q-defil-piste">' + cartes.join('') + '</div></div>'
+      + (n > 1 ? '<div class="q-defil-nav"><button type="button" data-dir="-1" aria-label="Pack précédent">▲</button>'
+        + '<div class="q-defil-points">' + cartes.map(function (c, j) { return '<button type="button" data-aller="' + j + '" aria-label="Pack ' + (j + 1) + '"></button>'; }).join('') + '</div>'
+        + '<button type="button" data-dir="1" aria-label="Pack suivant">▼</button></div>' : '')
+      + '</div>';
+  }
   function afficherPromo() {
-    var packs = packsAffiches();
-    if (!packs.length || $('q-promo')) return;
-    var d = document.createElement('section');
-    d.id = 'q-promo'; d.className = 'q-packs n' + packs.length; d.setAttribute('aria-label', 'Packs');
-    d.innerHTML = packs.map(function (pm, i) {
-      var total = pm.L.reduce(function (s, x) { return s + x.a.prix; }, 0);
-      return '<article class="q-pack">'
-        + '<span class="q-promo-et">' + esc(pm.etiquette) + '</span>'
-        + '<h2>' + esc(pm.pack.titre) + '</h2>'
-        + '<div class="q-pack-vign">' + pm.L.map(function (x) {
-            return '<a href="' + esc(ADR.fiche(x.a)) + '" title="' + esc(x.nom) + '"><img src="' + esc(x.a.img) + '" alt="' + esc(x.nom) + '" loading="lazy"></a>';
-          }).join('') + '</div>'
-        + '<p class="q-pack-liste">' + pm.L.map(function (x) { return esc(x.nom); }).join(' · ') + '</p>'
-        + '<div class="q-pack-pied"><div><div class="q-promo-prix">' + eur(total) + '</div>'
-        + '<div class="q-promo-inclus">livré, octroi de mer compris'
-        + (forfaitOffert(total) ? ' · <strong>forfait offert</strong>' : ' · + forfait ' + eur(etat.catalogue.forfait_expedition)) + '</div></div>'
-        + '<button type="button" class="q-promo-btn" data-pack="' + i + '">🛒 Ajouter le pack</button></div>'
-        + '</article>';
-    }).join('');
+    var packs = packsAffiches(), pros = packsPro();
+    if ((!packs.length && !pros.length) || $('q-promo')) return;
+    var onglets = [];
+    if (packs.length) onglets.push({ cle: 'moment', titre: '🔥 Packs du moment', cartes: packs.map(cartePackMoment) });
+    if (pros.length) onglets.push({ cle: 'pro', titre: '⚡ Packs pro machines', cartes: pros.map(cartePackPro) });
+    var d = document.createElement('div');  /* pas <section> : refonte.css force un padding !important sur les sections en mobile */
+    d.id = 'q-promo'; d.className = 'q-op'; d.setAttribute('role', 'region'); d.setAttribute('aria-label', 'Packs');
+    d.innerHTML = '<div class="q-op-tabs" role="tablist">' + onglets.map(function (o) {
+        return '<button type="button" role="tab" id="q-op-t-' + o.cle + '" aria-controls="q-op-' + o.cle + '" data-onglet="' + o.cle + '">'
+          + o.titre + ' <span>' + o.cartes.length + '</span></button>';
+      }).join('') + '<a class="q-op-tout" href="/packs-pro/">Tous les packs →</a></div>'
+      + onglets.map(function (o) { return panneauPacks(o.cle, o.cartes); }).join('');
     var avant = $('q-rayons');
     avant.parentNode.insertBefore(d, avant);
-    d.addEventListener('click', function (e) {
-      var b = e.target.closest('[data-pack]');
-      if (!b) return;
-      packs[+b.dataset.pack].L.forEach(function (x) {
-        if (!etat.panier.some(function (l) { return l.ref === x.a.ref; })) etat.panier.push({ ref: x.a.ref, q: 1 });
+    var defs = {};
+    onglets.forEach(function (o) { defs[o.cle] = defileur($('q-op-' + o.cle)); });
+    function ouvrir(cle) {
+      onglets.forEach(function (o) {
+        var actif = o.cle === cle;
+        $('q-op-' + o.cle).hidden = !actif;
+        $('q-op-t-' + o.cle).setAttribute('aria-selected', actif ? 'true' : 'false');
+        $('q-op-t-' + o.cle).tabIndex = actif ? 0 : -1;
       });
+      defs[cle].hauteur(); defs[cle].demarrer();
+      try { localStorage.setItem('egc_quinc_onglet_packs', cle); } catch (e) {}
+    }
+    var memo = null;
+    try { memo = localStorage.getItem('egc_quinc_onglet_packs'); } catch (e) {}
+    ouvrir(defs[memo] ? memo : onglets[0].cle);
+    /* hauteur recalculée une fois les polices chargées (le texte des cartes change alors de hauteur) */
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { var o = d.querySelector('.q-op-panneau:not([hidden])'); if (o) defs[o.id.slice(5)].hauteur(); });
+    d.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-onglet]');
+      if (t) { ouvrir(t.dataset.onglet); return; }
+      var b = e.target.closest('[data-pack]');
+      if (b) {
+        packs[+b.dataset.pack].L.forEach(function (x) {
+          if (!etat.panier.some(function (l) { return l.ref === x.a.ref; })) etat.panier.push({ ref: x.a.ref, q: 1 });
+        });
+      } else if ((b = e.target.closest('[data-pro]'))) {
+        var p = pros[+b.dataset.pro].pack;
+        etat.panier = etat.panier.filter(function (l) { return l.pack !== p.id; });
+        p.articles.forEach(function (x) { etat.panier.push({ ref: x.ref, q: 1, pack: p.id, packTitre: p.titre, packPrix: p.prix }); });
+        if (window.gtag) gtag('event', 'add_to_cart', { currency: 'EUR', value: p.prix, items: [{ item_id: p.id, item_name: p.titre }] });
+      } else return;
       sauver(); majPastille(); rendrePanier();
       $('q-tiroir').classList.add('ouvert');
+    });
+    d.querySelector('.q-op-tabs').addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      var k = onglets.findIndex(function (o) { return $('q-op-t-' + o.cle).getAttribute('aria-selected') === 'true'; });
+      var o = onglets[(k + (e.key === 'ArrowRight' ? 1 : onglets.length - 1)) % onglets.length];
+      ouvrir(o.cle); $('q-op-t-' + o.cle).focus();
     });
   }
 
@@ -535,7 +655,11 @@
   }
   function messageGroupage() {
     var f = etat.catalogue.forfait_expedition;
-    var unites = etat.panier.reduce(function (s, l) { return s + l.q; }, 0);
+    var vusU = {}, unites = etat.panier.reduce(function (s, l) {
+      if (l.pack) { if (vusU[l.pack]) return s; vusU[l.pack] = 1; return s + 1; }
+      return s + l.q;
+    }, 0);
+    if (totalPanier().inclus) return '<p class="q-groupe q-groupe-ok">✅ Prix fixe du pack : <strong>transport et forfait d’expédition inclus</strong>.</p>';
     if (offreActive()) {
       var manque = etat.offre.seuil - totalPanier().articles;
       return manque > 0
@@ -740,13 +864,15 @@
         return '1 × PACK [' + l.pack + '] ' + (l.packTitre || 'Pack') + ' — ' + eur(prixPack(l.pack)) + ' (prix fixe) : '
           + etat.panier.filter(function (x) { return x.pack === l.pack; }).map(function (x) { return x.q + ' × ' + x.ref; }).join(', ');
       }
+      if (!a) return null;  /* article retiré du catalogue depuis l'ajout au panier : ignoré, comme dans le panier affiché */
       return l.q + ' × [' + l.ref + '] ' + a.nom + ' — ' + eur(a.prix * l.q) + ' (' + statutDe(l.ref) + ')';
     }).filter(function (x) { return x; }).join('\n');
     var corps = {
       _subject: 'Commande quincaillerie — ' + eur(t.total),
       email: email, telephone: tel,
       panier: lignes,
-      total: t.offert ? eur(t.total) + ' — forfait d’expédition OFFERT (offre de lancement, code ' + etat.offre.code + ')'
+      total: t.inclus ? eur(t.total) + ' — packs à prix fixe, forfait d’expédition inclus'
+           : t.offert ? eur(t.total) + ' — forfait d’expédition OFFERT (offre de lancement, code ' + etat.offre.code + ')'
                       : eur(t.total) + ' dont forfait expédition ' + eur(t.forfait),
       _template: 'box'
     };

@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/quincaillerie.css?v=22">
+  <link rel="stylesheet" href="/assets/css/quincaillerie.css?v=26">
   <link rel="stylesheet" href="/assets/css/refonte.css?v=8">
   <script src="/assets/js/quincaillerie-theme.js?v=1"></script>
 </head>
@@ -58,6 +58,7 @@
         <button type="button" class="theme-btn" id="q-theme" aria-label="Basculer clair/sombre">🌙</button>
         <!-- retour page de garde : le panier (localStorage) est conservé -->
         <a href="/" class="lghost" title="Retour à la page d'accueil — votre panier est conservé">Accueil</a>
+        <a href="/packs-pro/" class="lghost q-hl-packs" style="border-color:#ffc457;color:#FFC457;font-weight:800" title="Packs machines avec accessoires, un seul prix tout compris">🔥 Packs pro</a>
         <button type="button" class="cart-pill" id="q-ouvrir-panier">🛒 Panier<span id="q-pastille">0</span></button>
         <a href="/pages/boutique.html" class="lback">← Boutiques</a>
       </div>
@@ -75,6 +76,7 @@
         <a href="/pages/compte.html">Mon compte</a>
         <a href="/pages/suivi.html">Suivi de commande</a>
         <div class="q-menu-titre">Boutique</div>
+        <a href="/packs-pro/">🔥 Packs pro (machines + accessoires)</a>
         <a href="/pages/quincaillerie.html">À propos de la boutique</a>
         <a href="/pages/legal/cgv-quincaillerie.html">Conditions de vente</a>
         <a href="/pages/quincaillerie.html#faq-quincaillerie">FAQ outillage</a>
@@ -97,7 +99,7 @@
 
   <div class="q-filtres">
     <button type="button" id="q-volet-btn" aria-controls="q-volet" aria-expanded="true">⚙ Filtres<span id="q-volet-nb"></span></button>
-    <input type="search" id="q-recherche" placeholder="Rechercher : perceuse 18 V, foret béton, Fluke…" aria-label="Rechercher un article">
+    <input type="search" id="q-recherche" placeholder="Rechercher : perceuse 18 V, foret béton, code EAN…" aria-label="Rechercher un article">
     <select id="q-cat" aria-label="Catégorie"><option value="">Toutes les catégories</option></select>
     <select id="q-tri" aria-label="Tri">
       <option value="pertinence">Tri : catalogue</option>
@@ -157,7 +159,7 @@
   <script src="/assets/js/quincaillerie-compte.js?v=2"></script>
   <script src="/assets/js/site-config.js?v=3" defer></script>
   <script src="/assets/js/quincaillerie-url.js?v=1" defer></script>
-  <script src="/assets/js/quincaillerie-shop.js?v=23" defer></script>
+  <script src="/assets/js/quincaillerie-shop.js?v=27" defer></script>
   <script src="/assets/js/mobile-nav.js?v=9" defer></script>
 <script src="/assets/js/protection.js?v=1" defer></script>
   <script src="/assets/js/analytics.js?v=2" defer></script>

@@ -594,7 +594,150 @@
      "ref": "693KY",
      "nom": "Coffret de 19 forets métal"
     }
+   ],
+   "categorie": "machines",
+   "accroche": "Le duo pro tout équipé"
+  },
+  {
+   "id": "trio-dewalt-compact",
+   "categorie": "machines",
+   "etiquette": "Nouveau pack",
+   "titre": "Trio DeWalt XR Compact",
+   "marque": "DeWalt · 18 V XR",
+   "accroche": "Percer, visser, meuler",
+   "sous_titre": "Perceuse-visseuse brushless avec 2 batteries 4 Ah et chargeur, visseuse à choc compacte et meuleuse 125 mm : 3 machines sur la même batterie",
+   "prix": 799,
+   "colis": "1 colis, environ 7,5 kg",
+   "articles": [
+    {
+     "ref": "682RH",
+     "nom": "Perceuse-visseuse brushless DeWalt DCD777M2T, 2 batteries 4 Ah, chargeur, coffret TSTAK"
+    },
+    {
+     "ref": "767PH",
+     "nom": "Visseuse à choc compacte brushless DeWalt DCF787N (machine seule)"
+    },
+    {
+     "ref": "276HG",
+     "nom": "Meuleuse d'angle brushless DeWalt DCG405N 125 mm (machine seule)"
+    }
    ]
+  },
+  {
+   "id": "trio-dewalt-5ah",
+   "categorie": "machines",
+   "etiquette": "Nouveau pack",
+   "titre": "Trio DeWalt XR 5 Ah",
+   "marque": "DeWalt · 18 V XR",
+   "accroche": "Percer, visser, tronçonner",
+   "sous_titre": "Perceuse-visseuse brushless avec 2 batteries 5 Ah et chargeur, visseuse à choc et mini-disqueuse 76 mm : 3 machines sur la même batterie",
+   "prix": 889,
+   "colis": "1 colis, environ 7,5 kg",
+   "articles": [
+    {
+     "ref": "199AJ",
+     "nom": "Perceuse-visseuse brushless DeWalt DCD708P2T, 2 batteries 5 Ah, chargeur, coffret TSTAK"
+    },
+    {
+     "ref": "551FU",
+     "nom": "Visseuse à choc brushless DeWalt DCF887N (machine seule)"
+    },
+    {
+     "ref": "693AJ",
+     "nom": "Mini-disqueuse brushless DeWalt DCS438N 76 mm (machine seule)"
+    }
+   ]
+  },
+  {
+   "id": "meuleuse-m18-pro",
+   "categorie": "machines",
+   "etiquette": "Nouveau pack",
+   "titre": "Meuleuse M18 Brushless Pro",
+   "marque": "Milwaukee · M18",
+   "accroche": "Tronçonner béton, métal et bois",
+   "sous_titre": "Meuleuse d'angle brushless 125 mm avec 2 batteries 4 Ah, chargeur et coffret, livrée avec 3 disques (diamant béton, diamant multimatériaux, tronçonnage), un mètre 7,5 m, une équerre, un cutter 6-en-1 et 12 crayons de charpentier",
+   "prix": 799,
+   "colis": "1 colis, environ 8,6 kg",
+   "articles": [
+    {
+     "ref": "449KN",
+     "nom": "Meuleuse d'angle brushless Milwaukee M18 125 mm, 2 batteries 4 Ah, chargeur, coffret"
+    },
+    {
+     "ref": "849GE",
+     "nom": "Disque diamant multimatériaux Milwaukee Speedcross 125 mm"
+    },
+    {
+     "ref": "5823R",
+     "nom": "Disque diamant segmenté béton et pierre 125 mm"
+    },
+    {
+     "ref": "297KY",
+     "nom": "Disque à tronçonner multimatériaux 125 mm (bois, métal, plastique)"
+    },
+    {
+     "ref": "948KN",
+     "nom": "Mètre ruban Milwaukee 7,5 m"
+    },
+    {
+     "ref": "7045K",
+     "nom": "Équerre combinée Bahco 150 mm"
+    },
+    {
+     "ref": "649GC",
+     "nom": "Cutter 6-en-1 Milwaukee Fastback Flip"
+    },
+    {
+     "ref": "2950V",
+     "nom": "12 crayons de charpentier"
+    }
+   ]
+  },
+  {
+   "id": "duo-makita-lxt",
+   "categorie": "machines",
+   "etiquette": "Nouveau pack",
+   "titre": "Duo Makita LXT",
+   "marque": "Makita · 18 V LXT",
+   "accroche": "Vous avez déjà des batteries Makita ?",
+   "sous_titre": "Perceuse-visseuse DDF482 et visseuse à choc DTD156 en machines seules, pour vos batteries Makita 18 V LXT, avec 100 forets et embouts, 38 embouts à choc, un kit tournevis 85 pièces, un mètre 5 m, un organiseur et 12 crayons de charpentier",
+   "prix": 629,
+   "colis": "1 colis, environ 8,8 kg",
+   "articles": [
+    {
+     "ref": "6662P",
+     "nom": "Perceuse-visseuse Makita DDF482Z 18 V LXT (machine seule)"
+    },
+    {
+     "ref": "498JJ",
+     "nom": "Visseuse à choc Makita DTD156Z 18 V LXT (machine seule)"
+    },
+    {
+     "ref": "3239R",
+     "nom": "Coffret Makita de 100 forets et embouts (bois, métal, béton, scies-cloches)"
+    },
+    {
+     "ref": "698GE",
+     "nom": "Coffret de 38 embouts à choc Milwaukee Shockwave"
+    },
+    {
+     "ref": "403FG",
+     "nom": "Kit tournevis et embouts Magnusson 85 pièces"
+    },
+    {
+     "ref": "6497K",
+     "nom": "Mètre ruban Stanley FatMax 5 m"
+    },
+    {
+     "ref": "8828K",
+     "nom": "Organiseur Stanley 40 × 29 cm"
+    },
+    {
+     "ref": "2950V",
+     "nom": "12 crayons de charpentier"
+    }
+   ],
+   "prix_txt": "le duo en machines seules + 6 accessoires"
   }
  ],
  "regle_packs_pro": "packs_pro : prix FIXE du pack (champ prix), validé par le gérant le 30/10/2026 ; commande par formulaire (vérification fournisseur sous 24 h ouvrées, aucun encaissement avant confirmation) ; page /packs-pro/. Pack laser + trépied retiré le 30/10/2026 (trépied non rentable à l'expédition)."
