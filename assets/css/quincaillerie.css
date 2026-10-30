@@ -487,3 +487,5 @@ html[data-theme="dark"] #q-volet-btn[aria-expanded="true"]{background:#2A39C0;co
   .q-defil .q-pack-l .q-promo-btn{flex:1 1 auto;}
   .q-op-tabs [role=tab]{flex:1 1 0;min-width:0;white-space:normal;line-height:1.2;padding:.5rem .45rem;text-align:center;}
 }
+.q-defil-nav>.q-defil-pause{margin-top:.15rem;font-size:.62rem;background:transparent;border-style:dashed;}
+.q-defil-nav>.q-defil-pause[aria-pressed=true]{background:#FFC457;color:#2A1600;border-style:solid;}

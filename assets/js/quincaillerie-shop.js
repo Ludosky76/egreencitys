@@ -546,16 +546,24 @@
       fen.style.height = h + 'px';
       aller(i % n, true);
     }
-    var survol = 0, toucher = 0;
-    function tic() { if (!survol && !toucher && !panneau.contains(document.activeElement) && vu && !panneau.hidden && !document.hidden) aller(i + 1); }
-    function demarrer() { clearInterval(timer); if (n > 1 && !mouvementReduit) timer = setInterval(tic, 4500); }
-    panneau.addEventListener('mouseenter', function () { survol = 1; });
-    panneau.addEventListener('mouseleave', function () { survol = 0; });
-    panneau.addEventListener('touchstart', function () { toucher = 1; clearTimeout(panneau._rep); panneau._rep = setTimeout(function () { toucher = 0; }, 9000); }, { passive: true });
+    /* Défilement TOUJOURS automatique (demande du gérant, 30/10/2026) : pas d'arrêt au survol, au toucher ni après un clic.
+       Seules exceptions : le bouton ⏸ (arrêt volontaire) et la navigation au clavier dans une carte (focus visible).
+       « Animations réduites » sur l'appareil : le pack change sans glissement, mais change quand même. */
+    var arret = false, btnPause = panneau.querySelector('[data-pause]');
+    function clavier() { try { return !!panneau.querySelector('.q-defil :focus-visible'); } catch (e) { return false; } }
+    function tic() { if (!arret && !clavier() && vu && !panneau.hidden && !document.hidden) aller(i + 1); }
+    function demarrer() { clearInterval(timer); if (n > 1) timer = setInterval(tic, 4500); }
+    function majPause() {
+      if (!btnPause) return;
+      btnPause.textContent = arret ? '▶' : '⏸';
+      btnPause.setAttribute('aria-pressed', arret ? 'true' : 'false');
+      btnPause.setAttribute('aria-label', arret ? 'Relancer le défilement des packs' : 'Mettre en pause le défilement des packs');
+    }
     panneau.addEventListener('click', function (e) {
-      var b = e.target.closest('[data-dir],[data-aller]');
+      var b = e.target.closest('[data-dir],[data-aller],[data-pause]');
       if (!b) return;
-      if (b.dataset.dir) aller(i % n + (+b.dataset.dir)); else aller(+b.dataset.aller);
+      if (b.hasAttribute('data-pause')) { arret = !arret; majPause(); }
+      else if (b.dataset.dir) aller(i % n + (+b.dataset.dir)); else aller(+b.dataset.aller);
       demarrer();
     });
     if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { vu = e[0].isIntersecting; }).observe(fen);
@@ -568,7 +576,8 @@
       + '<div class="q-defil"><div class="q-defil-piste">' + cartes.join('') + '</div></div>'
       + (n > 1 ? '<div class="q-defil-nav"><button type="button" data-dir="-1" aria-label="Pack précédent">▲</button>'
         + '<div class="q-defil-points">' + cartes.map(function (c, j) { return '<button type="button" data-aller="' + j + '" aria-label="Pack ' + (j + 1) + '"></button>'; }).join('') + '</div>'
-        + '<button type="button" data-dir="1" aria-label="Pack suivant">▼</button></div>' : '')
+        + '<button type="button" data-dir="1" aria-label="Pack suivant">▼</button>'
+        + '<button type="button" class="q-defil-pause" data-pause aria-pressed="false" aria-label="Mettre en pause le défilement des packs">⏸</button></div>' : '')
       + '</div>';
   }
   function afficherPromo() {
