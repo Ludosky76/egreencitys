@@ -372,7 +372,7 @@
      Montant restant = points manquants × prix moyen d'un point des articles déjà au carton
      (repère du catalogue quand le carton est vide), arrondi aux 5 € supérieurs. */
   function cartonConfig() {
-    return (etat.holex && etat.holex.carton) || { nom: 'Carton Atelier', seuil_points: 100, eur_par_point: 7.8, minimum_affiche: 780, poids_max: 10, cartons_max: 5, prix_carton: 150, dims: [30, 40, 40], delai: 'environ 2 semaines après l’envoi du carton' };
+    return (etat.holex && etat.holex.carton) || { nom: 'Carton Atelier', seuil_points: 100, eur_par_point: 7.8, minimum_affiche: 780, poids_max: 10, cartons_max: 1, prix_carton: 150, dims: [30, 40, 40], delai: 'environ 2 semaines après l’envoi du carton' };
   }
   function cartonInfo() {
     var c = cartonConfig(), pts = 0, montant = 0, kg = 0, n = 0, unites = [];
@@ -393,7 +393,7 @@
       reste: pts >= c.seuil_points ? 0 : Math.ceil((c.seuil_points - pts) * parPoint / 5) * 5,
       feu: pts >= c.seuil_points ? 'vert' : pct >= 50 ? 'jaune' : 'rouge',
       cartons: nbCartons(unites, c.poids_max),
-      lourd: nbCartons(unites, c.poids_max) > (c.cartons_max || 5)
+      lourd: nbCartons(unites, c.poids_max) > (c.cartons_max || 1)  // 1 colis de 10 kg (31/10/2026)
     };
   }
   /* La commande peut partir en plusieurs cartons de poids_max kg (le 1er est compris dans les prix, les suivants
@@ -411,7 +411,7 @@
   function blocCarton(ci) {
     var c = ci.c;
     var msg = ci.lourd
-      ? '⚠️ Votre commande pèse environ <strong>' + kgTexte(ci.kg) + ' kg</strong> : envoyez-la par le formulaire, nous vous proposons un devis.'
+      ? '⚠️ Votre commande pèse environ <strong>' + kgTexte(ci.kg) + ' kg</strong> : le ' + esc(c.nom) + ' part en un seul colis de ' + c.poids_max + ' kg au plus. Retirez des articles lourds, ou envoyez la commande par le formulaire : nous vous proposons un devis.'
       : ci.complet
       ? '✅ <strong>Carton complet : il peut partir !</strong> Livraison ' + esc(c.delai) + '.'
       : 'Encore <strong>' + eur(ci.reste).replace(',00', '') + '</strong> d’articles Holex pour déclencher l’envoi du carton (ce montant dépend des articles choisis). Les articles Holex partent ensemble, dès que le carton est complet.';
@@ -1079,7 +1079,7 @@
       _subject: 'Commande quincaillerie — ' + eur(t.total),
       email: email, telephone: tel,
       panier: lignes,
-      carton_atelier: ci.n ? ci.n + ' article(s), ' + kgTexte(ci.kg) + ' kg, ' + ci.cartons + ' carton(s)' + (ci.lourd ? ' — PLUS DE ' + (ci.c.cartons_max || 5) + ' CARTONS : DEVIS' : '') : 'aucun',
+      carton_atelier: ci.n ? ci.n + ' article(s), ' + kgTexte(ci.kg) + ' kg, ' + ci.cartons + ' carton(s)' + (ci.lourd ? ' — PLUS DE ' + (ci.c.cartons_max || 1) + ' CARTON(S) : DEVIS' : '') : 'aucun',
       total: t.inclus ? eur(t.total) + ' — packs à prix fixe, forfait d’expédition inclus'
            : t.offert ? eur(t.total) + ' — forfait d’expédition OFFERT (offre de lancement, code ' + etat.offre.code + ')'
                       : eur(t.total) + ' dont forfait expédition ' + eur(t.forfait),
