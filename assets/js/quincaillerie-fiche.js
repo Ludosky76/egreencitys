@@ -238,7 +238,7 @@
       +     (a.pc
       ?       (statutDe(ref) !== 'introuvable' ? '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>' : '<a class="q-pay" href="' + urlDemande(ref) + '">✉️ Faire une demande</a>')
       +       '<p class="qf-astuce">📦 Cet article part dans le <strong>' + esc(cartonNom()) + '</strong>, avec vos autres articles Holex : commande possible <strong>à partir d’environ '
-      +       eur((etat.holex && etat.holex.carton.minimum_affiche) || 780).replace(',00', '') + ' d’articles Holex</strong>. Le voyant du panier (rouge, jaune, vert) vous indique en direct ce qu’il reste'
+      +       eur((etat.holex && etat.holex.carton.minimum_affiche) || 940).replace(',00', '') + ' d’articles Holex</strong>. Le voyant du panier (rouge, jaune, vert) vous indique en direct ce qu’il reste'
       +       '.</p>'
       :     a.devis
       ?       '<a class="q-pay" href="' + urlDemande(ref) + '">📦 Demander un devis<span class="q-pay-sub">article de plus de 30 kg ou hors format — réponse sous 24 h ouvrées, suivi dans votre espace client</span></a>'
