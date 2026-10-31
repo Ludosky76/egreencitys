@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "egreencitys-93e0b"
-  }
+  },
+  "targets": {
+    "egreencitys-93e0b": {
+      "hosting": {
+        "fr": [
+          "egreencitys-fr"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

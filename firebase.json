@@ -6,5 +6,18 @@
   "firestore": {
     "rules": "_backend/firestore.rules",
     "indexes": "firestore.indexes.json"
-  }
+  },
+  "hosting": [
+    {
+      "target": "fr",
+      "public": "_backend/redirect-fr",
+      "redirects": [
+        {
+          "regex": "^/(?P<chemin>.*)$",
+          "destination": "https://egreencitys.com/:chemin",
+          "type": 301
+        }
+      ]
+    }
+  ]
 }
