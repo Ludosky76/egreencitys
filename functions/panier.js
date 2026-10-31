@@ -30,6 +30,16 @@ function decouper(elements) {
   return md;
 }
 
+/* nombre de cartons Carton Atelier : plus lourd d'abord, dans le premier carton où il reste de la place */
+function nbCartons(unites, max) {
+  const cartons = [];
+  for (const p of unites.slice().sort((a, b) => b - a)) {
+    const i = cartons.findIndex((c) => c + p <= max);
+    if (i >= 0) cartons[i] += p; else cartons.push(p);
+  }
+  return Math.max(1, cartons.length);
+}
+
 async function creerSessionPanier(corps, cleStripe) {
   corps = (corps && typeof corps === 'object') ? corps : {};
   const lignes = Array.isArray(corps.panier) ? corps.panier : [];
@@ -54,7 +64,8 @@ async function creerSessionPanier(corps, cleStripe) {
   const parRef = new Map(catalogue.articles.map((a) => [a.ref, a]));
   if (holex) holex.articles.forEach((a) => parRef.set(a.ref, a));
   const articles = [], refus = [];
-  let total = 0, poids = 0, points = 0, poidsCarton = 0;
+  let total = 0, poids = 0, points = 0, cartons = 0;
+  const unitesCarton = [];
   for (const l of lignes) {
     const ref = String((l && l.ref) || '').slice(0, 20);
     const q = Math.floor(Number(l && l.q));
@@ -65,7 +76,7 @@ async function creerSessionPanier(corps, cleStripe) {
     if (!s || !(s.s === 'disponible' || (a.pc && s.s === 'faible'))) { refus.push({ ref, motif: 'indisponible chez le fournisseur' }); continue; }
     articles.push({ a, q });
     total += a.prix * q;
-    if (a.pc) { points += a.pc * q; poidsCarton += (a.poids || 0) * q; } else poids += (a.poids || 0) * q;
+    if (a.pc) { points += a.pc * q; for (let i = 0; i < q; i++) unitesCarton.push(a.poids || 0.5); } else poids += (a.poids || 0) * q;
   }
   if (refus.length) return { statut: 409, json: { erreur: 'panier', refus } };
   if (poids > POIDS_MAX_COLIS) return { statut: 409, json: { erreur: 'poids', poids: Math.round(poids * 10) / 10 } };
@@ -75,7 +86,11 @@ async function creerSessionPanier(corps, cleStripe) {
     // paiement par carte du Carton Atelier : seulement quand il est explicitement ouvert
     if (!(reglages && reglages.carton_cb === true)) return { statut: 409, json: { erreur: 'carton_cb' } };
     if (points < c.seuil_points) return { statut: 409, json: { erreur: 'carton' } };
-    if (poidsCarton > c.poids_max) return { statut: 409, json: { erreur: 'poids', poids: Math.round(poidsCarton * 10) / 10 } };
+    // plusieurs cartons de poids_max kg possibles (transport compté au kilo dans les prix), au plus cartons_max
+    cartons = nbCartons(unitesCarton, c.poids_max);
+    if (cartons > (c.cartons_max || 5)) {
+      return { statut: 409, json: { erreur: 'poids', poids: Math.round(unitesCarton.reduce((s, p) => s + p, 0) * 10) / 10 } };
+    }
   }
 
   // Un seul colis : un seul forfait d'expédition. Offre de lancement : appliquée avec le VRAI
@@ -93,6 +108,12 @@ async function creerSessionPanier(corps, cleStripe) {
       product_data: { name: ('[' + a.ref + '] ' + a.nom).slice(0, 250), images: a.img ? [/^https?:/.test(a.img) ? a.img : SITE + a.img] : [] },
     },
   }));
+  // le 1er carton est compris dans le prix des articles Holex ; chaque carton en plus est facturé à part
+  if (cartons > 1) line_items.push({
+    quantity: cartons - 1,
+    price_data: { currency: 'eur', unit_amount: Math.round((holex.carton.prix_carton || 150) * 100),
+      product_data: { name: 'Carton Atelier supplémentaire (' + holex.carton.poids_max + ' kg max par carton)' } },
+  });
   line_items.push({
     quantity: 1,
     price_data: { currency: 'eur', unit_amount: Math.round(catalogue.forfait_expedition * 100),
@@ -109,7 +130,7 @@ async function creerSessionPanier(corps, cleStripe) {
     metadata: {
       ...decouper(articles.map(({ a, q }) => q + 'x' + a.ref)),
       poids_kg: poids.toFixed(2),
-      carton_atelier: points > 0 ? poidsCarton.toFixed(2) + ' kg' : '',
+      carton_atelier: points > 0 ? unitesCarton.reduce((s, p) => s + p, 0).toFixed(2) + ' kg, ' + cartons + ' carton(s)' : '',
       offre: offert ? offre.code : '',
     },
     success_url: BOUTIQUE + '?paiement=succes&panier=1',

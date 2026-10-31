@@ -148,6 +148,9 @@
       return fetch('/assets/data/fiches/hx/' + encodeURIComponent(String(a.fam).replace(/[^A-Za-z0-9_-]/g, '_')) + '.json')
         .then(function (r) { if (!r.ok) throw 0; return r.json(); })
         .then(function (j) {  /* prix d'un lot : on le dit en tête des caractéristiques */
+          /* la page statique de la famille (toutes les tailles) est celle que Google indexe */
+          var canon = document.querySelector('link[rel="canonical"]');
+          if (j._page && canon) canon.setAttribute('href', 'https://egreencitys.com' + j._page);
           var o = {}; o[ref] = { c: (a.lot > 1 ? ['Vendu par lot de ' + a.lot + ' pièces (prix affiché pour le lot)'] : []).concat(j[ref] || []) }; return o;
         })
         .catch(function () { return {}; });
@@ -236,7 +239,7 @@
       ?       (statutDe(ref) !== 'introuvable' ? '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>' : '<a class="q-pay" href="' + urlDemande(ref) + '">✉️ Faire une demande</a>')
       +       '<p class="qf-astuce">📦 Cet article part dans le <strong>' + esc(cartonNom()) + '</strong>, avec vos autres articles Holex : commande possible <strong>à partir d’environ '
       +       eur((etat.holex && etat.holex.carton.minimum_affiche) || 780).replace(',00', '') + ' d’articles Holex</strong>. Le voyant du panier (rouge, jaune, vert) vous indique en direct ce qu’il reste'
-      +       ((etat.holex && etat.holex.carton.dims) ? ' — carton ' + etat.holex.carton.dims.join(' × ') + ' cm, ' + etat.holex.carton.poids_max + ' kg maximum' : '') + '.</p>'
+      +       ((etat.holex && etat.holex.carton.dims) ? ' — carton ' + etat.holex.carton.dims.join(' × ') + ' cm, ' + etat.holex.carton.poids_max + ' kg maximum chacun ; le premier carton est compris dans les prix, chaque carton en plus ' + ((etat.holex && etat.holex.carton.prix_carton) || 150) + ' €' : '') + '.</p>'
       :     a.devis
       ?       '<a class="q-pay" href="' + urlDemande(ref) + '">📦 Demander un devis<span class="q-pay-sub">article de plus de 30 kg ou hors format — réponse sous 24 h ouvrées, suivi dans votre espace client</span></a>'
       :     dispo

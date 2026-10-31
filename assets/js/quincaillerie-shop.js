@@ -372,14 +372,16 @@
      Montant restant = points manquants × prix moyen d'un point des articles déjà au carton
      (repère du catalogue quand le carton est vide), arrondi aux 5 € supérieurs. */
   function cartonConfig() {
-    return (etat.holex && etat.holex.carton) || { nom: 'Carton Atelier', seuil_points: 100, eur_par_point: 7.8, minimum_affiche: 780, poids_max: 10, dims: [30, 40, 40], delai: 'environ 2 semaines après l’envoi du carton' };
+    return (etat.holex && etat.holex.carton) || { nom: 'Carton Atelier', seuil_points: 100, eur_par_point: 7.8, minimum_affiche: 780, poids_max: 10, cartons_max: 5, prix_carton: 150, dims: [30, 40, 40], delai: 'environ 2 semaines après l’envoi du carton' };
   }
   function cartonInfo() {
-    var c = cartonConfig(), pts = 0, montant = 0, kg = 0, n = 0;
+    var c = cartonConfig(), pts = 0, montant = 0, kg = 0, n = 0, unites = [];
     etat.panier.forEach(function (l) {
       var a = article(l.ref);
       if (!a || !a.pc) return;
-      pts += a.pc * l.q; montant += a.prix * l.q; kg += (a.poids || 0.5) * l.q; n += l.q;  /* poids inconnu : 0,5 kg, jamais 0 */
+      var p = a.poids || 0.5;  /* poids inconnu : 0,5 kg, jamais 0 */
+      pts += a.pc * l.q; montant += a.prix * l.q; kg += p * l.q; n += l.q;
+      for (var i = 0; i < l.q && unites.length < 400; i++) unites.push(p);
     });
     /* lignes Holex dont la gamme n'est pas (encore) chargée : rien ne part tant qu'on ne les connaît pas */
     var attente = !etat.holex && etat.panier.some(function (l) { return /^HX/.test(l.ref) && !article(l.ref); });
@@ -390,25 +392,40 @@
       complet: pts >= c.seuil_points,
       reste: pts >= c.seuil_points ? 0 : Math.ceil((c.seuil_points - pts) * parPoint / 5) * 5,
       feu: pts >= c.seuil_points ? 'vert' : pct >= 50 ? 'jaune' : 'rouge',
-      lourd: kg > c.poids_max
+      cartons: nbCartons(unites, c.poids_max),
+      lourd: nbCartons(unites, c.poids_max) > (c.cartons_max || 5)
     };
+  }
+  /* La commande peut partir en plusieurs cartons de poids_max kg (le transport est compté au kilo
+     dans chaque prix) : rangement « plus lourd d'abord » dans le premier carton où il reste de la place. */
+  function nbCartons(unites, max) {
+    var cartons = [];
+    unites.slice().sort(function (a, b) { return b - a; }).forEach(function (p) {
+      for (var i = 0; i < cartons.length; i++) if (cartons[i] + p <= max) { cartons[i] += p; return; }
+      cartons.push(p);
+    });
+    return Math.max(1, cartons.length);
+  }
+  function poidsTexte(ci) {
+    return kgTexte(ci.kg) + ' kg' + (ci.cartons > 1 ? ' · ' + ci.cartons + ' cartons' : ' / ' + ci.c.poids_max + ' kg');
   }
   function kgTexte(x) { return x.toLocaleString('fr-FR', { maximumFractionDigits: x < 10 ? 2 : 1 }); }
   function blocCarton(ci) {
     var c = ci.c, d = (c.dims || []).join(' × ');
     var msg = ci.lourd
-      ? '⚠️ Votre carton pèse environ <strong>' + kgTexte(ci.kg) + ' kg</strong> : au-delà de ' + c.poids_max + ' kg il ne part pas en un seul envoi. Envoyez la commande, nous vous proposons un devis.'
+      ? '⚠️ Votre commande pèse environ <strong>' + kgTexte(ci.kg) + ' kg</strong>, soit plus de ' + (c.cartons_max || 5) + ' cartons. Envoyez la commande, nous vous proposons un devis.'
       : ci.complet
       ? '✅ <strong>Carton complet : il peut partir !</strong> Livraison ' + esc(c.delai) + '.'
-      : 'Encore <strong>' + eur(ci.reste).replace(',00', '') + '</strong> d’articles Holex pour déclencher l’envoi du carton. Les articles Holex partent ensemble, dès que le carton est complet.';
+        + (ci.cartons > 1 ? ' Votre commande dépasse ' + c.poids_max + ' kg : ' + (ci.cartons - 1) + ' carton' + (ci.cartons > 2 ? 's' : '') + ' en plus, ' + eur((ci.cartons - 1) * (c.prix_carton || 150)).replace(',00', '') + ' (le premier est compris dans les prix).' : '')
+      : 'Encore <strong>' + eur(ci.reste).replace(',00', '') + '</strong> d’articles Holex pour déclencher l’envoi du carton (ce montant dépend des articles choisis). Les articles Holex partent ensemble, dès que le carton est complet.';
     return '<div class="q-carton q-feu-' + ci.feu + (ci.lourd ? ' q-carton-lourd' : '') + '" role="status">'
       + '<div class="q-carton-tete"><span class="q-feu" aria-hidden="true"></span><strong>📦 ' + esc(c.nom) + '</strong>'
       + '<span class="q-carton-pct">' + (ci.complet ? 'prêt' : ci.feu === 'jaune' ? 'presque' : 'à compléter') + '</span></div>'
       + '<div class="q-jauge" aria-hidden="true"><span style="width:' + ci.pct + '%"></span></div>'
       + '<p class="q-carton-msg">' + msg + '</p>'
-      + '<div class="q-carton-poids"><span>⚖️ ' + kgTexte(ci.kg) + ' kg / ' + c.poids_max + ' kg</span>'
-      + '<span class="q-jauge q-jauge-kg"><span style="width:' + Math.min(100, Math.round(ci.kg / c.poids_max * 100)) + '%"></span></span>'
-      + (d ? '<span>Carton ' + d + ' cm</span>' : '') + '</div>'
+      + '<div class="q-carton-poids"><span>⚖️ ' + poidsTexte(ci) + '</span>'
+      + '<span class="q-jauge q-jauge-kg"><span style="width:' + Math.min(100, Math.round(ci.kg / (c.poids_max * ci.cartons) * 100)) + '%"></span></span>'
+      + (d ? '<span>' + (ci.cartons > 1 ? ci.cartons + ' cartons ' : 'Carton ') + d + ' cm, ' + c.poids_max + ' kg max chacun</span>' : '') + '</div>'
       + '</div>';
   }
   /* repère permanent : pastille du panier + bandeau de l'onglet Holex, mis à jour à chaque ajout */
@@ -423,7 +440,7 @@
     }
     var z = $('q-carton-direct');
     if (z) z.innerHTML = ci.n
-      ? '<span class="q-feu q-feu-' + ci.feu + '"></span> Votre carton : ' + (ci.complet ? '<strong>complet, il peut partir</strong>' : 'encore <strong>' + eur(ci.reste).replace(',00', '') + '</strong> pour déclencher l’envoi') + ' · ' + kgTexte(ci.kg) + ' kg / ' + ci.c.poids_max + ' kg'
+      ? '<span class="q-feu q-feu-' + ci.feu + '"></span> Votre carton : ' + (ci.complet ? '<strong>complet, il peut partir</strong>' : 'encore <strong>' + eur(ci.reste).replace(',00', '') + '</strong> pour déclencher l’envoi') + ' · ' + poidsTexte(ci)
       : '<span class="q-feu q-feu-rouge"></span> Votre carton est vide : ajoutez des articles Holex, le voyant passe au vert quand il peut partir.';
   }
   function majPastille() {
@@ -455,7 +472,9 @@
     var inclus = etat.panier.length > 0 && etat.panier.every(function (l) { return l.pack && prixPack(l.pack) !== null; });
     var offert = !inclus && etat.panier.length > 0 && forfaitOffert(t);
     var f = etat.panier.length && !offert && !inclus ? etat.catalogue.forfait_expedition : 0;
-    return { articles: t, forfait: f, offert: offert, inclus: inclus, total: t + f };
+    /* Carton Atelier : le 1er carton est compris dans le prix des articles Holex, chaque carton en plus est facturé */
+    var ci = cartonInfo(), sup = ci.n && !ci.lourd ? (ci.cartons - 1) * (ci.c.prix_carton || 150) : 0;
+    return { articles: t, forfait: f, offert: offert, inclus: inclus, cartonsSup: sup, nCartonsSup: sup ? ci.cartons - 1 : 0, total: t + f + sup };
   }
   function rendrePanier() {
     var corps = $('q-tiroir-corps');
@@ -510,6 +529,10 @@
     var t = totalPanier();
     $('q-total-articles').textContent = eur(t.articles);
     $('q-total-forfait').textContent = t.inclus ? 'inclus dans le prix du pack' : t.offert ? 'offert 🎁' : eur(t.forfait);
+    var lc = $('q-total-cartons');
+    if (!lc) { lc = document.createElement('div'); lc.className = 'q-total-ligne'; lc.id = 'q-total-cartons'; $('q-total').parentNode.parentNode.insertBefore(lc, $('q-total').parentNode); }
+    lc.style.display = t.cartonsSup ? '' : 'none';
+    lc.innerHTML = t.cartonsSup ? '<span>Carton' + (t.nCartonsSup > 1 ? 's' : '') + ' Atelier supplémentaire' + (t.nCartonsSup > 1 ? 's' : '') + ' (' + t.nCartonsSup + ')</span><span>' + eur(t.cartonsSup) + '</span>' : '';
     $('q-total').textContent = eur(t.total);
     // paiement CB direct : uniquement UN article, quantité 1, disponible, lien actif
     var cb = $('q-payer-cb');
@@ -1039,7 +1062,7 @@
       _subject: 'Commande quincaillerie — ' + eur(t.total),
       email: email, telephone: tel,
       panier: lignes,
-      carton_atelier: ci.n ? ci.n + ' article(s), ' + kgTexte(ci.kg) + ' kg' + (ci.lourd ? ' — PLUS DE ' + ci.c.poids_max + ' KG : DEVIS (2 cartons)' : '') : 'aucun',
+      carton_atelier: ci.n ? ci.n + ' article(s), ' + kgTexte(ci.kg) + ' kg, ' + ci.cartons + ' carton(s)' + (ci.lourd ? ' — PLUS DE ' + (ci.c.cartons_max || 5) + ' CARTONS : DEVIS' : '') : 'aucun',
       total: t.inclus ? eur(t.total) + ' — packs à prix fixe, forfait d’expédition inclus'
            : t.offert ? eur(t.total) + ' — forfait d’expédition OFFERT (offre de lancement, code ' + etat.offre.code + ')'
                       : eur(t.total) + ' dont forfait expédition ' + eur(t.forfait),

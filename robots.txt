@@ -99,3 +99,4 @@ Disallow: /
 
 Sitemap: https://egreencitys.com/sitemap.xml
 Sitemap: https://egreencitys.com/sitemap-quincaillerie.xml
+Sitemap: https://egreencitys.com/sitemap-holex.xml
