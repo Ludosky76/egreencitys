@@ -26,7 +26,7 @@
     // Bouton "Boutique" toujours accessible dans la barre du haut
     // Mene a la page d'entree des deux univers (bornes / quincaillerie).
     // (toutes les pages sauf les pages boutique elles-memes)
-    if (!/boutique(-wallbox)?\.html/i.test(location.pathname)) {
+    if (!/boutique(-wallbox|-quincaillerie)?\.html/i.test(location.pathname)) {
       var shop = document.createElement('a');
       shop.className = 'egc-shop-btn' + (navLinks ? '' : ' egc-shop-btn--always');
       shop.href = '/pages/boutique.html';
