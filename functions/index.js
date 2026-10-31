@@ -91,7 +91,9 @@ exports.stripeWebhook = onRequest(
             : 'Borne de recharge — ' + produit)
       : 'Commande en ligne';
     // Panier (paiementPanier) : une ligne par référence, lue dans les métadonnées « 2x688HX,1x290HV ».
-    const panier = (s.metadata && s.metadata.panier) || '';
+    // (liste longue : suite dans panier_2, panier_3… — 500 caractères par métadonnée Stripe)
+    const md = s.metadata || {};
+    const panier = [md.panier, md.panier_2, md.panier_3, md.panier_4].filter(Boolean).join(',');
     const articlesPanier = panier
       ? panier.split(',').map((x) => {
           const m = x.match(/^(\d+)x(.+)$/);

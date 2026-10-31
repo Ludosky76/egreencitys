@@ -41,13 +41,16 @@
   };
   function statutDe(ref) {
     var s = etat.stock[ref];
-    return (s && s.s) || 'inconnu';
+    if (s && s.s) return s.s;
+    var a = /^HX/.test(ref) && etat.catalogue && etat.catalogue.articles.find(function (x) { return x.ref === ref; });
+    return (a && a.s) || 'inconnu';  /* gamme Holex : disponibilité relevée avec son catalogue */
   }
   function badgeStock(ref) {
     var l = LIBELLES[statutDe(ref)] || LIBELLES.inconnu;
     return '<span class="qs ' + l[1] + '">' + l[0] + '</span>';
   }
   function delaiTexte(ref, a) {
+    if (a && a.pc) return 'part dans le ' + cartonNom() + ', livraison ' + ((etat.holex && etat.holex.carton.delai) || 'environ 2 semaines après l’envoi du carton');
     if (statutDe(ref) === 'disponible') return 'livraison sous 7 jours ouvrés';
     return 'disponibilité à confirmer — faites une demande';
   }
@@ -139,7 +142,16 @@
   }
 
   /* ---------------- fiche détaillée (tranches) ---------------------- */
-  function chargerTranche(ref) {
+  function cartonNom() { return (etat.holex && etat.holex.carton.nom) || 'Carton Atelier'; }
+  function chargerTranche(ref, a) {
+    if (a && a.pc && a.fam) {  /* gamme Holex : caractéristiques par famille */
+      return fetch('/assets/data/fiches/hx/' + encodeURIComponent(String(a.fam).replace(/[^A-Za-z0-9_-]/g, '_')) + '.json')
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (j) {  /* prix d'un lot : on le dit en tête des caractéristiques */
+          var o = {}; o[ref] = { c: (a.lot > 1 ? ['Vendu par lot de ' + a.lot + ' pièces (prix affiché pour le lot)'] : []).concat(j[ref] || []) }; return o;
+        })
+        .catch(function () { return {}; });
+    }
     var cle = ref.charAt(ref.length - 1).toUpperCase();
     return fetch('/assets/data/fiches/f-' + encodeURIComponent(cle) + '.json')
       .then(function (r) { if (!r.ok) throw 0; return r.json(); })
@@ -209,7 +221,7 @@
       + '<div class="qf-infos">'
       +   (mq ? '<div class="q-marque">' + esc(mq) + '</div>' : '')
       +   '<h1>' + esc(a.nom) + '</h1>'
-      +   '<div class="q-ref">Réf. ' + esc(ref) + (a.ean ? ' · EAN ' + esc(a.ean) : '') + (a.poids ? ' · ' + a.poids.toLocaleString('fr-FR') + ' kg' : '') + (cat ? ' · ' + esc(cat.nom) : '') + '</div>'
+      +   '<div class="q-ref">Réf. ' + esc(ref) + (a.ean && !a.pc ? ' · EAN ' + esc(a.ean) : '') + (a.poids ? ' · ' + a.poids.toLocaleString('fr-FR') + ' kg' : '') + (cat ? ' · ' + esc(cat.nom) : '') + '</div>'
       +   badgeStock(ref)
       +   '<div class="qf-prixbloc">'
       +     (a.devis
@@ -220,7 +232,12 @@
       +       '<div class="q-inclus">Octroi de mer &amp; transport vers la Guyane inclus*</div>'
       +       '<div class="qf-livraison"><strong>' + delaiTexte(ref, a) + '</strong> · livré à domicile partout en Guyane</div>')
       +     '<div class="qf-boutons">'
-      +     (a.devis
+      +     (a.pc
+      ?       (statutDe(ref) !== 'introuvable' ? '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>' : '<a class="q-pay" href="' + urlDemande(ref) + '">✉️ Faire une demande</a>')
+      +       '<p class="qf-astuce">📦 Cet article part dans le <strong>' + esc(cartonNom()) + '</strong>, avec vos autres articles Holex : commande possible <strong>à partir d’environ '
+      +       eur((etat.holex && etat.holex.carton.minimum_affiche) || 780).replace(',00', '') + ' d’articles Holex</strong>. Le voyant du panier (rouge, jaune, vert) vous indique en direct ce qu’il reste'
+      +       ((etat.holex && etat.holex.carton.dims) ? ' — carton ' + etat.holex.carton.dims.join(' × ') + ' cm, ' + etat.holex.carton.poids_max + ' kg maximum' : '') + '.</p>'
+      :     a.devis
       ?       '<a class="q-pay" href="' + urlDemande(ref) + '">📦 Demander un devis<span class="q-pay-sub">article de plus de 30 kg ou hors format — réponse sous 24 h ouvrées, suivi dans votre espace client</span></a>'
       :     dispo
       ?       '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>'
@@ -255,7 +272,7 @@
     }
 
     /* description + caractéristiques */
-    chargerTranche(ref).then(function (tranche) {
+    chargerTranche(ref, a).then(function (tranche) {
       var f = tranche[ref] || {};
       var html = '';
       var d = f.d || a.desc;
@@ -271,8 +288,9 @@
       }
     });
 
-    /* même rayon : jusqu'à 4 autres articles, disponibles d'abord */
-    var memes = etat.catalogue.articles.filter(function (x) { return x.cat === a.cat && x.ref !== ref; });
+    /* même rayon : jusqu'à 4 autres articles, disponibles d'abord (Holex : même famille, puis même type) */
+    var memes = etat.catalogue.articles.filter(function (x) { return x.cat === a.cat && x.ref !== ref && (!a.fam || x.fam === a.fam); });
+    if (a.fam && memes.length < 4) memes = memes.concat(etat.catalogue.articles.filter(function (x) { return x.sr && x.sr === a.sr && x.fam !== a.fam; }).slice(0, 4 - memes.length));
     memes.sort(function (x, y) {
       return (statutDe(y.ref) === 'disponible' ? 1 : 0) - (statutDe(x.ref) === 'disponible' ? 1 : 0);
     });
@@ -367,10 +385,19 @@
   var ref = pageStatique || refParam || '';
 
   var catalogue = fetch('/assets/data/quincaillerie-catalogue.json').then(function (r) { return r.json(); });
+  if (/^HX/.test(ref)) {
+    catalogue = Promise.all([catalogue, fetch('/assets/data/quincaillerie-holex.json').then(function (r) { return r.json(); })])
+      .then(function (x) {
+        etat.holex = x[1];
+        x[0].articles = x[0].articles.concat(x[1].articles);
+        x[0].categories = x[0].categories.concat(x[1].categories || []);
+        return x[0];
+      });
+  }
   /* ancienne adresse ?ref= : départ vers la page statique dès l'arrivée du catalogue (sans attendre
      stock, liens ni offre), en gardant utm et ancre */
   var redirection = false;
-  if (!pageStatique && refParam && window.EGCQUrl) {
+  if (!pageStatique && refParam && window.EGCQUrl && !/^HX/.test(refParam)) {  /* Holex : pas de page statique */
     catalogue.then(function (c) {
       var art = c.articles.find(function (x) { return x.ref === refParam; });
       if (!art) return;

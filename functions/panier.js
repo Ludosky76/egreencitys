@@ -19,17 +19,32 @@ async function lireJson(chemin, facultatif) {
   }
 }
 
+/* liste « 2xREF,1xREF » répartie sur panier, panier_2… (Stripe : 500 caractères par métadonnée) */
+function decouper(elements) {
+  const md = {};
+  let cle = 'panier', n = 1, cour = '';
+  for (const e of elements) {
+    if (cour && (cour + ',' + e).length > 500) { md[cle] = cour; n += 1; cle = 'panier_' + n; cour = e; } else cour = cour ? cour + ',' + e : e;
+  }
+  if (cour) md[cle] = cour;
+  return md;
+}
+
 async function creerSessionPanier(corps, cleStripe) {
   corps = (corps && typeof corps === 'object') ? corps : {};
   const lignes = Array.isArray(corps.panier) ? corps.panier : [];
   if (lignes.length === 0 || lignes.length > 50) return { statut: 400, json: { erreur: 'panier vide ou trop grand' } };
 
-  let catalogue, stock, offre;
+  // Gamme Holex (réf. HX…) : catalogue à part, lu seulement si le panier en contient
+  const avecHolex = lignes.some((l) => /^HX/.test(String((l && l.ref) || '')));
+  let catalogue, stock, offre, holex, reglages;
   try {
-    [catalogue, stock, offre] = await Promise.all([
+    [catalogue, stock, offre, holex, reglages] = await Promise.all([
       lireJson('/assets/data/quincaillerie-catalogue.json'),
       lireJson('/assets/data/quincaillerie-stock.json'),
       lireJson('/assets/data/quincaillerie-offre.json', true),
+      avecHolex ? lireJson('/assets/data/quincaillerie-holex.json') : null,
+      lireJson('/assets/data/quincaillerie-paiement.json', true),
     ]);
   } catch (e) {
     console.error('Lecture des données du site impossible :', e.message);
@@ -37,22 +52,31 @@ async function creerSessionPanier(corps, cleStripe) {
   }
 
   const parRef = new Map(catalogue.articles.map((a) => [a.ref, a]));
+  if (holex) holex.articles.forEach((a) => parRef.set(a.ref, a));
   const articles = [], refus = [];
-  let total = 0, poids = 0;
+  let total = 0, poids = 0, points = 0, poidsCarton = 0;
   for (const l of lignes) {
     const ref = String((l && l.ref) || '').slice(0, 20);
     const q = Math.floor(Number(l && l.q));
     const a = parRef.get(ref);
     if (!a || !(q >= 1 && q <= QTE_MAX)) { refus.push({ ref, motif: 'article inconnu ou quantité invalide' }); continue; }
     if (a.devis) { refus.push({ ref, motif: 'colis de plus de 30 kg : sur devis' }); continue; }
-    const s = (stock.stock || {})[ref];
-    if (!s || s.s !== 'disponible') { refus.push({ ref, motif: 'indisponible chez le fournisseur' }); continue; }
+    const s = a.pc ? { s: a.s } : (stock.stock || {})[ref];  // Holex : disponibilité publiée avec sa gamme
+    if (!s || !(s.s === 'disponible' || (a.pc && s.s === 'faible'))) { refus.push({ ref, motif: 'indisponible chez le fournisseur' }); continue; }
     articles.push({ a, q });
     total += a.prix * q;
-    poids += (a.poids || 0) * q;
+    if (a.pc) { points += a.pc * q; poidsCarton += (a.poids || 0) * q; } else poids += (a.poids || 0) * q;
   }
   if (refus.length) return { statut: 409, json: { erreur: 'panier', refus } };
   if (poids > POIDS_MAX_COLIS) return { statut: 409, json: { erreur: 'poids', poids: Math.round(poids * 10) / 10 } };
+  // Carton Atelier : part seulement complet (minimum d'achat fournisseur) et dans sa limite de poids
+  if (points > 0) {
+    const c = holex.carton;
+    // paiement par carte du Carton Atelier : seulement quand il est explicitement ouvert
+    if (!(reglages && reglages.carton_cb === true)) return { statut: 409, json: { erreur: 'carton_cb' } };
+    if (points < c.seuil_points) return { statut: 409, json: { erreur: 'carton' } };
+    if (poidsCarton > c.poids_max) return { statut: 409, json: { erreur: 'poids', poids: Math.round(poidsCarton * 10) / 10 } };
+  }
 
   // Un seul colis : un seul forfait d'expédition. Offre de lancement : appliquée avec le VRAI
   // code Stripe (mêmes limites de date et de nombre d'utilisations que sur les liens d'article).
@@ -66,7 +90,7 @@ async function creerSessionPanier(corps, cleStripe) {
     price_data: {
       currency: 'eur',
       unit_amount: Math.round(a.prix * 100),
-      product_data: { name: ('[' + a.ref + '] ' + a.nom).slice(0, 250), images: a.img ? [a.img] : [] },
+      product_data: { name: ('[' + a.ref + '] ' + a.nom).slice(0, 250), images: a.img ? [/^https?:/.test(a.img) ? a.img : SITE + a.img] : [] },
     },
   }));
   line_items.push({
@@ -83,8 +107,9 @@ async function creerSessionPanier(corps, cleStripe) {
     phone_number_collection: { enabled: true },
     client_reference_id: 'QP-' + maintenant,
     metadata: {
-      panier: articles.map(({ a, q }) => q + 'x' + a.ref).join(',').slice(0, 500),
+      ...decouper(articles.map(({ a, q }) => q + 'x' + a.ref)),
       poids_kg: poids.toFixed(2),
+      carton_atelier: points > 0 ? poidsCarton.toFixed(2) + ' kg' : '',
       offre: offert ? offre.code : '',
     },
     success_url: BOUTIQUE + '?paiement=succes&panier=1',

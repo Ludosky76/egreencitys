@@ -25,6 +25,8 @@
   window.EGCQUrl = {
     slug: slug,
     fiche: function (a) {
+      /* gamme Holex (réf. HX…) : pas de page statique, fiche dynamique */
+      if (/^HX/.test(a.ref)) return '/pages/produit-quincaillerie.html?ref=' + encodeURIComponent(a.ref);
       var s = slug(a.nom);
       return '/quincaillerie-pro/produit/' + (s ? s + '-' : '') + String(a.ref).toLowerCase() + '.html';
     },

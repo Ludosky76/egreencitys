@@ -5,6 +5,13 @@
    Stock     : /assets/data/quincaillerie-stock.json      (rafraîchi toutes les
                heures par GitHub Actions — rotation ~100 fiches fournisseur/h)
    Liens CB  : /assets/data/quincaillerie-liens.json      (liens Stripe par ref)
+   Holex     : /assets/data/quincaillerie-holex.json      (gamme Holex, chargée à part :
+               recherche, onglet Holex, ou panier qui en contient)
+
+   « Carton Atelier » : les articles Holex partent ensemble, en un carton,
+   quand leur commande fournisseur atteint le minimum. Chaque article porte ses
+   points de carton (pc) ; le panier montre un voyant rouge / jaune / vert et
+   le montant restant. Ni le montant d'achat ni le fournisseur ne sont affichés.
 
    Prix affiché = tout compris (produit + octroi de mer + transport au poids).
    Le forfait d'expédition (21,12 €) s'ajoute UNE FOIS par commande : il est
@@ -27,7 +34,7 @@
   };
 
   var etat = {
-    catalogue: null, stock: {}, stockMaj: 0, liens: {},
+    catalogue: null, stock: {}, stockMaj: 0, liens: {}, index: {}, holex: null, holexCharge: null,
     recherche: '', mots: [], cat: '', dispo: false, tri: 'pertinence',
     f: { m: {}, a: {}, v: {}, b: {}, p: {}, pmin: '', pmax: '' }, facettes: {}, compat: {}, marquesToutes: false,
     visibles: PAR_PAGE, panier: []
@@ -51,7 +58,9 @@
   };
   function statutDe(ref) {
     var s = etat.stock[ref];
-    return (s && s.s) || 'inconnu';
+    if (s && s.s) return s.s;
+    var a = etat.index[ref];  /* gamme Holex : disponibilité relevée avec le catalogue */
+    return (a && a.s) || 'inconnu';
   }
   function badgeStock(ref) {
     var s = statutDe(ref);
@@ -63,6 +72,7 @@
      7 jours ouvrés ; sinon, pas d'estimation affichée — le client fait une
      demande et nous confirmons le délai avant toute commande. */
   function delaiTexte(ref, a, long) {
+    if (a && a.pc) return long ? 'part dans le Carton Atelier, ' + cartonConfig().delai : 'envoi groupé · Carton Atelier';
     if (statutDe(ref) === 'disponible') {
       return long ? 'livraison sous 7 jours ouvrés' : 'livré sous 7 j ouvrés';
     }
@@ -83,7 +93,7 @@
       libelles: { '<500': 'Moins de 500 W', '500-999': '500 à 999 W', '1000-1499': '1 000 à 1 499 W', '1500-1999': '1 500 à 1 999 W', '2000+': '2 000 W et plus' },
       valeur: function (f) { var w = f.p; return !w ? '' : w < 500 ? '<500' : w < 1000 ? '500-999' : w < 1500 ? '1000-1499' : w < 2000 ? '1500-1999' : '2000+'; } }
   ];
-  function fac(a) { return etat.facettes[a.ref] || {}; }
+  function fac(a) { return etat.facettes[a.ref] || (a.pc ? { m: a.marque } : {}); }
   function sansAccents(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
   function texteRecherche(a) {
     if (!a._q) { var f = fac(a); a._q = sansAccents([a.nom, f.m || a.marque, a.ref, a.ean || '', f.v, f.v ? f.v.replace(' ', '') : ''].join(' '));  /* EAN : recherche par code-barres */ }
@@ -168,7 +178,13 @@
       puces.push('<button type="button" class="qv-puce" data-retirer="prix">' + (etat.f.pmin !== '' ? etat.f.pmin + ' €' : '0 €') + ' à ' + (etat.f.pmax !== '' ? etat.f.pmax + ' €' : '…') + ' ×</button>');
     }
     var dewalt = Object.keys(etat.f.m).length === 1 && etat.f.m.DeWalt;
-    $('q-actifs').innerHTML = (dewalt ? '<div class="q-bandeau-dewalt"><strong>DeWalt</strong> : outils filaires et sans fil, batteries 18 V XR et 54 V FlexVolt, accessoires — '
+    var holex = Object.keys(etat.f.m).length === 1 && etat.f.m.Holex, c = cartonConfig();
+    $('q-actifs').innerHTML = (holex ? '<div class="q-bandeau-holex"><strong>Holex</strong> : outillage de précision pour l’atelier, la maintenance et le chantier — '
+        + 'forets, fraises, tarauds, mesure, serrage, outillage à main, EPI. Prix tout compris livrés en Guyane.'
+        + '<br>📦 Ces articles partent ensemble dans le <strong>' + esc(c.nom) + '</strong> : commande possible <strong>à partir d’environ '
+        + eur(c.minimum_affiche).replace(',00', '') + ' d’articles Holex</strong>, livraison ' + esc(c.delai) + '. Le voyant du panier vous dit en direct ce qu’il reste.'
+        + '<div id="q-carton-direct" class="q-carton-direct"></div></div>' : '')
+      + (dewalt ? '<div class="q-bandeau-dewalt"><strong>DeWalt</strong> : outils filaires et sans fil, batteries 18 V XR et 54 V FlexVolt, accessoires — '
         + 'prix tout compris livrés en Guyane. <a href="/quincaillerie-pro/marque/dewalt.html">Toute la gamme DeWalt</a></div>' : '')
       + (puces.length ? '<div class="qv-puces">' + puces.join('') + '<button type="button" class="qv-puce qv-tout" data-effacer="1">Tout effacer</button></div>' : '');
   }
@@ -256,7 +272,7 @@
     return '<article class="q-card" data-ref="' + esc(a.ref) + '">'
       + '<a class="q-lien q-img" href="' + fiche + '"><img loading="lazy" src="' + esc(a.img) + '" alt="' + esc(a.nom) + '" onerror="this.parentNode.classList.add(\'q-noimg\')"></a>'
       + '<div class="q-body">'
-      + '<div class="q-ref">Réf. ' + esc(a.ref) + (a.ean ? '<span class="q-ean"> · EAN ' + esc(a.ean) + '</span>' : '') + '</div>'
+      + '<div class="q-ref">Réf. ' + esc(a.ref) + (a.ean && !a.pc ? '<span class="q-ean"> · EAN ' + esc(a.ean) + '</span>' : '') + '</div>'
       + (fac(a).m ? '<div class="q-marque">' + esc(fac(a).m) + '</div>' : '')
       + '<a class="q-lien" href="' + fiche + '"><h3 class="q-nom">' + esc(a.nom) + '</h3></a>'
       + badgeStock(a.ref)
@@ -268,7 +284,11 @@
             + '<div class="q-inclus">Octroi &amp; livraison inclus*</div>'
             + (a.poids ? '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · ' + delaiTexte(a.ref, a) + '</div>' : ''))
       + '<div class="q-actions">'
-      + (a.devis
+      + (a.pc  /* Carton Atelier : panier seulement (pas de paiement article seul), sauf fin de série */
+          ? (statutDe(a.ref) !== 'introuvable'
+            ? '<button type="button" class="q-add" data-add="' + esc(a.ref) + '">🛒 Ajouter au panier</button>'
+            : '<a class="q-pay" href="' + urlDemande(a.ref) + '">✉️ Faire une demande<span class="q-pay-sub">réponse sous 24 h ouvrées</span></a>')
+      : a.devis
           ? '<a class="q-pay" href="' + urlDemande(a.ref) + '">📦 Demander un devis<span class="q-pay-sub">plus de 30 kg ou hors format — réponse sous 24 h ouvrées</span></a>'
           : dispo
           ? '<button type="button" class="q-add" data-add="' + esc(a.ref) + '">🛒 Ajouter au panier</button>'
@@ -333,16 +353,81 @@
         etat.panier = distant.lignes;
         etat.panierMaj = distant.maj;
         try { localStorage.setItem(CLE_PANIER, JSON.stringify(distant)); } catch (e) {}
+        purgerHolex();
         rendre(); rendrePanier();
+        if (holexUtile()) chargerHolex();
       } else if (etat.panier.length) {
         window.EGCQCompte.sauverPanier({ maj: etat.panierMaj || Date.now(), lignes: etat.panier });
       }
     });
   }
-  function article(ref) {
-    return etat.catalogue.articles.find(function (a) { return a.ref === ref; });
+  function article(ref) { return etat.index[ref]; }
+  function indexer() {
+    etat.index = {};
+    etat.catalogue.articles.forEach(function (a) { etat.index[a.ref] = a; });
+  }
+  /* ---------------- Carton Atelier (gamme Holex, envoi groupé) ----------------
+     Le carton part quand ses articles totalisent seuil_points (achat fournisseur minimum).
+     Voyant : rouge sous 50 %, jaune jusqu'à 99 %, vert = le carton peut partir.
+     Montant restant = points manquants × prix moyen d'un point des articles déjà au carton
+     (repère du catalogue quand le carton est vide), arrondi aux 5 € supérieurs. */
+  function cartonConfig() {
+    return (etat.holex && etat.holex.carton) || { nom: 'Carton Atelier', seuil_points: 100, eur_par_point: 7.8, minimum_affiche: 780, poids_max: 10, dims: [30, 40, 40], delai: 'environ 2 semaines après l’envoi du carton' };
+  }
+  function cartonInfo() {
+    var c = cartonConfig(), pts = 0, montant = 0, kg = 0, n = 0;
+    etat.panier.forEach(function (l) {
+      var a = article(l.ref);
+      if (!a || !a.pc) return;
+      pts += a.pc * l.q; montant += a.prix * l.q; kg += (a.poids || 0.5) * l.q; n += l.q;  /* poids inconnu : 0,5 kg, jamais 0 */
+    });
+    /* lignes Holex dont la gamme n'est pas (encore) chargée : rien ne part tant qu'on ne les connaît pas */
+    var attente = !etat.holex && etat.panier.some(function (l) { return /^HX/.test(l.ref) && !article(l.ref); });
+    var pct = Math.min(100, Math.floor(pts / c.seuil_points * 100));
+    var parPoint = pts > 0 ? montant / pts : c.eur_par_point;
+    return {
+      c: c, n: n, kg: kg, pct: Math.floor(pct / 5) * 5, montant: montant, attente: attente,
+      complet: pts >= c.seuil_points,
+      reste: pts >= c.seuil_points ? 0 : Math.ceil((c.seuil_points - pts) * parPoint / 5) * 5,
+      feu: pts >= c.seuil_points ? 'vert' : pct >= 50 ? 'jaune' : 'rouge',
+      lourd: kg > c.poids_max
+    };
+  }
+  function kgTexte(x) { return x.toLocaleString('fr-FR', { maximumFractionDigits: x < 10 ? 2 : 1 }); }
+  function blocCarton(ci) {
+    var c = ci.c, d = (c.dims || []).join(' × ');
+    var msg = ci.lourd
+      ? '⚠️ Votre carton pèse environ <strong>' + kgTexte(ci.kg) + ' kg</strong> : au-delà de ' + c.poids_max + ' kg il ne part pas en un seul envoi. Envoyez la commande, nous vous proposons un devis.'
+      : ci.complet
+      ? '✅ <strong>Carton complet : il peut partir !</strong> Livraison ' + esc(c.delai) + '.'
+      : 'Encore <strong>' + eur(ci.reste).replace(',00', '') + '</strong> d’articles Holex pour déclencher l’envoi du carton. Les articles Holex partent ensemble, dès que le carton est complet.';
+    return '<div class="q-carton q-feu-' + ci.feu + (ci.lourd ? ' q-carton-lourd' : '') + '" role="status">'
+      + '<div class="q-carton-tete"><span class="q-feu" aria-hidden="true"></span><strong>📦 ' + esc(c.nom) + '</strong>'
+      + '<span class="q-carton-pct">' + (ci.complet ? 'prêt' : ci.feu === 'jaune' ? 'presque' : 'à compléter') + '</span></div>'
+      + '<div class="q-jauge" aria-hidden="true"><span style="width:' + ci.pct + '%"></span></div>'
+      + '<p class="q-carton-msg">' + msg + '</p>'
+      + '<div class="q-carton-poids"><span>⚖️ ' + kgTexte(ci.kg) + ' kg / ' + c.poids_max + ' kg</span>'
+      + '<span class="q-jauge q-jauge-kg"><span style="width:' + Math.min(100, Math.round(ci.kg / c.poids_max * 100)) + '%"></span></span>'
+      + (d ? '<span>Carton ' + d + ' cm</span>' : '') + '</div>'
+      + '</div>';
+  }
+  /* repère permanent : pastille du panier + bandeau de l'onglet Holex, mis à jour à chaque ajout */
+  function majCartonMini() {
+    var ci = cartonInfo(), b = $('q-ouvrir-panier');
+    if (b) {
+      var f = $('q-feu-mini');
+      if (!f) { f = document.createElement('span'); f.id = 'q-feu-mini'; f.className = 'q-feu'; b.appendChild(f); }
+      f.className = 'q-feu q-feu-' + ci.feu;
+      f.style.display = ci.n ? '' : 'none';
+      f.title = ci.n ? (ci.complet ? 'Carton Atelier complet' : 'Carton Atelier : encore ' + eur(ci.reste)) : '';
+    }
+    var z = $('q-carton-direct');
+    if (z) z.innerHTML = ci.n
+      ? '<span class="q-feu q-feu-' + ci.feu + '"></span> Votre carton : ' + (ci.complet ? '<strong>complet, il peut partir</strong>' : 'encore <strong>' + eur(ci.reste).replace(',00', '') + '</strong> pour déclencher l’envoi') + ' · ' + kgTexte(ci.kg) + ' kg / ' + ci.c.poids_max + ' kg'
+      : '<span class="q-feu q-feu-rouge"></span> Votre carton est vide : ajoutez des articles Holex, le voyant passe au vert quand il peut partir.';
   }
   function majPastille() {
+    majCartonMini();
     /* un carton (lignes « pack ») compte pour 1 */
     var packs = {};
     var n = etat.panier.reduce(function (s, l) { if (l.pack) { if (packs[l.pack]) return s; packs[l.pack] = 1; return s + 1; } return s + l.q; }, 0);
@@ -404,9 +489,23 @@
         + '<button type="button" class="q-suppr" data-suppr="' + esc(l.ref) + '" aria-label="Retirer">×</button>'
         + '</div>';
     }).join('');
+    var ci = cartonInfo();
+    if (ci.attente) {  /* gamme Holex pas encore là (ou échec) : on la (re)demande, rien ne part en attendant */
+      corps.insertAdjacentHTML('afterbegin', '<div class="q-carton q-feu-rouge" role="status"><p class="q-carton-msg">⏳ Chargement de vos articles Holex… '
+        + (etat.holexEchec ? '<button type="button" class="q-reessayer" data-holex-recharger="1">Réessayer</button>' : '') + '</p></div>');
+      if (!etat.holexEchec) chargerHolex();
+    } else if (ci.n) corps.insertAdjacentHTML('afterbegin', blocCarton(ci));
+    if (etat.holexRetires) corps.insertAdjacentHTML('afterbegin', '<p class="q-carton-note" role="status">ℹ️ '
+      + (etat.holexRetires > 1 ? etat.holexRetires + ' articles Holex de votre panier ne sont plus proposés : ils ont été retirés.' : 'Un article Holex de votre panier n’est plus proposé : il a été retiré.') + '</p>');
     var g = $('q-groupage');
     if (!g) { g = document.createElement('div'); g.id = 'q-groupage'; $('q-tiroir-pied').insertBefore(g, $('q-tiroir-pied').firstChild); }
     g.innerHTML = messageGroupage();
+    /* tant que le Carton Atelier n'est pas complet, la commande ne peut pas partir */
+    var bloque = ci.attente || (ci.n > 0 && !ci.complet);
+    if ($('q-envoyer')) $('q-envoyer').disabled = bloque || !!etat.envoiEnCours;
+    var nb = $('q-carton-bloque');
+    if (!nb && $('q-form')) { nb = document.createElement('p'); nb.id = 'q-carton-bloque'; nb.className = 'q-carton-note'; $('q-form').appendChild(nb); }
+    if (nb) nb.innerHTML = ci.attente ? '⏳ Vos articles Holex se chargent : la commande sera possible dans un instant.' : bloque ? '🔴 Complétez le Carton Atelier (encore ' + eur(ci.reste).replace(',00', '') + ') ou retirez ses articles Holex pour commander le reste.' : '';
     corps.insertAdjacentHTML('beforeend', blocSuggestions());  // zone défilante : ne réduit pas la liste
     var t = totalPanier();
     $('q-total-articles').textContent = eur(t.articles);
@@ -419,10 +518,13 @@
     cb.style.display = ok ? '' : 'none';
     // paiement par carte du PANIER (fonction serveur) : tous les articles disponibles, un seul colis ≤ 30 kg
     var bp = $('q-payer-panier');
-    var poidsPanier = etat.panier.reduce(function (s, l) { var a = article(l.ref); return s + (a && a.poids ? a.poids * l.q : 0); }, 0);
+    /* colis Screwfix ≤ 30 kg ; le Carton Atelier a sa propre limite (cartonInfo) */
+    var poidsPanier = etat.panier.reduce(function (s, l) { var a = article(l.ref); return s + (a && a.poids && !a.pc ? a.poids * l.q : 0); }, 0);
     var okPanier = !ok && !!(etat.paiement && etat.paiement.panier_cb && etat.paiement.fonction)
-      && etat.panier.every(function (l) { var a = article(l.ref); return a && !a.devis && statutDe(l.ref) === 'disponible'; })
+      && etat.panier.every(function (l) { var a = article(l.ref); return a && !a.devis && (statutDe(l.ref) === 'disponible' || (a.pc && statutDe(l.ref) === 'faible')); })
       && poidsPanier <= 30
+      /* Carton Atelier : paiement par carte seulement quand le serveur le gère (réglage carton_cb) et carton complet */
+      && !ci.attente && (!ci.n || (etat.paiement.carton_cb && ci.complet && !ci.lourd))
       /* prix fixe de pack inconnu du serveur de paiement : ces packs passent par le formulaire */
       && !etat.panier.some(function (l) { return l.pack && typeof l.packPrix === 'number'; });
     if (bp) {
@@ -717,12 +819,15 @@
   function ouvrirMenu() { document.body.classList.add('menu-ouvert'); $('q-burger').setAttribute('aria-expanded', 'true'); }
   function fermerMenu() { document.body.classList.remove('menu-ouvert'); $('q-burger').setAttribute('aria-expanded', 'false'); }
 
-  function construireRayons() {
+  /* chips et menu des rayons : reconstruits quand la gamme Holex arrive */
+  function rendreRayons() {
     var comptes = {};
     etat.catalogue.articles.forEach(function (a) { comptes[a.cat] = (comptes[a.cat] || 0) + 1; });
     var total = etat.catalogue.articles.length;
     var nbDewalt = etat.catalogue.articles.filter(function (a) { return fac(a).m === 'DeWalt'; }).length;
+    var nbHolex = etat.holex ? etat.holex.articles.length : 0;
     var chips = (nbDewalt ? '<button type="button" class="q-onglet-dewalt" data-marque="DeWalt" title="Toute la gamme DeWalt">DeWalt <span>' + nbDewalt + '</span></button>' : '')
+      + '<button type="button" class="q-onglet-holex" data-marque="Holex" title="Outillage de précision Holex — envoi groupé en Carton Atelier">Holex' + (nbHolex ? ' <span>' + nbHolex.toLocaleString('fr-FR') + '</span>' : '') + '</button>'
       + '<button type="button" data-rayon="">Tous les rayons</button>';
     var menu = '<div class="q-menu-titre">Rayons</div>'
       + '<a href="#" data-rayon="">Tous les rayons <span class="nb">' + total.toLocaleString('fr-FR') + '</span></a>';
@@ -734,12 +839,18 @@
     });
     $('q-rayons').innerHTML = chips;
     $('q-menu-rayons').innerHTML = menu;
+    majRayons();
+  }
+  function construireRayons() {
+    rendreRayons();
     $('q-rayons').addEventListener('click', function (e) {
       var d = e.target.closest('button[data-marque]');
       if (d) { /* onglet de marque : bascule le filtre marque seul */
         var m = d.dataset.marque, seul = Object.keys(etat.f.m).length === 1 && etat.f.m[m];
         etat.f.m = {}; if (!seul) etat.f.m[m] = true;
-        etat.visibles = PAR_PAGE; rendre(); majRayons(); return;
+        etat.visibles = PAR_PAGE; rendre(); majRayons();
+        if (m === 'Holex' && !seul) chargerHolex();
+        return;
       }
       var b = e.target.closest('button[data-rayon]');
       if (b) choisirRayon(b.dataset.rayon);
@@ -752,7 +863,47 @@
     $('q-menu-fermer').addEventListener('click', fermerMenu);
     $('q-menu-fond').addEventListener('click', fermerMenu);
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fermerMenu(); });
-    majRayons();
+  }
+
+  /* ---------------- gamme Holex (assets/data/quincaillerie-holex.json) ----------------
+     Fichier volumineux : chargé à la demande (onglet Holex, rayon Usinage, recherche,
+     panier ou adresse qui en contient), puis ajouté au catalogue une fois pour toutes. */
+  /* Article Holex retiré de la gamme depuis qu'il a été mis au panier : on l'enlève
+     (sinon le panier attendrait indéfiniment) et on prévient le client une fois. */
+  function purgerHolex() {
+    if (!etat.holex) return;
+    var avant = etat.panier.length;
+    etat.panier = etat.panier.filter(function (l) { return !/^HX/.test(l.ref) || article(l.ref); });
+    if (etat.panier.length < avant) { etat.holexRetires = avant - etat.panier.length; sauver(); }
+  }
+  function chargerHolex() {
+    if (etat.holexCharge) return etat.holexCharge;
+    if ($('q-compte')) $('q-compte').classList.add('q-chargement');
+    etat.holexCharge = fetch('/assets/data/quincaillerie-holex.json')
+      .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (h) {
+        etat.holex = h;
+        var sel = $('q-cat');
+        (h.categories || []).forEach(function (c) {
+          if (etat.catalogue.categories.some(function (x) { return x.slug === c.slug; })) return;
+          etat.catalogue.categories.push(c);
+          var o = document.createElement('option'); o.value = c.slug; o.textContent = c.nom; sel.appendChild(o);
+        });
+        h.articles.forEach(function (a) { etat.index[a.ref] = a; });
+        etat.catalogue.articles = etat.catalogue.articles.concat(h.articles);
+        purgerHolex();
+        var catUrl = etat.catDemandee;
+        if (!etat.cat && catUrl && h.categories.some(function (c) { return c.slug === catUrl; })) { etat.cat = catUrl; sel.value = catUrl; }
+        rendreRayons(); rendre(); rendrePanier();
+      })
+      .catch(function () { etat.holexCharge = null; etat.holexEchec = true; if (etat.panier.some(function (l) { return /^HX/.test(l.ref); })) rendrePanier(); })
+      .then(function () { if ($('q-compte')) $('q-compte').classList.remove('q-chargement'); });
+    return etat.holexCharge;
+  }
+  function holexUtile() {
+    var p = new URLSearchParams(location.search);
+    return etat.f.m.Holex || etat.cat === 'usinage' || p.get('cat') === 'usinage' || etat.catDemandee === 'usinage' || etat.mots.length
+      || etat.panier.some(function (l) { return /^HX/.test(l.ref); });
   }
 
   /* ---------------- paiement sécurisé ---------------- */
@@ -816,6 +967,10 @@
           return fetch('/assets/data/quincaillerie-stock.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); })
             .then(function (j) { etat.stock = j.stock || etat.stock; rendre(); rendrePanier(); });
         }
+        if (x.statut === 409 && x.j.erreur === 'carton') {
+          alert('Le Carton Atelier n’est pas encore complet. Ajoutez des articles Holex ou retirez-les pour payer le reste.');
+          return;
+        }
         if (x.statut === 409 && x.j.erreur === 'poids') {
           alert('Votre commande pèse environ ' + x.j.poids + ' kg : au-delà de 30 kg, elle ne tient pas dans un colis. Envoyez-la par le formulaire, nous vous proposons un devis.');
           return;
@@ -863,6 +1018,10 @@
     var email = $('q-email').value.trim();
     var tel = $('q-tel').value.trim();
     if (!email) { alert('Indiquez votre email pour recevoir la confirmation.'); return; }
+    var ci = cartonInfo();
+    if (etat.envoiEnCours) return;
+    if (ci.attente) { alert('Vos articles Holex se chargent encore : réessayez dans un instant.'); chargerHolex(); return; }
+    if (ci.n && !ci.complet) { alert('Le Carton Atelier n’est pas encore complet : encore ' + eur(ci.reste) + ' d’articles Holex, ou retirez-les pour commander le reste.'); return; }
     var t = totalPanier();
     var vusPack = {};
     var lignes = etat.panier.map(function (l) {
@@ -874,19 +1033,20 @@
           + etat.panier.filter(function (x) { return x.pack === l.pack; }).map(function (x) { return x.q + ' × ' + x.ref; }).join(', ');
       }
       if (!a) return null;  /* article retiré du catalogue depuis l'ajout au panier : ignoré, comme dans le panier affiché */
-      return l.q + ' × [' + l.ref + '] ' + a.nom + ' — ' + eur(a.prix * l.q) + ' (' + statutDe(l.ref) + ')';
+      return (a.pc ? '[CARTON ATELIER] ' : '') + l.q + ' × [' + l.ref + '] ' + a.nom + ' — ' + eur(a.prix * l.q) + ' (' + statutDe(l.ref) + ')';
     }).filter(function (x) { return x; }).join('\n');
     var corps = {
       _subject: 'Commande quincaillerie — ' + eur(t.total),
       email: email, telephone: tel,
       panier: lignes,
+      carton_atelier: ci.n ? ci.n + ' article(s), ' + kgTexte(ci.kg) + ' kg' + (ci.lourd ? ' — PLUS DE ' + ci.c.poids_max + ' KG : DEVIS (2 cartons)' : '') : 'aucun',
       total: t.inclus ? eur(t.total) + ' — packs à prix fixe, forfait d’expédition inclus'
            : t.offert ? eur(t.total) + ' — forfait d’expédition OFFERT (offre de lancement, code ' + etat.offre.code + ')'
                       : eur(t.total) + ' dont forfait expédition ' + eur(t.forfait),
       _template: 'box'
     };
     var bouton = $('q-envoyer');
-    bouton.disabled = true; bouton.textContent = 'Envoi…';
+    bouton.disabled = true; bouton.textContent = 'Envoi…'; etat.envoiEnCours = true;
     fetch('https://formsubmit.co/ajax/egreencitys@gmail.com', {
       method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify(corps)
@@ -896,14 +1056,14 @@
       etat.panier = []; sauver(); majPastille(); rendrePanier();
       $('q-form-zone').innerHTML = '<p class="q-merci">✅ Commande reçue. Nous vérifions chaque article chez le fournisseur et revenons vers vous sous 24 h ouvrées avec la confirmation et le règlement — aucun encaissement avant validation.</p>';
     }).catch(function () {
-      bouton.disabled = false; bouton.textContent = 'Envoyer ma commande';
+      etat.envoiEnCours = false; bouton.disabled = false; bouton.textContent = 'Envoyer ma commande';
       alert('Envoi impossible pour le moment. Écrivez-nous : egreencitys@gmail.com');
     });
   }
 
   /* ---------------- init ---------------- */
   function initEvenements() {
-    $('q-recherche').addEventListener('input', function () { etat.recherche = this.value; majMots(); etat.visibles = PAR_PAGE; rendre(); });
+    $('q-recherche').addEventListener('input', function () { etat.recherche = this.value; majMots(); etat.visibles = PAR_PAGE; rendre(); if (etat.mots.length) chargerHolex(); });
     $('q-cat').addEventListener('change', function () { etat.cat = this.value; etat.visibles = PAR_PAGE; rendre(); majRayons(); });
     $('q-dispo').addEventListener('change', function () { etat.dispo = this.checked; etat.visibles = PAR_PAGE; rendre(); });
     $('q-tri').addEventListener('change', function () { etat.tri = this.value; rendre(); });
@@ -914,8 +1074,9 @@
     $('q-payer-cb').addEventListener('click', function () { verifierPuisPayer(etat.panier[0].ref); });
     if ($('q-payer-panier')) $('q-payer-panier').addEventListener('click', payerPanier);
     document.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-add],[data-pay],[data-plus],[data-moins],[data-suppr],[data-suppr-pack]');
+      var t = e.target.closest('[data-add],[data-pay],[data-plus],[data-moins],[data-suppr],[data-suppr-pack],[data-holex-recharger]');
       if (!t) return;
+      if (t.dataset.holexRecharger) { etat.holexEchec = false; chargerHolex(); rendrePanier(); return; }
       if (t.dataset.add) ajouter(t.dataset.add);
       if (t.dataset.pay) verifierPuisPayer(t.dataset.pay);
       if (t.dataset.plus) { etat.panier.find(function (x) { return x.ref === t.dataset.plus && !x.pack; }).q += 1; sauver(); rendrePanier(); majPastille(); }
@@ -947,12 +1108,14 @@
     etat.paiement = res[4];
     etat.stock = res[1].stock || {}; etat.stockMaj = res[1].maj || 0;
     etat.liens = res[2] || {};
+    indexer();
     var sel = $('q-cat');
     etat.catalogue.categories.forEach(function (c) {
       var o = document.createElement('option'); o.value = c.slug; o.textContent = c.nom; sel.appendChild(o);
     });
     /* rayon pré-sélectionné : ?cat=slug (liens du menu et de la fiche produit) */
     var catInitiale = new URLSearchParams(location.search).get('cat');
+    etat.catDemandee = catInitiale;
     if (catInitiale && etat.catalogue.categories.some(function (c) { return c.slug === catInitiale; })) {
       etat.cat = catInitiale; sel.value = catInitiale;
     }
@@ -960,6 +1123,7 @@
     charger(); initEvenements(); initVolet(); construireRayons(); afficherOffre(); afficherPromo(); rendre(); rendrePanier();
     traiterRetourPaiement();
     reconcilierPanierCompte();
+    if (holexUtile()) chargerHolex();
     /* anciens liens #a=REF (modal) : chaque produit a désormais sa page */
     if (location.hash.indexOf('#a=') === 0) {
       var refInitiale = decodeURIComponent(location.hash.slice(3));

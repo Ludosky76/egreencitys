@@ -489,3 +489,40 @@ html[data-theme="dark"] #q-volet-btn[aria-expanded="true"]{background:#2A39C0;co
 }
 .q-defil-nav>.q-defil-pause{margin-top:.15rem;font-size:.62rem;background:transparent;border-style:dashed;}
 .q-defil-nav>.q-defil-pause[aria-pressed=true]{background:#FFC457;color:#2A1600;border-style:solid;}
+
+/* ── Gamme Holex & Carton Atelier (envoi groupé) ───────────── */
+.q-rayons .q-onglet-holex{background:#D7141A;border-color:#D7141A;color:#fff;}
+.q-rayons .q-onglet-holex span{font-weight:600;opacity:.85;margin-left:.25rem;}
+.q-rayons .q-onglet-holex.actif{background:#1A1A1A;color:#fff;border-color:#1A1A1A;}
+.q-bandeau-holex{margin:.2rem 0 .7rem;padding:.65rem .9rem;border-radius:12px;background:#FDECEC;border-left:6px solid #D7141A;color:#1A1A1A;font-size:.84rem;line-height:1.55;}
+html[data-theme="dark"] .q-bandeau-holex{background:#2E1416;color:#F5D9DA;}
+.q-carton-direct{margin-top:.45rem;padding:.4rem .6rem;border-radius:9px;background:rgba(255,255,255,.7);font-size:.8rem;display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;}
+html[data-theme="dark"] .q-carton-direct{background:rgba(0,0,0,.25);}
+.q-feu{display:inline-block;width:.85rem;height:.85rem;border-radius:50%;flex:none;background:#C9CFD9;box-shadow:0 0 0 2px rgba(0,0,0,.08);}
+.q-feu-rouge .q-feu,.q-feu.q-feu-rouge{background:#E5322D;box-shadow:0 0 8px 1px rgba(229,50,45,.75);}
+.q-feu-jaune .q-feu,.q-feu.q-feu-jaune{background:#F5B700;box-shadow:0 0 8px 1px rgba(245,183,0,.8);}
+.q-feu-vert .q-feu,.q-feu.q-feu-vert{background:#2DBE2D;box-shadow:0 0 9px 2px rgba(45,190,45,.8);animation:q-feu-pulse 1.6s ease-in-out infinite;}
+@keyframes q-feu-pulse{50%{box-shadow:0 0 3px 0 rgba(45,190,45,.4);}}
+@media (prefers-reduced-motion:reduce){.q-feu-vert .q-feu,.q-feu.q-feu-vert{animation:none;}}
+#q-feu-mini{width:.7rem;height:.7rem;margin-left:.4rem;vertical-align:middle;}
+.q-carton{border:2px solid var(--line);border-radius:14px;padding:.7rem .8rem;margin-bottom:.8rem;background:var(--surface);font-size:.8rem;line-height:1.45;}
+.q-carton.q-feu-rouge{border-color:#F3B9B6;}
+.q-carton.q-feu-jaune{border-color:#F6DC8A;}
+.q-carton.q-feu-vert{border-color:#9ADF8F;background:var(--mint);}
+.q-carton-lourd{border-color:#E5322D !important;}
+.q-carton-tete{display:flex;align-items:center;gap:.5rem;font-size:.88rem;}
+.q-carton-pct{margin-left:auto;font-weight:800;color:var(--ink);}
+.q-jauge{display:block;height:9px;border-radius:6px;background:var(--line);overflow:hidden;margin:.45rem 0 .35rem;}
+.q-jauge>span{display:block;height:100%;border-radius:6px;background:#E5322D;transition:width .35s,background .35s;}
+.q-feu-jaune .q-jauge>span{background:#F5B700;}
+.q-feu-vert .q-jauge>span{background:#2DBE2D;}
+.q-carton-msg{margin:.2rem 0 .35rem;}
+.q-carton-poids{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;color:var(--muted);font-size:.74rem;}
+.q-jauge-kg{flex:1 1 70px;min-width:70px;height:6px;margin:0;}
+.q-carton .q-jauge.q-jauge-kg>span{background:var(--blue-light);}
+.q-carton-lourd .q-jauge.q-jauge-kg>span{background:#E5322D;}
+.q-carton-note{font-size:.74rem;color:#B3261E;margin-top:.35rem;}
+.q-carton-note:empty{display:none;}
+#q-envoyer:disabled{opacity:.5;cursor:not-allowed;}
+#q-compte.q-chargement::after{content:' · chargement de la gamme Holex…';}
+html[data-theme="dark"] .q-carton-pct{color:#fff;}
