@@ -565,7 +565,7 @@
     d.innerHTML = '🎁 <strong>' + esc(o.titre) + '</strong> : forfait d’expédition (' + eur(o.forfait) + ') <strong>offert dès '
       + eur(o.seuil).replace(',00', '') + ' d’articles</strong>, appliqué automatiquement (code <strong>' + esc(o.code) + '</strong>) — jusqu’au '
       + esc(o.fin_texte) + ', pour les ' + o.max_commandes + ' premières commandes.';
-    var avant = $('q-rayons');
+    var avant = $('q-filtres');
     avant.parentNode.insertBefore(d, avant);
   }
 
@@ -711,7 +711,7 @@
           + o.titre + ' <span>' + o.cartes.length + '</span></button>';
       }).join('') + '<a class="q-op-tout" href="/packs-pro/">Tous les packs →</a></div>'
       + onglets.map(function (o) { return panneauPacks(o.cle, o.cartes); }).join('');
-    var avant = $('q-rayons');
+    var avant = $('q-filtres');
     avant.parentNode.insertBefore(d, avant);
     var defs = {};
     onglets.forEach(function (o) { defs[o.cle] = defileur($('q-op-' + o.cle)); });
@@ -835,7 +835,8 @@
   function ouvrirMenu() { document.body.classList.add('menu-ouvert'); $('q-burger').setAttribute('aria-expanded', 'true'); }
   function fermerMenu() { document.body.classList.remove('menu-ouvert'); $('q-burger').setAttribute('aria-expanded', 'false'); }
 
-  /* chips et menu des rayons : reconstruits quand la gamme Holex arrive */
+  /* onglets d'accès rapide (DeWalt, Holex, tous les rayons) dans la barre de filtres, et menu des rayons :
+     reconstruits quand la gamme Holex arrive ; les rayons eux-mêmes se choisissent dans le menu et le volet de filtres */
   function rendreRayons() {
     var comptes = {};
     etat.catalogue.articles.forEach(function (a) { comptes[a.cat] = (comptes[a.cat] || 0) + 1; });
@@ -849,7 +850,6 @@
       + '<a href="#" data-rayon="">Tous les rayons <span class="nb">' + total.toLocaleString('fr-FR') + '</span></a>';
     etat.catalogue.categories.forEach(function (c) {
       if (!comptes[c.slug]) return; /* rayon vide : rien à montrer */
-      chips += '<button type="button" data-rayon="' + esc(c.slug) + '">' + esc(c.nom) + '</button>';
       menu += '<a href="#" data-rayon="' + esc(c.slug) + '">' + esc(c.nom)
         + ' <span class="nb">' + comptes[c.slug] + '</span></a>';
     });
