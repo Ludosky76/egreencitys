@@ -5,18 +5,36 @@ const Stripe = require('stripe');
 const SITE = 'https://egreencitys.com';
 const BOUTIQUE = SITE + '/pages/boutique-quincaillerie.html';
 const POIDS_MAX_COLIS = 30; // kg — au-delà : devis
-const QTE_MAX = 20;
+const QTE_MAX = 20; // par référence (toutes lignes confondues)
+const REF_VALIDE = /^[A-Z0-9]{3,12}$/i;
+const REF_HOLEX = /^HX[0-9A-F]{9}$/;
+// batterie lithium vendue seule (UN3480, refusée au transport) : « Batterie… », ou kit/pack/set de batteries sans machine
+const BATT_DEBUT = /^(batterie|batteries|accu|accus)\b/i;
+const BATT_KIT = /^(kit|pack|set|lot)\b/i;
+const BATT_MOT = /\b(batterie|batteries|accu|accus)\b/i;
+const MACHINE = /\b(perceuse|visseuse|perforateur|meuleuse|scie|ponceuse|cl[ée] [àa] chocs?|boulonneuse|d[ée]fonceuse|rabot|marteau|burineur|lampe|projecteur|souffleur|tondeuse|taille-haies?|d[ée]broussailleuse|tron[çc]onneuse|aspirateur|radio|agrafeuse|cloueur|riveteuse|pistolet|polisseuse|multi-?outils?|outils?|malaxeur|cisaille|d[ée]capeur|niveau laser|laser)\b/i;
+function batterieSeule(nom) {
+  nom = String(nom || '').trim();
+  return BATT_DEBUT.test(nom) || (BATT_KIT.test(nom) && BATT_MOT.test(nom) && !MACHINE.test(nom));
+}
+const CACHE_MS = 90 * 1000;
+const cache = new Map(); // chemin -> { t, promesse } : une instance ne relit pas les 7 Mo publiés à chaque appel
 
-/* Données publiées par le site : catalogue (prix tout compris), stock (automate horaire), offre. */
-async function lireJson(chemin, facultatif) {
-  try {
-    const r = await fetch(SITE + chemin + (chemin.includes('?') ? '&' : '?') + 't=' + Date.now());
-    if (!r.ok) throw new Error(chemin + ' : ' + r.status);
-    return await r.json();
-  } catch (e) {
-    if (facultatif) return null;
-    throw e;
-  }
+/* Données publiées par le site : catalogue (prix tout compris), stock (automate horaire), offre.
+   facultatif : un fichier ABSENT (404) vaut null ; une panne de lecture reste une erreur (on ne devine pas). */
+function lireJson(chemin, facultatif) {
+  const c = cache.get(chemin);
+  if (c && Date.now() - c.t < CACHE_MS) return c.promesse;
+  const promesse = telecharger(chemin, facultatif);
+  cache.set(chemin, { t: Date.now(), promesse });
+  promesse.catch(() => cache.delete(chemin));  // une panne n'est pas gardée en cache
+  return promesse;
+}
+async function telecharger(chemin, facultatif) {
+  const r = await fetch(SITE + chemin + (chemin.includes('?') ? '&' : '?') + 't=' + Math.floor(Date.now() / CACHE_MS));
+  if (facultatif && r.status === 404) return null;
+  if (!r.ok) throw new Error(chemin + ' : ' + r.status);
+  return r.json();
 }
 
 /* liste « 2xREF,1xREF » répartie sur panier, panier_2… (Stripe : 500 caractères par métadonnée) */
@@ -40,13 +58,27 @@ function nbCartons(unites, max) {
   return Math.max(1, cartons.length);
 }
 
+/* erreur Stripe due au code promo lui-même (et non à une panne passagère) */
+function refusDuCode(e) {
+  return !!e && e.type === 'StripeInvalidRequestError'
+    && (/discount|promotion|coupon/i.test(String(e.param || '')) || /promotion|coupon|code/i.test(String(e.message || '')));
+}
+
 async function creerSessionPanier(corps, cleStripe) {
   corps = (corps && typeof corps === 'object') ? corps : {};
   const lignes = Array.isArray(corps.panier) ? corps.panier : [];
   if (lignes.length === 0 || lignes.length > 50) return { statut: 400, json: { erreur: 'panier vide ou trop grand' } };
 
+  // une réf. mal formée est refusée avant toute lecture ; quantités regroupées par réf. (QTE_MAX sur la somme)
+  const qtes = new Map();
+  for (const l of lignes) {
+    const ref = l && typeof l.ref === 'string' ? l.ref.slice(0, 20) : '';
+    const q = l && typeof l.q === 'number' ? Math.floor(l.q) : NaN;
+    if (!REF_VALIDE.test(ref) || !(q >= 1 && q <= 1000)) return { statut: 400, json: { erreur: 'panier invalide' } };
+    qtes.set(ref, (qtes.get(ref) || 0) + q);
+  }
   // Gamme Holex (réf. HX…) : catalogue à part, lu seulement si le panier en contient
-  const avecHolex = lignes.some((l) => /^HX/.test(String((l && l.ref) || '')));
+  const avecHolex = [...qtes.keys()].some((r) => REF_HOLEX.test(r));
   let catalogue, stock, offre, holex, reglages;
   try {
     [catalogue, stock, offre, holex, reglages] = await Promise.all([
@@ -66,11 +98,11 @@ async function creerSessionPanier(corps, cleStripe) {
   const articles = [], refus = [];
   let total = 0, poids = 0, points = 0, cartons = 0;
   const unitesCarton = [];
-  for (const l of lignes) {
-    const ref = String((l && l.ref) || '').slice(0, 20);
-    const q = Math.floor(Number(l && l.q));
+  for (const [ref, q] of qtes) {
     const a = parRef.get(ref);
-    if (!a || !(q >= 1 && q <= QTE_MAX)) { refus.push({ ref, motif: 'article inconnu ou quantité invalide' }); continue; }
+    if (!a) { refus.push({ ref, motif: 'article inconnu' }); continue; }
+    if (q > QTE_MAX) { refus.push({ ref, motif: 'au plus ' + QTE_MAX + ' exemplaires par article (au-delà : envoyez la commande, nous vous répondons)' }); continue; }
+    if (batterieSeule(a.nom)) { refus.push({ ref, motif: 'batterie lithium vendue seule : interdite au transport aérien' }); continue; }
     if (a.devis) { refus.push({ ref, motif: 'colis de plus de 30 kg : sur devis' }); continue; }
     const s = a.pc ? { s: a.s } : (stock.stock || {})[ref];  // Holex : disponibilité publiée avec sa gamme
     if (!s || !(s.s === 'disponible' || (a.pc && s.s === 'faible'))) { refus.push({ ref, motif: 'indisponible chez le fournisseur' }); continue; }
@@ -86,10 +118,10 @@ async function creerSessionPanier(corps, cleStripe) {
     // paiement par carte du Carton Atelier : seulement quand il est explicitement ouvert
     if (!(reglages && reglages.carton_cb === true)) return { statut: 409, json: { erreur: 'carton_cb' } };
     if (points < c.seuil_points) return { statut: 409, json: { erreur: 'carton' } };
-    // plusieurs cartons de poids_max kg possibles (transport compté au kilo dans les prix), au plus cartons_max
+    // plusieurs cartons de poids_max kg possibles (le 1er compris dans les prix, les suivants à la charge de la boutique), au plus cartons_max
     cartons = nbCartons(unitesCarton, c.poids_max);
     if (cartons > (c.cartons_max || 5)) {
-      return { statut: 409, json: { erreur: 'poids', poids: Math.round(unitesCarton.reduce((s, p) => s + p, 0) * 10) / 10 } };
+      return { statut: 409, json: { erreur: 'cartons', cartons, max: c.cartons_max || 5 } };
     }
   }
 
@@ -108,12 +140,7 @@ async function creerSessionPanier(corps, cleStripe) {
       product_data: { name: ('[' + a.ref + '] ' + a.nom).slice(0, 250), images: a.img ? [/^https?:/.test(a.img) ? a.img : SITE + a.img] : [] },
     },
   }));
-  // le 1er carton est compris dans le prix des articles Holex ; chaque carton en plus est facturé à part
-  if (cartons > 1) line_items.push({
-    quantity: cartons - 1,
-    price_data: { currency: 'eur', unit_amount: Math.round((holex.carton.prix_carton || 150) * 100),
-      product_data: { name: 'Carton Atelier supplémentaire (' + holex.carton.poids_max + ' kg max par carton)' } },
-  });
+  // Carton Atelier : le 1er carton est compris dans les prix ; les suivants sont à la charge de la boutique (rien de facturé)
   line_items.push({
     quantity: 1,
     price_data: { currency: 'eur', unit_amount: Math.round(catalogue.forfait_expedition * 100),
@@ -131,9 +158,10 @@ async function creerSessionPanier(corps, cleStripe) {
       ...decouper(articles.map(({ a, q }) => q + 'x' + a.ref)),
       poids_kg: poids.toFixed(2),
       carton_atelier: points > 0 ? unitesCarton.reduce((s, p) => s + p, 0).toFixed(2) + ' kg, ' + cartons + ' carton(s)' : '',
+      cartons_sup: cartons > 1 ? String(cartons - 1) : '',
       offre: offert ? offre.code : '',
     },
-    success_url: BOUTIQUE + '?paiement=succes&panier=1',
+    success_url: BOUTIQUE + '?paiement=succes&panier=1&sid={CHECKOUT_SESSION_ID}',
     cancel_url: BOUTIQUE + '#panier',
   };
   if (offert) params.discounts = [{ promotion_code: offre.stripe_promotion_code }];
@@ -141,14 +169,27 @@ async function creerSessionPanier(corps, cleStripe) {
   const email = String(corps.email || '').trim();
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) params.customer_email = email.slice(0, 200);
 
+  const stripe = new Stripe(cleStripe, { apiVersion: '2024-06-20' });
   try {
-    const stripe = new Stripe(cleStripe, { apiVersion: '2024-06-20' });
     const session = await stripe.checkout.sessions.create(params);
     return { statut: 200, json: { url: session.url, offert } };
   } catch (e) {
     console.error('Création de la session Stripe impossible :', e.message);
-    return { statut: 502, json: { erreur: 'stripe' } };
+    if (!(params.discounts && refusDuCode(e))) return { statut: 502, json: { erreur: 'stripe' } };
   }
+  // code de l'offre refusé par Stripe (200 utilisations atteintes, désactivé, expiré) : on encaisse sans l'offre
+  {
+    delete params.discounts;
+    params.allow_promotion_codes = true;
+    params.metadata.offre = '';
+    try {
+      const session = await stripe.checkout.sessions.create(params);
+      return { statut: 200, json: { url: session.url, offert: false, offre_epuisee: true } };
+    } catch (e) {
+      console.error('Création de la session Stripe impossible (sans offre) :', e.message);
+    }
+  }
+  return { statut: 502, json: { erreur: 'stripe' } };
 }
 
 module.exports = { creerSessionPanier };

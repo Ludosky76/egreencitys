@@ -381,7 +381,7 @@
       if (!a || !a.pc) return;
       var p = a.poids || 0.5;  /* poids inconnu : 0,5 kg, jamais 0 */
       pts += a.pc * l.q; montant += a.prix * l.q; kg += p * l.q; n += l.q;
-      for (var i = 0; i < l.q && unites.length < 400; i++) unites.push(p);
+      for (var i = 0; i < l.q && unites.length < 1000; i++) unites.push(p);
     });
     /* lignes Holex dont la gamme n'est pas (encore) chargée : rien ne part tant qu'on ne les connaît pas */
     var attente = !etat.holex && etat.panier.some(function (l) { return /^HX/.test(l.ref) && !article(l.ref); });
@@ -396,8 +396,8 @@
       lourd: nbCartons(unites, c.poids_max) > (c.cartons_max || 5)
     };
   }
-  /* La commande peut partir en plusieurs cartons de poids_max kg (le transport est compté au kilo
-     dans chaque prix) : rangement « plus lourd d'abord » dans le premier carton où il reste de la place. */
+  /* La commande peut partir en plusieurs cartons de poids_max kg (le 1er est compris dans les prix, les suivants
+     à la charge de la boutique) : rangement « plus lourd d'abord » dans le premier carton où il reste de la place. */
   function nbCartons(unites, max) {
     var cartons = [];
     unites.slice().sort(function (a, b) { return b - a; }).forEach(function (p) {
@@ -406,26 +406,21 @@
     });
     return Math.max(1, cartons.length);
   }
-  function poidsTexte(ci) {
-    return kgTexte(ci.kg) + ' kg' + (ci.cartons > 1 ? ' · ' + ci.cartons + ' cartons' : ' / ' + ci.c.poids_max + ' kg');
-  }
+  function poidsTexte(ci) { return kgTexte(ci.kg) + ' kg'; }
   function kgTexte(x) { return x.toLocaleString('fr-FR', { maximumFractionDigits: x < 10 ? 2 : 1 }); }
   function blocCarton(ci) {
-    var c = ci.c, d = (c.dims || []).join(' × ');
+    var c = ci.c;
     var msg = ci.lourd
-      ? '⚠️ Votre commande pèse environ <strong>' + kgTexte(ci.kg) + ' kg</strong>, soit plus de ' + (c.cartons_max || 5) + ' cartons. Envoyez la commande, nous vous proposons un devis.'
+      ? '⚠️ Votre commande pèse environ <strong>' + kgTexte(ci.kg) + ' kg</strong> : envoyez-la par le formulaire, nous vous proposons un devis.'
       : ci.complet
       ? '✅ <strong>Carton complet : il peut partir !</strong> Livraison ' + esc(c.delai) + '.'
-        + (ci.cartons > 1 ? ' Votre commande dépasse ' + c.poids_max + ' kg : ' + (ci.cartons - 1) + ' carton' + (ci.cartons > 2 ? 's' : '') + ' en plus, ' + eur((ci.cartons - 1) * (c.prix_carton || 150)).replace(',00', '') + ' (le premier est compris dans les prix).' : '')
       : 'Encore <strong>' + eur(ci.reste).replace(',00', '') + '</strong> d’articles Holex pour déclencher l’envoi du carton (ce montant dépend des articles choisis). Les articles Holex partent ensemble, dès que le carton est complet.';
     return '<div class="q-carton q-feu-' + ci.feu + (ci.lourd ? ' q-carton-lourd' : '') + '" role="status">'
       + '<div class="q-carton-tete"><span class="q-feu" aria-hidden="true"></span><strong>📦 ' + esc(c.nom) + '</strong>'
       + '<span class="q-carton-pct">' + (ci.complet ? 'prêt' : ci.feu === 'jaune' ? 'presque' : 'à compléter') + '</span></div>'
       + '<div class="q-jauge" aria-hidden="true"><span style="width:' + ci.pct + '%"></span></div>'
       + '<p class="q-carton-msg">' + msg + '</p>'
-      + '<div class="q-carton-poids"><span>⚖️ ' + poidsTexte(ci) + '</span>'
-      + '<span class="q-jauge q-jauge-kg"><span style="width:' + Math.min(100, Math.round(ci.kg / (c.poids_max * ci.cartons) * 100)) + '%"></span></span>'
-      + (d ? '<span>' + (ci.cartons > 1 ? ci.cartons + ' cartons ' : 'Carton ') + d + ' cm, ' + c.poids_max + ' kg max chacun</span>' : '') + '</div>'
+      + '<div class="q-carton-poids"><span>⚖️ Poids : ' + poidsTexte(ci) + '</span></div>'
       + '</div>';
   }
   /* repère permanent : pastille du panier + bandeau de l'onglet Holex, mis à jour à chaque ajout */
@@ -451,6 +446,7 @@
     $('q-pastille').textContent = n;
     $('q-pastille').style.display = n ? '' : 'none';
   }
+  var QTE_MAX_CB = 20;  /* paiement par carte : 20 exemplaires par article au plus (functions/panier.js) ; le formulaire accepte davantage */
   function ajouter(ref) {
     var l = etat.panier.find(function (x) { return x.ref === ref && !x.pack; });
     if (l) l.q += 1; else etat.panier.push({ ref: ref, q: 1 });
@@ -472,9 +468,7 @@
     var inclus = etat.panier.length > 0 && etat.panier.every(function (l) { return l.pack && prixPack(l.pack) !== null; });
     var offert = !inclus && etat.panier.length > 0 && forfaitOffert(t);
     var f = etat.panier.length && !offert && !inclus ? etat.catalogue.forfait_expedition : 0;
-    /* Carton Atelier : le 1er carton est compris dans le prix des articles Holex, chaque carton en plus est facturé */
-    var ci = cartonInfo(), sup = ci.n && !ci.lourd ? (ci.cartons - 1) * (ci.c.prix_carton || 150) : 0;
-    return { articles: t, forfait: f, offert: offert, inclus: inclus, cartonsSup: sup, nCartonsSup: sup ? ci.cartons - 1 : 0, total: t + f + sup };
+    return { articles: t, forfait: f, offert: offert, inclus: inclus, total: t + f };
   }
   function rendrePanier() {
     var corps = $('q-tiroir-corps');
@@ -529,10 +523,6 @@
     var t = totalPanier();
     $('q-total-articles').textContent = eur(t.articles);
     $('q-total-forfait').textContent = t.inclus ? 'inclus dans le prix du pack' : t.offert ? 'offert 🎁' : eur(t.forfait);
-    var lc = $('q-total-cartons');
-    if (!lc) { lc = document.createElement('div'); lc.className = 'q-total-ligne'; lc.id = 'q-total-cartons'; $('q-total').parentNode.parentNode.insertBefore(lc, $('q-total').parentNode); }
-    lc.style.display = t.cartonsSup ? '' : 'none';
-    lc.innerHTML = t.cartonsSup ? '<span>Carton' + (t.nCartonsSup > 1 ? 's' : '') + ' Atelier supplémentaire' + (t.nCartonsSup > 1 ? 's' : '') + ' (' + t.nCartonsSup + ')</span><span>' + eur(t.cartonsSup) + '</span>' : '';
     $('q-total').textContent = eur(t.total);
     // paiement CB direct : uniquement UN article, quantité 1, disponible, lien actif
     var cb = $('q-payer-cb');
@@ -546,6 +536,9 @@
     var okPanier = !ok && !!(etat.paiement && etat.paiement.panier_cb && etat.paiement.fonction)
       && etat.panier.every(function (l) { var a = article(l.ref); return a && !a.devis && (statutDe(l.ref) === 'disponible' || (a.pc && statutDe(l.ref) === 'faible')); })
       && poidsPanier <= 30
+      /* limites du paiement serveur : 50 lignes, 20 exemplaires par article (au-delà : formulaire) */
+      && etat.panier.length <= 50
+      && Object.values(etat.panier.reduce(function (m, l) { m[l.ref] = (m[l.ref] || 0) + l.q; return m; }, {})).every(function (q) { return q <= QTE_MAX_CB; })
       /* Carton Atelier : paiement par carte seulement quand le serveur le gère (réglage carton_cb) et carton complet */
       && !ci.attente && (!ci.n || (etat.paiement.carton_cb && ci.complet && !ci.lourd))
       /* prix fixe de pack inconnu du serveur de paiement : ces packs passent par le formulaire */
@@ -975,23 +968,43 @@
     }).then(function (r) { return r.json().then(function (j) { return { statut: r.status, j: j }; }); })
       .then(function (x) {
         if (x.statut === 200 && x.j.url) {
+          /* offre de lancement annoncée au panier mais refusée par Stripe (code épuisé) : on prévient avant de payer */
+          if (t.offert && x.j.offert === false && !confirm('L’offre de lancement est épuisée : le forfait d’expédition ('
+            + eur(etat.catalogue.forfait_expedition) + ') sera facturé. Continuer vers le paiement ?')) return;
           try {
             localStorage.setItem('egc_quinc_commande', JSON.stringify({
-              panier: true, ref: etat.panier.map(function (l) { return l.q + 'x' + l.ref; }).join(','),
-              nom: 'panier de ' + etat.panier.reduce(function (s, l) { return s + l.q; }, 0) + ' article(s)', montant: t.total, ts: ts
+              carton: cartonInfo().n > 0, panier: true, ref: etat.panier.map(function (l) { return l.q + 'x' + l.ref; }).join(','),
+              nom: 'panier de ' + etat.panier.reduce(function (s, l) { return s + l.q; }, 0) + ' article(s)',
+              montant: t.total + (t.offert && x.j.offert === false ? etat.catalogue.forfait_expedition : 0), ts: ts
             }));
           } catch (e) {}
           window.location.href = x.j.url;
           return;
         }
         if (x.statut === 409 && x.j.erreur === 'panier') {
-          alert('Certains articles ne sont plus disponibles :\n' + x.j.refus.map(function (r) { return '• ' + r.ref + ' : ' + r.motif; }).join('\n')
+          alert('Certains articles ne peuvent pas être payés par carte :\n' + x.j.refus.map(function (r) { return '• ' + r.ref + ' : ' + r.motif; }).join('\n')
             + '\nRetirez-les du panier, ou envoyez la commande : nous vous confirmons le délai.');
           return fetch('/assets/data/quincaillerie-stock.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); })
-            .then(function (j) { etat.stock = j.stock || etat.stock; rendre(); rendrePanier(); });
+            .then(function (j) {
+              /* Holex : sa disponibilité vient de la gamme chargée une fois ; on marque les refus pour ne plus proposer la carte */
+              x.j.refus.forEach(function (r) { var a = /^HX/.test(r.ref) && article(r.ref); if (a && /indisponible/.test(r.motif)) a.s = 'rupture'; });
+              etat.stock = j.stock || etat.stock; rendre(); rendrePanier();
+            });
         }
         if (x.statut === 409 && x.j.erreur === 'carton') {
           alert('Le Carton Atelier n’est pas encore complet. Ajoutez des articles Holex ou retirez-les pour payer le reste.');
+          return;
+        }
+        if (x.statut === 400) {
+          alert('Ce panier ne peut pas être payé par carte en ligne (trop de lignes ou quantités inhabituelles). Envoyez la commande par le formulaire : nous vous répondons sous 24 h ouvrées.');
+          return;
+        }
+        if (x.statut === 409 && x.j.erreur === 'cartons') {
+          alert('Votre commande Holex est trop lourde pour un paiement en ligne. Envoyez-la par le formulaire : nous vous proposons un devis.');
+          return;
+        }
+        if (x.statut === 409 && x.j.erreur === 'carton_cb') {
+          alert('Le paiement par carte du Carton Atelier n’est pas encore ouvert. Envoyez la commande par le formulaire : nous vous recontactons sous 24 h ouvrées.');
           return;
         }
         if (x.statut === 409 && x.j.erreur === 'poids') {
@@ -1015,11 +1028,13 @@
       cmd = JSON.parse(localStorage.getItem('egc_quinc_commande') || 'null');
       localStorage.removeItem('egc_quinc_commande');
     } catch (e) {}
+    var sid = new URLSearchParams(location.search).get('sid') || '';
     history.replaceState(null, '', location.pathname);
     if (cmd && Date.now() - (cmd.ts || 0) < 2 * 3600 * 1000) {
       /* panier payé : il est vidé ; sinon la ligne payée (mono-article, qté 1) sort du panier */
       etat.panier = cmd.panier ? [] : etat.panier.filter(function (l) { return !(l.ref === cmd.ref && l.q === 1); });
       sauver(); rendre(); rendrePanier();
+      cmd.sid = sid;
       if (window.EGCQCompte) {
         window.EGCQCompte.pret.then(function (u) {
           if (u) window.EGCQCompte.enregistrerCommande(cmd);
@@ -1029,7 +1044,9 @@
     var bandeau = document.createElement('div');
     bandeau.setAttribute('role', 'status');
     bandeau.style.cssText = 'position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#17631a;color:#fff;padding:.7rem 1.3rem;border-radius:50px;font-weight:700;font-size:.85rem;z-index:99999;box-shadow:0 10px 28px rgba(0,0,0,.35);';
-    bandeau.textContent = '✅ Paiement validé — merci ! Article disponible : livraison sous 7 jours ouvrés.';
+    bandeau.textContent = cmd && cmd.carton
+      ? '✅ Paiement validé — merci ! Carton Atelier : livraison ' + cartonConfig().delai + '.'
+      : '✅ Paiement validé — merci ! Article disponible : livraison sous 7 jours ouvrés.';
     document.body.appendChild(bandeau);
     setTimeout(function () { bandeau.remove(); }, 7000);
     if (window.gtag) gtag('event', 'purchase_return', { currency: 'EUR', value: cmd ? cmd.montant : 0 });

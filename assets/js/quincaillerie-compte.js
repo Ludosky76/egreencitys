@@ -72,7 +72,8 @@
         total: Number(cmd.montant) || 0,
         status: 'paye',
         source: 'retour_stripe',
-        ref: cmd.ref || ''
+        ref: cmd.ref || '',
+        sid: cmd.sid || ''  // session Stripe : la même commande enregistrée par le webhook n'est affichée qu'une fois
       }, { merge: true }).then(function () { return true; }).catch(function () { return false; });
     },
 

@@ -39,9 +39,14 @@ exports.paiementPanier = onRequest(
   { secrets: [STRIPE_SECRET_KEY], region: 'europe-west1', cors: ['https://egreencitys.com', 'https://www.egreencitys.com'], maxInstances: 5, timeoutSeconds: 30 },
   async (req, res) => {
     if (req.method !== 'POST') return res.status(405).json({ erreur: 'methode' });
-    // trim : une valeur collée ou envoyée par pipe peut garder un retour à la ligne final
-    const r = await creerSessionPanier(req.body, STRIPE_SECRET_KEY.value().trim());
-    return res.status(r.statut).json(r.json);
+    try {
+      // trim : une valeur collée ou envoyée par pipe peut garder un retour à la ligne final
+      const r = await creerSessionPanier(req.body, STRIPE_SECRET_KEY.value().trim());
+      return res.status(r.statut).json(r.json);
+    } catch (e) {
+      console.error('paiementPanier :', e && e.message);
+      return res.status(400).json({ erreur: 'panier invalide' });
+    }
   }
 );
 
@@ -78,7 +83,8 @@ exports.stripeWebhook = onRequest(
 
     const db = admin.firestore();
     const ref = db.collection('orders').doc(s.id); // doc id = session -> idempotent
-    const annee = new Date().getFullYear();
+    // année du paiement à l'heure de la Guyane (pas l'heure UTC du traitement, ni celle d'un renvoi Stripe)
+    const annee = new Date(((s.created || Date.now() / 1000) - 3 * 3600) * 1000).getUTCFullYear();
     const numero = 'EGC-' + annee + '-' + String(s.id).slice(-8).toUpperCase();
 
     // Libellé lisible pour l'espace client (compte.html liste "articles").
@@ -100,9 +106,9 @@ exports.stripeWebhook = onRequest(
           return m ? { libelle: 'Quincaillerie — réf. ' + m[2], quantite: Number(m[1]) } : null;
         }).filter(Boolean)
       : null;
+    const livraison = (s.collected_information && s.collected_information.shipping_details) || s.shipping_details || null;
 
     const donnees = {
-      numero,
       email: (s.customer_details && s.customer_details.email) || s.customer_email || null,
       nom: (s.customer_details && s.customer_details.name) || null,
       telephone: (s.customer_details && s.customer_details.phone) || null,
@@ -111,7 +117,11 @@ exports.stripeWebhook = onRequest(
       produit,
       client_reference_id: refClient,
       stripe_session: s.id,
-      paye_at: admin.firestore.FieldValue.serverTimestamp()
+      carton_atelier: md.carton_atelier || '',  // interne : poids et nombre de cartons à expédier
+      cartons_sup: Number(md.cartons_sup) || 0,
+      poids_kg: Number(md.poids_kg) || 0,
+      offre: md.offre || '',
+      livraison: livraison ? { nom: livraison.name || null, adresse: livraison.address || null } : null
     };
 
     try {
@@ -120,6 +130,8 @@ exports.stripeWebhook = onRequest(
         // Posés une seule fois : les renvois Stripe ne doivent pas écraser
         // created_at, ni un n° de suivi / des articles édités par l'admin.
         donnees.created_at = admin.firestore.FieldValue.serverTimestamp();
+        donnees.paye_at = admin.firestore.FieldValue.serverTimestamp();
+        donnees.numero = numero;
         donnees.statut = 'payee';
         donnees.articles = (articlesPanier && articlesPanier.length) ? articlesPanier : [{ libelle, quantite: 1 }];
         donnees.numero_suivi = '';

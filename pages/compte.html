@@ -712,6 +712,7 @@ function chargerToutesCommandes(tentatives) {
           var o = d.data();
           distantes.push({
             id: o.numero || d.id,
+            sid: o.stripe_session || d.id,
             date: o.created_at && o.created_at.toDate ? o.created_at.toDate().toISOString() : new Date().toISOString(),
             items: (o.articles || []).map(function (a) {
               return { name: (a.quantite > 1 ? a.quantite + '× ' : '') + (a.libelle || '') };
@@ -722,7 +723,8 @@ function chargerToutesCommandes(tentatives) {
           });
         });
         var vus = {};
-        var tout = distantes.concat(locales).filter(function (o) {
+        distantes.forEach(function (o) { if (o.sid) vus['sid:' + o.sid] = 1; });
+        var tout = distantes.concat(locales.filter(function (o) { return !(o.sid && vus['sid:' + o.sid]); })).filter(function (o) {
           if (vus[o.id]) return false; vus[o.id] = 1; return true;
         });
         tout.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
