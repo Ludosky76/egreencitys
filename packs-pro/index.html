@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Packs pro — Machines et accessoires | EGREENCITY'S Pro Quincaillerie</title>
-  <meta name="description" content="Packs pro livrés en Guyane : duo Milwaukee M18 FUEL, meuleuse Milwaukee M18, trios DeWalt 18 V, duo Makita LXT, avec accessoires. Un prix tout compris, octroi de mer et transport inclus.">
+  <meta name="description" content="Packs pro livrés en Guyane : duo Milwaukee M18 FUEL, meuleuse Milwaukee M18, trios DeWalt 18 V, duo Makita LXT, avec accessoires, et super packs d’outillage Holex (électricien VDE, maintenance industrielle). Un prix tout compris, octroi de mer et transport inclus.">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://media.screwfix.fr https://*.google-analytics.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://www.google-analytics.com https://*.googletagmanager.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="canonical" href="https://egreencitys.com/packs-pro/">
@@ -94,7 +94,7 @@
   <section class="bandeau">
     <span class="k">Espace packs</span>
     <h1>Les packs pro <em>tout équipés</em></h1>
-    <p>Machines prêtes à l’emploi, accessoires inclus : un seul prix, livré chez vous en Guyane, octroi de mer compris.</p>
+    <p>Machines prêtes à l’emploi et outillage de précision Holex, accessoires inclus : un prix tout compris, livré en Guyane, octroi de mer compris.</p>
   </section>
   <div class="atouts">
     <div class="atout"><i>💶</i><div><b>Un seul prix</b>octroi de mer et transport inclus</div></div>
@@ -117,8 +117,8 @@
   <script>
   (function () {
     var CLE = 'egc_quinc_panier', RET = 7 * 24 * 3600 * 1000;
-    var CATS = [['tous', 'Tous les packs'], ['machines', 'Packs machines'], ['cartons', 'Cartons d’outillage']];
-    var etat = { cat: 'tous', packs: [], cartons: [], art: {} };
+    var CATS = [['tous', 'Tous les packs'], ['machines', 'Packs machines'], ['superpacks', 'Super packs Holex'], ['cartons', 'Cartons d’outillage']];
+    var etat = { cat: 'tous', packs: [], cartons: [], art: {}, holex: null, holexEchec: false };
     function $(i) { return document.getElementById(i); }
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
     function eur(v) { return v.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ' €'; }
@@ -144,13 +144,18 @@
     }
     function liste(L) {
       return '<ul>' + L.map(function (x) {
-        var lien = x.a && window.EGCQUrl ? window.EGCQUrl.fiche(x.a) : null;
+        var lien = !x.sup && x.a && window.EGCQUrl ? window.EGCQUrl.fiche(x.a) : null;  /* super pack : aucune fiche liée */
         return '<li>' + (lien ? '<a href="' + esc(lien) + '">' + esc(x.nom) + '</a>' : esc(x.nom)) + '</li>';
       }).join('') + '</ul>';
     }
     function cartePack(p, i) {
-      var L = p.articles.map(function (x) { return { a: etat.art[x.ref], nom: x.nom }; });
+      var sup = p.categorie === 'superpacks';  /* super pack Holex : photos lues dans promo.json */
+      var L = p.articles.map(function (x) { return { a: etat.art[x.ref] || (sup && x.img ? { ref: x.ref, img: x.img } : null), nom: x.nom, sup: sup }; });
       var ok = L.every(function (x) { return x.a && !x.a.devis; });
+      /* super pack : bouton actif seulement quand la gamme Holex est lue et que chaque réf. y est « disponible »
+         (gamme illisible : bouton actif, le panier la recharge et retire un pack incomplet) */
+      var verif = sup && !etat.holex && !etat.holexEchec;
+      if (sup && etat.holex) ok = p.articles.every(function (x) { var a = etat.holex[x.ref]; return a && !a.devis && a.s === 'disponible'; });
       var deja = dansPanier(p.id);
       return '<article class="pk" data-cat="' + esc(p.categorie || 'machines') + '">'
         + photos(L, p.etiquette || 'Nouveau', L.length + (L.length > 1 ? ' articles' : ' article'))
@@ -159,9 +164,9 @@
         + '<p class="sous">' + esc(p.sous_titre) + '</p>' + liste(L)
         + '<div class="prix-bloc"><div class="prix">' + eur(p.prix) + '</div>'
         + '<div class="inclus">' + esc(p.prix_txt || 'le pack complet') + ', livré chez vous en Guyane, octroi de mer compris</div>'
-        + '<button type="button" class="ajout' + (deja ? ' ok' : '') + '" data-i="' + i + '"' + (ok ? '' : ' disabled') + '>'
-        + (!ok ? 'Momentanément indisponible' : deja ? '✓ Dans le panier — voir le panier' : '🛒 Ajouter le pack au panier') + '</button>'
-        + '<div class="note">' + esc(p.colis || '') + ' · délai confirmé sous 24 h ouvrées</div></div></div></article>';
+        + '<button type="button" class="ajout' + (deja ? ' ok' : '') + '" data-i="' + i + '"' + (ok && !verif ? '' : ' disabled') + '>'
+        + (verif ? 'Vérification de la disponibilité…' : !ok ? 'Momentanément indisponible' : deja ? '✓ Dans le panier — voir le panier' : '🛒 Ajouter le pack au panier') + '</button>'
+        + '<div class="note">' + esc(p.colis || '') + (p.delai ? ' · délai ' + esc(p.delai) + ', confirmé sous 24 h ouvrées' : ' · délai confirmé sous 24 h ouvrées') + '</div></div></div></article>';
     }
     function carteCarton(c) {
       var L = c.articles.map(function (x) { return { a: etat.art[x.ref], nom: x.nom }; });
@@ -176,8 +181,9 @@
     }
     function rendre() {
       var machines = etat.packs.filter(function (p) { return (p.categorie || 'machines') === 'machines'; });
+      var supers = etat.packs.filter(function (p) { return p.categorie === 'superpacks'; });
       var cartons = etat.cartons;
-      var n = { tous: machines.length + cartons.length, machines: machines.length, cartons: cartons.length };
+      var n = { tous: machines.length + supers.length + cartons.length, machines: machines.length, superpacks: supers.length, cartons: cartons.length };
       $('filtres').innerHTML = CATS.filter(function (c) { return n[c[0]] > 0; }).map(function (c) {
         return '<button type="button" data-cat="' + c[0] + '" aria-pressed="' + (etat.cat === c[0]) + '">' + c[1] + ' <span>' + n[c[0]] + '</span></button>';
       }).join('');
@@ -185,6 +191,9 @@
       if ((etat.cat === 'tous' || etat.cat === 'machines') && machines.length)
         h += '<h2 class="sec">Packs machines <small>batteries et accessoires inclus selon le pack</small></h2><div class="packs">'
           + machines.map(function (p) { return cartePack(p, etat.packs.indexOf(p)); }).join('') + '</div>';
+      if ((etat.cat === 'tous' || etat.cat === 'superpacks') && supers.length)
+        h += '<h2 class="sec">Super packs Holex <small>outillage de précision, livré en 1 colis</small></h2><div class="packs">'
+          + supers.map(function (p) { return cartePack(p, etat.packs.indexOf(p)); }).join('') + '</div>';
       if ((etat.cat === 'tous' || etat.cat === 'cartons') && cartons.length)
         h += '<h2 class="sec">Cartons d’outillage <small>un carton garni, un seul colis</small></h2><div class="packs">'
           + cartons.map(carteCarton).join('') + '</div>';
@@ -203,6 +212,12 @@
         var q = (location.hash.match(/cat=(\w+)/) || [])[1];
         if (q && CATS.some(function (c) { return c[0] === q; })) etat.cat = q;
         rendre();
+        /* super packs : disponibilité lue dans la gamme Holex (même adresse que la boutique, cache du navigateur partagé) */
+        if (etat.packs.some(function (p) { return p.categorie === 'superpacks'; }))
+          fetch('/assets/data/quincaillerie-holex.json').then(function (r) { if (!r.ok) throw 0; return r.json(); })
+            .then(function (h) { var m = {}; (h.articles || []).forEach(function (a) { m[a.ref] = a; }); etat.holex = m; })
+            .catch(function () { etat.holexEchec = true; })
+            .then(rendre);
       })
       .catch(function () { $('contenu').innerHTML = '<p class="vide">Chargement impossible, réessayez dans un instant.</p>'; });
     $('filtres').addEventListener('click', function (e) {
@@ -216,9 +231,10 @@
       var b = e.target.closest('button[data-i]');
       if (!b || b.disabled) return;
       var p = etat.packs[+b.dataset.i];
+      if (p.categorie === 'superpacks' && etat.holex && !p.articles.every(function (x) { var a = etat.holex[x.ref]; return a && a.s === 'disponible'; })) return;
       if (dansPanier(p.id)) { window.location.href = '/pages/boutique-quincaillerie.html#panier'; return; }
       var lignes = lire().filter(function (l) { return l.pack !== p.id; });
-      p.articles.forEach(function (x) { lignes.push({ ref: x.ref, q: 1, pack: p.id, packTitre: p.titre, packPrix: p.prix }); });
+      p.articles.forEach(function (x) { lignes.push({ ref: x.ref, q: x.q || 1, pack: p.id, packTitre: p.titre, packPrix: p.prix }); });
       ecrire(lignes); pastille(); rendre();
       if (window.gtag) gtag('event', 'add_to_cart', { currency: 'EUR', value: p.prix, items: [{ item_id: p.id, item_name: p.titre }] });
       toast('✓ ' + esc(p.titre) + ' ajouté au panier <a href="/pages/boutique-quincaillerie.html#panier">Voir le panier →</a>');

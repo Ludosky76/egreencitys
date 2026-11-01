@@ -394,6 +394,7 @@ html[data-theme="dark"] #q-volet-btn[aria-expanded="true"]{background:#2A39C0;co
 .q-pack-vign a{display:flex;align-items:center;justify-content:center;aspect-ratio:1;border-radius:8px;background:#fff;padding:.2rem;}
 .q-pack-vign img{max-width:100%;max-height:100%;object-fit:contain;}
 .q-pack-vign a:hover{outline:2px solid #9FE870;}
+.q-pack-vign a:not([href]):hover{outline:none;}  /* super pack : vignettes sans fiche liée */
 .q-pack-liste{margin:.5rem 0 0;font-size:.7rem;line-height:1.4;color:#C8D4FF;}
 .q-pack-pied{margin-top:auto;padding-top:.6rem;display:flex;align-items:flex-end;justify-content:space-between;gap:.6rem;}
 .q-pack .q-promo-prix{font-size:1.45rem;}

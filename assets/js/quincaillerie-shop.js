@@ -386,7 +386,7 @@
     var c = cartonConfig(), pts = 0, montant = 0, kg = 0, n = 0, unites = [];
     etat.panier.forEach(function (l) {
       var a = article(l.ref);
-      if (!a || !a.pc) return;
+      if (!a || !a.pc || l.pack) return;  /* super pack : son propre carton, compris dans son prix fixe — hors voyant */
       var p = a.poids || 0.5;  /* poids inconnu : 0,5 kg, jamais 0 */
       pts += a.pc * l.q; montant += a.prix * l.q; kg += p * l.q; n += l.q;
       for (var i = 0; i < l.q && unites.length < 1000; i++) unites.push(p);
@@ -770,7 +770,12 @@
   }
   function rendrePanier() {
     var corps = $('q-tiroir-corps');
-    if (!etat.panier.length) { corps.innerHTML = '<p class="q-vide">Votre panier est vide.</p>'; $('q-tiroir-pied').style.display = 'none'; return; }
+    if (etat.holex) purgerHolex();  /* pack remis au panier après le chargement de la gamme : jamais incomplet à son prix fixe */
+    if (!etat.panier.length) {
+      corps.innerHTML = (etat.packsRetires ? '<p class="q-carton-note" role="status">ℹ️ Un pack de votre panier n’est plus proposé tel quel : il a été retiré. Écrivez-nous, nous vous proposons une composition proche.</p>' : '')
+        + '<p class="q-vide">Votre panier est vide.</p>';
+      $('q-tiroir-pied').style.display = 'none'; return;
+    }
     $('q-tiroir-pied').style.display = '';
     /* carton promo (lignes marquées « pack ») : UNE ligne, détail des articles sans prix unitaire, prix final seul */
     var vusPack = {};
@@ -780,13 +785,18 @@
         if (vusPack[l.pack]) return '';
         vusPack[l.pack] = true;
         var lp = etat.panier.filter(function (x) { return x.pack === l.pack && article(x.ref); });
+        if (lp.length < etat.panier.filter(function (x) { return x.pack === l.pack; }).length) return '';  /* incomplet : jamais affiché */
         var tp = prixPack(l.pack) !== null ? prixPack(l.pack) : lp.reduce(function (s, x) { return s + article(x.ref).prix * x.q; }, 0);
+        /* pack pro : le détail reprend les libellés du pack (promo.json) quand il les connaît */
+        var pkDef = ((etat.promo && etat.promo.packs_pro) || []).find(function (p) { return p.id === l.pack; });
+        var nomDe = function (x) { var y = pkDef && (pkDef.articles || []).find(function (z) { return z.ref === x.ref; }); return (y && y.nom) || article(x.ref).nom; };
         return '<div class="q-ligne q-ligne-pack">'
           + '<img src="' + esc(a.img) + '" alt="">'
-          + '<div class="q-ligne-infos"><div class="q-ligne-nom"><span class="q-pack-promo">' + (prixPack(l.pack) !== null ? 'Pack pro' : 'Offre spéciale') + '</span> ' + esc(l.packTitre || 'Pack') + '</div>'
-          + '<div class="q-ligne-prix"><strong>' + eur(tp) + '</strong> · ' + lp.length + ' articles, 1 colis</div>'
+          + '<div class="q-ligne-infos"><div class="q-ligne-nom"><span class="q-pack-promo">' + (prixPack(l.pack) !== null ? (/^HX/.test(l.ref) ? 'Holex' : 'Pack pro') : 'Offre spéciale') + '</span> ' + esc(l.packTitre || 'Pack') + '</div>'
+          + '<div class="q-ligne-prix"><strong>' + eur(tp) + '</strong> · ' + lp.length + ' articles, 1 colis'
+          + (pkDef && pkDef.delai ? ' · délai ' + esc(pkDef.delai) + ', confirmé sous 24 h ouvrées' : '') + '</div>'
           + '<details class="q-pack-detail"><summary>Voir le détail des articles</summary><ul>'
-          + lp.map(function (x) { return '<li>' + (x.q > 1 ? x.q + ' × ' : '') + esc(article(x.ref).nom) + '</li>'; }).join('')
+          + lp.map(function (x) { return '<li>' + (x.q > 1 && !/^\d+ × /.test(nomDe(x)) ? x.q + ' × ' : '') + esc(nomDe(x)) + '</li>'; }).join('')
           + '</ul></details></div>'
           + '<button type="button" class="q-suppr" data-suppr-pack="' + esc(l.pack) + '" aria-label="Retirer le pack">×</button>'
           + '</div>';
@@ -807,7 +817,8 @@
       if (!etat.holexEchec) chargerHolex();
     } else if (ci.n) corps.insertAdjacentHTML('afterbegin', groupeActif() ? blocChoix(ci) : blocCarton(ci));
     if (etat.holexRetires) corps.insertAdjacentHTML('afterbegin', '<p class="q-carton-note" role="status">ℹ️ '
-      + (etat.holexRetires > 1 ? etat.holexRetires + ' articles Holex de votre panier ne sont plus proposés : ils ont été retirés.' : 'Un article Holex de votre panier n’est plus proposé : il a été retiré.') + '</p>');
+      + (etat.packsRetires ? 'Un pack de votre panier n’est plus proposé tel quel : il a été retiré. Écrivez-nous, nous vous proposons une composition proche.'
+        : etat.holexRetires > 1 ? etat.holexRetires + ' articles Holex de votre panier ne sont plus proposés : ils ont été retirés.' : 'Un article Holex de votre panier n’est plus proposé : il a été retiré.') + '</p>');
     var g = $('q-groupage');
     if (!g) { g = document.createElement('div'); g.id = 'q-groupage'; $('q-tiroir-pied').insertBefore(g, $('q-tiroir-pied').firstChild); }
     g.innerHTML = messageGroupage();
@@ -908,16 +919,33 @@
     return out;
   }
   /* Packs « pro » à prix fixe (promo.json → packs_pro, page /packs-pro/) : affichés si tous leurs articles sont au catalogue. */
+  /* super pack Holex (categorie « superpacks ») : ses photos sont dans promo.json, il s'affiche sans charger la gamme Holex */
+  function estSuper(pk) { return pk.categorie === 'superpacks'; }
+  /* super pack commandable : toutes ses réf. dans la gamme Holex chargée et « disponible » ; null tant que la gamme n'est pas là */
+  function superOk(pk) {
+    if (!etat.holex) return null;
+    return (pk.articles || []).every(function (x) { var a = article(x.ref); return a && !a.devis && statutDe(x.ref) === 'disponible'; });
+  }
+  var TXT_AJOUT = '🛒 Ajouter le pack', TXT_INDISPO = 'Momentanément indisponible';
+  /* gamme chargée (ou rechargée) : boutons des super packs mis à jour, copie de défilement comprise */
+  function majSupers() {
+    (etat.pros || []).forEach(function (pp, j) {
+      if (!pp.sup) return;
+      pp.indispo = superOk(pp.pack) === false;
+      document.querySelectorAll('[data-pro="' + j + '"]').forEach(function (b) { b.disabled = pp.indispo; b.textContent = pp.indispo ? TXT_INDISPO : TXT_AJOUT; });
+    });
+  }
   function packsPro() {
     var p = etat.promo;
     return ((p && p.packs_pro) || []).map(function (pk) {
-      var L = (pk.articles || []).map(function (x) { return { a: article(x.ref), nom: x.nom }; });
-      return L.length && L.every(function (x) { return x.a && !x.a.devis; }) ? { pack: pk, L: L } : null;
+      var sup = estSuper(pk);
+      var L = (pk.articles || []).map(function (x) { return { a: article(x.ref) || (sup && x.img ? { ref: x.ref, img: x.img } : null), nom: x.nom }; });
+      return L.length && L.every(function (x) { return x.a && !x.a.devis; }) ? { pack: pk, L: L, sup: sup, indispo: sup && superOk(pk) === false } : null;
     }).filter(Boolean);
   }
-  function vignettes(L) {
+  function vignettes(L, sansLien) {  /* super pack : aucune fiche liée (on n'y montre que le contenu et le prix du pack) */
     return '<div class="q-pack-vign">' + L.slice(0, 6).map(function (x) {
-      return '<a href="' + esc(ADR.fiche(x.a)) + '" title="' + esc(x.nom) + '"><img src="' + esc(x.a.img) + '" alt="' + esc(x.nom) + '" loading="lazy"></a>';
+      return '<a' + (sansLien ? '' : ' href="' + esc(ADR.fiche(x.a)) + '"') + ' title="' + esc(x.nom) + '"><img src="' + esc(x.a.img) + '" alt="' + esc(x.nom) + '" loading="lazy"></a>';
     }).join('') + '</div>';
   }
   function cartePackMoment(pm, i) {
@@ -937,10 +965,12 @@
     return '<article class="q-pack q-pack-l q-pack-pro">'
       + '<div class="q-pack-info"><span class="q-promo-et">' + esc(p.marque || 'Pack pro') + '</span><h2>' + esc(p.titre) + '</h2>'
       + '<p class="q-pack-liste">' + esc(p.accroche ? p.accroche + ' — ' : '') + pp.L.length + ' articles · ' + esc(p.colis || '1 colis') + '</p></div>'
-      + vignettes(pp.L)
+      + vignettes(pp.L, pp.sup)
       + '<div class="q-pack-pied"><div><div class="q-promo-prix">' + eur(p.prix) + '</div>'
-      + '<div class="q-promo-inclus">' + esc(p.prix_txt || 'le pack complet') + ', livré, octroi de mer compris · <a href="/packs-pro/">détails</a></div></div>'
-      + '<button type="button" class="q-promo-btn" data-pro="' + j + '">🛒 Ajouter le pack</button></div>'
+      + '<div class="q-promo-inclus">' + esc(p.prix_txt || 'le pack complet') + ', livré, octroi de mer compris'
+      + (p.delai ? ' · délai ' + esc(p.delai) + ', confirmé sous 24 h ouvrées' : '')
+      + ' · <a href="/packs-pro/' + (pp.sup ? '#cat=superpacks' : '') + '">détails</a></div></div>'
+      + '<button type="button" class="q-promo-btn" data-pro="' + j + '"' + (pp.indispo ? ' disabled>' + TXT_INDISPO : '>' + TXT_AJOUT) + '</button></div>'
       + '</article>';
   }
   /* Défilement vertical automatique, une carte à la fois (copie de la 1re carte en fin de piste pour boucler sans retour visible). */
@@ -1013,9 +1043,13 @@
   function afficherPromo() {
     var packs = packsAffiches(), pros = packsPro();
     if ((!packs.length && !pros.length) || $('q-promo')) return;
+    etat.pros = pros;
     var onglets = [];
     if (packs.length) onglets.push({ cle: 'moment', titre: '🔥 Packs du moment', cartes: packs.map(cartePackMoment) });
-    if (pros.length) onglets.push({ cle: 'pro', titre: '⚡ Packs pro machines', cartes: pros.map(cartePackPro) });
+    var machines = [], supers = [];
+    pros.forEach(function (pp, j) { (pp.sup ? supers : machines).push(cartePackPro(pp, j)); });  /* j = index dans pros (data-pro) */
+    if (machines.length) onglets.push({ cle: 'pro', titre: '⚡ Packs pro machines', cartes: machines });
+    if (supers.length) onglets.push({ cle: 'super', titre: '💎 Super packs Holex', cartes: supers });
     var d = document.createElement('div');  /* pas <section> : refonte.css force un padding !important sur les sections en mobile */
     d.id = 'q-promo'; d.className = 'q-op'; d.setAttribute('role', 'region'); d.setAttribute('aria-label', 'Packs');
     d.innerHTML = '<div class="q-op-tabs" role="tablist">' + onglets.map(function (o) {
@@ -1051,9 +1085,24 @@
           if (!etat.panier.some(function (l) { return l.ref === x.a.ref; })) etat.panier.push({ ref: x.a.ref, q: 1 });
         });
       } else if ((b = e.target.closest('[data-pro]'))) {
-        var p = pros[+b.dataset.pro].pack;
+        if (b.disabled) return;
+        var pp = pros[+b.dataset.pro], p = pp.pack;
+        if (pp.sup) {  /* super pack : jamais ajouté sans avoir vérifié la gamme Holex (réf. présentes et « disponible ») */
+          var ok = superOk(p);
+          if (ok === null) {
+            b.disabled = true; b.textContent = 'Vérification de la disponibilité…';
+            chargerHolex().then(function () {
+              majSupers();
+              if (!etat.holex) { b.disabled = false; b.textContent = TXT_AJOUT; return; }  /* échec : nouvel essai au prochain clic */
+              if (superOk(p)) b.click();
+            });
+            return;
+          }
+          if (!ok) { majSupers(); return; }
+        }
         etat.panier = etat.panier.filter(function (l) { return l.pack !== p.id; });
-        p.articles.forEach(function (x) { etat.panier.push({ ref: x.ref, q: 1, pack: p.id, packTitre: p.titre, packPrix: p.prix }); });
+        p.articles.forEach(function (x) { etat.panier.push({ ref: x.ref, q: x.q || 1, pack: p.id, packTitre: p.titre, packPrix: p.prix }); });
+        etat.packsRetires = 0; etat.holexRetires = 0;  /* l'ancien message de retrait ne concerne pas le pack qu'on ajoute */
         if (window.gtag) gtag('event', 'add_to_cart', { currency: 'EUR', value: p.prix, items: [{ item_id: p.id, item_name: p.titre }] });
       } else return;
       sauver(); majPastille(); rendrePanier();
@@ -1207,8 +1256,11 @@
      (sinon le panier attendrait indéfiniment) et on prévient le client une fois. */
   function purgerHolex() {
     if (!etat.holex) return;
-    var avant = etat.panier.length;
-    etat.panier = etat.panier.filter(function (l) { return !/^HX/.test(l.ref) || article(l.ref); });
+    var avant = etat.panier.length, packs = {};
+    /* une ligne d'un pack retirée de la gamme : TOUT le pack sort (jamais un pack incomplet à son prix fixe) */
+    etat.panier.forEach(function (l) { if (l.pack && /^HX/.test(l.ref) && !article(l.ref)) packs[l.pack] = 1; });
+    etat.panier = etat.panier.filter(function (l) { return !(l.pack && packs[l.pack]) && (!/^HX/.test(l.ref) || article(l.ref)); });
+    if (Object.keys(packs).length) etat.packsRetires = Object.keys(packs).length;
     if (etat.panier.length < avant) { etat.holexRetires = avant - etat.panier.length; sauver(); }
   }
   function chargerHolex() {
@@ -1226,7 +1278,7 @@
         });
         h.articles.forEach(function (a) { etat.index[a.ref] = a; });
         etat.catalogue.articles = etat.catalogue.articles.concat(h.articles);
-        purgerHolex();
+        purgerHolex(); majSupers();
         var catUrl = etat.catDemandee;
         if (!etat.cat && catUrl && h.categories.some(function (c) { return c.slug === catUrl; })) { etat.cat = catUrl; sel.value = catUrl; }
         rendreRayons(); rendre(); rendrePanier();
@@ -1389,7 +1441,7 @@
         if (vusPack[l.pack]) return null;
         vusPack[l.pack] = 1;
         return '1 × PACK [' + l.pack + '] ' + (l.packTitre || 'Pack') + ' — ' + eur(prixPack(l.pack)) + ' (prix fixe) : '
-          + etat.panier.filter(function (x) { return x.pack === l.pack; }).map(function (x) { return x.q + ' × ' + x.ref; }).join(', ');
+          + etat.panier.filter(function (x) { return x.pack === l.pack; }).map(function (x) { return x.q + ' × ' + x.ref + (/^HX/.test(x.ref) ? ' (' + statutDe(x.ref) + ')' : ''); }).join(', ');
       }
       if (!a) return null;  /* article retiré du catalogue depuis l'ajout au panier : ignoré, comme dans le panier affiché */
       return (a.pc ? '[CARTON ATELIER] ' : '') + l.q + ' × [' + l.ref + '] ' + a.nom + ' — ' + eur(a.prix * l.q) + ' (' + statutDe(l.ref) + ')';
@@ -1399,9 +1451,12 @@
       email: email, telephone: tel,
       panier: lignes,
       carton_atelier: ci.n ? ci.n + ' article(s), ' + kgTexte(ci.kg) + ' kg, ' + ci.cartons + ' carton(s)' + (ci.lourd ? ' — PLUS DE ' + (ci.c.cartons_max || 1) + ' CARTON(S) : DEVIS' : '') : 'aucun',
-      total: t.inclus ? eur(t.total) + ' — packs à prix fixe, forfait d’expédition inclus'
+      /* note interne : chaque pack à prix fixe inclut le forfait ; avec un super pack et un autre pack, il n'est dû qu'une fois */
+      total: (t.inclus ? eur(t.total) + ' — packs à prix fixe, forfait d’expédition inclus' 
            : t.offert ? eur(t.total) + ' — forfait d’expédition OFFERT (offre de lancement, code ' + etat.offre.code + ')'
-                      : eur(t.total) + ' dont forfait expédition ' + eur(t.forfait),
+                      : eur(t.total) + ' dont forfait expédition ' + eur(t.forfait))
+        + (Object.keys(vusPack).length > 1 && etat.panier.some(function (x) { return x.pack && /^HX/.test(x.ref); })
+          ? ' — ' + Object.keys(vusPack).length + ' packs à prix fixe avec super pack : forfait d’expédition à ne compter qu’une fois, déduire ' + eur(etat.catalogue.forfait_expedition * (Object.keys(vusPack).length - 1)) + ' à la confirmation' : ''),
       _template: 'box'
     };
     var bouton = $('q-envoyer');
