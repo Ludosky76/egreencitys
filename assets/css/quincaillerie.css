@@ -525,6 +525,35 @@ html[data-theme="dark"] .q-carton-direct{background:rgba(0,0,0,.25);}
 .q-carton .q-jauge.q-jauge-kg>span{background:var(--blue-light);}
 .q-carton-lourd .q-jauge.q-jauge-kg>span{background:#E5322D;}
 .q-carton-note{font-size:.74rem;color:#B3261E;margin-top:.35rem;}
+/* carton groupé : choix commande groupée / commande unique, jauge commune (part du client en vert) */
+.q-mode{display:flex;gap:.4rem;margin-bottom:.5rem;}
+.q-mode button{flex:1;border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:.45rem .5rem;font:inherit;font-size:.78rem;font-weight:800;color:var(--ink);cursor:pointer;line-height:1.25;}
+.q-mode button span{display:block;font-weight:600;font-size:.7rem;color:var(--muted);}
+.q-mode button[aria-selected="true"]{border-color:var(--blue);background:var(--blue);color:#fff;}
+.q-mode button[aria-selected="true"] span{color:#DCE6FF;}
+.q-groupe-carton{border-color:#9DB8F5;}
+.q-jauge.q-jauge-groupe{display:flex;}
+.q-jauge.q-jauge-groupe>span{background:var(--blue);border-radius:0;}
+.q-jauge.q-jauge-groupe>span.q-jauge-vous{background:#2DBE2D;}
+.q-groupe-garantie{font-size:.74rem;color:var(--muted);margin:.2rem 0 .5rem;}
+.q-groupe-form{display:flex;flex-direction:column;gap:.4rem;}
+.q-groupe-form input,.q-groupe-form textarea{padding:.5rem .65rem;border:1.5px solid var(--line);border-radius:9px;font:inherit;font-size:16px;background:var(--surface);color:var(--text);resize:vertical;}
+.q-groupe-cgv{display:flex;gap:.4rem;align-items:flex-start;font-size:.72rem;color:var(--muted);line-height:1.35;}
+/* cases du carton groupé (préférences d'avancement, conditions) : pas le style des champs texte, cible de 18 px */
+.q-groupe-form input[type="radio"],.q-groupe-form input[type="checkbox"]{padding:0;width:18px;height:18px;flex:0 0 auto;margin:0;accent-color:var(--blue);}
+.q-groupe-avertir{border:1.5px solid var(--line);border-radius:9px;padding:.3rem .65rem .45rem;margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:.25rem 1rem;}
+.q-groupe-avertir legend{font-size:.74rem;font-weight:700;color:var(--ink);padding:0 .25rem;}
+.q-groupe-avertir label{display:flex;align-items:center;gap:.35rem;font-size:.85rem;color:var(--text);cursor:pointer;min-height:32px;}
+.q-groupe-aide{flex-basis:100%;font-size:.7rem;color:var(--muted);line-height:1.35;}
+.q-groupe-exclus{font-size:.76rem;background:#FFF4E5;border:1px solid #F6C77D;border-radius:10px;padding:.5rem .65rem;color:#6B4200;}
+html[data-theme="dark"] .q-groupe-exclus{background:rgba(246,199,125,.12);color:#F6D7A6;}
+.q-groupe-exclus ul{margin:.3rem 0 .3rem 1rem;padding:0;}
+.q-groupe-exclus p{margin:.2rem 0;}
+.q-lien-btn{background:none;border:0;color:var(--blue);text-decoration:underline;font:inherit;font-size:.74rem;cursor:pointer;padding:0 .2rem;}
+.q-pay.q-pay-alt{width:100%;margin-top:.5rem;}
+/* téléphone : champs en 16 px au moins, sinon Safari (iPhone) zoome à chaque saisie et le tiroir déborde
+   (formulaire du carton groupé : 16 px partout, ci-dessus) */
+@media (max-width:760px){#q-form input{font-size:16px;}}
 .q-carton-note:empty{display:none;}
 #q-envoyer:disabled{opacity:.5;cursor:not-allowed;}
 #q-compte.q-chargement::after{content:' · chargement de la gamme Holex…';}

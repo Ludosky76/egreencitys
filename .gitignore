@@ -24,6 +24,13 @@ _config/
 *.env
 functions/node_modules/
 
+# --- Fonctions Firebase confidentielles : JAMAIS publiées par GitHub Pages ---
+# (coefficients, marges, coûts et logique interne du carton groupé et de ses notifications ;
+# déployées par « firebase deploy » depuis le disque, qui ne lit pas ce fichier :
+# seul functions.ignore de firebase.json compte)
+functions/groupe.js
+functions/notifier.js
+
 # --- Documents internes : ne doivent PAS être publiés par GitHub Pages ---
 # (ils restent sur le disque local, simplement hors du dépôt public)
 _dossiers/

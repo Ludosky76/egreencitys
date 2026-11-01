@@ -7,7 +7,7 @@
   <script src="/assets/js/theme.js?v=1"></script>
   <meta name="description" content="Espace client EGREENCITY'S : gérez votre profil, consultez l'historique de vos commandes de bornes de recharge en Guyane.">
   <meta name="robots" content="noindex,follow">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.google-analytics.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.googletagmanager.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://egreencitys-93e0b.firebaseapp.com https://*.google-analytics.com https://www.google-analytics.com https://*.googletagmanager.com; frame-src https://egreencitys-93e0b.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.google-analytics.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.googletagmanager.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://egreencitys-93e0b.firebaseapp.com https://europe-west1-egreencitys-93e0b.cloudfunctions.net https://*.google-analytics.com https://www.google-analytics.com https://*.googletagmanager.com; frame-src https://egreencitys-93e0b.firebaseapp.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
@@ -122,6 +122,29 @@
     .empty-orders{text-align:center;padding:2.5rem 1rem;color:var(--muted);font-size:.95rem;background:#fafffa;border-radius:12px;border:1px dashed #d8e6cc;}
     .empty-orders .icon{font-size:2.5rem;display:block;margin-bottom:.5rem;}
 
+    /* Cartons groupés Holex */
+    .grp-rappel{font-size:.83rem;color:var(--muted);margin:-.4rem 0 .9rem;line-height:1.5;}
+    .grp-jauge{margin-top:.6rem;max-width:420px;}
+    .grp-jauge .barre{height:8px;background:#e0ebd8;border-radius:50px;overflow:hidden;}
+    .grp-jauge .barre span{display:block;height:100%;background:var(--green);border-radius:50px;}
+    .grp-jauge .legende{font-size:.75rem;color:var(--muted);margin-top:.3rem;}
+    .grp-actions{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;}
+    .btn-payer{background:var(--green-dark);color:#fff;border:none;padding:.7rem 1.2rem;border-radius:50px;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:700;transition:background .2s;}
+    .btn-payer:hover{background:#1f8a00;}
+    .grp-actions button[disabled]{opacity:.55;cursor:wait;}
+    .order .status.st-alerte{background:#ffe0b2;color:#8a4b00;}
+    .order .status.st-neutre{background:#eceff1;color:#546e7a;}
+    .grp-aide{font-size:.72rem;color:var(--muted);text-align:right;}
+    .grp-pref{font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;justify-content:flex-end;}
+    .grp-pref select{font-family:inherit;font-size:16px;padding:.3rem .5rem;border:1px solid #d8e6cc;border-radius:8px;background:#fff;color:var(--text);}
+    .grp-pref-aide{flex-basis:100%;text-align:right;font-size:.7rem;color:var(--muted);}
+    .grp-baisse{color:var(--green-dark);font-weight:600;}
+    .grp-retires{margin-top:.3rem;font-size:.78rem;color:#8a4b00;}
+    .grp-barre{text-decoration:line-through;color:var(--muted)!important;}
+    .order.grp-cible{border:2px solid var(--green);box-shadow:0 0 0 3px rgba(51,204,0,.18);}
+    .grp-lien .alert{margin-top:0;}
+    .alert-info{background:#e3f2fd;color:#0d3c61;border-left:4px solid #2B4DB5;}
+
     /* Actions RGPD */
     .rgpd-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:2rem;padding-top:1.5rem;border-top:1px solid #e5f0dd;}
     .btn-secondary{background:#fff;color:var(--green-deep);border:1px solid #d8e6cc;padding:.7rem 1.2rem;border-radius:50px;cursor:pointer;font-family:inherit;font-size:.82rem;transition:all .2s;text-decoration:none;display:inline-block;}
@@ -210,6 +233,10 @@
     html[data-theme="dark"] .order textarea{background:#1a3d15!important;border-color:rgba(51,204,0,.3)!important;color:#e8f5e0!important;}
     html[data-theme="dark"] .order > button{color:#a8c9a0!important;border-color:rgba(51,204,0,.3)!important;}
     html[data-theme="dark"] .empty-orders{background:#0f2408;border-color:rgba(51,204,0,.25);color:#a8c9a0;}
+    /* Commandes groupées */
+    html[data-theme="dark"] .grp-jauge .barre{background:#1a3d15;}
+    html[data-theme="dark"] .order .status.st-alerte{background:#3d2a08;color:#ffcc80;}
+    html[data-theme="dark"] .order .status.st-neutre{background:#1e2a25;color:#b0bec5;}
     /* Liens texte (y compris ceux générés en JS avec style inline) */
     html[data-theme="dark"] .order a,
     html[data-theme="dark"] .empty-orders a,
@@ -229,6 +256,9 @@
     /* Alertes */
     html[data-theme="dark"] .alert-error{background:#3a1212;color:#ff9a9a;border-left-color:#e05555;}
     html[data-theme="dark"] .alert-success{background:#15320f;color:#b6f0a4;border-left-color:#33cc00;}
+    html[data-theme="dark"] .alert-info{background:#0f2340;color:#b9d6ff;border-left-color:#6f8fe8;}
+    html[data-theme="dark"] .grp-pref select{background:#0f2408;color:#e8f5e0;border-color:rgba(51,204,0,.3);}
+    html[data-theme="dark"] .grp-retires{color:#f6c77d;}
     /* Footer (déjà sombre) : fond encore plus profond */
     html[data-theme="dark"] footer{background:#050e02;}
   </style>
@@ -258,6 +288,9 @@
 </section>
 
 <main class="container">
+
+  <!-- Liens des emails du carton groupé (paiement, nouveau prix, intérêt, désinscription) : réponse visible connecté ou non -->
+  <div id="grp-lien" class="grp-lien" role="status" style="display:none;"></div>
 
   <!-- Vue GUEST (déconnecté) -->
   <div id="view-guest" class="card">
@@ -394,6 +427,14 @@
     <!-- Historique commandes -->
     <h2 class="sec">📦 Historique de mes commandes</h2>
     <div id="orders-list" class="orders-list"></div>
+
+    <!-- Cartons groupés Holex : masquée tant qu'il n'y a aucune participation -->
+    <div id="groupes-wrap" style="display:none;">
+      <h2 class="sec">📦 Mes cartons groupés (Holex)</h2>
+      <p class="grp-rappel">Aucune carte n'est demandée à l'inscription. Quand le carton part, vous recevez par email un lien de paiement (72 h au moins pour régler). Annulation libre jusqu'au paiement ; après le paiement, remboursement intégral tant que le carton n'est pas commandé.</p>
+      <div id="groupes-alert"></div>
+      <div id="groupes-list" class="orders-list"></div>
+    </div>
 
     <!-- Demandes produits (boutique quincaillerie) -->
     <h2 class="sec">✉️ Mes demandes produits</h2>
@@ -677,6 +718,9 @@ function renderDashboard(c) {
   // Stats + commandes : historique local + commandes suivies par EGREENCITY'S
   chargerToutesCommandes();
 
+  // Commandes groupées (carton groupé Holex, Firestore « participations »)
+  loadGroupes();
+
   // Demandes produits + alertes dispo (Firestore, boutique quincaillerie)
   loadDemandes();
   loadAlertes();
@@ -885,6 +929,563 @@ window.retirerAlerte = function (ref) {
   }).then(loadAlertes).catch(function () { alert('Retrait impossible — réessayez.'); });
 };
 
+// --------- Commandes groupées (carton groupé Holex, v3) ---------
+// Une « participation » par passage au carton groupé (collection Firestore
+// « participations », lisible par son seul titulaire, écrite seulement par le
+// serveur : functions/groupe.js). C'est une INTENTION, sans carte : quand le
+// carton part, le client reçoit par email un lien de paiement (?payer=<id>,
+// 72 h au moins pour régler : délai réglable par l'admin, jamais moins). Prix figés à l'inscription : une baisse est répercutée,
+// une hausse doit être reconfirmée (?reconfirmer=<id>). Statuts :
+//   en_attente → a_payer → payee → commandee → livree ;
+//   en_attente → a_reconfirmer → a_payer ;
+//   annulee (client | prix_refuse | carton_annule) ;
+//   retiree (non_paiement | indisponible | sans_reponse | sans_reconfirmation) ;
+//   payee → remboursement → remboursee (client | carton_annule | delai).
+// Annulation : sans frais avant le paiement ; payée (carton pas encore
+// commandé) : remboursement intégral ; ensuite, rétractation à la livraison
+// (article 8 des CGV). La jauge relit le carton (cartons_groupes/{id}, lecture
+// publique : numero, statut, total, objectif, nb, poids). Payer, annuler,
+// reconfirmer et préférences passent par la fonction serveur « groupe » (jeton
+// Firebase) ; les liens « toujours intéressé ? » et de désinscription des
+// emails, par le jeton de la participation, sans connexion.
+// Le serveur a toujours le dernier mot.
+var GROUPE_URL_REPLI = 'https://europe-west1-egreencitys-93e0b.cloudfunctions.net/groupe';
+var groupeUrl = null; // promesse : URL lue une fois dans quincaillerie-paiement.json (clé « groupe »)
+function urlGroupe() {
+  if (!groupeUrl) {
+    groupeUrl = fetch('/assets/data/quincaillerie-paiement.json', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { return (j && j.groupe) || GROUPE_URL_REPLI; })
+      .catch(function () { return GROUPE_URL_REPLI; });
+  }
+  return groupeUrl;
+}
+// Appel authentifié : résout { statut, j } (j = corps JSON, {} s'il est illisible)
+function appelGroupe(corps) {
+  var u = firebase.auth().currentUser;
+  if (!u) return Promise.resolve({ statut: 401, j: { erreur: 'connexion' } });
+  return Promise.all([urlGroupe(), u.getIdToken()]).then(function (res) {
+    return fetch(res[0], {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + res[1] },
+      body: JSON.stringify(corps)
+    });
+  }).then(function (r) {
+    return r.json().catch(function () { return {}; }).then(function (j) { return { statut: r.status, j: j || {} }; });
+  });
+}
+// = REGLAGES_DEFAUT (functions/groupe.js). Délais réglables par l'admin dans les bornes des CGV (paiement 72 h au moins,
+// remboursement automatique 21 jours au plus) : la page affiche les dates calculées par le serveur (limite,
+// rembourse_auto_le) ; ces constantes ne servent que de repli pour une participation ancienne
+var GRP_OBJECTIF = 1700, GRP_DELAI_PAIEMENT_H = 72, GRP_DELAI_COMMANDE_J = 21;
+var GRP_STATUT_CARTON = {
+  ouvert: 'en cours de remplissage', paiement: 'parti — paiements des participants en cours',
+  a_decider: 'paiements terminés — commande en cours de validation', commande: 'commandé',
+  arrive: 'arrivé en Guyane', annule: 'annulé'
+};
+var GRP_STATUT_PART = {
+  en_attente: 'en attente du départ du carton', a_reconfirmer: 'nouveau prix à confirmer', a_payer: 'à payer',
+  payee: 'payée', commandee: 'commandée', livree: 'livrée',
+  annulee: 'annulée — rien n\'a été prélevé', retiree: 'retirée — rien n\'a été prélevé',
+  remboursement: 'remboursement en cours', remboursee: 'remboursée'
+};
+// précision selon le motif de la participation (champ « motif »)
+var GRP_MOTIF = {
+  'annulee:client': 'annulée à votre demande — rien n\'a été prélevé',
+  'annulee:prix_refuse': 'annulée (nouveau prix refusé) — rien n\'a été prélevé',
+  'annulee:carton_annule': 'carton annulé — rien n\'a été prélevé',
+  'retiree:non_paiement': 'retirée — paiement non reçu dans le délai',
+  'retiree:indisponible': 'retirée — articles devenus indisponibles',
+  'retiree:sans_reponse': 'retirée — sans réponse de votre part',
+  'retiree:sans_reconfirmation': 'retirée — nouveau prix non confirmé à temps',
+  'remboursee:client': 'remboursée — annulée à votre demande',
+  'remboursee:carton_annule': 'remboursée — carton annulé',
+  'remboursee:delai': 'remboursée — carton non commandé dans le délai',
+  'remboursee:indisponible': 'remboursée — articles indisponibles à la commande'
+};
+var GROUPE_SMS = false; // = SMS_ACTIF de functions/groupe.js (emails seuls au lancement, 31/10/2026)
+var GRP_AVERTIR = [['email', 'Email'], ['sms', 'Email + SMS'], ['aucun', 'Aucun']].filter(function (x) { return GROUPE_SMS || x[0] !== 'sms'; });
+var GRP_ALERTE = ['a_payer', 'a_reconfirmer'], GRP_NEUTRE = ['annulee', 'retiree', 'remboursee'];
+var GRP_SANS_FRAIS = ['en_attente', 'a_reconfirmer', 'a_payer']; // annulables sans frais (rien n'est payé)
+var GRP_SUIVIES = ['en_attente', 'a_reconfirmer', 'a_payer', 'payee', 'commandee']; // préférences d'avancement modifiables
+// Participations qui engagent encore le client ou EGREENCITY'S (intention active,
+// paiement à rembourser, payée pas encore livrée) : elles bloquent la suppression du compte
+var GRP_EN_COURS = ['en_attente', 'a_reconfirmer', 'a_payer', 'payee', 'remboursement', 'commandee'];
+var grpMinuteur = null; // relecture automatique à l'heure limite d'un paiement ou d'une reconfirmation
+var grpCible = '';      // participation visée par un lien d'email (mise en évidence)
+// Dates en millisecondes (serveur) ; Timestamp Firestore accepté par prudence
+function grpMs(v) { return v && v.toMillis ? v.toMillis() : (Number(v) || 0); }
+function grpDate(v) { var t = grpMs(v); return t ? new Date(t).toLocaleDateString('fr-FR') : '—'; }
+function grpDateHeure(v) {
+  var t = grpMs(v);
+  if (!t) return '—';
+  var d = new Date(t);
+  return 'le ' + d.toLocaleDateString('fr-FR') + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+}
+// « dans 2 j 5 h » / « dans 3 h » / « dans 20 min »
+function grpReste(v) {
+  var d = grpMs(v) - Date.now();
+  if (d <= 0) return 'délai dépassé';
+  var h = Math.floor(d / 3600000), j = Math.floor(h / 24);
+  return 'dans ' + (j ? j + ' j ' + (h % 24) + ' h' : h ? h + ' h' : Math.max(1, Math.ceil(d / 60000)) + ' min');
+}
+function grpEur(x) {
+  return (Number(x) || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+}
+function grpLib(table, cle) { return Object.prototype.hasOwnProperty.call(table, cle) ? table[cle] : ''; }
+function grpLibPart(p) {
+  return grpLib(GRP_MOTIF, (p.statut || '') + ':' + (p.motif || '')) || grpLib(GRP_STATUT_PART, p.statut) || String(p.statut || 'en attente');
+}
+// Le client peut-il annuler ? Mêmes règles que le serveur (annuler) : sans frais avant
+// le paiement ; payée : remboursement intégral tant que le carton n'est pas commandé
+function grpAnnulable(p, c) {
+  if (GRP_SANS_FRAIS.indexOf(p.statut) >= 0) return 'sans_frais';
+  if (p.statut === 'payee' && !(c && (c.statut === 'commande' || c.statut === 'arrive'))) return 'rembourse';
+  return '';
+}
+
+function loadGroupes(tentatives) {
+  var wrap = document.getElementById('groupes-wrap');
+  var list = document.getElementById('groupes-list');
+  if (!wrap || !list) return;
+  if (window.EGC_AUTH_BACKEND !== 'firebase') { wrap.style.display = 'none'; return; }
+  // firebase-auth.js charge le SDK dynamiquement : on attend qu'il soit prêt
+  if (!(window.firebase && firebase.apps && firebase.apps.length && firebase.auth().currentUser)) {
+    wrap.style.display = 'none';
+    if ((tentatives || 0) < 20) { setTimeout(function () { loadGroupes((tentatives || 0) + 1); }, 400); }
+    return;
+  }
+  var uid = firebase.auth().currentUser.uid;
+  var db = firebase.firestore();
+  // autre compte que celui affiché : on vide avant de recharger
+  if (wrap.getAttribute('data-uid') !== uid) { wrap.style.display = 'none'; list.innerHTML = ''; }
+  return db.collection('participations').where('uid', '==', uid).get()
+    .then(function (snap) {
+      var ps = [];
+      snap.forEach(function (doc) { var x = doc.data(); x._id = doc.id; ps.push(x); });
+      ps.sort(function (a, b) { return grpMs(b.cree_le) - grpMs(a.cree_le); });
+      if (!ps.length) { wrap.style.display = 'none'; list.innerHTML = ''; grpTraiterLien(ps); return; }
+      // cartons concernés (jauge, statut) : un carton illisible n'empêche pas la liste
+      var ids = [];
+      ps.forEach(function (p) { if (p.carton && ids.indexOf(p.carton) < 0) ids.push(p.carton); });
+      return Promise.all(ids.map(function (id) {
+        return db.collection('cartons_groupes').doc(id).get()
+          .then(function (d) { return d.exists ? d.data() : null; })
+          .catch(function () { return null; });
+      })).then(function (cs) {
+        var cartons = {};
+        ids.forEach(function (id, i) { cartons[id] = cs[i]; });
+        list.innerHTML = ps.map(function (p) { return htmlGroupe(p, p.carton ? cartons[p.carton] : null); }).join('');
+        wrap.setAttribute('data-uid', uid);
+        wrap.style.display = 'block';
+        // page laissée ouverte : les boutons « Payer » / « Accepter » disparaissent à l'heure limite
+        var prochaine = 0;
+        ps.forEach(function (p) {
+          var l = grpMs(p.limite);
+          if (GRP_ALERTE.indexOf(p.statut) >= 0 && l > Date.now() && (!prochaine || l < prochaine)) prochaine = l;
+        });
+        if (grpMinuteur) { clearTimeout(grpMinuteur); grpMinuteur = null; }
+        if (prochaine) {
+          grpMinuteur = setTimeout(function () { grpMinuteur = null; loadGroupes(); },
+            Math.min(prochaine - Date.now() + 2000, 2147483000));
+        }
+        grpTraiterLien(ps);
+        var cible = grpCible && document.getElementById('grp-' + grpCible);
+        if (cible && cible.scrollIntoView) cible.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    })
+    .catch(function () {
+      // section déjà affichée : on le signale ; sinon elle reste masquée
+      if (wrap.style.display === 'block') {
+        list.innerHTML = '<div class="empty-orders"><span class="icon">📦</span>Cartons groupés momentanément indisponibles — réessayez dans un instant.</div>';
+      }
+    });
+}
+
+// Carte d'une participation (p : document « participations », c : jauge publique du carton ou null).
+// Tout texte venu de la base passe par escD ; aucune donnée de coût n'existe côté client.
+function htmlGroupe(p, c) {
+  var st = p.statut || '', id = escD(p._id);
+  var limite = grpMs(p.limite), depasse = limite > 0 && Date.now() > limite;
+  var baisse = false;
+  var articles = (p.lignes || []).map(function (l) {
+    var moins = Number(l.prix_inscription) > Number(l.prix) + 0.005;
+    if (moins) baisse = true;
+    return escD(l.q) + ' × ' + escD(l.nom || ('réf. ' + l.ref))
+      + (moins ? ' <span class="grp-baisse">(' + grpEur(l.prix) + ' au lieu de ' + grpEur(l.prix_inscription) + ')</span>' : '');
+  }).join(', ') || 'Articles';
+  var classe = GRP_ALERTE.indexOf(st) >= 0 ? ' st-alerte' : (GRP_NEUTRE.indexOf(st) >= 0 ? ' st-neutre' : '');
+  // jauge : carton encore ouvert (l'objectif est un repère, le carton peut partir avant)
+  var jauge = '';
+  if (c && c.statut === 'ouvert' && ['en_attente', 'payee', 'a_payer', 'a_reconfirmer'].indexOf(st) >= 0) {
+    var objectif = Number(c.objectif) || GRP_OBJECTIF, cumul = Number(c.total) || 0;
+    var pct = Math.max(0, Math.min(100, Math.round(cumul / objectif * 100)));
+    var nb = Math.floor(Number(c.nb) || 0);
+    jauge = '<div class="grp-jauge">'
+      + '<div class="barre" role="progressbar" aria-label="Remplissage du carton" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '">'
+      +   '<span style="width:' + pct + '%;"></span></div>'
+      + '<div class="legende">Carton : ' + grpEur(cumul) + ' / objectif ' + grpEur(objectif).replace(',00', '') + ' — le carton peut partir avant'
+      +   (nb > 1 ? ' · ' + nb + ' participations' : '') + '</div>'
+      + '</div>';
+  }
+  // Message propre au statut
+  var note = '';
+  if (st === 'en_attente') {
+    note = 'Rien à payer pour l\'instant : quand le carton part, vous recevez par email un lien de paiement (au moins ' + GRP_DELAI_PAIEMENT_H
+      + ' h pour régler). Vous pouvez annuler sans frais jusque-là.';
+  } else if (st === 'a_reconfirmer') {
+    var r = p.reconfirmer || {}, avant = {};
+    (p.lignes || []).forEach(function (l) { avant[l.ref] = Number(l.prix) || 0; });
+    var hausses = (r.lignes || []).filter(function (l) { return (Number(l.prix) || 0) > (avant[l.ref] || 0) + 0.005; }).map(function (l) {
+      return escD(l.nom || ('réf. ' + l.ref)) + ' : ' + grpEur(avant[l.ref]) + ' → <strong>' + grpEur(l.prix) + '</strong>';
+    });
+    note = depasse
+      ? 'Le délai pour confirmer le nouveau prix est dépassé : votre participation va être retirée du carton, rien n\'est prélevé.'
+      : 'Le prix de certains articles a augmenté depuis votre inscription' + (hausses.length ? ' (' + hausses.join(' ; ') + ')' : '')
+        + '. Nouveau montant : <strong>' + grpEur(r.total) + '</strong> au lieu de ' + grpEur(p.total)
+        + '. Acceptez-le pour recevoir le paiement, ou refusez : votre participation est annulée sans frais'
+        + (limite ? ' (réponse attendue avant ' + escD(grpDateHeure(limite)) + ')' : '') + '.';
+  } else if (st === 'a_payer') {
+    note = depasse
+      ? 'Le délai de paiement est dépassé : votre participation va être retirée du carton, rien n\'est prélevé. '
+        + 'Vous pourrez remettre vos articles dans le carton groupé depuis la boutique.'
+      : (p.paiement_immediat ? 'Pour ce compte, la participation se règle dès l\'inscription. ' : 'Le carton part ! ')
+        + 'Réglez <strong>' + grpEur(p.total) + '</strong> avant <strong>' + escD(grpDateHeure(limite)) + '</strong> (' + grpReste(limite) + ') : '
+        + 'passé ce délai, votre participation est retirée du carton, sans frais.';
+  } else if (st === 'payee') {
+    // échéance fixée par le serveur au paiement (rembourse_auto_le) ; repli : paiement + 21 jours
+    var echeance = grpMs(p.rembourse_auto_le) || (grpMs(p.paye_le) ? grpMs(p.paye_le) + GRP_DELAI_COMMANDE_J * 86400000 : 0);
+    note = 'Payée ' + escD(grpDateHeure(p.paye_le)) + ' : ' + grpEur(p.montant_paye || p.total) + '. '
+      + (c && c.statut === 'ouvert' ? 'Le carton reste ouvert quelques jours pour se compléter. '
+        : 'La commande du carton est décidée par EGREENCITY\'S une fois les paiements reçus. ')
+      + (echeance ? 'S\'il n\'est pas commandé au plus tard ' + escD(grpDateHeure(echeance)) + ', vous êtes <strong>remboursé intégralement, automatiquement</strong>. ' : '')
+      + 'Vous pouvez aussi annuler d\'ici là : remboursement intégral.';
+  } else if (st === 'commandee') {
+    note = (c && c.statut === 'arrive'
+      ? 'Le carton est arrivé en Guyane : vos articles vous sont livrés à l\'adresse indiquée.'
+      : 'Carton commandé ' + escD(grpDateHeure(p.commande_le)) + ' : il est expédié vers la Guyane dès sa préparation (acheminement indicatif d\'environ deux semaines) ; '
+        + 'vous êtes prévenu à son arrivée, puis livré à l\'adresse indiquée.')
+      + ' Droit de rétractation de 14 jours à compter de la réception (article 8 des CGV).';
+  } else if (st === 'livree') {
+    note = 'Livrée ' + escD(grpDateHeure(p.livre_le)) + '. Rétractation possible pendant 14 jours à compter de la réception (article 8 des CGV).';
+  } else if (st === 'remboursement') {
+    note = 'Remboursement intégral de ' + grpEur(p.montant_paye || p.total) + ' en cours sur la carte utilisée pour le paiement.';
+  } else if (st === 'remboursee') {
+    note = grpEur(p.montant_rembourse || p.montant_paye || p.total) + ' remboursés ' + escD(grpDateHeure(p.rembourse_le))
+      + ' sur la carte utilisée pour le paiement (le délai d\'affichage dépend de votre banque).'
+      + (p.motif === 'delai' ? ' Le carton n\'a pas été commandé dans le délai garanti suivant votre paiement.' : '')
+      + (p.motif === 'indisponible' ? ' Vos articles se sont révélés indisponibles à la commande du carton : tout vous est remboursé, forfait compris.' : '');
+  } else if (st === 'retiree' && p.motif === 'non_paiement') {
+    note = 'Le paiement n\'a pas été reçu dans le délai : rien n\'a été prélevé. Vous pouvez remettre vos articles dans le carton groupé depuis la boutique. '
+      + 'Après deux paiements non reçus, les participations suivantes se règlent dès l\'inscription.';
+  } else if (st === 'retiree' && p.motif === 'indisponible') {
+    note = 'Vos articles sont devenus indisponibles avant le départ du carton : rien n\'a été prélevé.';
+  } else if (st === 'retiree' && p.motif === 'sans_reponse') {
+    note = 'Sans réponse à notre email « toujours intéressé ? », votre intention a été retirée. Vous pouvez la refaire depuis la boutique.';
+  } else if (st === 'retiree' && p.motif === 'sans_reconfirmation') {
+    note = 'Le nouveau prix n\'a pas été confirmé à temps : rien n\'a été prélevé. Vous pouvez remettre vos articles dans le carton groupé depuis la boutique.';
+  } else if (st === 'annulee' && p.motif === 'carton_annule') {
+    note = 'Le carton a été annulé par EGREENCITY\'S : rien n\'a été prélevé.';
+  }
+  if (baisse && ['en_attente', 'a_reconfirmer', 'a_payer'].indexOf(st) >= 0) note += ' Baisse de prix appliquée : vous payez le prix le plus bas.';
+  // paiement non retenu (en double, hors délai, ancien montant…) : remboursé intégralement
+  if (p.rembourses && Object.keys(p.rembourses).length) note += ' Un paiement non retenu pour cette participation vous a été remboursé intégralement.';
+  var payesRetires = (p.retires_payes || []).map(function (x) { return escD(x.qte) + ' × ' + escD(x.nom || x.ref) + ' (' + grpEur(x.montant) + ')'; });
+  if (payesRetires.length && st !== 'remboursee') note += '<div class="grp-retires">Indisponible' + (payesRetires.length > 1 ? 's' : '')
+    + ' à la commande du carton, remboursé' + (payesRetires.length > 1 ? 's' : '') + ' : ' + payesRetires.join(', ') + '</div>';
+  var retires = (p.retires || []).map(function (x) { return escD(x.qte) + ' × ' + escD(x.nom || x.ref); });
+  if (retires.length) note += '<div class="grp-retires">Retiré' + (retires.length > 1 ? 's' : '') + ' car devenu' + (retires.length > 1 ? 's' : '')
+    + ' indisponible' + (retires.length > 1 ? 's' : '') + ' (non facturé' + (retires.length > 1 ? 's' : '') + ') : ' + retires.join(', ') + '</div>';
+  // Boutons : payer, reconfirmer, annuler (mêmes règles que le serveur), préférences d'avancement
+  var boutons = '';
+  if (st === 'a_payer' && !depasse) {
+    boutons += '<button type="button" class="btn-payer" data-grp-payer="' + id + '">Payer maintenant — ' + grpEur(p.total) + '</button>'
+      + '<div class="grp-aide">avant ' + escD(grpDateHeure(limite)) + '</div>';
+  }
+  if (st === 'a_reconfirmer' && !depasse && p.reconfirmer) {
+    boutons += '<button type="button" class="btn-payer" data-grp-reconf="1" data-grp-id="' + id + '" data-grp-montant="' + escD(p.reconfirmer.total) + '">Accepter le nouveau montant — ' + grpEur(p.reconfirmer.total) + '</button>'
+      + '<button type="button" class="btn-danger" data-grp-reconf="0" data-grp-id="' + id + '">Refuser (annulation sans frais)</button>';
+  }
+  var annulable = grpAnnulable(p, c);
+  if (annulable === 'sans_frais' && st !== 'a_reconfirmer') {
+    boutons += '<button type="button" class="btn-danger" data-grp-annuler="' + id + '" data-grp-statut="' + escD(st) + '">Annuler (sans frais)</button>';
+  } else if (annulable === 'rembourse') {
+    boutons += '<button type="button" class="btn-danger" data-grp-annuler="' + id + '" data-grp-statut="payee" data-grp-montant="' + escD(p.montant_paye || p.total) + '">Annuler — remboursement intégral</button>';
+  }
+  if (GRP_SUIVIES.indexOf(st) >= 0) {
+    var av = p.avertir || 'email';
+    // désinscrit des emails d'avancement (lien de l'email) : option affichée seule, re-choisir une option les réactive
+    var coupe = p.sans_avancement && av !== 'aucun';
+    boutons += '<label class="grp-pref">Être informé : <select data-grp-pref="' + id + '" data-grp-avant="' + escD(coupe ? '' : av) + '">'
+      + (coupe ? '<option value="" selected disabled>' + (av === 'sms' && GROUPE_SMS ? 'SMS de paiement seulement' : 'Email de paiement seulement') + ' (avancement coupé)</option>' : '')
+      + GRP_AVERTIR.map(function (x) { return '<option value="' + x[0] + '"' + (!coupe && av === x[0] ? ' selected' : '') + '>' + x[1] + '</option>'; }).join('')
+      + '</select></label>'
+      + '<span class="grp-pref-aide">L\'avancement arrive par email' + (GROUPE_SMS ? ' ; « Email + SMS » : lien de paiement, rappels et reçus aussi par SMS.' : ' ; le lien de paiement et les reçus partent toujours par email.') + '</span>';
+  }
+  var prix = ['payee', 'commandee', 'livree', 'remboursement'].indexOf(st) >= 0 ? grpEur(p.montant_paye || p.total)
+    : st === 'remboursee' ? grpEur(p.montant_rembourse || p.montant_paye || p.total) : grpEur(p.total);
+  return ''
+    + '<div class="order' + (grpCible && grpCible === p._id ? ' grp-cible' : '') + '" id="grp-' + id + '">'
+    +   '<div class="info">'
+    +     '<div class="id">' + (p.carton_numero ? 'Carton ' + escD(p.carton_numero) : 'Carton groupé') + '</div>'
+    +     '<div class="date">Inscrit le ' + grpDate(p.cree_le) + '</div>'
+    +     '<div class="items">' + articles + '</div>'
+    +     '<div class="items" style="color:var(--muted);">Articles ' + grpEur(p.montant_articles)
+    +       ' + forfait d\'expédition ' + (Number(p.forfait) > 0 ? grpEur(p.forfait) : 'offert') + '</div>'
+    +     '<span class="status' + classe + '">' + escD(grpLibPart(p)) + '</span>'
+    +     (c && c.statut && GRP_NEUTRE.indexOf(st) < 0 && grpLib(GRP_STATUT_CARTON, c.statut)
+        ? '<div class="items" style="margin-top:.3rem;">📦 Carton : ' + escD(grpLib(GRP_STATUT_CARTON, c.statut)) + '</div>' : '')
+    +     (note ? '<div class="items" style="margin-top:.3rem;">' + note + '</div>' : '')
+    +     jauge
+    +   '</div>'
+    +   '<div class="grp-actions">'
+    +     '<div class="price' + (GRP_NEUTRE.indexOf(st) >= 0 && st !== 'remboursee' ? ' grp-barre' : '') + '">' + prix + '</div>'
+    +     boutons
+    +   '</div>'
+    + '</div>';
+}
+
+function msgGroupes(type, msg) {
+  var el = document.getElementById('groupes-alert');
+  el.innerHTML = '<div class="alert alert-' + type + '">' + msg + '</div>';
+  setTimeout(function () { el.innerHTML = ''; }, 6000);
+}
+// Bandeau des liens d'email (visible connecté ou non ; reste affiché)
+function grpMsgLien(type, msg) {
+  var el = document.getElementById('grp-lien');
+  if (!el) return;
+  el.innerHTML = msg ? '<div class="alert alert-' + type + '">' + msg + '</div>' : '';
+  el.style.display = msg ? 'block' : 'none';
+}
+// Réponse à un statut qui n'attend pas l'action demandée (409 « statut ») ; statut inconnu : message neutre
+function grpTexteStatut(st) {
+  if (!st) return { type: 'info', texte: 'Cette participation a changé entre-temps : la liste est actualisée ci-dessous.' };
+  if (['payee', 'commandee', 'livree'].indexOf(st) >= 0) return { type: 'success', texte: '✓ Cette participation est déjà payée : rien d\'autre à régler.' };
+  if (st === 'a_reconfirmer') return { type: 'info', texte: 'Le prix de certains articles a changé : confirmez d\'abord le nouveau montant (ci-dessous), le paiement s\'ouvre ensuite.' };
+  if (st === 'a_payer') return { type: 'info', texte: 'Le nouveau montant est déjà accepté : réglez votre participation avec « Payer maintenant ».' };
+  if (st === 'en_attente') return { type: 'info', texte: 'Le paiement n\'est pas encore ouvert : vous recevrez le lien par email quand le carton part.' };
+  if (st === 'remboursement' || st === 'remboursee') return { type: 'info', texte: 'Cette participation a été remboursée : rien n\'est à payer.' };
+  return { type: 'error', texte: 'Cette participation n\'est plus en cours (annulée ou retirée) : rien n\'est à payer.' };
+}
+
+function annulerGroupe(id, bouton) {
+  var payee = bouton.getAttribute('data-grp-statut') === 'payee';
+  if (!confirm(payee
+    ? 'Annuler votre participation au carton groupé ?\n\nVous êtes remboursé intégralement (' + grpEur(bouton.getAttribute('data-grp-montant')) + ') sur la carte utilisée pour le paiement.'
+    : 'Annuler votre participation au carton groupé ?\n\nRien n\'a été prélevé, rien ne le sera.')) return;
+  bouton.disabled = true;
+  appelGroupe({ action: 'annuler', participation: id }).then(function (x) {
+    if (x.statut === 200 && x.j.ok) {
+      msgGroupes('success', x.j.rembourse > 0
+        ? '✓ Participation annulée — ' + grpEur(x.j.rembourse) + (x.j.statut === 'remboursee' ? ' remboursés' : ' en cours de remboursement') + ' sur votre carte.'
+        : '✓ Participation annulée — rien n\'a été prélevé.');
+      return loadGroupes();
+    }
+    if (x.statut === 409 && x.j.erreur === 'trop_tard') {
+      alert('Le carton est déjà commandé : l\'annulation en ligne n\'est plus possible.\n\n'
+        + 'Vous pourrez exercer votre droit de rétractation pendant 14 jours à compter de la réception (article 8 des CGV) : egreencitys@gmail.com');
+      return loadGroupes();
+    }
+    if (x.statut === 409) { alert('Cette participation a changé entre-temps — la liste va être actualisée.'); return loadGroupes(); }
+    if (x.statut === 404) { alert('Participation introuvable — la liste va être actualisée.'); return loadGroupes(); }
+    if (x.statut === 401) { alert('Votre session a expiré : reconnectez-vous puis réessayez.'); return; }
+    throw 0;
+  }).catch(function () { alert('Annulation momentanément impossible — réessayez dans un instant.'); })
+    .then(function () { bouton.disabled = false; });
+}
+
+// Page de paiement Stripe (créée par le serveur au montant recalculé) ; bouton facultatif (lien d'email).
+// 409 « en_cours » : la page est en cours de création (double clic, autre onglet) : nouvel essai après 2 s
+function payerGroupe(id, bouton, essai) {
+  var redirige = false;
+  if (bouton) bouton.disabled = true;
+  return appelGroupe({ action: 'payer', participation: id }).then(function (x) {
+    if (x.statut === 409 && x.j.erreur === 'en_cours' && (essai || 0) < 4) {
+      redirige = true; // le bouton reste inactif pendant la nouvelle tentative
+      grpMsgLien('info', 'Préparation de votre paiement…');
+      return new Promise(function (ok) { setTimeout(ok, 2000); }).then(function () {
+        redirige = false;
+        return payerGroupe(id, bouton, (essai || 0) + 1);
+      });
+    }
+    if (x.statut === 200 && x.j.url && /^https:\/\//.test(x.j.url)) {
+      redirige = true;
+      grpMsgLien('info', 'Ouverture de la page de paiement sécurisée…');
+      window.location.href = x.j.url;
+      return;
+    }
+    if (x.statut === 409 && x.j.erreur === 'trop_tard') {
+      grpMsgLien('error', 'Le délai de paiement de cette participation est dépassé : elle va être retirée du carton, rien n\'est prélevé. '
+        + 'Vous pouvez remettre vos articles dans le carton groupé depuis la <a href="/pages/boutique-quincaillerie.html">boutique</a>.');
+      return loadGroupes();
+    }
+    if (x.statut === 409) { var t = grpTexteStatut(x.j.statut); grpMsgLien(t.type, t.texte); return loadGroupes(); }
+    if (x.statut === 404) { grpMsgLien('error', 'Participation introuvable sur ce compte : connectez-vous avec l\'adresse email qui a reçu le lien de paiement.'); return loadGroupes(); }
+    if (x.statut === 401) { grpMsgLien('error', 'Votre session a expiré : reconnectez-vous puis réessayez.'); return; }
+    throw 0;
+  }).catch(function () {
+    grpMsgLien('error', 'Paiement momentanément indisponible — réessayez dans un instant avec « Payer maintenant », ou écrivez-nous : egreencitys@gmail.com');
+  }).then(function () { if (bouton && !redirige) bouton.disabled = false; });
+}
+
+// Prix en hausse : accepter (le paiement s'ouvre aussitôt) ou refuser (annulée sans frais)
+function reconfirmerGroupe(id, accepter, bouton) {
+  if (!confirm(accepter
+    ? 'Accepter le nouveau montant de ' + grpEur(bouton.getAttribute('data-grp-montant')) + ' ?\n\nLa page de paiement s\'ouvre ensuite.'
+    : 'Refuser le nouveau prix ?\n\nVotre participation est annulée, sans frais : rien n\'a été prélevé.')) return;
+  bouton.disabled = true;
+  appelGroupe({ action: 'reconfirmer', participation: id, accepter: accepter }).then(function (x) {
+    if (x.statut === 200 && x.j.statut === 'a_payer') {
+      grpMsgLien('success', '✓ Nouveau montant accepté (' + grpEur(x.j.total) + ') : ouverture du paiement…');
+      return payerGroupe(id, null);
+    }
+    if (x.statut === 200) { msgGroupes('success', '✓ Participation annulée — rien n\'a été prélevé.'); return loadGroupes(); }
+    if (x.statut === 409 && x.j.erreur === 'trop_tard') {
+      alert('Le délai pour confirmer le nouveau prix est dépassé : votre participation va être retirée du carton, rien n\'est prélevé.');
+      return loadGroupes();
+    }
+    if (x.statut === 409) { var t = grpTexteStatut(x.j.statut); alert(t.texte); return loadGroupes(); }
+    if (x.statut === 404) { alert('Participation introuvable — la liste va être actualisée.'); return loadGroupes(); }
+    if (x.statut === 401) { alert('Votre session a expiré : reconnectez-vous puis réessayez.'); return; }
+    throw 0;
+  }).catch(function () { alert('Réponse momentanément impossible — réessayez dans un instant.'); })
+    .then(function () { bouton.disabled = false; });
+}
+
+// Préférences (email, email + SMS de paiement, aucun) ; l'avancement n'est jamais envoyé par SMS ; le lien de paiement et les reçus partent toujours par email
+function preferencesGroupe(id, select) {
+  var avant = select.getAttribute('data-grp-avant') || 'email', valeur = select.value;
+  select.disabled = true;
+  appelGroupe({ action: 'preferences', participation: id, avertir: valeur }).then(function (x) {
+    if (x.statut === 200 && x.j.ok) {
+      select.setAttribute('data-grp-avant', valeur);
+      msgGroupes('success', valeur === 'aucun'
+        ? '✓ C\'est noté : plus de messages d\'avancement pour ce carton (le lien de paiement et les reçus restent envoyés par email).'
+        : '✓ C\'est noté : avancement du carton par email' + (valeur === 'sms' ? ', et lien de paiement, rappels et reçus aussi par SMS' : '') + '.');
+      return;
+    }
+    if (x.statut === 401) { alert('Votre session a expiré : reconnectez-vous puis réessayez.'); }
+    else if (x.statut === 404) { alert('Participation introuvable — la liste va être actualisée.'); loadGroupes(); }
+    else if (x.statut === 400 && x.j.erreur === 'telephone_sms') {
+      alert('Les SMS ne partent que vers un numéro mobile (0694… en Guyane, 06 ou 07 en métropole), et le numéro de cette participation n\'en est pas un.\n'
+        + 'Choisissez « Email », ou écrivez-nous pour corriger votre numéro : egreencitys@gmail.com');
+    }
+    else throw 0;
+    select.value = avant;
+  }).catch(function () { select.value = avant; alert('Préférence non enregistrée — réessayez dans un instant.'); })
+    .then(function () { select.disabled = false; });
+}
+
+// Boutons de la liste (délégation : les id ne passent pas par un onclick inline)
+document.getElementById('groupes-list').addEventListener('click', function (e) {
+  var b = e.target && e.target.closest ? e.target.closest('button[data-grp-annuler], button[data-grp-payer], button[data-grp-reconf]') : null;
+  if (!b || b.disabled) return;
+  if (b.getAttribute('data-grp-annuler')) annulerGroupe(b.getAttribute('data-grp-annuler'), b);
+  else if (b.getAttribute('data-grp-payer')) payerGroupe(b.getAttribute('data-grp-payer'), b);
+  else reconfirmerGroupe(b.getAttribute('data-grp-id'), b.getAttribute('data-grp-reconf') === '1', b);
+});
+document.getElementById('groupes-list').addEventListener('change', function (e) {
+  var s = e.target;
+  if (s && s.getAttribute && s.getAttribute('data-grp-pref')) preferencesGroupe(s.getAttribute('data-grp-pref'), s);
+});
+
+// --------- Liens des emails du carton groupé ---------
+// ?payer=<id> (paiement ; &retour=1 au retour d'une page de paiement abandonnée :
+// JAMAIS de relance automatique, sinon le client tourne en boucle vers Stripe),
+// ?paye=<id> (retour après paiement), ?reconfirmer=<id>, ?preferences=1,
+// ?p=<id>&interet=<jeton> et ?p=<id>&desinscription=<jeton> (sans connexion).
+// Lus une seule fois puis retirés de l'adresse (un rechargement ne relance rien) ;
+// ceux qui demandent le compte attendent la connexion (sessionStorage, 2 h).
+var GRP_CLE_LIEN = 'egc_grp_lien';
+var grpLien = null; // { type: 'payer' | 'retour' | 'paye' | 'reconfirmer' | 'preferences', id, t }
+var GRP_ID = /^[A-Za-z0-9_-]{1,64}$/, GRP_JETON = /^[0-9a-f]{16,64}$/i;
+function grpLireLien() {
+  var q = new URLSearchParams(location.search), lien = null, vu = false;
+  function id(v) { return GRP_ID.test(v || '') ? v : ''; }
+  if (q.get('payer') !== null) { vu = true; if (id(q.get('payer'))) lien = { type: q.get('retour') ? 'retour' : 'payer', id: q.get('payer') }; }
+  else if (q.get('paye') !== null) { vu = true; if (id(q.get('paye'))) lien = { type: 'paye', id: q.get('paye') }; }
+  else if (q.get('reconfirmer') !== null) { vu = true; if (id(q.get('reconfirmer'))) lien = { type: 'reconfirmer', id: q.get('reconfirmer') }; }
+  else if (q.get('interet') !== null || q.get('desinscription') !== null) {
+    vu = true;
+    var action = q.get('interet') !== null ? 'interet' : 'desinscription';
+    grpLienJeton(action, q.get('p') || '', q.get(action) || '');
+  } else if (q.get('preferences') !== null) { vu = true; lien = { type: 'preferences', id: '' }; }
+  if (vu) history.replaceState(null, '', location.pathname);
+  if (vu && !lien && q.get('interet') === null && q.get('desinscription') === null) {
+    grpMsgLien('error', 'Lien incomplet : retrouvez vos cartons groupés ci-dessous, dans « Mes cartons groupés ».');
+  }
+  try {
+    if (lien) { lien.t = Date.now(); sessionStorage.setItem(GRP_CLE_LIEN, JSON.stringify(lien)); }
+    else { var s = JSON.parse(sessionStorage.getItem(GRP_CLE_LIEN) || 'null'); if (s && Date.now() - (Number(s.t) || 0) < 2 * 3600000) lien = s; }
+  } catch (e) {}
+  grpLien = lien;
+  if (!grpLien) return;
+  grpCible = grpLien.id || '';
+  var c = window.EGCCustomer && window.EGCCustomer.current();
+  if (!(c && c.sessionActive)) {
+    grpMsgLien('info', '🔑 Connectez-vous avec l\'adresse email qui a reçu notre message pour '
+      + ({ payer: 'régler votre participation au carton groupé', retour: 'reprendre le paiement de votre participation', paye: 'suivre votre paiement',
+        reconfirmer: 'confirmer ou refuser le nouveau prix', preferences: 'choisir comment être informé de l\'avancement du carton' }[grpLien.type] || 'suivre votre carton groupé') + '.');
+  }
+}
+// Action demandée par un lien d'email, une fois la liste chargée (compte connecté) : traitée une seule fois
+function grpTraiterLien(ps) {
+  var lien = grpLien;
+  if (!lien) return;
+  grpLien = null;
+  try { sessionStorage.removeItem(GRP_CLE_LIEN); } catch (e) {}
+  var p = null;
+  (ps || []).forEach(function (x) { if (x._id === lien.id) p = x; });
+  if (lien.type === 'payer') { grpMsgLien('info', 'Préparation de votre paiement…'); payerGroupe(lien.id, null); return; }
+  if (lien.type === 'retour') {
+    grpMsgLien('info', 'Paiement non terminé : rien n\'a été prélevé. '
+      + (p && p.statut === 'a_payer' && grpMs(p.limite) > Date.now()
+        ? 'Vous pouvez le reprendre avec « Payer maintenant » jusqu\'' + escD(grpDateHeure(p.limite)).replace(/^le /, 'au ') + '.'
+        : 'Retrouvez votre participation ci-dessous.'));
+    return;
+  }
+  if (lien.type === 'paye') {
+    grpMsgLien('success', '✅ Merci, votre paiement est transmis. Votre participation passe « payée » dans quelques instants ; un reçu vous est envoyé par email.');
+    if (!p || p.statut === 'a_payer') { setTimeout(loadGroupes, 5000); setTimeout(loadGroupes, 15000); } // confirmation du paiement par le serveur
+    return;
+  }
+  if (lien.type === 'reconfirmer') {
+    if (!p) { grpMsgLien('error', 'Participation introuvable sur ce compte : connectez-vous avec l\'adresse email qui a reçu notre message.'); return; }
+    if (p.statut === 'a_reconfirmer') { grpMsgLien('info', 'Le prix de certains articles a augmenté : acceptez le nouveau montant ou refusez (annulation sans frais), ci-dessous.'); return; }
+    var t = grpTexteStatut(p.statut); grpMsgLien(t.type, t.texte); return;
+  }
+  if (lien.type === 'preferences') {
+    var wrap = document.getElementById('groupes-wrap');
+    grpMsgLien('info', ps && ps.length ? 'Choisissez, pour chaque carton, comment être informé (' + (GROUPE_SMS ? 'Email, Email + SMS pour le paiement, ou Aucun' : 'Email ou Aucun') + ').' : 'Aucune participation au carton groupé sur ce compte.');
+    if (wrap && wrap.style.display === 'block' && wrap.scrollIntoView) wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+// « Toujours intéressé ? » et désinscription : jeton de la participation, sans connexion
+function grpLienJeton(action, pid, jeton) {
+  if (!GRP_ID.test(pid) || !GRP_JETON.test(jeton)) { grpMsgLien('error', 'Lien incomplet ou invalide : retrouvez vos cartons groupés dans votre espace client.'); return; }
+  grpMsgLien('info', 'Enregistrement de votre réponse…');
+  urlGroupe().then(function (url) {
+    return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: action, participation: pid, jeton: jeton }) });
+  }).then(function (r) {
+    return r.json().catch(function () { return {}; }).then(function (j) { return { statut: r.status, j: j || {} }; });
+  }).then(function (x) {
+    if (x.statut === 200 && action === 'interet') {
+      grpMsgLien('success', '✓ Merci : votre intention reste dans le carton groupé. Vous recevrez le lien de paiement par email quand le carton part.');
+    } else if (x.statut === 200 && x.j.avertir === 'sms' && GROUPE_SMS) {  // SMS coupés : texte « email » ci-dessous
+      grpMsgLien('success', '✓ C\'est noté : vous ne recevrez plus les emails d\'avancement de ce carton. Le lien de paiement, les rappels et les reçus restent envoyés par email et par SMS.');
+    } else if (x.statut === 200) {
+      grpMsgLien('success', '✓ C\'est noté : vous ne recevrez plus les emails d\'avancement de ce carton. Le lien de paiement et les reçus restent envoyés par email.');
+    } else if (x.statut === 409) {
+      grpMsgLien('info', 'Cette participation n\'est plus en attente (' + escD(grpLib(GRP_STATUT_PART, x.j.statut) || 'statut modifié') + ') : rien à faire de votre côté.');
+    } else if (x.statut === 404 || x.statut === 400) {
+      grpMsgLien('error', 'Lien invalide ou expiré : retrouvez vos cartons groupés dans votre espace client.');
+    } else throw 0;
+  }).catch(function () {
+    grpMsgLien('error', 'Réponse momentanément impossible : réessayez dans un instant en cliquant de nouveau sur le lien de l\'email.');
+  });
+}
+
 function renderOrders(orders) {
   orders = orders || [];
   document.getElementById('stat-orders').textContent = orders.length;
@@ -960,14 +1561,44 @@ window.handleExport = async function () {
 };
 
 // --------- Suppression ---------
-window.handleDelete = async function () {
-  if (!confirm('⚠️ Supprimer définitivement votre compte et toutes vos données ?\n\nCette action est irréversible.')) return;
-  try {
-    await window.EGCCustomer.deleteAccount();
-    refreshView();
-  } catch (err) {
-    alertLogged('error', '❌ ' + (err.message || '') + ' (reconnectez-vous puis réessayez si nécessaire).');
+// Refusée tant qu'une participation au carton groupé est active ou payée et pas
+// encore livrée (GRP_EN_COURS : en attente, à reconfirmer, à payer, payée, en
+// remboursement, commandée). Résout le nombre de participations en cours ;
+// rejette si la vérification est impossible (la suppression est alors refusée).
+function grpNbEnCours() {
+  if (window.EGC_AUTH_BACKEND !== 'firebase') return Promise.resolve(0); // comptes locaux : pas de commande groupée
+  if (!(window.firebase && firebase.apps && firebase.apps.length && firebase.auth().currentUser)) {
+    return Promise.reject(new Error('session'));
   }
+  return firebase.firestore().collection('participations')
+    .where('uid', '==', firebase.auth().currentUser.uid).get()
+    .then(function (snap) {
+      var n = 0;
+      snap.forEach(function (doc) { if (GRP_EN_COURS.indexOf(doc.data().statut) >= 0) n++; });
+      return n;
+    });
+}
+window.handleDelete = function () {
+  grpNbEnCours().then(function (n) {
+    if (n > 0) {
+      alert('Suppression impossible pour le moment : '
+        + (n > 1 ? 'vous avez ' + n + ' participations au carton groupé en cours.' : 'vous avez une participation au carton groupé en cours.')
+        + '\n\nAvant le paiement, annulez-la dans « Mes cartons groupés » (sans frais) ; payée, vous pouvez l\'annuler (remboursement intégral) '
+        + 'tant que le carton n\'est pas commandé ; sinon, attendez la livraison, puis réessayez.\n\nUne question ? egreencitys@gmail.com');
+      loadGroupes();
+      var wrap = document.getElementById('groupes-wrap');
+      if (wrap && wrap.style.display === 'block' && wrap.scrollIntoView) wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    if (!confirm('⚠️ Supprimer définitivement votre compte et toutes vos données ?\n\nCette action est irréversible.')) return;
+    return Promise.resolve(window.EGCCustomer.deleteAccount()).then(function () {
+      refreshView();
+    }, function (err) {
+      alertLogged('error', '❌ ' + escD((err && err.message) || '') + ' (reconnectez-vous puis réessayez si nécessaire).');
+    });
+  }, function () {
+    alertLogged('error', '❌ Vérification de vos cartons groupés impossible — réessayez dans un instant.');
+  });
 };
 
 // --------- Renvoyer email de vérification (Firebase) ---------
@@ -989,6 +1620,7 @@ if (window.EGC_AUTH_BACKEND === 'firebase') {
   var secqWrap = document.getElementById('secq-wrap');
   if (secqWrap) secqWrap.style.display = 'none';
 }
+grpLireLien(); // liens des emails du carton groupé (traités une fois la liste chargée, compte connecté)
 refreshView();
 
 // Contourne le reveal-on-scroll pour ne pas cacher le contenu critique du compte

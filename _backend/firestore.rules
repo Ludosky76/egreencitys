@@ -80,6 +80,57 @@ service cloud.firestore {
     }
 
     // --------------------------------------------------------------------
+    // CARTON GROUPÉ HOLEX v3 (functions/groupe.js) — écrit uniquement par
+    // les Cloud Functions (SDK Admin) : aucune écriture depuis le navigateur.
+    // cartons_groupes/{id} ne contient que la JAUGE (numero, statut, total,
+    // objectif, nb, poids — ni marge, ni coût, ni points, aucune donnée
+    // client) : lisible par tous document par document (« get » : boutique,
+    // espace client ; _courant = carton qui reçoit les intentions), mais pas
+    // listable. L'état complet (points, marge, paliers, dates) est dans
+    // cartons_groupes_interne/{id} ; la partie confidentielle d'une
+    // participation (points, coefficient, prix de revient) dans
+    // participations_interne/{id} ; réglages (marge minimum…) et quota de
+    // l'offre dans groupe_interne/* ; non-paiements dans clients_groupe/{uid} :
+    // admin seulement. Une participation (coordonnées, articles, montants,
+    // statut) n'est lisible que par son client et par l'admin.
+    // --------------------------------------------------------------------
+    match /cartons_groupes/{id} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow write: if false;
+    }
+    match /cartons_groupes_interne/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /participations/{id} {
+      allow read: if isAdmin()
+                  || (request.auth != null && resource.data.uid == request.auth.uid);
+      allow write: if false;
+    }
+    match /participations_interne/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /groupe_interne/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /clients_groupe/{uid} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    // remboursements décidés par le serveur, en attente de Stripe ou faits
+    // (paiement en trop, tardif, article payé indisponible) : admin seulement
+    match /remboursements_dus/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /clients_stripe/{uid} {
+      allow read, write: if false;
+    }
+
+    // --------------------------------------------------------------------
     // DEMANDES PRODUIT (boutique quincaillerie) — un client authentifié
     // crée sa propre demande (uid imposé, champs bornés, horodatage
     // serveur) ; il lit les siennes ; l'admin lit tout et enregistre la

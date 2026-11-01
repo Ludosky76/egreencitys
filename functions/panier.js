@@ -192,4 +192,4 @@ async function creerSessionPanier(corps, cleStripe) {
   return { statut: 502, json: { erreur: 'stripe' } };
 }
 
-module.exports = { creerSessionPanier };
+module.exports = { creerSessionPanier, lireJson, decouper, nbCartons, batterieSeule, SITE, BOUTIQUE, QTE_MAX, REF_HOLEX };

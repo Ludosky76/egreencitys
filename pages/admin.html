@@ -6,7 +6,7 @@
   <title>Admin — EGREENCITY'S</title>
   <script src="/assets/js/theme.js?v=1"></script>
   <meta name="robots" content="noindex, nofollow">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline' https://www.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://firestore.googleapis.com https://egreencitys-93e0b.firebaseapp.com; frame-ancestors 'none'; base-uri 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline' https://www.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://firestore.googleapis.com https://egreencitys-93e0b.firebaseapp.com https://europe-west1-egreencitys-93e0b.cloudfunctions.net; frame-ancestors 'none'; base-uri 'self';">
   <link rel="icon" type="image/png" href="/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -40,6 +40,33 @@
     #msg{font-size:.82rem;margin-top:.7rem;min-height:1.1rem;}
     .hidden{display:none!important;}
     .note{font-size:.78rem;color:var(--muted);margin-top:1.2rem;}
+    /* Cartons groupés Holex : une carte par carton, jauge total / objectif, marge (vert / orange / rouge), bandeau « décision à prendre » */
+    .cg-carte{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem;margin-bottom:1rem;}
+    .cg-carte.cg-decision{border:2px solid #f4664a;box-shadow:0 0 0 3px rgba(244,102,74,.15);}
+    .cg-tete{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;font-size:1rem;}
+    .cg-bandeau{background:rgba(244,102,74,.14);border:1px solid rgba(244,102,74,.55);color:#ffd2c8;border-radius:10px;padding:.7rem .9rem;margin:.7rem 0;font-size:.85rem;}
+    .cg-bandeau b{color:#fff;}
+    .cg-jauge{height:12px;background:#0c150d;border:1px solid var(--line);border-radius:50px;overflow:hidden;margin:.8rem 0 .35rem;}
+    .cg-jauge span{display:block;height:100%;background:var(--green);}
+    .cg-infos{font-size:.8rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:.25rem 1.1rem;margin-top:.35rem;}
+    .cg-infos b{color:var(--ink);font-weight:600;}
+    .cg-btns{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem;}
+    .cg-btns .btn{padding:.45rem .9rem;font-size:.8rem;}
+    .cg-bandeau.cg-info{background:rgba(255,193,7,.1);border-color:rgba(255,193,7,.45);color:#ffe6a3;}
+    .cg-bandeau.cg-urgent{background:rgba(244,102,74,.28);border:2px solid #f4664a;}
+    .cg-detail{font-size:.72rem;color:#9db2a3;margin-top:.2rem;}
+    .btn.warn{background:#f4664a;color:#fff;}
+    .cg-marge{border-radius:10px;padding:.55rem .8rem;margin:.6rem 0 .2rem;font-size:.85rem;border:1px solid var(--line);}
+    .cg-marge b{color:#fff;}
+    .cg-m-vert{background:rgba(51,204,0,.12);border-color:rgba(51,204,0,.45);}
+    .cg-m-ambre{background:rgba(255,193,7,.12);border-color:rgba(255,193,7,.5);}
+    .cg-m-alerte{background:rgba(244,102,74,.14);border-color:rgba(244,102,74,.55);}
+    .cg-m-gris{background:rgba(157,178,163,.08);}
+    .cg-regl{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.6rem 1rem;}
+    .cg-regl label{display:flex;flex-direction:column;gap:.25rem;font-size:.78rem;color:var(--muted);}
+    .cg-regl span{display:flex;align-items:center;gap:.4rem;color:var(--ink);}
+    .cg-regl input{flex:1;min-width:0;padding:.45rem .6rem;border:1px solid var(--line);border-radius:8px;background:#0c150d;color:var(--ink);font-family:inherit;font-size:16px;}
+    .btn:disabled{opacity:.5;cursor:wait;}
     .theme-btn{background:transparent;border:none;font-size:1.05rem;cursor:pointer;padding:.3rem .5rem;border-radius:50%;line-height:1;transition:background .2s}
     .theme-btn:hover{background:rgba(0,0,0,.08)}
     .top .theme-btn:hover,html[data-theme="dark"] .theme-btn:hover{background:rgba(255,255,255,.14)}
@@ -78,6 +105,7 @@
     </div>
     <div class="wrap">
       <div class="kpis" id="kpis"></div>
+      <div class="cg-bandeau hidden" id="cgBandeau" style="margin-top:0;"></div>
       <h2>🛒 Commandes</h2>
       <details style="margin-bottom:.8rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem;">
         <summary style="cursor:pointer;font-weight:700;font-size:.88rem;">➕ Enregistrer une commande manuelle (quincaillerie, virement…)</summary>
@@ -95,6 +123,14 @@
         <span id="no-msg" style="font-size:.78rem;margin-left:.6rem;color:#9db2a3;"></span>
       </details>
       <div class="tablewrap"><table id="ordersT"><thead><tr><th>N°</th><th>Client</th><th>Email</th><th>Montant</th><th>Statut · Suivi</th><th>Date</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="ordersEmpty">Aucune commande enregistrée.<br><span style="font-size:.82rem;">L'enregistrement automatique des paiements Stripe nécessite l'activation du plan Blaze sur Firebase. En attendant, créez les commandes manuellement ci-dessus — elles apparaissent dans l'espace client.</span></div></div>
+      <h2 id="cartons-groupes">📦 Cartons groupés Holex <span style="font-size:.72rem;color:var(--muted);font-weight:400;">(intentions sans carte ; vous déclenchez le carton en voyant la marge — jamais montrée aux clients — puis chaque client reçoit un lien de paiement ; les payées sont remboursées si le carton est annulé ou n'est pas commandé à temps)</span></h2>
+      <details style="margin-bottom:.8rem;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem;">
+        <summary style="cursor:pointer;font-weight:700;font-size:.88rem;">⚙️ Réglages du carton groupé (marge minimum et cible, objectif, délais, email d'alerte)</summary>
+        <div id="cgReglages" style="margin-top:.7rem;"><div class="cg-detail">Chargement…</div></div>
+      </details>
+      <div id="cgMsg" style="font-size:.8rem;color:#9db2a3;min-height:1.1rem;margin-bottom:.4rem;"></div>
+      <div id="cgListe"></div>
+      <div class="empty hidden" id="cgEmpty" style="background:var(--card);border:1px solid var(--line);border-radius:14px;">Aucun carton groupé pour le moment. Le premier s'ouvre quand un client met ses articles dans le carton groupé depuis son panier.</div>
       <h2>✉️ Demandes produits (quincaillerie)</h2>
       <div class="tablewrap"><table id="demT"><thead><tr><th>Date</th><th>Client</th><th>Produit</th><th>Message</th><th>Réponse</th></tr></thead><tbody></tbody></table><div class="empty hidden" id="demEmpty">Aucune demande produit. Elles arrivent ici quand un client clique « Faire une demande » sur un article indisponible.</div></div>
       <h2>🧾 Commandes clients auto-enregistrées <span style="font-size:.72rem;color:var(--muted);font-weight:400;">(retour Stripe — à recouper avec le tableau de bord Stripe avant préparation)</span></h2>
@@ -136,7 +172,7 @@
       else if (user){ var m=document.getElementById('msg'); m.style.color='#ff8574'; m.textContent='Ce compte n\'est pas administrateur.'; }
     });
 
-    window.loadAll = function(){ loadOrders(); loadLeads(); loadDemandes(); loadClients(); };
+    window.loadAll = function(){ loadOrders(); loadCartons(); loadLeads(); loadDemandes(); loadClients(); };
 
     // --- Commandes : création manuelle + statut / n° de suivi -------------
     // Visible côté client dans compte.html (collection « orders », lue par
@@ -174,6 +210,557 @@
       }).then(loadOrders)
         .catch(function(e){ alert('Enregistrement impossible : '+(e.code||e.message)+'\nPubliez les règles Firestore mises à jour.'); });
     };
+
+    // --- Cartons groupés Holex (commande groupée, v3) ---------------------
+    // Tout passe par la fonction HTTP « groupe » (functions/groupe.js) avec le
+    // jeton Firebase de l'admin : le serveur vérifie les droits (403 sinon) et
+    // fait seul les opérations Stripe. Les clients ne donnent qu'une INTENTION,
+    // sans carte ; c'est l'admin qui DÉCLENCHE le carton en voyant la MARGE
+    // (cachée : jamais visible côté client, ni dans un document public).
+    // Statuts du carton :
+    //   ouvert → (déclencher) paiement : chaque intention reçoit un lien de
+    //   paiement valable delai_paiement_h, rappels à 24 h et 6 h, impayés retirés
+    //   → a_decider : plus aucun paiement attendu, marge RÉELLE des seules payées
+    //   → commander → commande → arrivé ; attendre → ouvert (les payées restent
+    //   payées) ; annuler (ouvert, paiement, à décider) → annulé, payées REMBOURSÉES.
+    // Déclencher / commander : autorisé si marge ≥ marge_min et points ≥ minimum
+    // fournisseur (100 points) ; sinon « forcer » (il faut taper FORCER).
+    // Marge = Σ (prix − prix de revient) des lignes − cartons réellement expédiés
+    // (colisage réel) − frais Stripe estimés − forfaits d'expédition offerts
+    // (offre de lancement : la livraison reste à payer) ; un forfait payé est
+    // neutre. Page PUBLIÉE (source lisible par tous) : aucun réglage, coût ni
+    // coefficient en dur ici ; tout vient de la réponse admin authentifiée du
+    // serveur (op liste / reglages), « — » en attendant.
+    // Une participation payée dont le carton n'est pas commandé au
+    // bout de delai_commande_jours est remboursée automatiquement. Article payé
+    // indisponible à la commande : « rembourser » sur sa ligne (remboursement
+    // partiel ; dernier article : forfait compris). Tout remboursement que Stripe
+    // refuse est noté et rejoué toutes les 10 min (bandeau ci-dessus).
+    var GROUPE_URL_DEFAUT = 'https://europe-west1-egreencitys-93e0b.cloudfunctions.net/groupe';
+    var CG_POINTS_MIN = 100; // repli de constantes.seuil_points (serveur) : minimum fournisseur, en points
+    var CG_CARTON = { ouvert:'ouvert — intentions en cours', paiement:'paiement — liens envoyés', a_decider:'à décider',
+      commande:'commandé', arrive:'arrivé', annule:'annulé' };
+    var CG_PART = { en_attente:'intention — en attente du départ', a_reconfirmer:'prix en hausse — à reconfirmer', a_payer:'lien envoyé — à payer',
+      payee:'payée', commandee:'commandée', livree:'livrée', annulee:'annulée', retiree:'retirée', remboursement:'remboursement en cours', remboursee:'remboursée' };
+    var CG_MOTIF = { client:'par le client', prix_refuse:'nouveau prix refusé', carton_annule:'carton annulé', non_paiement:'non payée dans le délai',
+      indisponible:'articles indisponibles', sans_reponse:'sans réponse à la relance', sans_reconfirmation:'hausse non reconfirmée à temps',
+      delai:'carton non commandé dans le délai' };
+    // remboursements notés en attente de Stripe (remboursements_dus) : motif
+    var CG_MOTIF_REMB = { double:'paiement en double', montant:'ancien montant payé', tardif:'payé après la limite', inconnue:'participation introuvable',
+      article_indisponible:'article payé indisponible', annulee:'participation annulée', retiree:'participation retirée', remboursee:'déjà remboursée',
+      remboursement:'remboursement en cours' };
+    var CG_TEINTE_CARTON = { ouvert:'attente', paiement:'ambre', a_decider:'alerte', commande:'vert', arrive:'vert', annule:'gris' };
+    var CG_TEINTE_PART = { en_attente:'attente', a_reconfirmer:'ambre', a_payer:'ambre', payee:'vert', commandee:'vert', livree:'vert',
+      annulee:'gris', retiree:'gris', remboursement:'alerte', remboursee:'gris' };
+    var CG_TEINTES = { alerte:'background:rgba(244,102,74,.18);color:#ffb3a3;', attente:'background:rgba(63,139,242,.18);color:#9cc4ff;',
+      ambre:'background:rgba(255,193,7,.16);color:#ffd36b;', gris:'background:rgba(157,178,163,.14);color:#9db2a3;',
+      vert:'background:rgba(51,204,0,.15);color:#7fe85c;' };
+    var CG_INACTIFS = ['annulee','retiree','remboursee'];
+    var CG_PAYEES = ['payee','commandee','livree'];
+    // refus 409 du serveur (champ « erreur »)
+    var CG_REFUS = { statut:'le statut a changé entre-temps — liste actualisée', vide:'aucune intention active dans ce carton : rien à déclencher',
+      sous_seuil:'sous le minimum (marge ou points) : confirmez en tapant FORCER', aucun_paiement:'aucune participation payée : rien à commander (attendez ou annulez)',
+      deja_commande:'carton déjà commandé : annulation impossible', introuvable:'introuvable — liste actualisée',
+      article:'article déjà retiré de cette participation — liste actualisée', deja:'article déjà remboursé', montant:'rien à rembourser sur cette ligne' };
+    // réglages modifiables : [clé, libellé, unité] (pourcentages saisis en %, stockés en fraction)
+    var CG_CHAMPS = [['marge_min','Marge minimum (déclencher / commander sans forcer)','%'], ['marge_cible','Marge cible (vert)','%'],
+      ['objectif','Objectif affiché aux clients','€'], ['delai_paiement_h','Délai de paiement après le déclenchement','h'],
+      ['delai_commande_jours','Remboursement automatique si non commandé après','jours'], ['relance_interet_jours','Relance « toujours intéressé ? » après','jours']];
+    // bornes des délais (= BORNES de groupe.js, engagements des CGV art. 9 bis)
+    var CG_BORNES_TEXTE = 'Délais bornés par les CGV : paiement 72 h au moins (240 h au plus), remboursement automatique 21 jours au plus (7 au moins), relance « toujours intéressé ? » 42 jours au moins.';
+    // réglages : ceux du serveur seulement (vides tant que la réponse admin n'est pas arrivée)
+    var _cg = { cartons: [], parts: {}, clients: {}, reglages: {}, courant: '', constantes: {}, remboursements: [] };
+    var _groupeUrl = null;
+
+    function fmtE(n){ return (Number(n)||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €'; }
+    function cgPts(n){ return (Number(n)||0).toLocaleString('fr-FR',{maximumFractionDigits:1}); }
+    function cgPct(x){ return ((Number(x)||0) * 100).toLocaleString('fr-FR',{maximumFractionDigits:1}) + ' %'; }
+    // réglage du serveur (pct : fraction affichée en %) ; « — » tant que la réponse admin n'est pas arrivée
+    function cgRegl(cle, pct){
+      var v = _cg.reglages ? _cg.reglages[cle] : undefined;
+      return typeof v !== 'number' ? '—' : pct ? cgPct(v) : String(v);
+    }
+    // minimum fournisseur en points : constantes.seuil_points du serveur
+    function cgPtsMin(){ return Number(_cg.constantes && _cg.constantes.seuil_points) || CG_POINTS_MIN; }
+    function cgKg(n){ return (Number(n)||0).toLocaleString('fr-FR',{maximumFractionDigits:1}) + ' kg'; }
+    function cgDate(ms, heure){
+      if (ms && typeof ms === 'object' && ms._seconds) ms = ms._seconds * 1000; // Timestamp sérialisé (au cas où)
+      if (!ms) return '—';
+      var d = new Date(Number(ms));
+      return heure ? d.toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : d.toLocaleDateString('fr-FR');
+    }
+    function cgPill(texte, teinte){ return '<span class="pill"'+(teinte ? ' style="'+CG_TEINTES[teinte]+'"' : '')+'>'+esc(texte)+'</span>'; }
+    // libellé d'une table de correspondance (clé venue de la base : jamais une propriété héritée)
+    function cgLibelle(table, cle){ return Object.prototype.hasOwnProperty.call(table, cle) ? table[cle] : ''; }
+    // « dans 2 j 5 h » / « dans 3 h » / « dans 20 min » / « dépassée »
+    function cgReste(ms){
+      var d = Number(ms) - Date.now();
+      if (!(d > 0)) return 'dépassée';
+      var h = Math.floor(d / 3600000), j = Math.floor(h / 24);
+      return 'dans ' + (j ? j + ' j ' + (h % 24) + ' h' : h ? h + ' h' : Math.max(1, Math.ceil(d / 60000)) + ' min');
+    }
+
+    // URL de la fonction lue dans quincaillerie-paiement.json (clé « groupe »), repli sur l'URL connue
+    function groupeUrl(){
+      if (_groupeUrl) return Promise.resolve(_groupeUrl);
+      return fetch('/assets/data/quincaillerie-paiement.json?t='+Date.now(),{cache:'no-store'})
+        .then(function(r){ return r.json(); })
+        .then(function(j){ _groupeUrl = (j && typeof j.groupe === 'string' && /^https:\/\//.test(j.groupe)) ? j.groupe : GROUPE_URL_DEFAUT; return _groupeUrl; })
+        .catch(function(){ return GROUPE_URL_DEFAUT; });
+    }
+
+    // POST authentifié ; rejette { statut, erreur, j } si la réponse n'est pas 2xx
+    function appelGroupe(corps){
+      var user = firebase.auth().currentUser;
+      if (!user) return Promise.reject({ statut: 401, erreur: 'connexion' });
+      return Promise.all([groupeUrl(), user.getIdToken()]).then(function(r){
+        return fetch(r[0], { method:'POST', headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+r[1] }, body: JSON.stringify(corps) });
+      }).then(function(rep){
+        return rep.json().catch(function(){ return {}; }).then(function(j){
+          if (!rep.ok) throw { statut: rep.status, erreur: (j && j.erreur) || '', j: j || {} };
+          return j;
+        });
+      });
+    }
+
+    function cgErreur(e){
+      var s = e && e.statut, x = (e && e.erreur) || '', j = (e && e.j) || {};
+      if (s === 401) return 'session expirée : reconnectez-vous';
+      if (s === 403) return 'compte non reconnu comme administrateur par le serveur';
+      if (s === 409 && x === 'sous_seuil') return 'sous le minimum (' + cgRaisons(j.raisons, j.marge) + ') : confirmez en tapant FORCER';
+      if (s === 409) return cgLibelle(CG_REFUS, x) || 'opération refusée (' + x + ')';
+      if (s === 404) return cgLibelle(CG_REFUS, 'introuvable');
+      if (s === 400 && x === 'reglage') {
+        var pc = CG_CHAMPS.filter(function(c){ return c[0] === j.champ; })[0], pourcent = pc && pc[2] === '%';
+        return 'réglage refusé : ' + (pc ? pc[1] : j.champ || '?') + (j.min !== undefined ? ' (entre ' + (pourcent ? cgPct(j.min) + ' et ' + cgPct(j.max) : j.min + ' et ' + j.max) + ')' : ' (adresse email invalide)');
+      }
+      if (s) return 'erreur ' + s + (x ? ' — ' + x : '');
+      return 'fonction « groupe » injoignable — déployée ? (' + ((e && e.message) || 'réseau') + ')';
+    }
+    // raisons d'un refus « sous le minimum » : marge et / ou points
+    function cgRaisons(raisons, m){
+      m = m || {};
+      return (raisons || []).map(function(r){
+        return r === 'marge' ? 'marge ' + cgPct(m.pct) + ' < ' + cgRegl('marge_min', true)
+          : r === 'points' ? cgPts(m.points) + ' points < ' + cgPtsMin() : r;
+      }).join(' ; ') || 'minimum non atteint';
+    }
+
+    function loadCartons(){
+      var liste = document.getElementById('cgListe');
+      liste.innerHTML = '<div class="empty">Chargement des cartons groupés…</div>';
+      document.getElementById('cgEmpty').classList.add('hidden');
+      appelGroupe({ action:'admin', op:'liste' }).then(function(j){
+        _cg = { cartons: (j && j.cartons) || [], parts: (j && j.participations) || {}, clients: (j && j.clients) || {},
+          reglages: (j && j.reglages) || {}, courant: (j && j.courant) || '', constantes: (j && j.constantes) || {},
+          remboursements: (j && j.remboursements) || [] };
+        renderCartons();
+        renderReglages();
+      }).catch(function(e){
+        liste.innerHTML = '';
+        document.getElementById('cgReglages').innerHTML = '<div class="cg-detail">Réglages : — (réponse du serveur indisponible)</div>';
+        document.getElementById('cgBandeau').classList.add('hidden');
+        var vide = document.getElementById('cgEmpty');
+        vide.classList.remove('hidden');
+        vide.textContent = 'Lecture impossible (' + cgErreur(e) + ').';
+      });
+    }
+
+    function cgCarton(id){
+      for (var i = 0; i < _cg.cartons.length; i++) if (_cg.cartons[i].id === id) return _cg.cartons[i];
+      return null;
+    }
+    function cgCompte(parts, statuts){ var n = 0; parts.forEach(function(p){ if (statuts.indexOf(p.statut) > -1) n++; }); return n; }
+    function cgSomme(parts, statuts, champ){
+      var s = 0;
+      parts.forEach(function(p){ if (statuts.indexOf(p.statut) > -1) s += Number(p[champ] || p.total) || 0; });
+      return Math.round(s * 100) / 100;
+    }
+    // teinte de la marge : vert ≥ marge cible, orange ≥ marge minimum, rouge en dessous (gris : réglages pas encore reçus)
+    function cgTeinteMarge(pct){
+      var R = _cg.reglages || {};
+      if (typeof R.marge_min !== 'number' || typeof R.marge_cible !== 'number') return 'gris';
+      return pct >= R.marge_cible ? 'vert' : pct >= R.marge_min ? 'ambre' : 'alerte';
+    }
+    // bloc de marge (admin seulement) : € et % du CA articles, détail du calcul, minimum fournisseur
+    function cgMargeHtml(m, titre){
+      if (!m || !m.nb) return '<div class="cg-marge cg-m-gris"><b>' + titre + ' :</b> aucune participation</div>';
+      var t = cgTeinteMarge(Number(m.pct) || 0), ptsMin = cgPtsMin(), ptsOk = (Number(m.points) || 0) >= ptsMin;
+      return '<div class="cg-marge cg-m-' + t + '"><div><b>' + titre + ' : ' + fmtE(m.eur) + ' (' + cgPct(m.pct) + ')</b>'
+        + ' <span class="cg-detail">' + (t === 'vert' ? '≥ cible ' + cgRegl('marge_cible', true) : t === 'ambre' ? '≥ minimum ' + cgRegl('marge_min', true) : t === 'alerte' ? 'sous le minimum ' + cgRegl('marge_min', true) : 'minimum —') + '</span></div>'
+        + '<div class="cg-detail">CA articles ' + fmtE(m.ca) + ' · marge des lignes ' + fmtE(m.marge_lignes) + ' − ' + (Number(m.nb_cartons) || 0) + ' carton(s) réel(s) ('
+        + cgKg(m.poids) + ') ' + fmtE(m.frais_cartons) + ' − frais Stripe estimés ' + fmtE(m.frais_stripe) + ' − forfaits offerts ' + fmtE(m.forfaits_offerts)
+        + ' · ' + (Number(m.nb) || 0) + ' participation(s)</div>'
+        + '<div class="cg-detail">Minimum fournisseur : <b>' + cgPts(m.points) + ' / ' + ptsMin + ' points</b> ' + (ptsOk ? '✓' : '✗ (non atteint)') + '</div></div>';
+    }
+
+    // échéance du remboursement automatique d'une participation payée : fixée au paiement (rembourse_auto_le), repli paiement + délai
+    function cgEcheance(p){
+      var t = Number(p.paye_le) || 0;
+      return Number(p.rembourse_auto_le) || (t ? t + _cg.reglages.delai_commande_jours * 86400000 : 0);
+    }
+    // participations actives d'abord (ordre d'arrivée), annulées / retirées / remboursées à la fin
+    function cgTri(parts){
+      return parts.slice().sort(function(a, b){
+        var ia = CG_INACTIFS.indexOf(a.statut) > -1 ? 1 : 0, ib = CG_INACTIFS.indexOf(b.statut) > -1 ? 1 : 0;
+        if (ia !== ib) return ia - ib;
+        return (Number(a.cree_le) || 0) - (Number(b.cree_le) || 0);
+      });
+    }
+
+    // réf. et quantités cumulées des participations PAYÉES (payée, commandée, livrée) : une ligne « réf<TAB>qté », triée par réf.
+    function cgListeArticles(id){
+      var cumul = {}, refs = [];
+      (_cg.parts[id] || []).forEach(function(p){
+        if (CG_PAYEES.indexOf(p.statut) < 0) return;
+        (p.lignes || []).forEach(function(l){
+          var r = String(l.ref || ''); if (!r) return;
+          if (!cumul['r:'+r]) { cumul['r:'+r] = 0; refs.push(r); }
+          cumul['r:'+r] += Number(l.q) || 0;
+        });
+      });
+      refs.sort();
+      return refs.map(function(r){ return r + '\t' + cumul['r:'+r]; }).join('\n');
+    }
+
+    function renderCartons(){
+      var liste = document.getElementById('cgListe');
+      document.getElementById('cgEmpty').classList.toggle('hidden', _cg.cartons.length > 0);
+      liste.innerHTML = _cg.cartons.map(cgCarteHtml).join('');
+      // bandeau en haut du tableau de bord : carton prêt, paiements en cours, décisions, remboursements en reprise
+      var lignes = [], remb = 0, cmd = 0;
+      _cg.cartons.forEach(function(c){
+        var parts = _cg.parts[c.id] || [], num = esc(c.numero || c.id), m = c.marge || {}, mp = c.marge_payee || {};
+        if (c.statut === 'ouvert' && c.pret) lignes.push('✅ <b>Carton groupé ' + num + ' prêt à déclencher</b> : marge estimée ' + fmtE(m.eur) + ' (' + cgPct(m.pct) + '), '
+          + cgPts(m.points) + ' points, ' + fmtE(c.total) + ' d\'intentions.');
+        if (c.statut === 'paiement') lignes.push('⏳ Carton ' + num + ' : paiements ouverts jusqu\'au <b>' + cgDate(c.limite_paiement, true) + '</b> (' + cgReste(c.limite_paiement) + ') — '
+          + cgCompte(parts, ['a_payer','a_reconfirmer']) + ' en attente de paiement, ' + cgCompte(parts, ['payee']) + ' payée(s).');
+        if (c.statut === 'a_decider') lignes.push('⚠️ <b>Carton groupé ' + num + ' à décider</b> : ' + cgCompte(parts, ['payee']) + ' payée(s), marge réelle ' + fmtE(mp.eur) + ' (' + cgPct(mp.pct) + '), '
+          + cgPts(mp.points) + ' points. Commander, attendre ou annuler.');
+        remb += cgCompte(parts, ['remboursement']);
+        parts.forEach(function(p){ if (p.commande_ecrite === false && ['commandee','livree'].indexOf(p.statut) > -1) cmd++; });
+      });
+      if (remb) lignes.push('⏳ ' + remb + ' <b>remboursement(s) en reprise</b> (Stripe momentanément en échec) : la tâche planifiée réessaie toutes les 10 min.');
+      // remboursements décidés (paiement en double, tardif, article indisponible…) que Stripe n'a pas encore acceptés
+      (_cg.remboursements || []).forEach(function(x){
+        lignes.push('⏳ <b>Remboursement à rejouer</b> : ' + fmtE(x.montant) + ' (' + esc(cgLibelle(CG_MOTIF_REMB, x.motif) || x.motif || '?') + (x.ref ? ', réf. ' + esc(x.ref) : '') + ')'
+          + (x.participation ? ' — participation ' + esc(String(x.participation).slice(0, 8)) : '') + ', ' + (Number(x.essais) || 0) + ' essai(s)'
+          + (x.erreur ? ' : ' + esc(String(x.erreur).slice(0, 80)) : '') + '. Réessayé toutes les 10 min ; vérifiez les droits « Refunds » de la clé Stripe.');
+      });
+      if (cmd) lignes.push('ℹ️ ' + cmd + ' commande(s) « orders » pas encore écrite(s) : réécrites par la tâche planifiée (≤ 10 min).');
+      var b = document.getElementById('cgBandeau');
+      b.innerHTML = lignes.length ? lignes.join('<br>') + ' <a href="#cartons-groupes" style="color:#fff;">Voir ↓</a>' : '';
+      b.classList.toggle('hidden', !lignes.length);
+    }
+
+    function cgCarteHtml(c){
+      var R = _cg.reglages, st = c.statut, parts = cgTri(_cg.parts[c.id] || []);
+      var id = esc(c.id), num = esc(c.numero || c.id);
+      var objectif = Number(c.objectif) || R.objectif || 1700, total = Number(c.total) || 0;
+      var pct = objectif > 0 ? Math.min(100, Math.round(total / objectif * 100)) : 0;
+      var nPayees = cgCompte(parts, ['payee']), nPayer = cgCompte(parts, ['a_payer']), nReconf = cgCompte(parts, ['a_reconfirmer']), nAttente = cgCompte(parts, ['en_attente']);
+      var mp = c.marge_payee || {};
+      var h = '<div class="cg-carte' + (st === 'a_decider' || (st === 'ouvert' && c.pret) ? ' cg-decision' : '') + '">';
+      h += '<div class="cg-tete"><b>' + num + '</b> ' + cgPill(cgLibelle(CG_CARTON, st) || st || '?', cgLibelle(CG_TEINTE_CARTON, st))
+        + (c.id === _cg.courant ? ' ' + cgPill('carton courant : reçoit les nouvelles intentions', 'attente') : '')
+        + (st === 'ouvert' && c.pret ? ' ' + cgPill('prêt à déclencher', 'vert') : '')
+        + (c.force ? ' ' + cgPill('déclenché en forçant (' + cgRaisons(c.raisons_force, c.marge_declenchement) + ')', 'gris') : '')
+        + (c.force_commande ? ' ' + cgPill('commandé en forçant', 'gris') : '')
+        + '</div>';
+      // jauge : intentions actives + payées / objectif affiché aux clients
+      h += '<div class="cg-jauge" title="' + pct + ' % de l\'objectif"><span style="width:' + pct + '%;' + (st === 'annule' ? 'background:#5c6e60;' : '') + '"></span></div>';
+      h += '<div class="cg-infos"><span>Total : <b>' + fmtE(total) + '</b> / objectif ' + fmtE(objectif) + ' (' + pct + ' %)</span>'
+        + '<span>Participations : <b>' + (Number(c.nb) || 0) + '</b></span>'
+        + '<span>Poids : <b>' + cgKg(c.poids) + '</b> / 50 kg</span>'
+        + '<span>Points : <b>' + cgPts(c.points) + '</b> / ' + cgPtsMin() + ' ' + ((Number(c.points) || 0) >= cgPtsMin() ? '✓' : '✗') + ' (minimum fournisseur : ' + cgPtsMin() + ' points)</span></div>';
+      // marge : estimée sur les intentions actives ; réelle (payées seulement) dès le paiement
+      if (st === 'ouvert') h += cgMargeHtml(c.marge, 'Marge estimée (intentions actives)');
+      if (st === 'paiement') h += cgMargeHtml(c.marge, 'Marge estimée (actives, payées ou non)') + cgMargeHtml(mp, 'Marge déjà encaissée (payées seulement)');
+      if (st === 'a_decider') h += cgMargeHtml(mp, 'Marge RÉELLE (payées seulement)');
+      if (st === 'commande' || st === 'arrive') h += cgMargeHtml(c.marge_commande || mp, 'Marge à la commande');
+      // bandeaux : ce qui se passe, et ce que chaque décision fait de l'argent
+      if (st === 'ouvert') h += c.pret
+        ? '<div class="cg-bandeau cg-info">✅ <b>Prêt :</b> marge ≥ minimum et ' + cgPtsMin() + ' points atteints. <b>Déclencher</b> = chaque intention reçoit un lien de paiement ('
+          + cgRegl('delai_paiement_h') + ' h pour régler) ; disponibilité et prix sont revérifiés. Vous pouvez aussi attendre : plus le carton se remplit, meilleure est la marge.</div>'
+        : '<div class="cg-bandeau cg-info">Sous le minimum (' + cgRaisons(c.raisons, c.marge) + ') : déclencher reste possible en forçant (taper FORCER).'
+          + (nAttente ? '' : ' Aucune intention en attente.') + '</div>';
+      if (st === 'paiement') h += '<div class="cg-bandeau cg-info">⏳ <b>Paiements ouverts</b> jusqu\'au <b>' + cgDate(c.limite_paiement, true) + '</b> (' + cgReste(c.limite_paiement) + ') : '
+        + nPayer + ' à payer, ' + nReconf + ' à reconfirmer (hausse de prix), ' + nPayees + ' payée(s)' + (nAttente ? ', ' + nAttente + ' en cours de traitement' : '') + '.'
+        + ' Rappels automatiques à 24 h et 6 h ; à la limite, les impayés sont retirés et le carton passe « à décider ».</div>';
+      if (st === 'a_decider') {
+        var premier = 0;
+        parts.forEach(function(p){ var t = cgEcheance(p); if (p.statut === 'payee' && t && (!premier || t < premier)) premier = t; });
+        h += '<div class="cg-bandeau">⚠️ <b>Décision à prendre :</b> ' + nPayees + ' participation(s) payée(s), ' + fmtE(cgSomme(parts, ['payee'], 'montant_paye')) + ' encaissés (forfaits compris).'
+          + ' <b>Commander</b> = vous passez la commande fournisseur' + ((c.raisons || []).length ? ' (sous le minimum : ' + cgRaisons(c.raisons, mp) + ', il faudra taper FORCER)' : '') + '.'
+          + ' <b>Attendre</b> = le carton rouvre et reçoit de nouvelles intentions, les payées restent payées.'
+          + ' <b>Annuler</b> = toutes les payées sont <b>remboursées</b>.'
+          + (premier ? '<br>⏱ Sans commande, 1er remboursement automatique le <b>' + cgDate(premier, true) + '</b> (client prévenu 3 j avant).' : '') + '</div>';
+      }
+      if (st === 'commande') h += '<div class="cg-bandeau cg-info">🧾 Commandé le ' + cgDate(c.commande_le, true) + ' : passez la commande fournisseur avec la liste des articles ci-dessous, puis « Carton arrivé » à réception en Guyane.</div>';
+      if (st === 'arrive') h += '<div class="cg-bandeau cg-info">📬 Arrivé le ' + cgDate(c.arrive_le, true) + ' : marquez chaque participation « livrée » à la remise au client.</div>';
+      if (st === 'annule') h += '<div class="cg-bandeau cg-info">Carton annulé le ' + cgDate(c.annule_le, true) + ' : participations payées remboursées, intentions annulées sans frais.'
+        + (c.nettoye === false ? ' <b>Remboursements encore en cours</b> (reprise automatique par la tâche planifiée).' : '') + '</div>';
+      // dates du carton
+      var dates = [['Ouvert le', c.ouvert_le]];
+      if (c.declenche_le) dates.push(['Déclenché le', c.declenche_le]);
+      if (c.limite_paiement) dates.push(['Limite de paiement', c.limite_paiement, st === 'paiement' ? cgReste(c.limite_paiement) : '']);
+      if (c.a_decider_le) dates.push(['À décider depuis le', c.a_decider_le]);
+      if (c.attendre_le) dates.push(['Rouvert (attendre) le', c.attendre_le]);
+      if (c.commande_le) dates.push(['Commandé le', c.commande_le]);
+      if (c.arrive_le) dates.push(['Arrivé le', c.arrive_le]);
+      if (c.annule_le) dates.push(['Annulé le', c.annule_le]);
+      h += '<div class="cg-infos">' + dates.map(function(d){
+        return '<span>' + d[0] + ' : <b>' + cgDate(d[1], d[0] !== 'Ouvert le') + '</b>' + (d[2] ? ' (' + d[2] + ')' : '') + '</span>';
+      }).join('') + '</div>';
+      if (c.paliers && Object.keys(c.paliers).length) h += '<div class="cg-infos"><span>Emails d\'avancement envoyés : ' + Object.keys(c.paliers).sort().map(function(k){ return esc(k) + ' %'; }).join(', ') + '</span></div>';
+      if (c.precedent && st === 'ouvert') h += '<div class="cg-infos"><span>Carton ouvert car le précédent aurait dépassé 50 kg ; s\'il se vide ou part, les nouvelles intentions retournent au carton précédent encore ouvert.</span></div>';
+      // actions selon le statut (le libellé dit ce que devient l'argent)
+      var btns = '';
+      if (st === 'ouvert') btns += '<button class="btn" data-cg-op="declencher" data-cg-carton="' + id + '">' + (c.pret ? '🚀 Déclencher — envoyer les liens de paiement' : '🚀 Déclencher quand même (FORCER)') + '</button>';
+      if (st === 'a_decider') btns += '<button class="btn" data-cg-op="commander" data-cg-carton="' + id + '">🧾 Commander' + ((c.raisons || []).length ? ' quand même (FORCER)' : '') + '</button>'
+        + '<button class="btn ghost" data-cg-op="attendre" data-cg-carton="' + id + '">⏸ Attendre — rouvrir le carton</button>';
+      if (['ouvert','paiement','a_decider'].indexOf(st) > -1) btns += '<button class="btn warn" data-cg-op="annuler" data-cg-carton="' + id + '">✖ Annuler le carton'
+        + (cgCompte(parts, ['payee']) ? ' — rembourser ' + cgCompte(parts, ['payee']) + ' payée(s)' : ' (personne n\'a payé)') + '</button>';
+      if (st === 'commande') btns += '<button class="btn" data-cg-op="arrive" data-cg-carton="' + id + '">📬 Carton arrivé</button>';
+      var nArticles = cgCompte(parts, CG_PAYEES);
+      if (nArticles) btns += '<button class="btn ghost" data-cg-op="copier" data-cg-carton="' + id + '">📋 Copier la liste des articles payés</button>';
+      if (btns) h += '<div class="cg-btns">' + btns + '</div>';
+      if (nArticles) {
+        var txt = cgListeArticles(c.id);
+        h += '<details style="margin-top:.5rem;font-size:.8rem;"><summary style="cursor:pointer;color:var(--muted);">Liste des articles à commander (' + txt.split('\n').length + ' réf., '
+          + nArticles + ' participation(s) payée(s) seulement)</summary>'
+          + '<textarea readonly style="width:100%;min-height:90px;margin-top:.4rem;padding:.45rem .6rem;border:1px solid var(--line);border-radius:8px;background:#0c150d;color:var(--ink);font-family:monospace;font-size:.8rem;">' + esc(txt) + '</textarea></details>';
+      }
+      // participants
+      if (!parts.length) return h + '<div class="empty">Aucune participation dans ce carton.</div></div>';
+      h += '<div class="tablewrap" style="margin-top:.8rem;background:transparent;"><table style="min-width:1080px;"><thead><tr><th>Participant</th><th>Contact</th><th>Adresse</th><th>Articles</th><th>Total</th><th>Marge</th><th>Statut</th><th></th></tr></thead><tbody>';
+      parts.forEach(function(p){
+        var inactif = CG_INACTIFS.indexOf(p.statut) > -1, tel = String(p.telephone || ''), fiche = _cg.clients[p.uid] || {};
+        var remboursable = ['payee','commandee'].indexOf(p.statut) > -1; // article payé indisponible : remboursement de la ligne
+        var arts = (p.lignes || []).map(function(l){
+          return '<div><b>' + esc(l.ref) + '</b> × ' + (Number(l.q) || 0) + ' <span style="color:#9db2a3;font-size:.72rem;">' + esc(String(l.nom || '').slice(0, 60))
+            + ' · ' + fmtE(l.prix) + (Number(l.prix_inscription) > Number(l.prix) + 0.005 ? ' (baisse, inscrit à ' + fmtE(l.prix_inscription) + ')' : '') + '</span>'
+            + (remboursable ? ' <button class="btn ghost" style="padding:.1rem .45rem;font-size:.68rem;" title="Article indisponible chez la source : rembourser cette ligne au client" data-cg-op="retirer_article" data-cg-carton="' + id + '" data-cg-part="' + esc(p.id) + '" data-cg-ref="' + esc(l.ref) + '">rembourser (indispo.)</button>' : '')
+            + '</div>';
+        }).join('');
+        var pm = p.marge || {}, pi = p.interne || {};
+        var marge = pm.ca ? '<span style="' + CG_TEINTES[cgTeinteMarge((Number(pm.marge_lignes) || 0) / pm.ca)] + 'padding:.1rem .45rem;border-radius:50px;font-size:.74rem;font-weight:700;">'
+          + fmtE(pm.marge_lignes) + ' (' + cgPct((Number(pm.marge_lignes) || 0) / pm.ca) + ')</span><div class="cg-detail">marge des lignes · ' + cgPts(pi.points) + ' pts · ' + cgKg(p.poids) + '</div>' : '—';
+        var detail = '';
+        if (p.motif) detail += '<div class="cg-detail">' + esc(cgLibelle(CG_MOTIF, p.motif) || p.motif) + '</div>';
+        if (p.statut === 'a_payer' && p.limite) detail += '<div class="cg-detail" style="color:#ffd36b;">à payer avant le ' + cgDate(p.limite, true) + ' (' + cgReste(p.limite) + ')'
+          + (p.paiement_immediat ? ' — paiement immédiat' : '') + '</div>';
+        if (p.statut === 'a_reconfirmer' && p.reconfirmer) detail += '<div class="cg-detail" style="color:#ffd36b;">nouveau montant proposé ' + fmtE(p.reconfirmer.total) + ' (avant le ' + cgDate(p.limite, true) + ')</div>';
+        if (p.paye_le) detail += '<div class="cg-detail">payé le ' + cgDate(p.paye_le, true) + ' : ' + fmtE(p.montant_paye) + '</div>';
+        if (p.statut === 'payee' && p.paye_le) detail += '<div class="cg-detail">remboursement auto. le ' + cgDate(cgEcheance(p)) + ' si non commandé</div>';
+        if (p.retablie_le) detail += '<div class="cg-detail">rétablie le ' + cgDate(p.retablie_le, true) + ' (payée à temps, confirmation Stripe arrivée après le retrait)</div>';
+        if (p.retires_payes && p.retires_payes.length) detail += '<div class="cg-detail" style="color:#ffb3a3;">payé(s) puis indisponible(s), remboursé(s) : '
+          + p.retires_payes.map(function(x){ return esc(x.qte) + ' × ' + esc(x.ref) + ' (' + fmtE(x.montant) + ')'; }).join(', ') + '</div>';
+        if (p.rembourses && Object.keys(p.rembourses).length) detail += '<div class="cg-detail">' + Object.keys(p.rembourses).length + ' paiement(s) non retenu(s) remboursé(s) (en double, hors délai…)</div>';
+        if (p.rembourse_le) detail += '<div class="cg-detail">remboursé le ' + cgDate(p.rembourse_le, true) + ' : ' + fmtE(p.montant_rembourse) + '</div>';
+        if (p.livre_le) detail += '<div class="cg-detail">livré le ' + cgDate(p.livre_le) + '</div>';
+        if (p.retires && p.retires.length) detail += '<div class="cg-detail" style="color:#ffb3a3;">retiré(s), indisponible(s) : ' + p.retires.map(function(x){ return esc(x.qte) + ' × ' + esc(x.ref); }).join(', ') + '</div>';
+        if (p.commande_ecrite === false && ['commandee','livree'].indexOf(p.statut) > -1) detail += '<div class="cg-detail" style="color:#ffd36b;">commande « orders » pas encore écrite — réécrite par la tâche planifiée (≤ 10 min)</div>';
+        if (p.offre) detail += '<div class="cg-detail">offre de lancement ' + esc(p.offre) + (p.offre_comptee ? ' (comptée dans le quota)' : '') + '</div>';
+        detail += '<div class="cg-detail">informé : ' + esc({ email:'email', sms:'email + SMS (paiement, rappels, reçus)', aucun:'sans avancement (email pour le paiement)' }[p.avertir] || 'email')
+          + (p.sans_avancement && p.avertir !== 'aucun' ? ' — emails d\'avancement coupés' : '') + '</div>';
+        var client = '';
+        if (fiche.non_paiements) client += '<div class="cg-detail" style="color:#ffb3a3;">' + fiche.non_paiements + ' non-paiement(s)' + (fiche.paiement_immediat ? ' — paiement immédiat' : '') + '</div>';
+        var actions = '';
+        if (p.statut === 'commandee') actions += '<button class="btn" style="padding:.35rem .7rem;font-size:.74rem;" data-cg-op="livree" data-cg-carton="' + id + '" data-cg-part="' + esc(p.id) + '">✔ Livrée</button>';
+        if (fiche.paiement_immediat) actions += '<button class="btn ghost" style="padding:.35rem .7rem;font-size:.74rem;margin-top:.3rem;" data-cg-op="client" data-cg-carton="' + id + '" data-cg-uid="' + esc(p.uid) + '">Lever le paiement immédiat</button>';
+        h += '<tr' + (inactif ? ' style="opacity:.55;"' : '') + '>'
+          + '<td>' + esc(p.nom || '—') + '<div style="font-size:.72rem;color:#9db2a3;">inscrit le ' + cgDate(p.cree_le) + '</div>' + client + '</td>'
+          + '<td style="font-size:.8rem;">' + (p.email ? '<a href="mailto:' + esc(p.email) + '" style="color:#9fe870;">' + esc(p.email) + '</a>' : '—')
+          +   (tel ? '<div><a href="tel:' + esc(tel.replace(/[^\d+]/g, '')) + '" style="color:#9fe870;">' + esc(tel) + '</a></div>' : '') + '</td>'
+          + '<td style="max-width:220px;font-size:.78rem;white-space:pre-line;">' + esc(p.adresse || '—') + '</td>'
+          + '<td style="font-size:.8rem;">' + (arts || '—') + '</td>'
+          + '<td>' + fmtE(p.total) + '<div style="font-size:.72rem;color:#9db2a3;">' + (Number(p.forfait) > 0 ? 'dont forfait ' + fmtE(p.forfait) : 'forfait offert') + '</div></td>'
+          + '<td style="min-width:130px;">' + marge + '</td>'
+          + '<td style="min-width:190px;">' + cgPill(cgLibelle(CG_PART, p.statut) || p.statut || '?', cgLibelle(CG_TEINTE_PART, p.statut)) + detail + '</td>'
+          + '<td>' + actions + '</td>'
+          + '</tr>';
+      });
+      return h + '</tbody></table></div></div>';
+    }
+
+    // réglages (groupe_interne/reglages) : modifiables ici, bornes vérifiées par le serveur
+    function renderReglages(){
+      var z = document.getElementById('cgReglages');
+      if (!z) return;
+      var R = _cg.reglages || {}, K = _cg.constantes || {};
+      z.innerHTML = '<div class="cg-regl">' + CG_CHAMPS.map(function(c){
+        // valeur du serveur ; absente : champ vide (« — »), jamais une valeur par défaut écrite dans la page
+        var v = typeof R[c[0]] === 'number' ? R[c[0]] : null;
+        if (v !== null && c[2] === '%') v = Math.round(v * 10000) / 100;
+        return '<label>' + esc(c[1]) + '<span><input type="number" step="' + (c[2] === '%' ? '0.5' : '1') + '" data-cg-regl="' + c[0] + '" value="' + (v === null ? '' : esc(v)) + '" placeholder="—"> ' + esc(c[2]) + '</span></label>';
+      }).join('')
+        + '<label>Email d\'alerte (marge minimum atteinte, carton à décider)<span><input type="email" data-cg-regl="email_admin" value="' + esc(R.email_admin || '') + '"></span></label></div>'
+        + '<div class="cg-btns"><button class="btn" id="cgReglSauver" type="button">Enregistrer les réglages</button><span id="cgReglMsg" class="cg-detail" style="align-self:center;"></span></div>'
+        + '<div class="cg-detail" style="margin-top:.4rem;">Constantes du serveur : coefficient Holex ' + esc(String(K.coef_holex || '—').replace('.', ',')) + ' · part carton '
+        + esc(String(K.part_carton || '—').replace('.', ',')) + ' € par point · carton réel ' + (typeof K.prix_carton === 'number' ? fmtE(K.prix_carton) : '—') + ' par ' + esc(K.kg_carton || '—') + ' kg · frais Stripe estimés '
+        + (K.frais_stripe ? cgPct(K.frais_stripe.pct) + ' + ' + fmtE(K.frais_stripe.fixe) : '—') + ' par paiement · minimum fournisseur ' + esc(cgPtsMin())
+        + ' points · ' + esc(K.limite_kg || 50) + ' kg par carton · ' + esc(K.max_actives || 5) + ' participations en cours par compte.</div>'
+        + '<div class="cg-detail" style="margin-top:.3rem;">' + esc(CG_BORNES_TEXTE) + '</div>';
+      document.getElementById('cgReglSauver').addEventListener('click', sauverReglages);
+    }
+    function sauverReglages(){
+      var r = {}, msg = document.getElementById('cgReglMsg'), b = document.getElementById('cgReglSauver');
+      var champs = document.querySelectorAll('[data-cg-regl]');
+      for (var i = 0; i < champs.length; i++) {
+        var k = champs[i].getAttribute('data-cg-regl'), v = champs[i].value.trim();
+        if (k === 'email_admin') { r[k] = v; continue; }
+        var n = parseFloat(v.replace(',', '.'));
+        if (!isFinite(n)) { msg.style.color = '#ff8574'; msg.textContent = 'Valeur invalide : ' + k; return; }
+        var pc = CG_CHAMPS.filter(function(c){ return c[0] === k; })[0];
+        r[k] = pc && pc[2] === '%' ? Math.round(n * 100) / 10000 : n;
+      }
+      if (r.marge_cible < r.marge_min && !confirm('La marge cible (' + cgPct(r.marge_cible) + ') est inférieure à la marge minimum (' + cgPct(r.marge_min) + '). Enregistrer quand même ?')) return;
+      b.disabled = true; msg.style.color = '#9db2a3'; msg.textContent = 'Enregistrement…';
+      appelGroupe({ action:'admin', op:'reglages', reglages: r }).then(function(j){
+        _cg.reglages = (j && j.reglages) || _cg.reglages;
+        msg.style.color = '#7fe85c'; msg.textContent = '✔ Réglages enregistrés.';
+        renderCartons();
+        b.disabled = false;
+      }).catch(function(e){ b.disabled = false; msg.style.color = '#ff8574'; msg.textContent = 'Échec : ' + cgErreur(e) + '.'; });
+    }
+
+    // confirmation explicite, qui dit ce que devient l'argent ; sous le minimum il faut taper FORCER,
+    // commander / annuler (irréversibles) : taper COMMANDER / ANNULER. Résout { ok, forcer }
+    function cgConfirmer(op, c, part){
+      var num = (c && (c.numero || c.id)) || '', parts = (c && _cg.parts[c.id]) || [], r;
+      var m = (c && c.marge) || {}, mp = (c && c.marge_payee) || {};
+      var nPayees = cgCompte(parts, ['payee']), encaisse = cgSomme(parts, ['payee'], 'montant_paye');
+      if (op === 'declencher') {
+        var texte = 'DÉCLENCHER le carton ' + num + ' ?\n\n'
+          + '• Marge estimée : ' + fmtE(m.eur) + ' (' + cgPct(m.pct) + ' ; minimum ' + cgRegl('marge_min', true) + ', cible ' + cgRegl('marge_cible', true) + ') — ' + cgPts(m.points) + ' points / ' + cgPtsMin() + '.\n'
+          + '• ' + cgCompte(parts, ['en_attente']) + ' intention(s) : disponibilité et prix revérifiés (baisse appliquée, hausse à reconfirmer par le client), puis lien de paiement par email (et SMS si choisi).\n'
+          + '• Les clients ont ' + cgRegl('delai_paiement_h') + ' h pour payer ; rappels à 24 h et 6 h ; impayés retirés, puis le carton passe « à décider » (marge réelle).\n'
+          + '• Le carton ne reçoit plus d\'intentions : un nouveau carton devient courant.\n';
+        if (c.pret) return { ok: confirm(texte + '\nConfirmer ?'), forcer: false };
+        r = prompt(texte + '• ATTENTION — sous le minimum : ' + cgRaisons(c.raisons, m) + '.\n\nTapez FORCER pour déclencher quand même.');
+        return { ok: r !== null && cgMot(r, 'FORCER'), forcer: true };
+      }
+      if (op === 'commander') {
+        var sous = (c.raisons || []).length > 0;
+        r = prompt('COMMANDER le carton ' + num + ' ?\n\n'
+          + '• ' + nPayees + ' participation(s) payée(s), ' + fmtE(encaisse) + ' encaissés (forfaits compris).\n'
+          + '• Marge réelle : ' + fmtE(mp.eur) + ' (' + cgPct(mp.pct) + ') — ' + cgPts(mp.points) + ' points / ' + cgPtsMin() + '.\n'
+          + (sous ? '• ATTENTION — sous le minimum : ' + cgRaisons(c.raisons, mp) + '.\n' : '')
+          + '• Les participations passent « commandée » (plus d\'annulation en ligne : rétractation à la livraison), les clients sont prévenus et les commandes « orders » sont écrites.\n'
+          + '• Passez ensuite la commande fournisseur avec la liste des articles.\n\nTapez ' + (sous ? 'FORCER' : 'COMMANDER') + ' pour confirmer.');
+        return { ok: r !== null && cgMot(r, sous ? 'FORCER' : 'COMMANDER'), forcer: sous };
+      }
+      if (op === 'attendre') return { ok: confirm('ATTENDRE : rouvrir le carton ' + num + ' ?\n\n'
+        + '• Il redevient le carton courant et reçoit de nouvelles intentions.\n'
+        + '• Les ' + nPayees + ' participation(s) payée(s) restent payées ; chacune est remboursée automatiquement si le carton n\'est pas commandé '
+        + cgRegl('delai_commande_jours') + ' jours après son paiement.\n• Au prochain déclenchement, seules les nouvelles intentions reçoivent un lien de paiement.'), forcer: false };
+      if (op === 'annuler') {
+        r = prompt('ANNULER le carton ' + num + ' ?\n\n'
+          + (nPayees ? '• ' + nPayees + ' participation(s) payée(s) REMBOURSÉE(S) intégralement : ' + fmtE(encaisse) + '.\n' : '• Personne n\'a payé : aucun remboursement.\n')
+          + '• Les intentions et paiements en attente sont annulés sans frais ; chaque client est prévenu.\n• Action irréversible.\n\nTapez ANNULER pour confirmer.');
+        return { ok: r !== null && cgMot(r, 'ANNULER'), forcer: false };
+      }
+      if (op === 'arrive') return { ok: confirm('Confirmer l\'arrivée du carton ' + num + ' en Guyane ?\n\nLes clients commandés sont prévenus. Aucun mouvement d\'argent.'), forcer: false };
+      if (op === 'livree') return { ok: confirm('Marquer « livrée » la participation de ' + ((part && (part.nom || part.email)) || 'ce client') + ' ?\n\nAucun mouvement d\'argent.'), forcer: false };
+      if (op === 'client') return { ok: confirm('Lever le « paiement immédiat » de ce compte ?\n\nSes prochaines participations redeviennent de simples intentions (compteur de non-paiements remis à zéro).'), forcer: false };
+      if (op === 'retirer_article') {
+        var lg = null;
+        ((part && part.lignes) || []).forEach(function(l){ if (l.ref === part._ref) lg = l; });
+        if (!lg) return { ok: false };
+        var seule = (part.lignes || []).length === 1, montantL = (Number(lg.prix) || 0) * (Number(lg.q) || 0) + (seule ? Number(part.forfait) || 0 : 0);
+        r = prompt('REMBOURSER l\'article ' + lg.ref + ' (' + String(lg.nom || '').slice(0, 60) + ') × ' + lg.q + ' à ' + ((part.nom || part.email) || 'ce client') + ' ?\n\n'
+          + '• À utiliser si l\'article PAYÉ est indisponible chez la source au moment de la commande (CGV art. 9 bis).\n'
+          + '• Remboursement immédiat : ' + fmtE(montantL) + (seule ? ' (dernier article : forfait d\'expédition compris, la participation est entièrement remboursée)' : '') + '.\n'
+          + '• La ligne sort de la participation et de la commande « orders » ; le client est prévenu par email.\n• Action irréversible.\n\nTapez REMBOURSER pour confirmer.');
+        return { ok: r !== null && cgMot(r, 'REMBOURSER'), forcer: false };
+      }
+      return { ok: false };
+    }
+    function cgMot(saisi, attendu){
+      if (String(saisi).trim().toUpperCase() === attendu) return true;
+      alert('Confirmation incorrecte : rien n\'a été fait.');
+      return false;
+    }
+    // compte rendu d'une opération réussie
+    function cgCompteRendu(op, c, j){
+      var num = (c && (c.numero || c.id)) || '';
+      j = j || {};
+      if (op === 'declencher') {
+        var n = j.participations || {};
+        return 'Carton ' + num + ' déclenché' + (j.force ? ' en forçant' : '') + ' : ' + (n.a_payer || 0) + ' lien(s) de paiement envoyé(s), ' + (n.a_reconfirmer || 0) + ' hausse(s) à reconfirmer, '
+          + (n.retiree || 0) + ' retirée(s) (indisponibles) — paiements jusqu\'au ' + cgDate(j.limite_paiement, true) + '.';
+      }
+      if (op === 'commander') return 'Carton ' + num + ' commandé — marge ' + fmtE(j.marge && j.marge.eur) + ' (' + cgPct(j.marge && j.marge.pct) + '). Passez la commande fournisseur avec la liste des articles.';
+      if (op === 'attendre') return 'Carton ' + num + ' rouvert : il reçoit de nouveau les intentions.';
+      if (op === 'annuler') {
+        var b = j.bilan || {};
+        return 'Carton ' + num + ' annulé : ' + (b.rembourses || 0) + ' remboursement(s), ' + (b.annulees || 0) + ' intention(s) annulée(s)'
+          + (b.en_attente ? ', ' + b.en_attente + ' remboursement(s) en reprise (Stripe) — la tâche planifiée réessaie' : '') + '.';
+      }
+      if (op === 'arrive') return 'Carton ' + num + ' arrivé : ' + (j.prevenus || 0) + ' client(s) prévenu(s).';
+      if (op === 'livree') return 'Participation marquée « livrée ».';
+      if (op === 'client') return 'Paiement immédiat levé pour ce compte.';
+      if (op === 'retirer_article') return 'Article remboursé : ' + fmtE(j.rembourse) + (j.vide ? ' (participation entièrement remboursée)' : '')
+        + (j.statut_remboursement === 'en_reprise' ? ' — Stripe en échec, remboursement noté et rejoué toutes les 10 min' : '') + '.';
+      return 'Fait.';
+    }
+
+    function copierTexte(txt){
+      if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(txt);
+      return new Promise(function(ok, ko){
+        var ta = document.createElement('textarea'); ta.value = txt; ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+        var fait = false; try { fait = document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+        if (fait) ok(); else ko();
+      });
+    }
+
+    function cgOperation(bouton){
+      var op = bouton.getAttribute('data-cg-op'), cid = bouton.getAttribute('data-cg-carton'), pid = bouton.getAttribute('data-cg-part');
+      var c = cgCarton(cid), msg = document.getElementById('cgMsg');
+      if (op === 'copier') {
+        var txt = cgListeArticles(cid);
+        copierTexte(txt).then(function(){
+          var avant = bouton.textContent;
+          bouton.textContent = '✔ Copié (' + txt.split('\n').length + ' réf.)';
+          setTimeout(function(){ bouton.textContent = avant; }, 2500);
+        }, function(){ msg.style.color = '#ff8574'; msg.textContent = 'Copie impossible : ouvrez « Liste des articles à commander » sous le carton et copiez-la à la main.'; });
+        return;
+      }
+      var part = null;
+      if (pid) (_cg.parts[cid] || []).forEach(function(p){ if (p.id === pid) part = p; });
+      if (!c) return;
+      if (op === 'retirer_article') { if (!part) return; part._ref = bouton.getAttribute('data-cg-ref'); }
+      var choix = cgConfirmer(op, c, part);
+      if (!choix.ok) return;
+      var corps = { action:'admin', op: op };
+      if (op === 'livree') corps.participation = pid;
+      else if (op === 'retirer_article') { corps.participation = pid; corps.ref = bouton.getAttribute('data-cg-ref'); }
+      else if (op === 'client') corps.uid = bouton.getAttribute('data-cg-uid');
+      else corps.carton = cid;
+      if (choix.forcer) corps.forcer = true;
+      bouton.disabled = true;
+      msg.style.color = '#9db2a3'; msg.textContent = 'Opération en cours…';
+      appelGroupe(corps).then(function(j){
+        msg.style.color = '#7fe85c';
+        msg.textContent = '✔ ' + cgCompteRendu(op, c, j);
+        loadCartons();
+        if (op === 'commander' || op === 'retirer_article') loadOrders(); // les commandes « orders » des participations payées
+      }).catch(function(e){
+        msg.style.color = '#ff8574'; msg.textContent = 'Échec : ' + cgErreur(e) + '.';
+        bouton.disabled = false;
+        if (e && (e.statut === 409 || e.statut === 404)) loadCartons();
+      });
+    }
+
+    // un seul écouteur pour tous les boutons des cartons (identifiants lus dans data-*, jamais injectés dans du JS)
+    document.getElementById('cgListe').addEventListener('click', function(ev){
+      var el = ev.target;
+      while (el && el !== this && !(el.getAttribute && el.getAttribute('data-cg-op'))) el = el.parentNode;
+      if (el && el !== this) cgOperation(el);
+    });
 
     // --- Commandes auto-enregistrées (users/*/orders, option B) -----------
     function loadAutoOrders(usersEmails){

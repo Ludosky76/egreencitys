@@ -181,8 +181,11 @@
     var holex = Object.keys(etat.f.m).length === 1 && etat.f.m.Holex, c = cartonConfig();
     $('q-actifs').innerHTML = (holex ? '<div class="q-bandeau-holex"><strong>Holex</strong> : outillage de précision pour l’atelier, la maintenance et le chantier — '
         + 'forets, fraises, tarauds, mesure, serrage, outillage à main, EPI. Prix tout compris livrés en Guyane.'
-        + '<br>📦 Ces articles partent ensemble dans le <strong>' + esc(c.nom) + '</strong> : commande possible <strong>à partir d’environ '
-        + eur(c.minimum_affiche).replace(',00', '') + ' d’articles Holex</strong>, livraison ' + esc(c.delai) + '. Le voyant du panier vous dit en direct ce qu’il reste.'
+        + (groupeActif()
+          ? '<br>📦 Ces articles partent par carton : <strong>carton groupé sans minimum</strong> (aucune carte demandée : vous réglez seulement quand le carton commun part), ou <strong>commande unique</strong> à partir d’environ '
+            + eur(c.minimum_affiche).replace(',00', '') + ' d’articles Holex. Livraison ' + esc(c.delai) + '.'
+          : '<br>📦 Ces articles partent ensemble dans le <strong>' + esc(c.nom) + '</strong> : commande possible <strong>à partir d’environ '
+            + eur(c.minimum_affiche).replace(',00', '') + ' d’articles Holex</strong>, livraison ' + esc(c.delai) + '. Le voyant du panier vous dit en direct ce qu’il reste.')
         + '<div id="q-carton-direct" class="q-carton-direct"></div></div>' : '')
       + (dewalt ? '<div class="q-bandeau-dewalt"><strong>DeWalt</strong> : outils filaires et sans fil, batteries 18 V XR et 54 V FlexVolt, accessoires — '
         + 'prix tout compris livrés en Guyane. <a href="/quincaillerie-pro/marque/dewalt.html">Toute la gamme DeWalt</a></div>' : '')
@@ -281,6 +284,7 @@
             + '<div class="q-inclus">Colis de plus de 30 kg ou hors format : acheminement adapté</div>'
             + '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · délai confirmé avec le devis</div>'
           : '<div class="q-prix">' + eur(a.prix) + '<span class="q-ttc">TTC</span></div>'
+            + (a.lot > 1 ? '<div class="q-poids">Lot de ' + a.lot + ', soit ' + eur(a.prix / a.lot) + '/pièce</div>' : '')  /* prix affiché = le lot */
             + '<div class="q-inclus">Octroi &amp; livraison inclus*</div>'
             + (a.poids ? '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · ' + delaiTexte(a.ref, a) + '</div>' : ''))
       + '<div class="q-actions">'
@@ -372,7 +376,7 @@
      Montant restant = points manquants × prix moyen d'un point des articles déjà au carton
      (repère du catalogue quand le carton est vide), arrondi aux 5 € supérieurs. */
   function cartonConfig() {
-    return (etat.holex && etat.holex.carton) || { nom: 'Carton Atelier', seuil_points: 100, eur_par_point: 7.8, minimum_affiche: 780, poids_max: 10, cartons_max: 1, prix_carton: 150, dims: [30, 40, 40], delai: 'environ 2 semaines après l’envoi du carton' };
+    return (etat.holex && etat.holex.carton) || { nom: 'Carton Atelier', seuil_points: 100, eur_par_point: 9.39, minimum_affiche: 940, poids_max: 10, cartons_max: 1, prix_carton: 150, dims: [30, 40, 40], delai: 'environ 2 semaines après l’envoi du carton' };
   }
   function cartonInfo() {
     var c = cartonConfig(), pts = 0, montant = 0, kg = 0, n = 0, unites = [];
@@ -388,12 +392,13 @@
     var pct = Math.min(100, Math.floor(pts / c.seuil_points * 100));
     var parPoint = pts > 0 ? montant / pts : c.eur_par_point;
     return {
-      c: c, n: n, kg: kg, pct: Math.floor(pct / 5) * 5, montant: montant, attente: attente,
+      c: c, n: n, kg: kg, pts: pts, pct: Math.floor(pct / 5) * 5, montant: montant, attente: attente,
       complet: pts >= c.seuil_points,
       reste: pts >= c.seuil_points ? 0 : Math.ceil((c.seuil_points - pts) * parPoint / 5) * 5,
       feu: pts >= c.seuil_points ? 'vert' : pct >= 50 ? 'jaune' : 'rouge',
       cartons: nbCartons(unites, c.poids_max),
-      lourd: nbCartons(unites, c.poids_max) > (c.cartons_max || 1)  // 1 colis de 10 kg (31/10/2026)
+      lourd: nbCartons(unites, c.poids_max) > (c.cartons_max || 1),           // commande unique : 1 colis de 10 kg (31/10/2026)
+      lourdGroupe: nbCartons(unites, c.poids_max) > CARTONS_MAX_GROUPE        // carton groupé : 5 colis par participation (serveur)
     };
   }
   /* La commande peut partir en plusieurs cartons de poids_max kg (le 1er est compris dans les prix, les suivants
@@ -410,33 +415,315 @@
   function kgTexte(x) { return x.toLocaleString('fr-FR', { maximumFractionDigits: x < 10 ? 2 : 1 }); }
   function blocCarton(ci) {
     var c = ci.c;
-    var msg = ci.lourd
+    /* trop lourde pour la commande unique (1 colis) mais pas pour le carton groupé (5 colis) : on propose la bascule */
+    var versGroupe = ci.lourd && !ci.lourdGroupe && groupeActif();
+    var msg = versGroupe
+      ? '⚠️ Votre commande pèse environ <strong>' + kgTexte(ci.kg) + ' kg</strong> : trop lourde pour la commande unique (un seul colis de ' + c.poids_max + ' kg). Elle peut partir par le <strong>carton groupé</strong>, sans minimum.'
+      : ci.lourd
       ? '⚠️ Votre commande pèse environ <strong>' + kgTexte(ci.kg) + ' kg</strong> : le ' + esc(c.nom) + ' part en un seul colis de ' + c.poids_max + ' kg au plus. Retirez des articles lourds, ou envoyez la commande par le formulaire : nous vous proposons un devis.'
       : ci.complet
       ? '✅ <strong>Carton complet : il peut partir !</strong> Livraison ' + esc(c.delai) + '.'
       : 'Encore <strong>' + eur(ci.reste).replace(',00', '') + '</strong> d’articles Holex pour déclencher l’envoi du carton (ce montant dépend des articles choisis). Les articles Holex partent ensemble, dès que le carton est complet.';
-    return '<div class="q-carton q-feu-' + ci.feu + (ci.lourd ? ' q-carton-lourd' : '') + '" role="status">'
+    return '<div class="q-carton q-feu-' + (ci.lourd ? 'rouge q-carton-lourd' : ci.feu) + '" role="status">'
       + '<div class="q-carton-tete"><span class="q-feu" aria-hidden="true"></span><strong>📦 ' + esc(c.nom) + '</strong>'
-      + '<span class="q-carton-pct">' + (ci.complet ? 'prêt' : ci.feu === 'jaune' ? 'presque' : 'à compléter') + '</span></div>'
+      + '<span class="q-carton-pct">' + (ci.lourd ? 'trop lourd' : ci.complet ? 'prêt' : ci.feu === 'jaune' ? 'presque' : 'à compléter') + '</span></div>'
       + '<div class="q-jauge" aria-hidden="true"><span style="width:' + ci.pct + '%"></span></div>'
       + '<p class="q-carton-msg">' + msg + '</p>'
       + '<div class="q-carton-poids"><span>⚖️ Poids : ' + poidsTexte(ci) + '</span></div>'
+      + (versGroupe ? '<button type="button" class="q-pay q-pay-alt" data-mode-holex="groupe">👥 Passer au carton groupé<span class="q-pay-sub">sans minimum · aucune carte demandée maintenant</span></button>' : '')
       + '</div>';
   }
-  /* repère permanent : pastille du panier + bandeau de l'onglet Holex, mis à jour à chaque ajout */
+  /* ---------------- carton groupé (commande groupée Holex, functions/groupe.js, v3) ----------------
+     Le client connecté (email confirmé) met ses articles Holex dans le carton en cours : c'est une INTENTION, sans carte,
+     sans empreinte ni prélèvement, annulable à tout moment avant de payer. Quand EGREENCITY'S fait partir le carton,
+     chacun reçoit par email un lien de paiement (72 h au moins pour régler). Prix figés à l'inscription : une baisse est
+     répercutée, une hausse est soumise à l'accord du client. Le montant affiché est envoyé au serveur : s'il a changé
+     (prix republiés, offre épuisée), le client le reconfirme. La jauge publique ne donne que total, objectif (1 700 €),
+     nombre de participants et poids : le carton peut partir avant l'objectif.
+     Compte en « paiement immédiat » (2 paiements non reçus) : le serveur répond 409 « paiement_immediat » ; le client
+     accepte de payer tout de suite (30 min) avant que rien ne soit créé (accepte_immediat).
+     La commande unique reste le Carton Atelier ci-dessus (minimum ≈ carton.minimum_affiche, ~940 €, payée tout de suite). */
+  var CLE_COORD = 'egc_quinc_coord';
+  /* = functions/groupe.js (LIMITE_KG, REGLAGES_DEFAUT.objectif ; delai_paiement_h : 72 h AU MOINS, borne des réglages) */
+  var LIMITE_KG_GROUPE = 50, OBJECTIF_GROUPE = 1700, DELAI_PAIEMENT_H = 72, CARTONS_MAX_GROUPE = 5; // CARTONS_MAX_PARTICIPATION
+  var GROUPE_SMS = false; // = SMS_ACTIF de functions/groupe.js (emails seuls au lancement, 31/10/2026)
+  var AVERTIR_GROUPE = [['email', 'Email'], ['sms', 'Email + SMS'], ['aucun', 'Aucun']].filter(function (x) { return GROUPE_SMS || x[0] !== 'sms'; });
+  /* batterie lithium vendue seule (refusée au transport aérien) : même règle que functions/panier.js (batterieSeule) */
+  var BATT_DEBUT = /^(batterie|batteries|accu|accus)\b/i, BATT_KIT = /^(kit|pack|set|lot)\b/i, BATT_MOT = /\b(batterie|batteries|accu|accus)\b/i;
+  var BATT_MACHINE = /\b(perceuse|visseuse|perforateur|meuleuse|scie|ponceuse|cl[ée] [àa] chocs?|boulonneuse|d[ée]fonceuse|rabot|marteau|burineur|lampe|projecteur|souffleur|tondeuse|taille-haies?|d[ée]broussailleuse|tron[çc]onneuse|aspirateur|radio|agrafeuse|cloueur|riveteuse|pistolet|polisseuse|multi-?outils?|outils?|malaxeur|cisaille|d[ée]capeur|niveau laser|laser)\b/i;
+  function batterieSeule(nom) {
+    nom = String(nom || '').trim();
+    return BATT_DEBUT.test(nom) || (BATT_KIT.test(nom) && BATT_MOT.test(nom) && !BATT_MACHINE.test(nom));
+  }
+  function groupeActif() { return !!(etat.paiement && etat.paiement.groupe && window.firebase && firebase.apps && firebase.apps.length); }
+  /* onglet par défaut : commande unique seulement si elle peut partir (carton complet ET un seul colis de 10 kg), sinon carton groupé */
+  function modeHolex(ci) { return !groupeActif() ? 'unique' : (etat.modeHolex || (ci.complet && !ci.lourd ? 'unique' : 'groupe')); }
+  /* carton en cours (lecture publique : numero, statut, total, objectif, nb, poids — aucune donnée client), relu au plus
+     une fois par minute. etat.groupe : undefined = pas encore lu ou lecture en échec (état inconnu), null = aucun carton ouvert */
+  function chargerGroupe(force) {
+    if (!groupeActif() || (!force && etat.groupeLu && Date.now() - etat.groupeLu < 60000)) return;
+    etat.groupeLu = Date.now();
+    var db = firebase.firestore();
+    db.collection('cartons_groupes').doc('_courant').get()
+      .then(function (s) { var id = s.exists && s.data().carton; return id ? db.collection('cartons_groupes').doc(id).get() : null; })
+      .then(function (d) { var g = d && d.exists ? d.data() : null; etat.groupe = g && g.statut === 'ouvert' ? g : null; })
+      .catch(function () { etat.groupe = undefined; etat.groupeLu = 0; })  /* relu à la prochaine ouverture du panier */
+      .then(function () { if ($('q-tiroir').classList.contains('ouvert')) rendrePanier(); });
+  }
+  function lignesHolex() { return etat.panier.filter(function (l) { var a = article(l.ref); return a && a.pc && !l.pack; }); }
+  function blocChoix(ci) {
+    var m = modeHolex(ci);
+    return '<div class="q-mode" role="tablist" aria-label="Envoi de vos articles Holex">'
+      + '<button type="button" role="tab" data-mode-holex="groupe" aria-selected="' + (m === 'groupe') + '">👥 Carton groupé<span>sans minimum</span></button>'
+      + '<button type="button" role="tab" data-mode-holex="unique" aria-selected="' + (m === 'unique') + '">📦 Commande unique<span>dès ' + eur(cartonConfig().minimum_affiche || 940).replace(',00', '') + '</span></button></div>'
+      + (m === 'groupe' ? blocGroupe(ci) : blocCarton(ci));
+  }
+  /* disponibilité à confirmer (ni disponible, ni stock faible) : refusée par le carton groupé comme par la commande unique */
+  function aConfirmer(ref) { var st = statutDe(ref); return !(st === 'disponible' || st === 'faible'); }
+  /* motif pour lequel une ligne Holex ne peut pas partir dans le carton groupé (le serveur la refuserait), '' sinon */
+  function motifHorsGroupe(l) {
+    var a = article(l.ref);
+    if (a && batterieSeule(a.nom)) return 'batterie sans machine : interdite au transport aérien';
+    if (aConfirmer(l.ref)) return 'disponibilité à confirmer';
+    if (l.q > QTE_MAX_CB) return 'au plus ' + QTE_MAX_CB + ' exemplaires';
+    return '';
+  }
+  function lignesNonEligibles() { return lignesHolex().filter(function (l) { return !!motifHorsGroupe(l); }); }
+  /* la commande unique est-elle une solution pour les articles refusés par le carton groupé ? Seulement pour une quantité
+     trop forte (son formulaire l'accepte) et dans son colis de 10 kg : disponibilité à confirmer et batterie seule y sont
+     refusées aussi (« demander » : nous vérifions la disponibilité) */
+  function uniqueSolution(ci) {
+    return !ci.lourd && lignesNonEligibles().every(function (l) { var a = article(l.ref); return !(a && batterieSeule(a.nom)) && !aConfirmer(l.ref); });
+  }
+  function saisieGroupe(id, defaut) { return etat.saisieGroupe && etat.saisieGroupe[id] !== undefined ? etat.saisieGroupe[id] : defaut; }
+  /* le carton groupé peut-il prendre TOUS les articles Holex du panier ? (sinon : commande unique, demande ou devis) */
+  function groupePossible(ci) { return !ci.lourdGroupe && !lignesNonEligibles().length; }
+  function blocGroupe(ci) {
+    /* même règle que le serveur (rejoindre) : aucun carton ouvert -> nouveau carton ; carton en cours qui dépasserait
+       50 kg avec cette commande -> carton précédent encore ouvert s'il a la place, sinon nouveau carton (on ne sait pas
+       lequel : pas de jauge) ; carton pas encore lu ou illisible (inconnu) : texte neutre, sans jauge */
+    var g = etat.groupe, inconnu = g === undefined, lourdCourant = !!g && (Number(g.poids) || 0) + ci.kg > LIMITE_KG_GROUPE;
+    var nouveau = g === null, sansJauge = inconnu || lourdCourant;
+    var objectif = (g && Number(g.objectif)) || OBJECTIF_GROUPE;
+    var total = g && !lourdCourant ? (Number(g.total) || 0) : 0, apres = total + ci.montant;
+    var pct = Math.min(100, Math.round(total / objectif * 100)), pctApres = Math.min(100, Math.round(apres / objectif * 100));
+    var aRegler = ci.montant + (forfaitOffert(ci.montant) ? 0 : etat.catalogue.forfait_expedition);
+    etat.groupeMontant = Math.round(aRegler * 100) / 100;
+    var u = window.EGCQCompte && window.EGCQCompte.utilisateur();
+    var coord = {};
+    try { if (u) coord = JSON.parse(localStorage.getItem(CLE_COORD + '_' + u.uid) || '{}') || {}; } catch (e) {}
+    var obj = eur(objectif).replace(',00', ''), repere = 'objectif ' + obj + ' — le carton peut partir avant';
+    var vos = 'vos articles (<strong>' + eur(ci.montant) + '</strong>)';
+    var nb = g && !lourdCourant ? Math.floor(Number(g.nb) || 0) : 0;
+    var h = '<div class="q-carton q-groupe-carton" role="status">'
+      + '<div class="q-carton-tete"><strong>👥 Carton groupé</strong><span class="q-carton-pct">'
+      + (sansJauge || nouveau ? 'objectif ' + obj : eur(total).replace(',00', '') + ' / objectif ' + obj) + '</span></div>'
+      + (sansJauge ? '' : '<div class="q-jauge q-jauge-groupe" aria-hidden="true"><span style="width:' + pct + '%"></span><span class="q-jauge-vous" style="width:' + (pctApres - pct) + '%"></span></div>')
+      + '<p class="q-carton-msg">' + (inconnu
+        ? 'Avec ' + vos + ', vous rejoignez le carton en cours : ' + repere + '.'
+        : lourdCourant
+        ? 'Le carton en cours atteindrait sa limite de ' + LIMITE_KG_GROUPE + ' kg : ' + vos + ' rejoignent un carton précédent encore ouvert s’il a la place, sinon ils <strong>ouvrent un nouveau carton</strong> (' + repere + ').'
+        : nouveau
+        ? 'Avec ' + vos + ', vous ouvrez un nouveau carton : ' + repere + '.'
+        : 'Avec ' + vos + ' : <strong>' + eur(apres).replace(',00', '') + '</strong> / ' + repere + '.'
+          + (nb ? ' Déjà ' + nb + ' participation' + (nb > 1 ? 's' : '') + '.' : ''))
+      + '</p><p class="q-groupe-garantie">✅ <strong>Aucune carte demandée maintenant.</strong> Vous recevez un lien de paiement (au moins ' + DELAI_PAIEMENT_H
+      + ' h pour régler) quand le carton part. Annulation libre jusqu’au paiement. Livraison ' + esc(cartonConfig().delai) + '.</p>';
+    /* articles qui ne peuvent pas partir dans le carton groupé : on le dit AVANT la saisie, avec « retirer », « demander »
+       et, seulement si elle peut les prendre (uniqueSolution), la bascule en commande unique (jamais un renvoi vers un
+       formulaire désactivé). Disponibilité à confirmer : « demander », nous la vérifions */
+    var unique = '<button type="button" class="q-pay q-pay-alt" data-mode-holex="unique">📦 Passer en commande unique<span class="q-pay-sub">dès '
+      + eur(cartonConfig().minimum_affiche || 940).replace(',00', '') + ' d’articles Holex, payée tout de suite</span></button>';
+    var exclus = lignesNonEligibles();
+    if (exclus.length) {
+      var verifier = exclus.some(function (l) { return aConfirmer(l.ref); }), parUnique = uniqueSolution(ci);
+      return h + '<div class="q-groupe-exclus"><p><strong>Ces articles ne peuvent pas partir dans le carton groupé</strong> :</p><ul>'
+        + exclus.map(function (l) { var a = article(l.ref); return '<li>' + esc(a ? a.nom : l.ref) + ' <em>(' + esc(motifHorsGroupe(l)) + ')</em> <button type="button" class="q-lien-btn" data-suppr="' + esc(l.ref) + '">retirer</button>'
+          + '<a class="q-lien-btn" href="' + urlDemande(l.ref) + '">demander</a></li>'; }).join('')
+        + '</ul><p>Retirez-les pour rejoindre le carton'
+        + (verifier ? ', ou cliquez sur « demander » : nous vérifions leur disponibilité et vous confirmons délai et prix' : ', ou faites-en la demande (nous vous confirmons délai et prix)')
+        + (parUnique ? ', ou passez en commande unique' : '') + '.</p></div>' + (parUnique ? unique : '') + '</div>';
+    }
+    if (ci.lourdGroupe) {  /* = serveur (409 « cartons ») : la limite est le nombre de colis, pas le poids total ; ni jauge ni « vous rejoignez » */
+      return '<div class="q-carton q-groupe-carton" role="status"><div class="q-carton-tete"><strong>👥 Carton groupé</strong><span class="q-carton-pct">objectif ' + obj + '</span></div>'
+        + '<p class="q-carton-note">⚠️ Vos articles Holex ne se répartissent pas en ' + CARTONS_MAX_GROUPE + ' colis de ' + cartonConfig().poids_max
+        + ' kg (il en faudrait ' + ci.cartons + ') : c’est la limite du carton groupé. Retirez des articles lourds, ou envoyez la commande par le formulaire ci-dessous : nous vous proposons un devis.</p></div>';
+    }
+    if (!u) return h + '<a class="q-pay" href="/pages/compte.html">🔑 Se connecter pour rejoindre le carton groupé</a><p class="q-groupe-garantie">Votre panier est gardé : revenez ici une fois connecté.</p></div>';
+    /* le lien de paiement part par email : adresse confirmée obligatoire (le serveur refuse sinon) */
+    if (u.emailVerified === false) {
+      return h + '<p class="q-carton-note">📧 Confirmez d’abord votre adresse email (lien reçu à la création de votre compte) : c’est par email que vous recevrez le lien de paiement.</p>'
+        + '<button type="button" class="q-pay q-pay-alt" data-groupe-verifier="1">✅ J’ai confirmé mon adresse email</button>'
+        + '<p class="q-groupe-garantie">Lien non reçu ? <a href="/pages/compte.html">Renvoyez-le depuis votre espace client</a> (pensez à vos courriers indésirables).</p></div>';
+    }
+    var avertir = saisieGroupe('qg-avertir', coord.avertir || 'email');
+    return h + '<div class="q-groupe-form">'
+      + '<input id="qg-nom" autocomplete="name" placeholder="Nom et prénom" value="' + esc(saisieGroupe('qg-nom', coord.nom || '')) + '">'
+      + '<input id="qg-tel" type="tel" autocomplete="tel" placeholder="' + (GROUPE_SMS ? 'Téléphone (mobile pour les SMS de paiement)' : 'Téléphone (pour la livraison)') + '" value="' + esc(saisieGroupe('qg-tel', coord.tel || '')) + '">'
+      + '<textarea id="qg-adresse" rows="2" autocomplete="street-address" placeholder="Adresse de livraison en Guyane, avec le code postal (973…)">' + esc(saisieGroupe('qg-adresse', coord.adresse || '')) + '</textarea>'
+      + '<fieldset class="q-groupe-avertir"><legend>Être informé de l’avancement du carton</legend>'
+      + AVERTIR_GROUPE.map(function (x) {
+        return '<label><input type="radio" name="qg-avertir" value="' + x[0] + '"' + (avertir === x[0] ? ' checked' : '') + '> ' + x[1] + '</label>';
+      }).join('')
+      + '<span class="q-groupe-aide">' + (GROUPE_SMS ? 'L’avancement arrive par email. Le lien de paiement et les reçus partent toujours par email ; avec « Email + SMS », le lien de paiement, les rappels et les reçus arrivent aussi par SMS (numéro mobile obligatoire).' : 'L’avancement arrive par email. Le lien de paiement et les reçus partent toujours par email.') + ' Modifiable dans votre espace client.</span></fieldset>'
+      + '<label class="q-groupe-cgv"><input type="checkbox" id="qg-cgv"' + (saisieGroupe('qg-cgv', false) ? ' checked' : '') + '> <span>J’accepte les <a href="/pages/legal/cgv-quincaillerie.html#commande-groupee" target="_blank" rel="noopener">conditions de la commande groupée</a> : '
+      + 'intention sans engagement, ' + eur(aRegler) + ' à régler uniquement quand le carton part, par le lien de paiement.</span></label>'
+      + '<button type="button" class="q-pay" data-groupe-rejoindre="1">👥 Mettre mes articles dans le carton groupé — ' + eur(aRegler)
+      + '<span class="q-pay-sub">aucune carte demandée maintenant · ' + (forfaitOffert(ci.montant) ? 'forfait d’expédition offert' : 'forfait d’expédition compris') + '</span></button>'
+      + '</div></div>';
+  }
+  /* message flottant (quelques secondes) */
+  function toastGroupe(texte) {
+    var bandeau = document.createElement('div');
+    bandeau.setAttribute('role', 'status');
+    bandeau.style.cssText = 'position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#17631a;color:#fff;padding:.7rem 1.3rem;border-radius:16px;font-weight:700;font-size:.85rem;z-index:99999;box-shadow:0 10px 28px rgba(0,0,0,.35);max-width:92vw;text-align:center;';
+    bandeau.textContent = texte;
+    document.body.appendChild(bandeau);
+    setTimeout(function () { bandeau.remove(); }, 10000);
+  }
+  /* intention enregistrée : les articles Holex sont dans le carton groupé, ils sortent du panier. Compte en « paiement
+     immédiat » (2 paiements non reçus) : la participation se règle tout de suite (30 min), la page de paiement s'ouvre */
+  function inscritGroupe(j, lignes) {
+    var refs = lignes.map(function (l) { return l.ref; });
+    etat.panier = etat.panier.filter(function (l) { return l.pack || refs.indexOf(l.ref) < 0; });
+    sauver(); majPastille(); rendre(); rendrePanier(); chargerGroupe(true);
+    if (j.paiement_immediat) {
+      alert('Vos articles sont dans le carton groupé' + (j.carton ? ' ' + j.carton : '') + '.\n\n'
+        + 'Pour ce compte, la participation se règle dès l’inscription : vous avez 30 minutes pour payer ' + eur(Number(j.total) || 0) + '. La page de paiement sécurisée va s’ouvrir.');
+      location.href = j.url && /^https:\/\//.test(j.url) ? j.url : '/pages/compte.html?payer=' + encodeURIComponent(j.participation);
+      return;
+    }
+    toastGroupe('✅ Vos articles sont dans le carton groupé' + (j.carton ? ' ' + j.carton : '') + ' (' + eur(Number(j.total) || 0) + '). Aucune carte demandée : '
+      + 'vous recevrez le lien de paiement par email quand le carton part. Suivi et annulation dans votre espace client.');
+  }
+  /* doublon : réponse 409 « deja » si le même panier est déjà en cours ; le client confirme (confirmer_doublon) pour en ajouter un second.
+     Email confirmé depuis l'ouverture de la page : le jeton est rafraîchi une fois (rafraichi) pour que le serveur le voie.
+     Compte en « paiement immédiat » : 409 « paiement_immediat », le client confirme (immediat) qu'il paie dans les 30 min */
+  function rejoindreGroupe(bouton, montant, doublon, rafraichi, immediat) {
+    var nom = $('qg-nom').value.trim(), tel = $('qg-tel').value.trim(), adr = $('qg-adresse').value.trim();
+    if (nom.length < 2 || tel.replace(/\D/g, '').length < 9 || adr.length < 10) { alert('Indiquez votre nom, votre téléphone et votre adresse de livraison.'); return; }
+    if (!/\b973\d{2}\b/.test(adr)) { alert('Indiquez votre adresse de livraison en Guyane avec son code postal (973…) : le carton groupé livre en Guyane uniquement.'); return; }
+    if (!$('qg-cgv').checked) { alert('Merci d’accepter les conditions de la commande groupée.'); return; }
+    var choix = document.querySelector('input[name="qg-avertir"]:checked'), avertir = choix ? choix.value : 'email';
+    var u = window.EGCQCompte && window.EGCQCompte.utilisateur();
+    if (!u) { location.href = '/pages/compte.html'; return; }
+    try { localStorage.setItem(CLE_COORD + '_' + u.uid, JSON.stringify({ nom: nom, tel: tel, adresse: adr, avertir: avertir })); } catch (e) {}
+    var lignes = lignesHolex();
+    montant = typeof montant === 'number' ? montant : etat.groupeMontant;
+    bouton.disabled = true; bouton.classList.add('q-verif');
+    var corps = { action: 'rejoindre', panier: lignes.map(function (l) { return { ref: l.ref, q: l.q }; }), nom: nom, telephone: tel, adresse: adr,
+      conditions: true, montant: montant, avertir: avertir };
+    if (doublon) corps.confirmer_doublon = true;
+    if (immediat) corps.accepte_immediat = true;
+    /* nouvel envoi après confirmation : sa promesse est rendue, le bouton reste inactif jusqu'à la fin */
+    function relancer(m, d, r, im) { return rejoindreGroupe(bouton, m, d, r || rafraichi, im || immediat); }
+    return u.getIdToken(!!rafraichi).then(function (jeton) {
+      return fetch(etat.paiement.groupe, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + jeton },
+        body: JSON.stringify(corps)
+      });
+    }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { statut: r.status, j: j || {} }; }); })
+      .then(function (x) {
+        var e = x.j.erreur;
+        if (x.statut === 200 && x.j.participation) { inscritGroupe(x.j, lignes); return; }
+        if (x.statut === 409 && e === 'prix_change') {
+          /* prix republiés ou offre de lancement épuisée : le client valide le montant exact */
+          if (confirm('Le montant de votre participation a été mis à jour : ' + eur(Number(x.j.total) || 0)
+            + (x.j.forfait > 0 ? ' (dont ' + eur(Number(x.j.forfait)) + ' de forfait d’expédition)' : ' (forfait d’expédition offert)')
+            + '.\nMettre vos articles dans le carton groupé pour ' + eur(Number(x.j.total) || 0) + ' ?' + (immediat ? '' : ' (rien n’est à payer maintenant)'))) return relancer(x.j.total, doublon);
+          return;
+        }
+        if (x.statut === 409 && e === 'paiement_immediat') {
+          /* 2 paiements non reçus : la participation se paie tout de suite ; rien n'est créé sans l'accord du client */
+          if (confirm('Pour votre compte, la participation au carton groupé se règle dès l’inscription (deux paiements précédents n’ont pas été reçus).\n\n'
+            + 'Vous aurez ' + (Number(x.j.minutes) || 30) + ' minutes pour payer ' + eur(Number(x.j.total) || montant) + ' par carte, sur la page de paiement sécurisée qui va s’ouvrir.\n'
+            + 'Continuer ?')) return relancer(montant, doublon, false, true);
+          return;
+        }
+        if (x.statut === 409 && e === 'deja' && x.j.statut === 'a_payer' && x.j.participation) {
+          /* même panier déjà en attente de paiement : on propose de le régler plutôt que d'en créer un second */
+          if (confirm('Ces mêmes articles sont déjà dans le carton groupé et attendent votre paiement.\n\nOuvrir le paiement de cette participation ?\n(Annuler = en ajouter une deuxième participation)')) {
+            location.href = '/pages/compte.html?payer=' + encodeURIComponent(x.j.participation);
+            return;
+          }
+          if (confirm('En ajouter une deuxième participation ?')) return relancer(montant, true);
+          return;
+        }
+        if (x.statut === 409 && e === 'deja') {
+          /* même panier déjà en cours (en attente du départ, à reconfirmer ou à payer) */
+          if (confirm('Ces mêmes articles sont déjà dans le carton groupé (participation ' + ({ a_payer: 'à payer', a_reconfirmer: 'à reconfirmer' }[x.j.statut] || 'en attente du départ') + ').\n'
+            + 'En ajouter une deuxième participation ?')) return relancer(montant, true);
+          alert('Votre participation est bien enregistrée : suivez-la dans votre espace client.');
+          return;
+        }
+        if (x.statut === 409 && e === 'panier') {
+          alert('Certains articles ne peuvent pas partir dans le carton groupé :\n' + (x.j.refus || []).map(function (r) { return '• ' + (r.nom || r.ref) + ' : ' + r.motif; }).join('\n')
+            + '\nRetirez-les du panier, ou faites-en la demande depuis leur fiche : nous vérifions leur disponibilité et vous confirmons délai et prix.');
+          return;
+        }
+        if (x.statut === 409 && e === 'cartons') {
+          alert('Vos articles Holex ne se répartissent pas en ' + CARTONS_MAX_GROUPE + ' colis de ' + cartonConfig().poids_max + ' kg, la limite du carton groupé : '
+            + 'retirez des articles lourds, ou envoyez la commande par le formulaire du panier, nous vous proposons un devis.');
+          return;
+        }
+        if (x.statut === 429) {
+          alert('Vous avez déjà 5 participations en cours au carton groupé (en attente du départ, à payer, ou payées en attente de la commande du carton) : c’est le maximum par compte.'
+            + '\nRetrouvez-les dans votre espace client : annulez-en une, ou attendez la commande du carton.');
+          return;
+        }
+        if (x.statut === 403 && e === 'email_non_verifie') {
+          /* email confirmé entre-temps ? on relit le compte, puis un seul nouvel essai avec un jeton neuf */
+          return (rafraichi ? Promise.resolve() : u.reload()).then(function () {
+            if (!rafraichi && u.emailVerified) return relancer(montant, doublon, true);
+            alert('Confirmez d’abord votre adresse email (lien reçu à la création de votre compte, pensez aux courriers indésirables) : c’est par email que vous recevrez le lien de paiement.\nVous pouvez renvoyer le lien depuis votre espace client.');
+            rendrePanier();
+          });
+        }
+        if (x.statut === 400 && e === 'telephone_sms') { alert('Les SMS ne partent que vers un numéro mobile (0694… en Guyane, 06 ou 07 en métropole). Indiquez un mobile, ou choisissez « Email ».'); return; }
+        if (x.statut === 400 && e === 'coordonnees') { alert('Indiquez votre nom, votre téléphone et votre adresse de livraison.'); return; }
+        if (x.statut === 400 && e === 'adresse_guyane') { alert('Indiquez votre adresse de livraison en Guyane avec son code postal (973…).'); return; }
+        if (x.statut === 400 && e === 'conditions') { alert('Merci d’accepter les conditions de la commande groupée.'); return; }
+        if (x.statut === 400) { alert('Votre panier ne peut pas partir tel quel dans le carton groupé (50 lignes au plus, articles Holex uniquement). Vérifiez-le puis réessayez.'); return; }
+        if (x.statut === 401) { location.href = '/pages/compte.html'; return; }
+        throw 0;  /* 503 « donnees », 500 « serveur », réseau… */
+      })
+      .catch(function () { alert('Le carton groupé est momentanément indisponible. Réessayez dans un instant, ou choisissez la commande unique.'); })
+      .then(function () { bouton.disabled = false; bouton.classList.remove('q-verif'); });
+  }
+  /* « J'ai confirmé mon adresse email » : compte relu (et jeton rafraîchi) puis panier redessiné */
+  function verifierEmailGroupe(bouton) {
+    var u = window.EGCQCompte && window.EGCQCompte.utilisateur();
+    if (!u) { rendrePanier(); return; }
+    bouton.disabled = true;
+    u.reload().then(function () { return u.emailVerified ? u.getIdToken(true) : null; })
+      .then(function () {
+        if (!u.emailVerified) alert('Votre adresse email n’est pas encore confirmée : ouvrez le lien reçu par email (pensez aux courriers indésirables), puis réessayez.');
+        rendrePanier();
+      }, function () { bouton.disabled = false; alert('Vérification impossible pour le moment : réessayez dans un instant.'); });
+  }
+  /* repère permanent : pastille du panier + bandeau de l'onglet Holex, mis à jour à chaque ajout.
+     Carton groupé choisi : sans minimum, donc pas de voyant ni de « encore X € pour déclencher l'envoi » (commande unique seulement) */
   function majCartonMini() {
-    var ci = cartonInfo(), b = $('q-ouvrir-panier');
+    var ci = cartonInfo(), b = $('q-ouvrir-panier'), groupe = groupeActif() && modeHolex(ci) === 'groupe';
+    var feu = ci.lourd ? 'rouge' : ci.feu;  /* commande unique : un seul colis de 10 kg */
     if (b) {
       var f = $('q-feu-mini');
       if (!f) { f = document.createElement('span'); f.id = 'q-feu-mini'; f.className = 'q-feu'; b.appendChild(f); }
-      f.className = 'q-feu q-feu-' + ci.feu;
-      f.style.display = ci.n ? '' : 'none';
-      f.title = ci.n ? (ci.complet ? 'Carton Atelier complet' : 'Carton Atelier : encore ' + eur(ci.reste)) : '';
+      f.className = 'q-feu q-feu-' + feu;
+      f.style.display = ci.n && !groupe ? '' : 'none';
+      f.title = ci.n && !groupe ? (ci.lourd ? 'Carton Atelier : trop lourd pour un colis de ' + ci.c.poids_max + ' kg' : ci.complet ? 'Carton Atelier complet' : 'Carton Atelier : encore ' + eur(ci.reste)) : '';
     }
     var z = $('q-carton-direct');
-    if (z) z.innerHTML = ci.n
-      ? '<span class="q-feu q-feu-' + ci.feu + '"></span> Votre carton : ' + (ci.complet ? '<strong>complet, il peut partir</strong>' : 'encore <strong>' + eur(ci.reste).replace(',00', '') + '</strong> pour déclencher l’envoi') + ' · ' + poidsTexte(ci)
-      : '<span class="q-feu q-feu-rouge"></span> Votre carton est vide : ajoutez des articles Holex, le voyant passe au vert quand il peut partir.';
+    if (z) z.innerHTML = !ci.n
+      ? (groupeActif() ? '<span class="q-feu"></span> Aucun article Holex dans votre panier pour l’instant.'
+        : '<span class="q-feu q-feu-rouge"></span> Votre carton est vide : ajoutez des articles Holex, le voyant passe au vert quand il peut partir.')
+      : groupe
+      ? '👥 Vos articles Holex : <strong>' + eur(ci.montant).replace(',00', '') + '</strong> · ' + poidsTexte(ci) + ' — '
+        + (ci.lourdGroupe ? 'trop lourds pour partir en ligne : devis par le formulaire du panier'
+          : 'carton groupé sans minimum' + (ci.lourd ? '' : ci.complet ? ', ou commande unique' : ', ou commande unique dès '
+            + eur(ci.c.minimum_affiche || 940).replace(',00', '') + ' (encore ' + eur(ci.reste).replace(',00', '') + ')'))
+      : '<span class="q-feu q-feu-' + feu + '"></span> Votre carton : ' + (ci.lourd ? '<strong>trop lourd</strong> pour un seul colis de ' + ci.c.poids_max + ' kg'
+        : ci.complet ? '<strong>complet, il peut partir</strong>' : 'encore <strong>' + eur(ci.reste).replace(',00', '') + '</strong> pour déclencher l’envoi') + ' · ' + poidsTexte(ci);
   }
   function majPastille() {
     majCartonMini();
@@ -458,16 +745,23 @@
     var l = etat.panier.find(function (x) { return x.pack === id; });
     return l && typeof l.packPrix === 'number' ? l.packPrix : null;
   }
+  /* commande groupée : les articles Holex partent (et sont réglés) par le carton groupé, hors du total du panier ;
+     carton groupé impossible (article exclu, trop lourd) : ils restent dans le total (commande unique, demande ou devis) */
+  function enModeGroupe() { var ci = cartonInfo(); return groupeActif() && ci.n > 0 && modeHolex(ci) === 'groupe' && groupePossible(ci); }
+  function filtreHorsGroupe() { var g = enModeGroupe(); return function (l) { var a = article(l.ref); return !(g && a && a.pc && !l.pack); }; }
+  /* lignes réglées en bas du panier (articles connus, hors carton groupé) */
+  function lignesHorsGroupe() { var f = filtreHorsGroupe(); return etat.panier.filter(function (l) { return article(l.ref) && f(l); }); }
   function totalPanier() {
     var vus = {};
-    var t = etat.panier.reduce(function (s, l) {
+    var lignes = etat.panier.filter(filtreHorsGroupe());
+    var t = lignes.reduce(function (s, l) {
       if (l.pack && prixPack(l.pack) !== null) { if (vus[l.pack]) return s; vus[l.pack] = 1; return s + prixPack(l.pack); }
       var a = article(l.ref); return a ? s + a.prix * l.q : s;
     }, 0);
     /* packs pro à prix fixe : prix annoncé « tout compris, livré » = prix final, forfait inclus (seuls au panier) */
-    var inclus = etat.panier.length > 0 && etat.panier.every(function (l) { return l.pack && prixPack(l.pack) !== null; });
-    var offert = !inclus && etat.panier.length > 0 && forfaitOffert(t);
-    var f = etat.panier.length && !offert && !inclus ? etat.catalogue.forfait_expedition : 0;
+    var inclus = lignes.length > 0 && lignes.every(function (l) { return l.pack && prixPack(l.pack) !== null; });
+    var offert = !inclus && lignes.length > 0 && forfaitOffert(t);
+    var f = lignes.length && !offert && !inclus ? etat.catalogue.forfait_expedition : 0;
     return { articles: t, forfait: f, offert: offert, inclus: inclus, total: t + f };
   }
   function rendrePanier() {
@@ -507,23 +801,37 @@
       corps.insertAdjacentHTML('afterbegin', '<div class="q-carton q-feu-rouge" role="status"><p class="q-carton-msg">⏳ Chargement de vos articles Holex… '
         + (etat.holexEchec ? '<button type="button" class="q-reessayer" data-holex-recharger="1">Réessayer</button>' : '') + '</p></div>');
       if (!etat.holexEchec) chargerHolex();
-    } else if (ci.n) corps.insertAdjacentHTML('afterbegin', blocCarton(ci));
+    } else if (ci.n) corps.insertAdjacentHTML('afterbegin', groupeActif() ? blocChoix(ci) : blocCarton(ci));
     if (etat.holexRetires) corps.insertAdjacentHTML('afterbegin', '<p class="q-carton-note" role="status">ℹ️ '
       + (etat.holexRetires > 1 ? etat.holexRetires + ' articles Holex de votre panier ne sont plus proposés : ils ont été retirés.' : 'Un article Holex de votre panier n’est plus proposé : il a été retiré.') + '</p>');
     var g = $('q-groupage');
     if (!g) { g = document.createElement('div'); g.id = 'q-groupage'; $('q-tiroir-pied').insertBefore(g, $('q-tiroir-pied').firstChild); }
     g.innerHTML = messageGroupage();
     /* tant que le Carton Atelier n'est pas complet, la commande ne peut pas partir */
-    var bloque = ci.attente || (ci.n > 0 && !ci.complet);
+    /* articles Holex : commande unique quand le Carton Atelier est complet ; en commande groupée, ils partent par le bouton du carton groupé.
+       Trop lourd (devis) : le formulaire reste ouvert. Trop lourd = pour le mode choisi : 5 colis de 10 kg en carton groupé, 1 en commande unique. */
+    var choixGroupe = ci.n > 0 && modeHolex(ci) === 'groupe', groupe = choixGroupe && groupePossible(ci);
+    var tropLourd = choixGroupe ? ci.lourdGroupe : ci.lourd;
+    /* tout le panier part par le carton groupé : en bas, ni total à 0 €, ni indication de paiement, ni formulaire (messageGroupage le dit) */
+    var seulGroupe = groupe && !lignesHorsGroupe().length;
+    var bloque = ci.attente || (ci.n > 0 && (groupe || (!ci.complet && !tropLourd)));
     if ($('q-envoyer')) $('q-envoyer').disabled = bloque || !!etat.envoiEnCours;
     var nb = $('q-carton-bloque');
     if (!nb && $('q-form')) { nb = document.createElement('p'); nb.id = 'q-carton-bloque'; nb.className = 'q-carton-note'; $('q-form').appendChild(nb); }
-    if (nb) nb.innerHTML = ci.attente ? '⏳ Vos articles Holex se chargent : la commande sera possible dans un instant.' : bloque ? '🔴 Complétez le Carton Atelier (encore ' + eur(ci.reste).replace(',00', '') + ') ou retirez ses articles Holex pour commander le reste.' : '';
+    if (nb) nb.innerHTML = ci.attente ? '⏳ Vos articles Holex se chargent : la commande sera possible dans un instant.'
+      : groupe ? '👥 Vos articles Holex partent par le carton groupé (bouton plus haut) : le total ci-dessus ne les comprend pas. Vos autres articles se commandent ensuite, avec leur propre forfait d’expédition.'
+      : tropLourd && ci.n > 0 ? (!choixGroupe && !ci.lourdGroupe && groupeActif()
+        ? '📦 Commande Holex trop lourde pour la commande unique (un seul colis de ' + ci.c.poids_max + ' kg) : passez au carton groupé (plus haut, sans minimum), ou envoyez-la par ce formulaire, nous vous proposons un devis.'
+        : '📦 Commande Holex trop lourde pour partir en ligne : envoyez-la par ce formulaire, nous vous proposons un devis.')
+      : choixGroupe && bloque ? '👥 Le carton groupé ne peut pas prendre tous vos articles Holex (voir plus haut) : retirez ou demandez les articles signalés' + (uniqueSolution(ci) ? ', ou passez en commande unique' : '') + '.'
+      : bloque ? '🔴 Complétez le Carton Atelier (encore ' + eur(ci.reste).replace(',00', '') + ')' + (groupeActif() ? ', passez au carton groupé (sans minimum),' : '') + ' ou retirez ses articles Holex pour commander le reste.' : '';
     corps.insertAdjacentHTML('beforeend', blocSuggestions());  // zone défilante : ne réduit pas la liste
     var t = totalPanier();
-    $('q-total-articles').textContent = eur(t.articles);
-    $('q-total-forfait').textContent = t.inclus ? 'inclus dans le prix du pack' : t.offert ? 'offert 🎁' : eur(t.forfait);
-    $('q-total').textContent = eur(t.total);
+    $('q-total-articles').textContent = seulGroupe ? '—' : eur(t.articles);
+    $('q-total-forfait').textContent = seulGroupe ? '—' : t.inclus ? 'inclus dans le prix du pack' : t.offert ? 'offert 🎁' : eur(t.forfait);
+    $('q-total').textContent = seulGroupe ? '—' : eur(t.total);
+    ['q-total-articles', 'q-total-forfait', 'q-total'].forEach(function (id) { var r = $(id).parentNode; if (r) r.style.display = seulGroupe ? 'none' : ''; });
+    if ($('q-form-zone')) $('q-form-zone').style.display = seulGroupe ? 'none' : '';
     // paiement CB direct : uniquement UN article, quantité 1, disponible, lien actif
     var cb = $('q-payer-cb');
     var ok = etat.panier.length === 1 && etat.panier[0].q === 1
@@ -540,14 +848,14 @@
       && etat.panier.length <= 50
       && Object.values(etat.panier.reduce(function (m, l) { m[l.ref] = (m[l.ref] || 0) + l.q; return m; }, {})).every(function (q) { return q <= QTE_MAX_CB; })
       /* Carton Atelier : paiement par carte seulement quand le serveur le gère (réglage carton_cb) et carton complet */
-      && !ci.attente && (!ci.n || (etat.paiement.carton_cb && ci.complet && !ci.lourd))
+      && !ci.attente && (!ci.n || (modeHolex(ci) === 'unique' && etat.paiement.carton_cb && ci.complet && !ci.lourd))
       /* prix fixe de pack inconnu du serveur de paiement : ces packs passent par le formulaire */
       && !etat.panier.some(function (l) { return l.pack && typeof l.packPrix === 'number'; });
     if (bp) {
       bp.style.display = okPanier ? '' : 'none';
       bp.textContent = '💳 Payer le panier par carte — ' + eur(t.total);
     }
-    $('q-cb-indice').style.display = (ok || okPanier) ? 'none' : '';
+    $('q-cb-indice').style.display = (ok || okPanier || seulGroupe) ? 'none' : '';
   }
 
   /* ---------------- offre de lancement (assets/data/quincaillerie-offre.json) ----------------
@@ -781,20 +1089,27 @@
     return res;
   }
   function messageGroupage() {
-    var f = etat.catalogue.forfait_expedition;
-    var vusU = {}, unites = etat.panier.reduce(function (s, l) {
+    var f = etat.catalogue.forfait_expedition, groupe = enModeGroupe(), lignes = lignesHorsGroupe();
+    /* carton groupé : ses articles Holex ne comptent ni dans le total ni pour l'offre ; on ne parle que des « autres articles »,
+       envoyés à part (jamais « dans le même colis ») ; sans autre article, rien à régler en bas du panier */
+    if (groupe && !lignes.length) return '<p class="q-groupe">👥 Vos articles Holex partent par le <strong>carton groupé</strong> (plus haut) : rien à payer maintenant.</p>';
+    var vusU = {}, unites = lignes.reduce(function (s, l) {
       if (l.pack) { if (vusU[l.pack]) return s; vusU[l.pack] = 1; return s + 1; }
       return s + l.q;
     }, 0);
     if (totalPanier().inclus) return '<p class="q-groupe q-groupe-ok">✅ Prix fixe du pack : <strong>transport et forfait d’expédition inclus</strong>.</p>';
     if (offreActive()) {
-      var manque = etat.offre.seuil - totalPanier().articles;
+      var manque = etat.offre.seuil - totalPanier().articles;  /* hors carton groupé (totalPanier) */
       return manque > 0
-        ? '<p class="q-groupe">🎁 Plus que <strong>' + eur(manque) + '</strong> d’articles et le forfait d’expédition (' + eur(f) + ') vous est offert — offre de lancement jusqu’au ' + esc(etat.offre.fin_texte) + '.</p>'
-        : '<p class="q-groupe q-groupe-ok">🎁 <strong>Forfait d’expédition offert</strong> sur cette commande — offre de lancement.</p>';
+        ? (groupe
+          ? '<p class="q-groupe">🎁 Vos autres articles : plus que <strong>' + eur(manque) + '</strong> et leur forfait d’expédition (' + eur(f) + ') vous est offert — offre de lancement jusqu’au ' + esc(etat.offre.fin_texte) + '.</p>'
+          : '<p class="q-groupe">🎁 Plus que <strong>' + eur(manque) + '</strong> d’articles et le forfait d’expédition (' + eur(f) + ') vous est offert — offre de lancement jusqu’au ' + esc(etat.offre.fin_texte) + '.</p>')
+        : '<p class="q-groupe q-groupe-ok">🎁 <strong>Forfait d’expédition offert</strong> sur ' + (groupe ? 'vos autres articles' : 'cette commande') + ' — offre de lancement.</p>';
     }
     return unites >= 2
-      ? '<p class="q-groupe q-groupe-ok">✅ Un seul forfait d’expédition pour vos ' + unites + ' articles : <strong>' + eur(f * (unites - 1)) + ' économisés</strong> par rapport à des commandes séparées.</p>'
+      ? '<p class="q-groupe q-groupe-ok">✅ Un seul forfait d’expédition pour vos ' + unites + (groupe ? ' autres' : '') + ' articles : <strong>' + eur(f * (unites - 1)) + ' économisés</strong> par rapport à des commandes séparées.</p>'
+      : groupe
+      ? '<p class="q-groupe">💡 Vos autres articles partent à part, avec un forfait d’expédition (' + eur(f) + ') qui couvre toute leur commande.</p>'
       : '<p class="q-groupe">💡 Le forfait d’expédition (' + eur(f) + ') couvre toute la commande : ajoutez d’autres articles, ils partent dans le même colis sans frais d’envoi en plus.</p>';
   }
   function blocSuggestions() {
@@ -1061,7 +1376,7 @@
     var ci = cartonInfo();
     if (etat.envoiEnCours) return;
     if (ci.attente) { alert('Vos articles Holex se chargent encore : réessayez dans un instant.'); chargerHolex(); return; }
-    if (ci.n && !ci.complet) { alert('Le Carton Atelier n’est pas encore complet : encore ' + eur(ci.reste) + ' d’articles Holex, ou retirez-les pour commander le reste.'); return; }
+    if (ci.n && !ci.complet && !ci.lourd) { alert('Le Carton Atelier n’est pas encore complet : encore ' + eur(ci.reste) + ' d’articles Holex, ou retirez-les pour commander le reste.'); return; }
     var t = totalPanier();
     var vusPack = {};
     var lignes = etat.panier.map(function (l) {
@@ -1108,14 +1423,32 @@
     $('q-dispo').addEventListener('change', function () { etat.dispo = this.checked; etat.visibles = PAR_PAGE; rendre(); });
     $('q-tri').addEventListener('change', function () { etat.tri = this.value; rendre(); });
     $('q-plus').addEventListener('click', function () { etat.visibles += PAR_PAGE; rendre(); });
-    $('q-ouvrir-panier').addEventListener('click', function () { rendrePanier(); $('q-tiroir').classList.add('ouvert'); });
+    $('q-ouvrir-panier').addEventListener('click', function () { rendrePanier(); $('q-tiroir').classList.add('ouvert'); chargerGroupe(); });
+    /* formulaire du carton groupé : la saisie survit aux rendus du panier (ajout d'un article, voyant…) */
+    document.addEventListener('input', function (e) {
+      var c = e.target;
+      etat.saisieGroupe = etat.saisieGroupe || {};
+      if (c.name === 'qg-avertir') { if (c.checked) etat.saisieGroupe['qg-avertir'] = c.value; return; }
+      if (!c.id || c.id.indexOf('qg-') !== 0) return;
+      etat.saisieGroupe[c.id] = c.type === 'checkbox' ? c.checked : c.value;
+    });
+    document.addEventListener('change', function (e) {
+      var c = e.target;
+      if (c.id === 'qg-cgv') { etat.saisieGroupe = etat.saisieGroupe || {}; etat.saisieGroupe[c.id] = c.checked; }
+      if (c.name === 'qg-avertir' && c.checked) { etat.saisieGroupe = etat.saisieGroupe || {}; etat.saisieGroupe['qg-avertir'] = c.value; }
+    });
+    /* connexion ou déconnexion : le carton groupé propose le formulaire ou le lien de connexion */
+    document.addEventListener('egcq-compte', function () { if ($('q-tiroir').classList.contains('ouvert')) rendrePanier(); });
     $('q-fermer-panier').addEventListener('click', function () { $('q-tiroir').classList.remove('ouvert'); });
     $('q-form').addEventListener('submit', envoyerCommande);
     $('q-payer-cb').addEventListener('click', function () { verifierPuisPayer(etat.panier[0].ref); });
     if ($('q-payer-panier')) $('q-payer-panier').addEventListener('click', payerPanier);
     document.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-add],[data-pay],[data-plus],[data-moins],[data-suppr],[data-suppr-pack],[data-holex-recharger]');
+      var t = e.target.closest('[data-add],[data-pay],[data-plus],[data-moins],[data-suppr],[data-suppr-pack],[data-holex-recharger],[data-mode-holex],[data-groupe-rejoindre],[data-groupe-verifier]');
       if (!t) return;
+      if (t.dataset.modeHolex) { etat.modeHolex = t.dataset.modeHolex; rendrePanier(); majCartonMini(); if (t.dataset.modeHolex === 'groupe') chargerGroupe(true); return; }
+      if (t.dataset.groupeRejoindre) { rejoindreGroupe(t); return; }
+      if (t.dataset.groupeVerifier) { verifierEmailGroupe(t); return; }
       if (t.dataset.holexRecharger) { etat.holexEchec = false; chargerHolex(); rendrePanier(); return; }
       if (t.dataset.add) ajouter(t.dataset.add);
       if (t.dataset.pay) verifierPuisPayer(t.dataset.pay);
@@ -1163,6 +1496,7 @@
     charger(); initEvenements(); initVolet(); construireRayons(); afficherOffre(); afficherPromo(); rendre(); rendrePanier();
     traiterRetourPaiement();
     reconcilierPanierCompte();
+    chargerGroupe();
     if (holexUtile()) chargerHolex();
     /* anciens liens #a=REF (modal) : chaque produit a désormais sa page */
     if (location.hash.indexOf('#a=') === 0) {

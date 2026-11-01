@@ -143,6 +143,8 @@
 
   /* ---------------- fiche détaillée (tranches) ---------------------- */
   function cartonNom() { return (etat.holex && etat.holex.carton.nom) || 'Carton Atelier'; }
+  /* carton groupé ouvert (quincaillerie-paiement.json → groupe, même règle que la boutique) : proposé aussi sur la fiche Holex */
+  function groupeActif() { return !!(etat.paiement && etat.paiement.groupe && window.firebase && firebase.apps && firebase.apps.length); }
   function chargerTranche(ref, a) {
     if (a && a.pc && a.fam) {  /* gamme Holex : caractéristiques par famille */
       return fetch('/assets/data/fiches/hx/' + encodeURIComponent(String(a.fam).replace(/[^A-Za-z0-9_-]/g, '_')) + '.json')
@@ -151,7 +153,7 @@
           /* la page statique de la famille (toutes les tailles) est celle que Google indexe */
           var canon = document.querySelector('link[rel="canonical"]');
           if (j._page && canon) canon.setAttribute('href', 'https://egreencitys.com' + j._page);
-          var o = {}; o[ref] = { c: (a.lot > 1 ? ['Vendu par lot de ' + a.lot + ' pièces (prix affiché pour le lot)'] : []).concat(j[ref] || []) }; return o;
+          var o = {}; o[ref] = { c: (a.lot > 1 ? ['Vendu par lot de ' + a.lot + ' pièces (prix affiché pour le lot, soit ' + eur(a.prix / a.lot) + '/pièce)'] : []).concat(j[ref] || []) }; return o;
         })
         .catch(function () { return {}; });
     }
@@ -232,13 +234,17 @@
       +       '<div class="q-inclus">Colis de plus de 30&nbsp;kg ou hors format : nous chiffrons un acheminement adapté (fret), octroi de mer compris</div>'
       +       '<div class="qf-livraison"><strong>Délai confirmé avec le devis</strong> · livré à domicile partout en Guyane</div>'
       :       '<div class="qf-prix">' + eur(a.prix) + '<span class="q-ttc">TTC</span></div>'
+      +       (a.lot > 1 ? '<div class="qf-livraison">Lot de ' + a.lot + ' pièces, soit <strong>' + eur(a.prix / a.lot) + '/pièce</strong></div>' : '')  /* prix affiché = le lot */
       +       '<div class="q-inclus">Octroi de mer &amp; transport vers la Guyane inclus*</div>'
       +       '<div class="qf-livraison"><strong>' + delaiTexte(ref, a) + '</strong> · livré à domicile partout en Guyane</div>')
       +     '<div class="qf-boutons">'
       +     (a.pc
       ?       (statutDe(ref) !== 'introuvable' ? '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>' : '<a class="q-pay" href="' + urlDemande(ref) + '">✉️ Faire une demande</a>')
       +       '<p class="qf-astuce">📦 Cet article part dans le <strong>' + esc(cartonNom()) + '</strong>, avec vos autres articles Holex : commande possible <strong>à partir d’environ '
-      +       eur((etat.holex && etat.holex.carton.minimum_affiche) || 940).replace(',00', '') + ' d’articles Holex</strong>. Le voyant du panier (rouge, jaune, vert) vous indique en direct ce qu’il reste'
+      +       eur((etat.holex && etat.holex.carton.minimum_affiche) || 940).replace(',00', '') + ' d’articles Holex</strong>'
+      +       (groupeActif()
+      ?         ' (le voyant du panier indique ce qu’il reste), ou <strong>sans minimum par le carton groupé</strong> : envoi quand le carton est complet, paiement par lien seulement au départ du carton'
+      :         '. Le voyant du panier (rouge, jaune, vert) vous indique en direct ce qu’il reste')
       +       '.</p>'
       :     a.devis
       ?       '<a class="q-pay" href="' + urlDemande(ref) + '">📦 Demander un devis<span class="q-pay-sub">article de plus de 30 kg ou hors format — réponse sous 24 h ouvrées, suivi dans votre espace client</span></a>'
@@ -308,6 +314,7 @@
           + '<a class="q-lien" href="' + fiche + '"><h3 class="q-nom">' + esc(m.nom) + '</h3></a>'
           + badgeStock(m.ref)
           + '<div class="q-prix">' + eur(m.prix) + '<span class="q-ttc">TTC</span></div>'
+          + (m.lot > 1 ? '<div class="q-poids">Lot de ' + m.lot + ', soit ' + eur(m.prix / m.lot) + '/pièce</div>' : '')
           + '<div class="q-inclus">Octroi &amp; livraison inclus*</div>'
           + '</div></article>';
       }).join('');
@@ -389,9 +396,11 @@
 
   var catalogue = fetch('/assets/data/quincaillerie-catalogue.json').then(function (r) { return r.json(); });
   if (/^HX/.test(ref)) {
-    catalogue = Promise.all([catalogue, fetch('/assets/data/quincaillerie-holex.json').then(function (r) { return r.json(); })])
+    catalogue = Promise.all([catalogue, fetch('/assets/data/quincaillerie-holex.json').then(function (r) { return r.json(); }),
+      fetch('/assets/data/quincaillerie-paiement.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })])
       .then(function (x) {
         etat.holex = x[1];
+        etat.paiement = x[2];  /* carton groupé ouvert ? (groupeActif) */
         x[0].articles = x[0].articles.concat(x[1].articles);
         x[0].categories = x[0].categories.concat(x[1].categories || []);
         return x[0];

@@ -19,21 +19,89 @@
    articles de la quincaillerie (un seul forfait d'expédition). Les prix, le
    stock, la limite de 30 kg et l'offre de lancement sont relus côté serveur
    dans les fichiers publiés du site : rien ne vient du navigateur, sauf les
-   références et quantités. Secret requis : une clé Stripe RESTREINTE
-   (droit « Checkout Sessions : écriture ») :
+   références et quantités. Secret requis : une clé Stripe RESTREINTE :
      firebase functions:secrets:set STRIPE_SECRET_KEY
+
+   groupe / gererCartons / stripeWebhook (carton groupé Holex v3, functions/groupe.js)
+   utilisent la MÊME clé restreinte, qui doit avoir EXACTEMENT ces droits
+   (tableau de bord Stripe > Développeurs > Clés API > clé restreinte) :
+     - Checkout Sessions ....... écriture  (panier, paiement d'une participation : create / expire / retrieve —
+                                            page payée dont le webhook tarde, vérifiée avant un retrait)
+     - PaymentIntents .......... lecture   (remboursement désigné par son PaymentIntent)
+     - Refunds ................. écriture  (remboursement intégral ou partiel : refunds.create, clé d'idempotence fixe)
+     - Promotion codes ......... lecture   (quota de l'offre de lancement : promotionCodes.retrieve)
+   Tout autre droit reste « Aucun » (plus de Customers, SetupIntents, PaymentMethods
+   ni capture manuelle depuis la v3). Sans ces droits : paiement en erreur 500,
+   offre jamais appliquée ; un remboursement décidé est NOTÉ avant l'appel Stripe
+   (remboursements_dus, participations « remboursement ») et rejoué par la tâche
+   planifiée toutes les 10 min jusqu'au succès (visible dans l'administration).
+
+   Emails et SMS du carton groupé (functions/notifier.js, Brevo) : secret
+     firebase functions:secrets:set BREVO_API_KEY
+   À CRÉER AVANT TOUT DÉPLOIEMENT des fonctions : stripeWebhook (paniers et bornes
+   compris), groupe et gererCartons le déclarent, et Firebase refuse de les déployer
+   sans lui. Valeur « - » (un tiret) = mode test : rien n'est envoyé, chaque envoi est
+   journalisé ; remplacer ensuite par la vraie clé Brevo (puis redéployer).
    ========================================================================== */
 const { onRequest } = require('firebase-functions/v2/https');
+const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { defineSecret } = require('firebase-functions/params');
 const admin = require('firebase-admin');
 const Stripe = require('stripe');
 const { creerSessionPanier } = require('./panier');
+const groupe = require('./groupe');
+const { creerNotifier } = require('./notifier');
 
 admin.initializeApp();
 
 const STRIPE_WEBHOOK_SECRET = defineSecret('STRIPE_WEBHOOK_SECRET');
-const STRIPE_SECRET_KEY = defineSecret('STRIPE_SECRET_KEY'); // clé RESTREINTE (Checkout Sessions : écriture)
+const STRIPE_SECRET_KEY = defineSecret('STRIPE_SECRET_KEY'); // clé RESTREINTE (droits exacts : voir l'en-tête)
+const BREVO_API_KEY = defineSecret('BREVO_API_KEY');         // emails et SMS du carton groupé
 const EVENEMENTS = ['checkout.session.completed', 'checkout.session.async_payment_succeeded'];
+const ORIGINES = ['https://egreencitys.com', 'https://www.egreencitys.com'];
+
+/* contexte de la commande groupée : base, Stripe (clé restreinte), horloge, emails / SMS (Brevo ; clé « - » = mode test) */
+function ctxGroupe() {
+  const brevo = String(BREVO_API_KEY.value() || '').trim();
+  return { db: admin.firestore(), FieldValue: admin.firestore.FieldValue, maintenant: Date.now,
+    stripe: new Stripe(STRIPE_SECRET_KEY.value().trim(), { apiVersion: '2024-06-20' }),
+    notifier: creerNotifier({ cle: brevo === '-' ? '' : brevo, fetch }) };
+}
+/* utilisateur Firebase du jeton « Authorization: Bearer … » (null si absent ou invalide) ; groupe.js n'utilise
+   son email que si email_verified est vrai */
+async function utilisateur(req) {
+  const m = String(req.headers.authorization || '').match(/^Bearer (.+)$/);
+  if (!m) return null;
+  try { return await admin.auth().verifyIdToken(m[1]); } catch (e) { return null; }
+}
+
+/* Commande groupée Holex (carton groupé) : rejoindre (intention sans carte), annuler, payer (lien de paiement),
+   reconfirmer (prix en hausse), interet / desinscription (liens des emails, par jeton), preferences, pilotage admin */
+exports.groupe = onRequest(
+  { secrets: [STRIPE_SECRET_KEY, BREVO_API_KEY], region: 'europe-west1', cors: ORIGINES, maxInstances: 5, timeoutSeconds: 300 },
+  async (req, res) => {
+    if (req.method !== 'POST') return res.status(405).json({ erreur: 'methode' });
+    try {
+      const corps = (req.body && typeof req.body === 'object') ? req.body : {};
+      const actions = { rejoindre: groupe.rejoindre, annuler: groupe.annuler, payer: groupe.payer, reconfirmer: groupe.reconfirmer,
+        interet: groupe.interet, desinscription: groupe.desinscription, preferences: groupe.preferences, admin: groupe.admin };
+      const f = actions[corps.action];
+      if (!f) return res.status(400).json({ erreur: 'action' });
+      const r = await f(ctxGroupe(), await utilisateur(req), corps);
+      return res.status(r.statut).json(r.json);
+    } catch (e) {
+      console.error('groupe :', e && e.message);
+      return res.status(500).json({ erreur: 'serveur' });
+    }
+  }
+);
+
+/* toutes les 10 minutes : déclenchements repris, rappels et fin des délais de paiement, cartons « à décider »,
+   remboursements (21 jours, reprises), relances d'intérêt, paliers d'avancement et alerte de marge */
+exports.gererCartons = onSchedule(
+  { schedule: 'every 10 minutes', region: 'europe-west1', secrets: [STRIPE_SECRET_KEY, BREVO_API_KEY], timeoutSeconds: 540 },
+  async () => { console.log('cartons groupés :', JSON.stringify(await groupe.gerer(ctxGroupe()))); }
+);
 
 exports.paiementPanier = onRequest(
   { secrets: [STRIPE_SECRET_KEY], region: 'europe-west1', cors: ['https://egreencitys.com', 'https://www.egreencitys.com'], maxInstances: 5, timeoutSeconds: 30 },
@@ -51,7 +119,7 @@ exports.paiementPanier = onRequest(
 );
 
 exports.stripeWebhook = onRequest(
-  { secrets: [STRIPE_WEBHOOK_SECRET], region: 'europe-west1' },
+  { secrets: [STRIPE_WEBHOOK_SECRET, STRIPE_SECRET_KEY, BREVO_API_KEY], region: 'europe-west1' },
   async (req, res) => {
     // Aucune clé d'API nécessaire : constructEvent ne fait que vérifier une signature.
     const stripe = new Stripe('sk_unused', { apiVersion: '2024-06-20' });
@@ -70,6 +138,19 @@ exports.stripeWebhook = onRequest(
     }
 
     const s = event.data.object;
+
+    // Carton groupé : participation payée (capture immédiate). Elle passe « payee » si elle attendait ce paiement,
+    // sinon le paiement est remboursé ; JAMAIS de commande générique ici (la commande « orders » est écrite quand
+    // l'admin commande le carton). Une session « setup » (ancienne v2) n'est plus traitée.
+    if (s.metadata && s.metadata.participation) {
+      if (s.mode !== 'payment') return res.json({ received: true, ignore: 'groupe_' + s.mode });
+      try {
+        return res.json({ received: true, groupe: await groupe.paiementRecu(ctxGroupe(), s, (event.created || 0) * 1000 || Date.now()) });
+      } catch (e) {
+        console.error('Carton groupé, paiement non traité :', e && e.message);
+        return res.status(500).send('groupe'); // Stripe réessaiera (traitement idempotent)
+      }
+    }
 
     // On n'enregistre que les paiements réellement encaissés.
     if (s.payment_status && s.payment_status !== 'paid') {
@@ -94,6 +175,8 @@ exports.stripeWebhook = onRequest(
           ? 'Quincaillerie — réf. ' + produit.slice(3)
           : produit.startsWith('QP-')
             ? 'Quincaillerie — panier'
+            : produit.startsWith('QG-')
+              ? 'Quincaillerie — carton groupé'
             : 'Borne de recharge — ' + produit)
       : 'Commande en ligne';
     // Panier (paiementPanier) : une ligne par référence, lue dans les métadonnées « 2x688HX,1x290HV ».
