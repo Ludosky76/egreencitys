@@ -118,7 +118,7 @@
   (function () {
     var CLE = 'egc_quinc_panier', RET = 7 * 24 * 3600 * 1000;
     var CATS = [['tous', 'Tous les packs'], ['machines', 'Packs machines'], ['superpacks', 'Super packs Holex'], ['cartons', 'Cartons d’outillage']];
-    var etat = { cat: 'tous', packs: [], cartons: [], art: {} };
+    var etat = { cat: 'tous', packs: [], cartons: [], art: {}, holex: null, holexEchec: false };
     function $(i) { return document.getElementById(i); }
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
     function eur(v) { return v.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ' €'; }
@@ -149,9 +149,13 @@
       }).join('') + '</ul>';
     }
     function cartePack(p, i) {
-      var sup = p.categorie === 'superpacks';  /* super pack Holex : photos lues dans promo.json, sans charger la gamme */
+      var sup = p.categorie === 'superpacks';  /* super pack Holex : photos lues dans promo.json */
       var L = p.articles.map(function (x) { return { a: etat.art[x.ref] || (sup && x.img ? { ref: x.ref, img: x.img } : null), nom: x.nom, sup: sup }; });
       var ok = L.every(function (x) { return x.a && !x.a.devis; });
+      /* super pack : bouton actif seulement quand la gamme Holex est lue et que chaque réf. y est « disponible »
+         (gamme illisible : bouton actif, le panier la recharge et retire un pack incomplet) */
+      var verif = sup && !etat.holex && !etat.holexEchec;
+      if (sup && etat.holex) ok = p.articles.every(function (x) { var a = etat.holex[x.ref]; return a && !a.devis && a.s === 'disponible'; });
       var deja = dansPanier(p.id);
       return '<article class="pk" data-cat="' + esc(p.categorie || 'machines') + '">'
         + photos(L, p.etiquette || 'Nouveau', L.length + (L.length > 1 ? ' articles' : ' article'))
@@ -160,9 +164,9 @@
         + '<p class="sous">' + esc(p.sous_titre) + '</p>' + liste(L)
         + '<div class="prix-bloc"><div class="prix">' + eur(p.prix) + '</div>'
         + '<div class="inclus">' + esc(p.prix_txt || 'le pack complet') + ', livré chez vous en Guyane, octroi de mer compris</div>'
-        + '<button type="button" class="ajout' + (deja ? ' ok' : '') + '" data-i="' + i + '"' + (ok ? '' : ' disabled') + '>'
-        + (!ok ? 'Momentanément indisponible' : deja ? '✓ Dans le panier — voir le panier' : '🛒 Ajouter le pack au panier') + '</button>'
-        + '<div class="note">' + esc(p.colis || '') + ' · délai confirmé sous 24 h ouvrées</div></div></div></article>';
+        + '<button type="button" class="ajout' + (deja ? ' ok' : '') + '" data-i="' + i + '"' + (ok && !verif ? '' : ' disabled') + '>'
+        + (verif ? 'Vérification de la disponibilité…' : !ok ? 'Momentanément indisponible' : deja ? '✓ Dans le panier — voir le panier' : '🛒 Ajouter le pack au panier') + '</button>'
+        + '<div class="note">' + esc(p.colis || '') + (p.delai ? ' · délai ' + esc(p.delai) + ', confirmé sous 24 h ouvrées' : ' · délai confirmé sous 24 h ouvrées') + '</div></div></div></article>';
     }
     function carteCarton(c) {
       var L = c.articles.map(function (x) { return { a: etat.art[x.ref], nom: x.nom }; });
@@ -208,6 +212,12 @@
         var q = (location.hash.match(/cat=(\w+)/) || [])[1];
         if (q && CATS.some(function (c) { return c[0] === q; })) etat.cat = q;
         rendre();
+        /* super packs : disponibilité lue dans la gamme Holex (même adresse que la boutique, cache du navigateur partagé) */
+        if (etat.packs.some(function (p) { return p.categorie === 'superpacks'; }))
+          fetch('/assets/data/quincaillerie-holex.json').then(function (r) { if (!r.ok) throw 0; return r.json(); })
+            .then(function (h) { var m = {}; (h.articles || []).forEach(function (a) { m[a.ref] = a; }); etat.holex = m; })
+            .catch(function () { etat.holexEchec = true; })
+            .then(rendre);
       })
       .catch(function () { $('contenu').innerHTML = '<p class="vide">Chargement impossible, réessayez dans un instant.</p>'; });
     $('filtres').addEventListener('click', function (e) {
@@ -221,6 +231,7 @@
       var b = e.target.closest('button[data-i]');
       if (!b || b.disabled) return;
       var p = etat.packs[+b.dataset.i];
+      if (p.categorie === 'superpacks' && etat.holex && !p.articles.every(function (x) { var a = etat.holex[x.ref]; return a && a.s === 'disponible'; })) return;
       if (dansPanier(p.id)) { window.location.href = '/pages/boutique-quincaillerie.html#panier'; return; }
       var lignes = lire().filter(function (l) { return l.pack !== p.id; });
       p.articles.forEach(function (x) { lignes.push({ ref: x.ref, q: x.q || 1, pack: p.id, packTitre: p.titre, packPrix: p.prix }); });

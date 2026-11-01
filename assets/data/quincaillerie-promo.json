@@ -750,6 +750,7 @@
    "prix": 1109,
    "prix_txt": "le pack complet : 29 outils et appareils, 2 700 embouts et la sacoche",
    "colis": "1 colis, environ 7,7 kg",
+   "delai": "environ 2 semaines",
    "articles": [
     {
      "ref": "HXB686244A3",
@@ -830,10 +831,11 @@
    "titre": "Super pack Maintenance industrielle",
    "marque": "Holex",
    "accroche": "Démonter, remonter, serrer au couple",
-   "sous_titre": "Coffret de douilles 3/8″ 26 pièces avec cliquet, clé dynamométrique 3/8″ de 10 à 50 Nm, 12 clés mixtes, 8 tournevis plats, Phillips et Pozidriv, 8 pinces à circlips intérieurs et extérieurs, 9 chasse-goupilles, maillet sans rebond, 17 clés mâles 6 pans et Torx®, jauge d'épaisseur 32 lames et levier magnétique : pour les équipes de maintenance des sites industriels",
-   "prix": 1029,
-   "prix_txt": "le pack complet de 84 pièces",
-   "colis": "1 colis, environ 8,4 kg",
+   "sous_titre": "Coffret de douilles 3/8″ 26 pièces avec cliquet, clé dynamométrique 3/8″ de 10 à 50 Nm, 12 clés mixtes, 8 pinces à circlips intérieurs et extérieurs, 9 chasse-goupilles, maillet sans rebond, 17 clés mâles 6 pans et Torx®, jauge d'épaisseur 32 lames et levier magnétique : pour les équipes de maintenance des sites industriels",
+   "prix": 969,
+   "prix_txt": "le pack complet de 76 pièces",
+   "colis": "1 colis, environ 8,5 kg",
+   "delai": "environ 2 semaines",
    "articles": [
     {
      "ref": "HX973FB037D",
@@ -849,11 +851,6 @@
      "ref": "HXE9F57F4EA",
      "nom": "12 clés mixtes chromées",
      "img": "/assets/img/hx/f70c5c206b3395.webp"
-    },
-    {
-     "ref": "HX654EF075F",
-     "nom": "8 tournevis : 4 plats, 2 Phillips et 2 Pozidriv, pointes trempées",
-     "img": "/assets/img/hx/143b45a1d386db.webp"
     },
     {
      "ref": "HX838C2EBF4",

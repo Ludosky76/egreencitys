@@ -770,6 +770,7 @@
   }
   function rendrePanier() {
     var corps = $('q-tiroir-corps');
+    if (etat.holex) purgerHolex();  /* pack remis au panier après le chargement de la gamme : jamais incomplet à son prix fixe */
     if (!etat.panier.length) {
       corps.innerHTML = (etat.packsRetires ? '<p class="q-carton-note" role="status">ℹ️ Un pack de votre panier n’est plus proposé tel quel : il a été retiré. Écrivez-nous, nous vous proposons une composition proche.</p>' : '')
         + '<p class="q-vide">Votre panier est vide.</p>';
@@ -784,6 +785,7 @@
         if (vusPack[l.pack]) return '';
         vusPack[l.pack] = true;
         var lp = etat.panier.filter(function (x) { return x.pack === l.pack && article(x.ref); });
+        if (lp.length < etat.panier.filter(function (x) { return x.pack === l.pack; }).length) return '';  /* incomplet : jamais affiché */
         var tp = prixPack(l.pack) !== null ? prixPack(l.pack) : lp.reduce(function (s, x) { return s + article(x.ref).prix * x.q; }, 0);
         /* pack pro : le détail reprend les libellés du pack (promo.json) quand il les connaît */
         var pkDef = ((etat.promo && etat.promo.packs_pro) || []).find(function (p) { return p.id === l.pack; });
@@ -791,7 +793,8 @@
         return '<div class="q-ligne q-ligne-pack">'
           + '<img src="' + esc(a.img) + '" alt="">'
           + '<div class="q-ligne-infos"><div class="q-ligne-nom"><span class="q-pack-promo">' + (prixPack(l.pack) !== null ? (/^HX/.test(l.ref) ? 'Holex' : 'Pack pro') : 'Offre spéciale') + '</span> ' + esc(l.packTitre || 'Pack') + '</div>'
-          + '<div class="q-ligne-prix"><strong>' + eur(tp) + '</strong> · ' + lp.length + ' articles, 1 colis</div>'
+          + '<div class="q-ligne-prix"><strong>' + eur(tp) + '</strong> · ' + lp.length + ' articles, 1 colis'
+          + (pkDef && pkDef.delai ? ' · délai ' + esc(pkDef.delai) + ', confirmé sous 24 h ouvrées' : '') + '</div>'
           + '<details class="q-pack-detail"><summary>Voir le détail des articles</summary><ul>'
           + lp.map(function (x) { return '<li>' + (x.q > 1 && !/^\d+ × /.test(nomDe(x)) ? x.q + ' × ' : '') + esc(nomDe(x)) + '</li>'; }).join('')
           + '</ul></details></div>'
@@ -918,12 +921,26 @@
   /* Packs « pro » à prix fixe (promo.json → packs_pro, page /packs-pro/) : affichés si tous leurs articles sont au catalogue. */
   /* super pack Holex (categorie « superpacks ») : ses photos sont dans promo.json, il s'affiche sans charger la gamme Holex */
   function estSuper(pk) { return pk.categorie === 'superpacks'; }
+  /* super pack commandable : toutes ses réf. dans la gamme Holex chargée et « disponible » ; null tant que la gamme n'est pas là */
+  function superOk(pk) {
+    if (!etat.holex) return null;
+    return (pk.articles || []).every(function (x) { var a = article(x.ref); return a && !a.devis && statutDe(x.ref) === 'disponible'; });
+  }
+  var TXT_AJOUT = '🛒 Ajouter le pack', TXT_INDISPO = 'Momentanément indisponible';
+  /* gamme chargée (ou rechargée) : boutons des super packs mis à jour, copie de défilement comprise */
+  function majSupers() {
+    (etat.pros || []).forEach(function (pp, j) {
+      if (!pp.sup) return;
+      pp.indispo = superOk(pp.pack) === false;
+      document.querySelectorAll('[data-pro="' + j + '"]').forEach(function (b) { b.disabled = pp.indispo; b.textContent = pp.indispo ? TXT_INDISPO : TXT_AJOUT; });
+    });
+  }
   function packsPro() {
     var p = etat.promo;
     return ((p && p.packs_pro) || []).map(function (pk) {
       var sup = estSuper(pk);
       var L = (pk.articles || []).map(function (x) { return { a: article(x.ref) || (sup && x.img ? { ref: x.ref, img: x.img } : null), nom: x.nom }; });
-      return L.length && L.every(function (x) { return x.a && !x.a.devis; }) ? { pack: pk, L: L, sup: sup } : null;
+      return L.length && L.every(function (x) { return x.a && !x.a.devis; }) ? { pack: pk, L: L, sup: sup, indispo: sup && superOk(pk) === false } : null;
     }).filter(Boolean);
   }
   function vignettes(L, sansLien) {  /* super pack : aucune fiche liée (on n'y montre que le contenu et le prix du pack) */
@@ -950,8 +967,10 @@
       + '<p class="q-pack-liste">' + esc(p.accroche ? p.accroche + ' — ' : '') + pp.L.length + ' articles · ' + esc(p.colis || '1 colis') + '</p></div>'
       + vignettes(pp.L, pp.sup)
       + '<div class="q-pack-pied"><div><div class="q-promo-prix">' + eur(p.prix) + '</div>'
-      + '<div class="q-promo-inclus">' + esc(p.prix_txt || 'le pack complet') + ', livré, octroi de mer compris · <a href="/packs-pro/' + (pp.sup ? '#cat=superpacks' : '') + '">détails</a></div></div>'
-      + '<button type="button" class="q-promo-btn" data-pro="' + j + '">🛒 Ajouter le pack</button></div>'
+      + '<div class="q-promo-inclus">' + esc(p.prix_txt || 'le pack complet') + ', livré, octroi de mer compris'
+      + (p.delai ? ' · délai ' + esc(p.delai) + ', confirmé sous 24 h ouvrées' : '')
+      + ' · <a href="/packs-pro/' + (pp.sup ? '#cat=superpacks' : '') + '">détails</a></div></div>'
+      + '<button type="button" class="q-promo-btn" data-pro="' + j + '"' + (pp.indispo ? ' disabled>' + TXT_INDISPO : '>' + TXT_AJOUT) + '</button></div>'
       + '</article>';
   }
   /* Défilement vertical automatique, une carte à la fois (copie de la 1re carte en fin de piste pour boucler sans retour visible). */
@@ -1024,6 +1043,7 @@
   function afficherPromo() {
     var packs = packsAffiches(), pros = packsPro();
     if ((!packs.length && !pros.length) || $('q-promo')) return;
+    etat.pros = pros;
     var onglets = [];
     if (packs.length) onglets.push({ cle: 'moment', titre: '🔥 Packs du moment', cartes: packs.map(cartePackMoment) });
     var machines = [], supers = [];
@@ -1065,9 +1085,24 @@
           if (!etat.panier.some(function (l) { return l.ref === x.a.ref; })) etat.panier.push({ ref: x.a.ref, q: 1 });
         });
       } else if ((b = e.target.closest('[data-pro]'))) {
-        var p = pros[+b.dataset.pro].pack;
+        if (b.disabled) return;
+        var pp = pros[+b.dataset.pro], p = pp.pack;
+        if (pp.sup) {  /* super pack : jamais ajouté sans avoir vérifié la gamme Holex (réf. présentes et « disponible ») */
+          var ok = superOk(p);
+          if (ok === null) {
+            b.disabled = true; b.textContent = 'Vérification de la disponibilité…';
+            chargerHolex().then(function () {
+              majSupers();
+              if (!etat.holex) { b.disabled = false; b.textContent = TXT_AJOUT; return; }  /* échec : nouvel essai au prochain clic */
+              if (superOk(p)) b.click();
+            });
+            return;
+          }
+          if (!ok) { majSupers(); return; }
+        }
         etat.panier = etat.panier.filter(function (l) { return l.pack !== p.id; });
         p.articles.forEach(function (x) { etat.panier.push({ ref: x.ref, q: x.q || 1, pack: p.id, packTitre: p.titre, packPrix: p.prix }); });
+        etat.packsRetires = 0; etat.holexRetires = 0;  /* l'ancien message de retrait ne concerne pas le pack qu'on ajoute */
         if (window.gtag) gtag('event', 'add_to_cart', { currency: 'EUR', value: p.prix, items: [{ item_id: p.id, item_name: p.titre }] });
       } else return;
       sauver(); majPastille(); rendrePanier();
@@ -1243,7 +1278,7 @@
         });
         h.articles.forEach(function (a) { etat.index[a.ref] = a; });
         etat.catalogue.articles = etat.catalogue.articles.concat(h.articles);
-        purgerHolex();
+        purgerHolex(); majSupers();
         var catUrl = etat.catDemandee;
         if (!etat.cat && catUrl && h.categories.some(function (c) { return c.slug === catUrl; })) { etat.cat = catUrl; sel.value = catUrl; }
         rendreRayons(); rendre(); rendrePanier();
