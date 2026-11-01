@@ -191,7 +191,10 @@
         + 'prix tout compris livrés en Guyane. <a href="/quincaillerie-pro/marque/dewalt.html">Toute la gamme DeWalt</a></div>' : '')
       + (puces.length ? '<div class="qv-puces">' + puces.join('') + '<button type="button" class="qv-puce qv-tout" data-effacer="1">Tout effacer</button></div>' : '');
   }
-  /* état des filtres dans l'adresse : partageable, et conservé au retour depuis une fiche */
+  /* état des filtres dans l'adresse : partageable, et conservé au retour depuis une fiche.
+     Les paramètres de suivi (utm_*, gclid, fbclid…) restent dans l'adresse : la mesure d'audience,
+     chargée après le consentement, la lit à ce moment-là (sans eux : visite comptée en accès direct). */
+  var SUIVI = /^(utm_[a-z]+|gclid|gbraid|wbraid|fbclid|msclkid)$/;
   function syncUrl() {
     var p = new URLSearchParams();
     if (etat.recherche) p.set('q', etat.recherche);
@@ -200,6 +203,7 @@
     if (etat.f.pmin !== '') p.set('pmin', etat.f.pmin);
     if (etat.f.pmax !== '') p.set('pmax', etat.f.pmax);
     if (etat.dispo) p.set('dispo', '1');
+    new URLSearchParams(location.search).forEach(function (v, k) { if (SUIVI.test(k)) p.set(k, v); });
     var q = p.toString();
     try { history.replaceState(null, '', location.pathname + (q ? '?' + q : '') + location.hash); } catch (e) {}
   }
