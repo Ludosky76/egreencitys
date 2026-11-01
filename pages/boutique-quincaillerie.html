@@ -121,7 +121,7 @@
     </div>
   </div>
 
-  <p class="q-mentions">* Prix tout compris : article + octroi de mer (TGOM) + transport métropole → Guyane au poids réel. Forfait d'expédition 21,12&nbsp;€ par commande, inclus dans le montant des paiements par carte. Sans TVA — art.&nbsp;294 du CGI. Les paiements par carte ne sont proposés que sur les articles en stock chez notre fournisseur à l'instant de la commande ; toute commande passée par formulaire est vérifiée article par article avant encaissement. Délais : article disponible livré sous <strong>7 jours ouvrés</strong> ; article non disponible : envoyez une <strong>demande</strong> depuis sa fiche — nous confirmons prix et délai avant toute commande, avec un suivi dans votre espace client. Voir les <a href="/pages/legal/cgv-quincaillerie.html">conditions de vente</a>.</p>
+  <p class="q-mentions">* Prix tout compris : article + octroi de mer (TGOM) + transport métropole → Guyane au poids réel. Forfait d'expédition 21,12&nbsp;€ par commande, inclus dans le montant des paiements par carte. Sans TVA — art.&nbsp;294 du CGI. Les paiements par carte ne sont proposés que pour des articles indiqués disponibles d'après le dernier relevé publié sur la boutique (gamme Holex : aussi en stock faible) ; toute commande passée par formulaire est vérifiée article par article avant encaissement. Délais : article disponible, hors gamme Holex, livré sous <strong>7 jours ouvrés</strong> ; articles Holex : délai indiqué sur la fiche et dans le panier ; article non disponible ou à confirmer : envoyez une <strong>demande</strong> depuis sa fiche ou votre panier — nous confirmons prix et délai avant toute commande, avec un suivi dans votre espace client. Communes de l'intérieur : contactez-nous avant de commander. Voir les <a href="/pages/legal/cgv-quincaillerie.html">conditions de vente</a>.</p>
 
   <aside id="q-tiroir" aria-label="Panier">
     <div class="q-tiroir-tete"><h2>🛒 Votre panier</h2><button type="button" id="q-fermer-panier" aria-label="Fermer">×</button></div>
@@ -130,9 +130,10 @@
       <div class="q-total-ligne"><span>Articles</span><span id="q-total-articles">—</span></div>
       <div class="q-total-ligne"><span>Forfait d'expédition (unique)</span><span id="q-total-forfait">—</span></div>
       <div class="q-total-ligne total"><span>Total tout compris</span><span id="q-total">—</span></div>
-      <button type="button" id="q-payer-cb">💳 Payer par carte — vérification du stock avant paiement</button>
+      <p style="font-size:.7rem;color:var(--muted);margin:0 0 .5rem;">En payant ou en envoyant votre commande, vous acceptez les <a href="/pages/legal/cgv-quincaillerie.html" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">conditions de vente</a>, dont l'article 5 (modes de commande). Communes de l'intérieur : contactez-nous avant de commander (article 7).</p>
+      <button type="button" id="q-payer-cb">💳 Payer cet article par carte</button>
       <button type="button" id="q-payer-panier" style="display:none">💳 Payer le panier par carte</button>
-      <p id="q-cb-indice">Le paiement par carte est disponible pour un article seul, en stock. Pour plusieurs articles : envoyez la commande, nous vérifions chaque référence chez le fournisseur et vous adressons le règlement — aucun encaissement avant validation.</p>
+      <p id="q-cb-indice">Le paiement par carte est proposé pour un article seul disponible, ou pour tout le panier en une fois quand tous ses articles sont disponibles (un colis de 30&nbsp;kg au plus, 50 lignes et 20 exemplaires par article au plus, hors packs à prix fixe). Sinon, envoyez la commande : nous vérifions chaque référence et vous adressons le règlement, ou un devis au-delà de 30&nbsp;kg — aucun encaissement avant validation. Articles Holex : suivez les indications du carton, plus haut.</p>
       <div id="q-form-zone">
         <form id="q-form">
           <input type="email" id="q-email" placeholder="Votre email *" required>
