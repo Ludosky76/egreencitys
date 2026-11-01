@@ -738,6 +738,159 @@
     }
    ],
    "prix_txt": "le duo en machines seules + 6 accessoires"
+  },
+  {
+   "id": "superpack-electricien-vde",
+   "categorie": "superpacks",
+   "etiquette": "Nouveau pack",
+   "titre": "Super pack Électricien VDE",
+   "marque": "Holex",
+   "accroche": "Dénuder, sertir, vérifier",
+   "sous_titre": "4 pinces, 16 tournevis (plats, Pozidriv, Phillips et Torx®), pince multiprise et clé à molette isolés VDE 1 000 V, kit de sertissage avec pince et 2 700 embouts de 0,5 à 16 mm², vérificateur d'absence de tension bipolaire (EN 61243-3), détecteur de tension sans contact, multimètre CAT III / CAT IV jusqu'à 1 000 V, outil à dégainer, ciseaux d'électricien, mètre 5 m et sacoche étanche : du tableau à la prise",
+   "prix": 1109,
+   "prix_txt": "le pack complet : 29 outils et appareils, 2 700 embouts et la sacoche",
+   "colis": "1 colis, environ 7,7 kg",
+   "articles": [
+    {
+     "ref": "HXB686244A3",
+     "nom": "4 pinces isolées VDE 1 000 V : universelle, becs demi-ronds, coupante diagonale et pince à dénuder",
+     "img": "/assets/img/hx/fba1dcfbf5a2e3.webp"
+    },
+    {
+     "ref": "HXB4EB842D6",
+     "nom": "6 tournevis isolés VDE 1 000 V : 4 plats (2,5 à 5,5 mm) et 2 Pozidriv",
+     "img": "/assets/img/hx/03058972e16976.webp"
+    },
+    {
+     "ref": "HX621642DA5",
+     "nom": "7 tournevis Torx® isolés VDE 1 000 V",
+     "img": "/assets/img/hx/8501102347ea9a.webp"
+    },
+    {
+     "ref": "HX4D102B7AE",
+     "nom": "3 tournevis Phillips isolés VDE 1 000 V",
+     "img": "/assets/img/hx/262c4ab7957591.webp"
+    },
+    {
+     "ref": "HX8BA08D850",
+     "nom": "Pince multiprise isolée VDE 1 000 V, 250 mm",
+     "img": "/assets/img/hx/1e2c3fa9415270.webp"
+    },
+    {
+     "ref": "HXAE91D2790",
+     "nom": "Clé à molette isolée VDE 1 000 V, 200 mm (ouverture 24 mm)",
+     "img": "/assets/img/hx/573e3bb2d72c8d.webp"
+    },
+    {
+     "ref": "HX0E5C4DBAA",
+     "nom": "Kit de sertissage : pince à sertir et 2 700 embouts de câblage de 0,5 à 16 mm², en coffret",
+     "img": "/assets/img/hx/d921a546236ab5.webp"
+    },
+    {
+     "ref": "HXC481BB062",
+     "nom": "Multimètre CAT III / CAT IV, jusqu'à 1 000 V, écran éclairé",
+     "img": "/assets/img/hx/4560ae443d88cd.webp"
+    },
+    {
+     "ref": "HX01249E916",
+     "nom": "Vérificateur d'absence de tension (VAT) bipolaire à LED, EN 61243-3, continuité et ordre des phases, IP64",
+     "img": "/assets/img/hx/0977d7feb3bfdc.webp"
+    },
+    {
+     "ref": "HX0EBD31DF3",
+     "nom": "Détecteur de tension sans contact 12 à 1 000 V, CAT IV, IP67, avec lampe",
+     "img": "/assets/img/hx/510deca2c5970f.webp"
+    },
+    {
+     "ref": "HXC829D0E03",
+     "nom": "Outil à dégainer pour câbles de 6 à 25 mm",
+     "img": "/assets/img/hx/d4049048076cf7.webp"
+    },
+    {
+     "ref": "HX06195370A",
+     "nom": "Ciseaux d'électricien inox avec coupe-fils, 140 mm",
+     "img": "/assets/img/hx/459cdab7b33f8c.webp"
+    },
+    {
+     "ref": "HXCA7FA4CFC",
+     "nom": "Mètre-ruban 5 m, boîtier caoutchouté",
+     "img": "/assets/img/hx/343b0c66246384.webp"
+    },
+    {
+     "ref": "HX375EA7D43",
+     "nom": "Sacoche d'électricien étanche à l'eau, 12 casiers",
+     "img": "/assets/img/hx/d62eb9d43dd36c.webp"
+    }
+   ]
+  },
+  {
+   "id": "superpack-maintenance-industrielle",
+   "categorie": "superpacks",
+   "etiquette": "Nouveau pack",
+   "titre": "Super pack Maintenance industrielle",
+   "marque": "Holex",
+   "accroche": "Démonter, remonter, serrer au couple",
+   "sous_titre": "Coffret de douilles 3/8″ 26 pièces avec cliquet, clé dynamométrique 3/8″ de 10 à 50 Nm, 12 clés mixtes, 8 tournevis plats, Phillips et Pozidriv, 8 pinces à circlips intérieurs et extérieurs, 9 chasse-goupilles, maillet sans rebond, 17 clés mâles 6 pans et Torx®, jauge d'épaisseur 32 lames et levier magnétique : pour les équipes de maintenance des sites industriels",
+   "prix": 1029,
+   "prix_txt": "le pack complet de 84 pièces",
+   "colis": "1 colis, environ 8,4 kg",
+   "articles": [
+    {
+     "ref": "HX973FB037D",
+     "nom": "Coffret de douilles carré 3/8″, 26 pièces : douilles 6 pans et 6 pans creux, cliquet, rallonge, cardan et poignée transversale",
+     "img": "/assets/img/hx/c5ee56cf2c55c8.webp"
+    },
+    {
+     "ref": "HXBA279E9F2",
+     "nom": "Clé dynamométrique à cliquet carré 3/8″, 10 à 50 Nm, réglage par vernier, réétalonnable (DIN EN ISO 6789)",
+     "img": "/assets/img/hx/9cb2ffa5c6332d.webp"
+    },
+    {
+     "ref": "HXE9F57F4EA",
+     "nom": "12 clés mixtes chromées",
+     "img": "/assets/img/hx/f70c5c206b3395.webp"
+    },
+    {
+     "ref": "HX654EF075F",
+     "nom": "8 tournevis : 4 plats, 2 Phillips et 2 Pozidriv, pointes trempées",
+     "img": "/assets/img/hx/143b45a1d386db.webp"
+    },
+    {
+     "ref": "HX838C2EBF4",
+     "nom": "4 pinces à circlips intérieurs (12 à 140 mm)",
+     "img": "/assets/img/hx/4c9c01d119fa08.webp"
+    },
+    {
+     "ref": "HX2C84BCEEC",
+     "nom": "4 pinces à circlips extérieurs (3 à 100 mm)",
+     "img": "/assets/img/hx/73c1b327b633bb.webp"
+    },
+    {
+     "ref": "HX5BE26F7C7",
+     "nom": "9 chasse-goupilles avec douille de guidage, en coffret métallique",
+     "img": "/assets/img/hx/6decbdf3ef15c5.webp"
+    },
+    {
+     "ref": "HX1664D0F57",
+     "nom": "Maillet à frappe amortie anti-rebond, tête 45 mm",
+     "img": "/assets/img/hx/37483f0227baa8.webp"
+    },
+    {
+     "ref": "HX35063477C",
+     "nom": "17 clés mâles coudées 6 pans et Torx®, sur plateau mousse 200 × 250 mm",
+     "img": "/assets/img/hx/81ab725b48fc85.webp"
+    },
+    {
+     "ref": "HX8EAF2C775",
+     "nom": "Jauge d'épaisseur 32 lames, de 0,03 à 1 mm",
+     "img": "/assets/img/hx/8cd3a2b79bf0ac.webp"
+    },
+    {
+     "ref": "HX7333FEB3F",
+     "nom": "Levier magnétique flexible 520 mm, force de traction 3 kg",
+     "img": "/assets/img/hx/3d1749b5907570.webp"
+    }
+   ]
   }
  ],
  "regle_packs_pro": "packs_pro : prix FIXE du pack (champ prix), validé par le gérant le 30/10/2026 ; commande par formulaire (vérification fournisseur sous 24 h ouvrées, aucun encaissement avant confirmation) ; page /packs-pro/. Pack laser + trépied retiré le 30/10/2026 (trépied non rentable à l'expédition)."
