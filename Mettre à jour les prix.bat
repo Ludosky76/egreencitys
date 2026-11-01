@@ -7,13 +7,13 @@ echo    EGREENCITY'S - Mise a jour des prix de la boutique
 echo ============================================================
 echo.
 echo Ce programme va :
-echo   1. Lire les prix depuis assets\js\catalog.js
+echo   1. Lire les prix d'achat (fichier prive) et ecrire les prix de vente dans catalog.js
 echo   2. Desactiver les anciens liens de paiement Stripe
 echo   3. Creer les nouveaux liens (nouveaux prix)
 echo   4. Mettre le site a jour et le publier en ligne
 echo.
-echo Astuce : pour changer un prix, modifiez d'abord le nombre
-echo          "ht:" du produit (ou COEF_MARGE) dans catalog.js.
+echo Astuce : pour changer un prix, modifiez d'abord le prix d'achat
+echo          (ou le coefficient) dans _tools\bornes_prix_achat.json (prive).
 echo.
 pause
 echo.
@@ -30,7 +30,7 @@ if errorlevel 1 (
 
 echo.
 echo --- Publication en ligne (git) ---
-git add assets/js/stripe-config.js pages/boutique-wallbox.html
+git add assets/js/stripe-config.js assets/js/catalog.js pages/boutique-wallbox.html
 git commit -m "prix: mise a jour des tarifs boutique"
 git push
 if errorlevel 1 (

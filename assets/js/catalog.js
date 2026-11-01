@@ -9,20 +9,15 @@
      - Frais de livraison Chronopost DOM : forfait par gamme (voir SHIPPING)
 
    Structure de prix boutique :
-     - Prix produit = HT fournisseur E-TOTEM * COEF_MARGE (arrondi marketing)
+     - Prix produit = prix de vente (champ prix ; fixe hors de ce fichier)
      - Frais livraison Chronopost DOM ajoutes au total
      - Total facture (sans TVA) = prix produit + frais livraison
      - Octroi de mer = a la charge du client, preleve a la livraison
    ========================================================================== */
 
 /* ================================================================
-   CONFIGURATION MARGE
+   CONFIGURATION
    ================================================================
-   COEF_MARGE :
-     1.00 = prix coutant fournisseur (aucune marge)
-     1.35 = +35 % (recommande dropshipping, DEFAUT)
-     1.50 = +50 % (marge confortable)
-
    LIVRAISON :
      Les frais de livraison Chronopost DOM vers la Guyane NE SONT PAS
      forfaitaires. Ils dependent du poids reel du colis et de la commune
@@ -31,12 +26,7 @@
      -> Le prix affiche en boutique = PRIX PRODUIT SEUL (hors livraison).
    ================================================================ */
 window.CATALOG_CONFIG = {
-  COEF_MARGE: 1.35,         // <-- Ajustez ici votre marge dropshipping (bornes)
-  COEF_MARGE_OPTIONS: 1.10, // <-- marge reduite sur les OPTIONS/accessoires (+10 %)
-                            //     pour diminuer le cout a l'achat des configurations
-  COEF_SUPERVISION: 1.25,   // <-- marge sur les services de supervision (E-TOTEM)
   DEVISE: '€',
-  ARRONDI: 10,            // arrondi marketing a 10 € pres (donne 999, 1049, etc.)
 
   // OCTROI DE MER Guyane (TGOM 2026, delib. AP-2026-47) — code 8504.40
   // Bornes = convertisseurs statiques / chargeurs d'accumulateurs :
@@ -55,15 +45,9 @@ window.CATALOG_CONFIG = {
   MENTION_LIVRAISON: 'Frais de livraison Chronopost DOM en sus, calculés selon le poids et votre commune, communiqués avant validation de commande'
 };
 
-/* Prix produit seul (sans livraison, sans TVA) */
-window.priceProduct = function (htFournisseur) {
-  var C = window.CATALOG_CONFIG;
-  var raw = htFournisseur * C.COEF_MARGE;
-  if (C.ARRONDI > 0) {
-    var rounded = Math.round(raw / C.ARRONDI) * C.ARRONDI;
-    return rounded - 1; // 999, 1049, 2349...
-  }
-  return Math.round(raw);
+/* Prix produit seul (sans livraison, sans TVA) : le prix de vente du catalogue */
+window.priceProduct = function (prix) {
+  return prix;
 };
 
 /* Alias pour retrocompatibilite (ex-priceTTC → maintenant priceProduct) */
@@ -74,10 +58,9 @@ window.octroiMer = function (montant) {
   return Math.round(montant * window.CATALOG_CONFIG.OCTROI_TOTAL);
 };
 
-/* Prix d'une OPTION/accessoire : marge reduite (+10 %), sans arrondi
-   marketing — c'est un supplement, pas un prix d'appel. */
-window.priceOption = function (htFournisseur) {
-  return Math.round(htFournisseur * (window.CATALOG_CONFIG.COEF_MARGE_OPTIONS || 1.10));
+/* Prix d'une OPTION/accessoire : son prix de vente (supplement, pas de prix d'appel). */
+window.priceOption = function (prix) {
+  return prix;
 };
 
 /* ================================================================
@@ -103,19 +86,19 @@ window.shippingFor = function (productId) {
 /* ================================================================
    PRIX TOUT COMPRIS (affiche et facture)
    ================================================================
-   = (prix fournisseur x COEF_MARGE)   <- benefice EGREENCITY'S
+   = prix de vente du produit
    + octroi de mer 20 %                <- reverse a la douane
    + livraison Chronopost DOM          <- reverse au transporteur
    Le client paie ce montant en UNE SEULE FOIS.
    ================================================================ */
-window.priceAllIn = function (htFournisseur, productId) {
-  var base = window.priceProduct(htFournisseur);
+window.priceAllIn = function (prix, productId) {
+  var base = window.priceProduct(prix);
   return base + window.octroiMer(base) + window.shippingFor(productId);
 };
 
 /* Detail de la decomposition (pour affichage transparent) */
-window.priceBreakdown = function (htFournisseur, productId) {
-  var base = window.priceProduct(htFournisseur);
+window.priceBreakdown = function (prix, productId) {
+  var base = window.priceProduct(prix);
   var octroi = window.octroiMer(base);
   var ship = window.shippingFor(productId);
   return {
@@ -183,8 +166,8 @@ window.CATALOG = {
       {
         id: 'wb-mur',
         name: 'e-WallBox Murale',
-        ht: 420,                 // borne e-Wallbox NG NUE — base MONOPHASÉ 7 kW
-        htTri: 509,              // borne NUE — base TRIPHASÉ 22 kW (config élec différente)
+        prix: 569,                 // borne e-Wallbox NG NUE — base MONOPHASÉ 7 kW
+        prixTri: 689,              // borne NUE — base TRIPHASÉ 22 kW (config élec différente)
         configurable: true,      // carte configurateur : mono/tri + options a cocher
         phases: [
           { key: 'mono', label: 'Monophasé 7 kW', power: '7 kW AC · monophasé' },
@@ -193,9 +176,9 @@ window.CATALOG = {
         // Options a cocher — l'ordre définit le suffixe de l'id Stripe (p,c,t,r).
         // Transport France métropole DÉJÀ inclus dans le prix de vente (pas d'option séparée).
         options: [
-          { key: 'p', name: 'Prise Type 2S',       sub: 'connecteur de charge (indispensable)', ht: 196 },
-          { key: 'c', name: 'Cache de finition',   sub: 'façade (si pas de RFID)',              ht: 56  },
-          { key: 'r', name: 'Lecteur RFID',        sub: 'badge d\'accès',                        ht: 84  }
+          { key: 'p', name: 'Prise Type 2S',       sub: 'connecteur de charge (indispensable)', prix: 216 },
+          { key: 'c', name: 'Cache de finition',   sub: 'façade (si pas de RFID)',              prix: 62  },
+          { key: 'r', name: 'Lecteur RFID',        sub: 'badge d\'accès',                        prix: 92  }
         ],
         power: '7 kW mono ou 22 kW tri',
         pdc: 1,
@@ -214,7 +197,7 @@ window.CATALOG = {
       {
         id: 'wb-pied-7',
         name: 'e-WallBox sur Pied 1×7 kW',
-        ht: 911,
+        prix: 1229,
         power: '7 kW AC · monophasé',
         pdc: 1,
         format: 'Sur pied',
@@ -231,7 +214,7 @@ window.CATALOG = {
       {
         id: 'wb-pied-22',
         name: 'e-WallBox sur Pied 1×22 kW',
-        ht: 1041,
+        prix: 1409,
         power: '22 kW AC · triphasé 32A',
         pdc: 1,
         format: 'Sur pied',
@@ -259,7 +242,7 @@ window.CATALOG = {
       {
         id: 'sm7-mur-1',
         name: 'e-Smart 7 kW Murale 1 PDC',
-        ht: 1485,
+        prix: 1999,
         power: '7 kW AC · 1 point',
         pdc: 1,
         format: 'Murale + plaque',
@@ -278,7 +261,7 @@ window.CATALOG = {
       {
         id: 'sm7-mur-2',
         name: 'e-Smart 7 kW Murale 2 PDC',
-        ht: 2560,
+        prix: 3459,
         power: '2×7 kW AC (14 kW)',
         pdc: 2,
         format: 'Murale + potence',
@@ -296,7 +279,7 @@ window.CATALOG = {
       {
         id: 'sm7-pied-1',
         name: 'e-Smart 7 kW sur Pied 1 PDC',
-        ht: 1517,
+        prix: 2049,
         power: '7 kW AC · 1 point',
         pdc: 1,
         format: 'Sur pied',
@@ -314,7 +297,7 @@ window.CATALOG = {
       {
         id: 'sm7-pied-2',
         name: 'e-Smart 7 kW sur Pied 2 PDC',
-        ht: 2572,
+        prix: 3469,
         power: '2×7 kW AC (14 kW)',
         pdc: 2,
         format: 'Sur pied',
@@ -343,7 +326,7 @@ window.CATALOG = {
       {
         id: 'sm22-mur-1',
         name: 'e-Smart 22 kW Murale 1 PDC',
-        ht: 1568,
+        prix: 2119,
         power: '22 kW AC triphasé',
         pdc: 1,
         format: 'Murale + plaque',
@@ -362,7 +345,7 @@ window.CATALOG = {
       {
         id: 'sm22-mur-2',
         name: 'e-Smart 22 kW Murale 2 PDC',
-        ht: 2727,
+        prix: 3679,
         power: '2×22 kW AC (44 kW)',
         pdc: 2,
         format: 'Murale + potence',
@@ -380,7 +363,7 @@ window.CATALOG = {
       {
         id: 'sm22-pied-1',
         name: 'e-Smart 22 kW sur Pied 1 PDC',
-        ht: 1599,
+        prix: 2159,
         power: '22 kW AC triphasé',
         pdc: 1,
         format: 'Sur pied',
@@ -398,7 +381,7 @@ window.CATALOG = {
       {
         id: 'sm22-pied-2',
         name: 'e-Smart 22 kW sur Pied 2 PDC',
-        ht: 2739,
+        prix: 3699,
         power: '2×22 kW AC (44 kW)',
         pdc: 2,
         format: 'Sur pied',
@@ -428,7 +411,7 @@ window.CATALOG = {
       {
         id: 'prem-2x22',
         name: 'e-Premium AC 2×22 kW',
-        ht: 4948,
+        prix: 6679,
         power: '2×22 kW AC (44 kW)',
         pdc: 2,
         format: 'Sur pied inox',
@@ -457,16 +440,16 @@ window.CATALOG = {
 /* kg = surpoids estimé de l'option pour le calcul de la livraison (colis).
    Revêtements / sérigraphie = 0 (appliqués sur la borne, aucun surpoids). */
 window.CATALOG_OPTIONS = [
-  { id: 'opt-modem-4g',       name: 'Modem 4G intégré (sans SIM)',                    ht: 104, kg: 0.3, gammes: ['smart7','smart22','wallbox'] },
-  { id: 'opt-ecran',          name: 'Écran afficheur par PDC',                        ht: 224, kg: 1.5, gammes: ['smart7','smart22'] },
-  { id: 'opt-ecran-10',       name: 'Écran 10" couleur tactile',                      ht: 648, kg: 2.5, gammes: ['premium'] },
-  { id: 'opt-tpe-cb',         name: 'TPE CB sans contact (à la commande)',            ht: 837, kg: 1.5, gammes: ['premium'] },
-  { id: 'opt-prise-e',        name: 'Prise E/F additionnelle',                        ht:  69, kg: 0.5, gammes: ['smart7','smart22'] },
-  { id: 'opt-borne-maitre',   name: 'Borne maître (gère jusqu\'à 16 PDC)',            ht: 351, kg: 0.5, gammes: ['smart7','smart22'] },
-  { id: 'opt-anti-graffiti',  name: 'Revêtement anti-graffiti',                       ht:  41, kg: 0,   gammes: ['premium'] },
-  { id: 'opt-peinture-humide',name: 'Peinture zone humide tropicale (DOM)',            ht: 203, kg: 0,   gammes: ['premium','smart7','smart22'] },
-  { id: 'opt-pied-pdl',       name: 'Pied PDL (préparation coffret CIBE)',            ht: 108, kg: 6,   gammes: ['premium'] },
-  { id: 'opt-personnalisation', name: 'Sérigraphie logo entreprise sur capot',        ht: 120, kg: 0,   gammes: ['smart7','smart22','wallbox','premium'] }
+  { id: 'opt-modem-4g',       name: 'Modem 4G intégré (sans SIM)',                    prix: 114, kg: 0.3, gammes: ['smart7','smart22','wallbox'] },
+  { id: 'opt-ecran',          name: 'Écran afficheur par PDC',                        prix: 246, kg: 1.5, gammes: ['smart7','smart22'] },
+  { id: 'opt-ecran-10',       name: 'Écran 10" couleur tactile',                      prix: 713, kg: 2.5, gammes: ['premium'] },
+  { id: 'opt-tpe-cb',         name: 'TPE CB sans contact (à la commande)',            prix: 921, kg: 1.5, gammes: ['premium'] },
+  { id: 'opt-prise-e',        name: 'Prise E/F additionnelle',                        prix: 76, kg: 0.5, gammes: ['smart7','smart22'] },
+  { id: 'opt-borne-maitre',   name: 'Borne maître (gère jusqu\'à 16 PDC)',            prix: 386, kg: 0.5, gammes: ['smart7','smart22'] },
+  { id: 'opt-anti-graffiti',  name: 'Revêtement anti-graffiti',                       prix: 45, kg: 0,   gammes: ['premium'] },
+  { id: 'opt-peinture-humide',name: 'Peinture zone humide tropicale (DOM)',            prix: 223, kg: 0,   gammes: ['premium','smart7','smart22'] },
+  { id: 'opt-pied-pdl',       name: 'Pied PDL (préparation coffret CIBE)',            prix: 119, kg: 6,   gammes: ['premium'] },
+  { id: 'opt-personnalisation', name: 'Sérigraphie logo entreprise sur capot',        prix: 132, kg: 0,   gammes: ['smart7','smart22','wallbox','premium'] }
 ];
 
 
@@ -474,21 +457,18 @@ window.CATALOG_OPTIONS = [
    🛠️ SERVICES COMPLEMENTAIRES (E-TOTEM) — abonnements & prestations
    ================================================================
    - Supervision FULL : proposée SUR DEVIS (tarif selon l'offre et l'engagement).
-       Réf. E-TOTEM offre FULL : 180 €/PDC/an (5 ans) · 204 € (3 ans) · 252 € (1 an).
-       Marge EGREENCITY'S : × COEF_SUPERVISION (1.25) -> 225 / 255 / 315 €/PDC/an.
-       (Offre BASIC E-TOTEM : 96 / 108 / 144 €/PDC/an.)
        Aucun octroi de mer (c'est un service, pas un bien importé).
    - Maintenance préventive / extension de garantie : sur devis.
    Ces services s'affichent dans la boutique pour les gammes concernées
    (e-Smart, e-Premium) et sont facturés SEPAREMENT de la borne.
    ================================================================ */
-window.priceSupervision = function (htPdcAn) {
-  return Math.round(htPdcAn * (window.CATALOG_CONFIG.COEF_SUPERVISION || 1.25));
+window.priceSupervision = function (prixPdcAn) {
+  return prixPdcAn;
 };
 
 window.CATALOG_SERVICES = [
   { id: 'sup-full',     name: 'Supervision FULL',       sub: 'Pilotage à distance, monétisation, hotline & SAV — sur devis',
-    type: 'devis', htPdcAn: 180, coef: 1.25, perPdc: true, gammes: ['smart7','smart22','premium'] },
+    type: 'devis', prixPdcAn: 225, perPdc: true, gammes: ['smart7','smart22','premium'] },
   { id: 'maint-prev',   name: 'Maintenance préventive', sub: 'Visite annuelle obligatoire (décret 2017-26)',
     type: 'devis', gammes: ['smart7','smart22','premium'] },
   { id: 'ext-garantie', name: 'Extension de garantie',  sub: '+1 à +3 ans au-delà des 2 ans (jusqu\'à 5 ans)',

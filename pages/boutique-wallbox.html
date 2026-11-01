@@ -705,7 +705,7 @@
 
 <!-- STRIPE + CATALOG + COMPTE CLIENT -->
 <script src="/assets/js/stripe-config.js?v=9"></script>
-<script src="/assets/js/catalog.js?v=15"></script>
+<script src="/assets/js/catalog.js?v=16"></script>
 <script src="/assets/js/customer-account.js?v=2"></script>
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/firebase-auth.js?v=1"></script>
@@ -747,7 +747,7 @@
         if (p.hidden) return;   // variante interne (ex: option RFID) — pas de carte propre
         totalCount++;
         if (p.configurable) { grid.appendChild(buildConfigurableCard(p, key)); return; }
-        var bd = window.priceBreakdown(p.ht, p.id);   // produit / octroi / livraison / total
+        var bd = window.priceBreakdown(p.prix, p.id); // produit / octroi / livraison / total
         var priceTTC = bd.total;                       // prix TOUT COMPRIS affiche
         var weight = window.weightFor(p.id);
         var priceSplit3 = Math.ceil(priceTTC / 3);
@@ -822,24 +822,16 @@
     return found;
   }
 
-  // Base HT selon la puissance : mono (ht) ou tri (htTri)
-  function muraleBaseHt(prod) {
-    return (muraleState.phase === 'tri' && prod.htTri) ? prod.htTri : prod.ht;
+  // Prix de la borne nue selon la puissance : mono (prix) ou tri (prixTri)
+  function muraleBasePrix(prod) {
+    return (muraleState.phase === 'tri' && prod.prixTri) ? prod.prixTri : prod.prix;
   }
 
-  // HT courant = borne nue (mono/tri) + options cochees
-  function muraleHt(prod) {
-    var ht = muraleBaseHt(prod);
-    prod.options.forEach(function (o) { if (muraleState.opts[o.key]) ht += o.ht; });
-    return ht;
-  }
-
-  // Prix produit de la configuration : borne au coefficient plein (1,35)
-  // + chaque option cochee a la marge reduite (+10 % — priceOption).
+  // Prix produit de la configuration : borne nue + chaque option cochee
   function muralePrixProduit(prod) {
-    var produit = window.priceProduct(muraleBaseHt(prod));
+    var produit = window.priceProduct(muraleBasePrix(prod));
     prod.options.forEach(function (o) {
-      if (muraleState.opts[o.key]) produit += window.priceOption(o.ht);
+      if (muraleState.opts[o.key]) produit += window.priceOption(o.prix);
     });
     return produit;
   }
@@ -870,8 +862,8 @@
     var specsHtml = p.specs.slice(0, 6).map(function (s) { return '<li>' + s + '</li>'; }).join('');
 
     var optsHtml = p.options.map(function (o) {
-      // Supplement = option a +10 % de marge + octroi de mer (20 %)
-      var pOpt = window.priceOption(o.ht);
+      // Supplement = prix de l'option + octroi de mer (20 %)
+      var pOpt = window.priceOption(o.prix);
       var supp = pOpt + window.octroiMer(pOpt);
       return ''
         + '<label class="mur-opt" style="display:flex;align-items:center;gap:.55rem;margin:.35rem 0;padding:.55rem .7rem;border:1px solid #d8e6cc;border-radius:10px;cursor:pointer;font-size:.85rem;">'
@@ -980,7 +972,7 @@
     configuring = { gammeKey: gammeKey, product: product, options: [] };
 
     var content = document.getElementById('optContent');
-    var bd = window.priceBreakdown(product.ht, product.id);
+    var bd = window.priceBreakdown(product.prix, product.id);
     var weight = window.weightFor(product.id);
     content.innerHTML = ''
       + '<div class="drawer-summary">'
@@ -1009,13 +1001,13 @@
         // C'est exactement le prix de l'article optionnel correspondant sur la
         // page de paiement Stripe (affiche = paye). La livraison reste celle de
         // la borne : le leger surpoids eventuel est absorbe.
-        var optProd = window.priceOption(opt.ht); // marge reduite +10 % sur les options
+        var optProd = window.priceOption(opt.prix);
         var optTTC = optProd + window.octroiMer(optProd);
         var row = document.createElement('div');
         row.className = 'opt-item';
         row.innerHTML = ''
           + '<label>'
-          +   '<input type="checkbox" data-opt-id="' + opt.id + '" data-opt-ht="' + opt.ht + '" onchange="updateConfigTotal()">'
+          +   '<input type="checkbox" data-opt-id="' + opt.id + '" data-opt-prix="' + opt.prix + '" onchange="updateConfigTotal()">'
           +   '<span><div class="lbl">' + opt.name + '</div><div class="lbl-sub">Option E-TOTEM</div></span>'
           + '</label>'
           + '<span class="price" data-opt-price="' + opt.id + '">+' + window.formatPrice(optTTC) + '</span>';
@@ -1035,7 +1027,7 @@
       availableSvc.forEach(function (svc) {
         var priceLabel, dataAnnual;
         if (svc.type === 'abo') {
-          dataAnnual = window.priceSupervision(svc.htPdcAn) * (svc.perPdc ? (product.pdc || 1) : 1);
+          dataAnnual = window.priceSupervision(svc.prixPdcAn) * (svc.perPdc ? (product.pdc || 1) : 1);
           priceLabel = '+' + window.formatPrice(dataAnnual) + '/an';
         } else {
           dataAnnual = 0;
@@ -1083,16 +1075,16 @@
     // Chaque option ajoute produit + octroi (20 %) — le meme montant que
     // l'article optionnel correspondant sur la page de paiement Stripe,
     // pour que le total affiche soit exactement le total paye.
-    var produits = window.priceProduct(product.ht);
+    var produits = window.priceProduct(product.prix);
     var octroi = window.octroiMer(produits);
     var weight = window.weightFor(product.id);
     var selected = [];
     document.querySelectorAll('#opt-list input[type="checkbox"]:checked').forEach(function (cb) {
-      var ht = parseFloat(cb.dataset.optHt);
-      var pOpt = window.priceOption(ht); // marge reduite +10 % sur les options
+      var prixOpt = parseFloat(cb.dataset.optPrix);
+      var pOpt = window.priceOption(prixOpt);
       produits += pOpt;
       octroi += window.octroiMer(pOpt);
-      selected.push({ id: cb.dataset.optId, ht: ht });
+      selected.push({ id: cb.dataset.optId, prix: prixOpt });
     });
     var livraison = window.shippingForWeight(weight);
     var total = produits + octroi + livraison;
@@ -1151,12 +1143,12 @@
     if (!configuring) return;
     var opts = configuring.options.map(function (o) {
       var full = window.CATALOG_OPTIONS.find(function (x) { return x.id === o.id; });
-      return { id: o.id, name: full ? full.name : o.id, ht: o.ht };
+      return { id: o.id, name: full ? full.name : o.id, prix: o.prix };
     });
     cart.push({
       productId: configuring.product.id,
       name: configuring.product.name,
-      basePriceTTC: window.priceProduct(configuring.product.ht),
+      basePriceTTC: window.priceProduct(configuring.product.prix),
       weight: window.weightFor(configuring.product.id),
       options: opts,
       services: configuring.services || [],

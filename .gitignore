@@ -41,3 +41,5 @@ node_modules/
 *-debug.log
 firebase-debug.log
 .firebase/
+# guide privé des prix des bornes (prix d'achat et marge) : jamais publié
+GUIDE_AJUSTER_LES_PRIX.md
