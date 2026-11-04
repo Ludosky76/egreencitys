@@ -455,9 +455,13 @@
   /* batterie lithium vendue seule (refusée au transport aérien) : même règle que functions/panier.js (batterieSeule) */
   var BATT_DEBUT = /^(batterie|batteries|accu|accus)\b/i, BATT_KIT = /^(kit|pack|set|lot)\b/i, BATT_MOT = /\b(batterie|batteries|accu|accus)\b/i;
   var BATT_MACHINE = /\b(perceuse|visseuse|perforateur|meuleuse|scie|ponceuse|cl[ée] [àa] chocs?|boulonneuse|d[ée]fonceuse|rabot|marteau|burineur|lampe|projecteur|souffleur|tondeuse|taille-haies?|d[ée]broussailleuse|tron[çc]onneuse|aspirateur|radio|agrafeuse|cloueur|riveteuse|pistolet|polisseuse|multi-?outils?|outils?|malaxeur|cisaille|d[ée]capeur|niveau laser|laser)\b/i;
+  /* pile au lithium vendue seule (CR2032, CR123, CRP2… = lithium) : même règle que functions/panier.js (audit du 04/11/2026) */
+  var PILE_DEBUT = /^((lot|pack|set|kit|blister|bo[iî]te|coffret)\s+(de\s+)?)?(\d+\s+)?piles?\b/i;
+  var PILE_LITHIUM = /\blithium\b|\bli-?ion\b|\blifepo4\b|\b[cb]r[- ]?(\d{3,4}|p2|2|123a?)\b|\b2cr5\b/i;
   function batterieSeule(nom) {
     nom = String(nom || '').trim();
-    return BATT_DEBUT.test(nom) || (BATT_KIT.test(nom) && BATT_MOT.test(nom) && !BATT_MACHINE.test(nom));
+    return BATT_DEBUT.test(nom) || (BATT_KIT.test(nom) && BATT_MOT.test(nom) && !BATT_MACHINE.test(nom))
+      || (PILE_DEBUT.test(nom) && PILE_LITHIUM.test(nom));
   }
   function groupeActif() { return !!(etat.paiement && etat.paiement.groupe && window.firebase && firebase.apps && firebase.apps.length); }
   /* onglet par défaut : commande unique seulement si elle peut partir (carton complet ET un seul colis de 10 kg), sinon carton groupé */
@@ -487,7 +491,7 @@
   /* motif pour lequel une ligne Holex ne peut pas partir dans le carton groupé (le serveur la refuserait), '' sinon */
   function motifHorsGroupe(l) {
     var a = article(l.ref);
-    if (a && batterieSeule(a.nom)) return 'batterie sans machine : interdite au transport aérien';
+    if (a && batterieSeule(a.nom)) return 'pile ou batterie au lithium sans machine : interdite au transport aérien';
     if (aConfirmer(l.ref)) return 'disponibilité à confirmer';
     if (l.q > QTE_MAX_CB) return 'au plus ' + QTE_MAX_CB + ' exemplaires';
     return '';

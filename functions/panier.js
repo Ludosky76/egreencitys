@@ -13,9 +13,15 @@ const BATT_DEBUT = /^(batterie|batteries|accu|accus)\b/i;
 const BATT_KIT = /^(kit|pack|set|lot)\b/i;
 const BATT_MOT = /\b(batterie|batteries|accu|accus)\b/i;
 const MACHINE = /\b(perceuse|visseuse|perforateur|meuleuse|scie|ponceuse|cl[ée] [àa] chocs?|boulonneuse|d[ée]fonceuse|rabot|marteau|burineur|lampe|projecteur|souffleur|tondeuse|taille-haies?|d[ée]broussailleuse|tron[çc]onneuse|aspirateur|radio|agrafeuse|cloueur|riveteuse|pistolet|polisseuse|multi-?outils?|outils?|malaxeur|cisaille|d[ée]capeur|niveau laser|laser)\b/i;
+// pile au lithium vendue seule (UN3090/UN3091 sans équipement, refusée de même — audit du 04/11/2026) : l'article EST une pile
+// (« Pile… », « 12 piles… », « Lot de 2 piles… ») de chimie lithium (CR2032, CR123, CRP2… sont au lithium, même libellées « alcaline ») ;
+// un appareil livré avec sa pile (détecteur, télécommande…) reste autorisé
+const PILE_DEBUT = /^((lot|pack|set|kit|blister|bo[iî]te|coffret)\s+(de\s+)?)?(\d+\s+)?piles?\b/i;
+const LITHIUM = /\blithium\b|\bli-?ion\b|\blifepo4\b|\b[cb]r[- ]?(\d{3,4}|p2|2|123a?)\b|\b2cr5\b/i;
 function batterieSeule(nom) {
   nom = String(nom || '').trim();
-  return BATT_DEBUT.test(nom) || (BATT_KIT.test(nom) && BATT_MOT.test(nom) && !MACHINE.test(nom));
+  return BATT_DEBUT.test(nom) || (BATT_KIT.test(nom) && BATT_MOT.test(nom) && !MACHINE.test(nom))
+    || (PILE_DEBUT.test(nom) && LITHIUM.test(nom));
 }
 const CACHE_MS = 90 * 1000;
 const cache = new Map(); // chemin -> { t, promesse } : une instance ne relit pas les 7 Mo publiés à chaque appel
@@ -102,7 +108,7 @@ async function creerSessionPanier(corps, cleStripe) {
     const a = parRef.get(ref);
     if (!a) { refus.push({ ref, motif: 'article inconnu' }); continue; }
     if (q > QTE_MAX) { refus.push({ ref, motif: 'au plus ' + QTE_MAX + ' exemplaires par article (au-delà : envoyez la commande, nous vous répondons)' }); continue; }
-    if (batterieSeule(a.nom)) { refus.push({ ref, motif: 'batterie lithium vendue seule : interdite au transport aérien' }); continue; }
+    if (batterieSeule(a.nom)) { refus.push({ ref, motif: 'pile ou batterie au lithium vendue seule : interdite au transport aérien' }); continue; }
     if (a.devis) { refus.push({ ref, motif: 'colis de plus de 30 kg : sur devis' }); continue; }
     const s = a.pc ? { s: a.s } : (stock.stock || {})[ref];  // Holex : disponibilité publiée avec sa gamme
     if (!s || !(s.s === 'disponible' || (a.pc && s.s === 'faible'))) { refus.push({ ref, motif: 'indisponible chez le fournisseur' }); continue; }
