@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EGREENCITY'S — Bornes de Recharge Électrique en Guyane</title>
-  <meta name="description" content="EGREENCITY'S — Fourniture, installation et maintenance de bornes de recharge électrique en Guyane. Projet de réseau inter-communal en préparation (dossier ADVENIR). Particuliers, entreprises, collectivités.">
+  <meta name="description" content="EGREENCITY'S — Fourniture, installation et maintenance de bornes de recharge électrique en Guyane. Projet de réseau inter-communal en préparation. Particuliers, entreprises, collectivités.">
   <meta name="author" content="EGREENCITY'S SAS">
   <meta name="robots" content="index, follow">
   <!-- Opt-out fouille de textes et données (directive UE 2019/790 art. 4) -->
@@ -34,13 +34,13 @@
   <meta name="geo.placename" content="Macouria, Guyane française">
   <meta name="geo.position" content="4.9362;-52.3545">
   <meta name="ICBM" content="4.9362, -52.3545">
-  <meta name="keywords" content="borne de recharge, véhicule électrique, Guyane, IRVE, ADVENIR, mobilité électrique, borne AC, borne DC, borne AC 22 kW, Cayenne, Kourou, Saint-Laurent, installation borne, maintenance IRVE">
+  <meta name="keywords" content="borne de recharge, véhicule électrique, Guyane, IRVE, mobilité électrique, borne AC, borne DC, borne AC 22 kW, Cayenne, Kourou, Saint-Laurent, installation borne, maintenance IRVE">
 
   <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="EGREENCITY'S">
   <meta property="og:title" content="EGREENCITY'S — Bornes de Recharge Électrique en Guyane">
-  <meta property="og:description" content="Fourniture, installation et maintenance de bornes de recharge pour véhicules électriques en Guyane française. Projet de réseau inter-communal (dossier ADVENIR 20 PDC).">
+  <meta property="og:description" content="Fourniture, installation et maintenance de bornes de recharge pour véhicules électriques en Guyane française. Projet de réseau inter-communal en préparation (20 points de charge).">
   <meta property="og:url" content="https://egreencitys.com/">
   <meta property="og:image" content="https://egreencitys.com/logo.png">
   <meta property="og:image:alt" content="Logo EGREENCITY'S — Bornes de recharge électrique Guyane">
@@ -71,7 +71,7 @@
     "url": "https://egreencitys.com/",
     "logo": "https://egreencitys.com/logo.png",
     "image": "https://egreencitys.com/logo.png",
-    "description": "Fourniture, installation et maintenance de bornes de recharge pour véhicules électriques en Guyane française. Projet de réseau inter-communal dans le cadre du programme ADVENIR.",
+    "description": "Fourniture, installation et maintenance de bornes de recharge pour véhicules électriques en Guyane française. Projet de réseau inter-communal en préparation.",
     "email": "egreencitys@gmail.com",
     "telephone": "+33651141118",
     "priceRange": "€€",
@@ -222,7 +222,7 @@
 
     /* ── STATS BAR ───────────────────────────────────── */
     .stats{background:var(--green);padding:2rem 3rem;}
-    .stats-inner{max-width:min(2460px, 96vw);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;}
+    .stats-inner{max-width:min(2460px, 96vw);margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;}
     .stat{text-align:center;color:#fff;}
     .stat-n{font-size:2.3rem;font-weight:800;line-height:1;display:block;}
     .stat-l{font-size:.78rem;opacity:.88;margin-top:.25rem;}
@@ -439,6 +439,7 @@
       .hero-inner{grid-template-columns:1fr;}
       .hero-map-wrap{display:none;}
       .stats-inner{grid-template-columns:repeat(2,1fr);}
+      .stats-inner .stat:last-child{grid-column:1 / -1;}
       .mission-grid,.econ-grid,.reseau-grid,.contact-grid{grid-template-columns:1fr;}
       .shop-banner{padding:3rem 1.5rem;}
       .shop-inner{grid-template-columns:1fr;gap:2rem;}
@@ -643,7 +644,6 @@
     <div class="stat rv"><span class="stat-n">20</span><span class="stat-l">PDC prévus — Phase 1</span></div>
     <div class="stat rv d1"><span class="stat-n">8</span><span class="stat-l">communes cibles</span></div>
     <div class="stat rv d2"><span class="stat-n">440 kW</span><span class="stat-l">puissance AC projetée</span></div>
-    <div class="stat rv d3"><span class="stat-n">64 %</span><span class="stat-l">visés via ADVENIR</span></div>
   </div>
 </div>
 
@@ -662,7 +662,7 @@
       <a href="/pages/boutique-wallbox.html" class="shop-btn">Accéder à la boutique →</a>
     </div>
     <div class="shop-cards">
-      <div class="shop-card"><span class="sc-emo">🔌</span><span class="sc-name">e-WallBox</span><span class="sc-price">dès 768,50&nbsp;€</span></div>
+      <div class="shop-card"><span class="sc-emo">🔌</span><span class="sc-name">e-WallBox</span><span class="sc-price">dès 1&nbsp;027,50&nbsp;€</span></div>
       <div class="shop-card"><span class="sc-emo">⚡</span><span class="sc-name">e-Smart 7 kW</span><span class="sc-price">dès 2&nbsp;539,10&nbsp;€</span></div>
       <div class="shop-card"><span class="sc-emo">🚀</span><span class="sc-name">e-Smart 22 kW</span><span class="sc-price">dès 2&nbsp;683,10&nbsp;€</span></div>
     </div>
@@ -701,8 +701,7 @@
         </p>
         <p>
           Nous proposons la <strong>fourniture, l'installation et la maintenance</strong> de bornes de recharge
-          (AC 2×22 kW et DC rapide 120 kW), en partenariat avec un fabricant français reconnu
-          et dans le respect des exigences du programme <strong>ADVENIR</strong> (AVERE-France).
+          (AC 2×22 kW et DC rapide 120 kW), en partenariat avec un fabricant français reconnu.
         </p>
         <p>
           Société par actions simplifiée au capital de 250 €, immatriculée au RCS de Cayenne
@@ -715,7 +714,7 @@
           <div class="av"><div class="chk">✓</div><span>Peu d'entretien</span></div>
           <div class="av"><div class="chk">✓</div><span>Zéro émission CO₂</span></div>
           <div class="av"><div class="chk">✓</div><span>Assurance moins chère</span></div>
-          <div class="av"><div class="chk">✓</div><span>Norme ADVENIR certifiée</span></div>
+          <div class="av"><div class="chk">✓</div><span>Bornes fabriquées en France</span></div>
         </div>
       </div>
     </div>
@@ -1073,7 +1072,7 @@
         <div class="vp-city" style="top:68%;left:78%"><label>Rémire</label></div>
         <div class="vp-city" style="top:70%;left:86%"><label>Matoury</label></div>
       </div>
-      <p class="vp-sub-txt" style="margin-top:2vh">Programme ADVENIR · jusqu'à <b style="color:#58d68d">9 000 €</b> / point de charge</p>
+      <p class="vp-sub-txt" style="margin-top:2vh">De Saint-Laurent-du-Maroni à Matoury, le long de la <b style="color:#58d68d">RN1</b></p>
     </div>
   </div>
   <div class="vp-scene" id="vp-s6" data-vp-photo="assets/video/scene6">
@@ -1082,9 +1081,9 @@
       <h2 class="vp-h2">Pour qui ?</h2>
       <h1 class="vp-h1">Chaque cas d'usage</h1>
       <div class="vp-aud-grid" id="vp-audGrid">
-        <div class="vp-aud"><span class="vp-icon">🏠</span><h3>Particulier</h3><p>WallBox 7 kW — dès 768,50 € tout compris</p></div>
-        <div class="vp-aud"><span class="vp-icon">🏢</span><h3>Entreprise</h3><p>Flotte & parking — ADVENIR jusqu'à 50 %</p></div>
-        <div class="vp-aud"><span class="vp-icon">🏛️</span><h3>Collectivité</h3><p>Voirie publique — jusqu'à 9 000 €/point</p></div>
+        <div class="vp-aud"><span class="vp-icon">🏠</span><h3>Particulier</h3><p>WallBox 7 kW — dès 1 027,50 € tout compris, avec prise Type 2S</p></div>
+        <div class="vp-aud"><span class="vp-icon">🏢</span><h3>Entreprise</h3><p>Flotte & parking — bornes AC 7 à 22 kW</p></div>
+        <div class="vp-aud"><span class="vp-icon">🏛️</span><h3>Collectivité</h3><p>Voirie publique — recharge AC et DC rapide</p></div>
         <div class="vp-aud"><span class="vp-icon">🏬</span><h3>Commerce</h3><p>Parking client — +12 % de CA*</p></div>
       </div>
     </div>
@@ -1147,9 +1146,9 @@
     {t:61,txt:"Deux prises pour voitures, deux prises domestiques pour scooters et vélos électriques."},
     {t:70.5,txt:"Notre projet : déployer sept stations connectées le long de la RN1."},
     {t:77,txt:"De Saint-Laurent-du-Maroni à Matoury, en passant par Iracoubo, point stratégique à mi-parcours, pour traverser la Guyane sans rupture de charge."},
-    {t:84,txt:"Premier jalon : 2026-2027, dans le cadre du programme national ADVENIR."},
+    {t:84,txt:"Premier jalon : 2026-2027."},
     {t:90.5,txt:"Particulier, entreprise, collectivité, commerce : nous équipons chaque cas d'usage."},
-    {t:97,txt:"De la WallBox domestique à la station 50 kW, avec accompagnement ADVENIR et maintenance 5 ans garantie."},
+    {t:97,txt:"De la WallBox domestique à la station 50 kW, avec accompagnement et maintenance 5 ans garantie."},
     {t:105.5,txt:"Découvrez combien vous économisez avec notre calculateur personnalisé."},
     {t:111,txt:"Contactez-nous pour une étude gratuite."},
     {t:115,txt:"EGREENCITY'S — la mobilité verte est déjà là. En Guyane."}
@@ -1440,18 +1439,15 @@
 <section class="partners" id="partenaires" style="padding:4rem 2rem 3rem;background:linear-gradient(180deg,#fff,var(--off));">
   <div style="max-width:min(2460px, 96vw);margin:0 auto;text-align:center;">
     <p style="font-size:.78rem;letter-spacing:2px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:2rem;">
-      Nos partenaires & programmes
+      Nos partenaires
     </p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2rem;align-items:center;">
       <div class="partner-card"><div class="pn-title" style="color:var(--green-deep);">Fabricant partenaire</div><div class="pn-sub">Fabricant partenaire<br>bornes AC/DC</div></div>
-      <div class="partner-card"><div class="pn-title" style="color:var(--blue);">ADVENIR</div><div class="pn-sub">Programme de<br>subvention d'État</div></div>
       <div class="partner-card"><div class="pn-title" style="color:var(--green-deep);">AVERE France</div><div class="pn-sub">Association<br>mobilité électrique</div></div>
       <div class="partner-card"><div class="pn-title" style="color:var(--blue);">EDF SEI</div><div class="pn-sub">Distributeur<br>électrique Guyane</div></div>
-      <div class="partner-card" style="opacity:.7;"><div class="pn-title" style="color:var(--green-deep);">Qualifelec IRVE</div><div class="pn-sub">Certification<br>(en cours)</div></div>
-      <div class="partner-card" style="opacity:.7;"><div class="pn-title" style="color:var(--green-deep);">AFNOR</div><div class="pn-sub">Normalisation<br>(en cours)</div></div>
     </div>
     <p style="margin-top:2rem;font-size:.75rem;color:var(--muted);font-style:italic;max-width:95ch;margin-left:auto;margin-right:auto;">
-      Les marques et références produits cités appartiennent à leurs propriétaires respectifs. ADVENIR est un programme de l'AVERE-France.
+      Les marques et références produits cités appartiennent à leurs propriétaires respectifs.
     </p>
   </div>
 </section>
@@ -1544,7 +1540,7 @@
       <div class="fbrand">
         <div class="logo-name">EGREENCITY'S</div>
         <span class="logo-tag">Borne De Recharge Électrique · Guyane</span>
-        <p>Projet de réseau de bornes de recharge en Guyane. Fourniture, installation et maintenance pour particuliers, entreprises et collectivités. Dossier ADVENIR en préparation.</p>
+        <p>Projet de réseau de bornes de recharge en Guyane. Fourniture, installation et maintenance pour particuliers, entreprises et collectivités.</p>
       </div>
       <div class="fcol">
         <h4>Navigation</h4>
@@ -1571,7 +1567,7 @@
           <li><a href="/pages/produits.html">City Borne Entreprises</a></li>
           <li><a href="/pages/produits.html">Borne Voirie Publique</a></li>
           <li><a href="/pages/produits.html">Quickcharger 50 kW</a></li>
-          <li><a href="/pages/produits.html">Maintenance ADVENIR</a></li>
+          <li><a href="/pages/produits.html">Maintenance</a></li>
         </ul>
       </div>
       <div class="fcol">
