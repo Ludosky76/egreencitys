@@ -187,8 +187,8 @@ window.CATALOG = {
         specs: [
           'Borne e-Wallbox NG — fabrication France E-TOTEM',
           'Configurable Monophasé 7 kW ou Triphasé 22 kW',
-          'Prix de base = borne nue ; ajoutez vos options',
-          'Prise Type 2S, cache et lecteur RFID en options',
+          'Prise Type 2S cochée par défaut (indispensable pour charger)',
+          'Cache de finition et lecteur RFID en options',
           'Transport France métropole inclus',
           'Protections différentielles à installer par un électricien IRVE',
         ],
@@ -400,10 +400,10 @@ window.CATALOG = {
     ]
   },
 
-  // ---- Gamme e-Premium AC (voirie publique, ADVENIR) -------------
+  // ---- Gamme e-Premium AC (voirie publique, collectivites) ------
   premium: {
     title: 'e-Premium AC',
-    subtitle: 'Voirie publique · ADVENIR',
+    subtitle: 'Voirie publique · collectivités',
     description: 'Borne inox premium 2×22 kW dédiée aux collectivités. Parafoudre, TPE optionnel, écran couleur 10", peinture zone humide compatible tropical.',
     icon: '🏛️',
     color: '#2B4DB5',
@@ -423,10 +423,9 @@ window.CATALOG = {
           '2 protections différentielles intégrées',
           '2 compteurs MID',
           'Parafoudre type 2',
-          'Modèle du programme ADVENIR',
           'Transport France métropole inclus',
         ],
-        tag: 'ADVENIR voirie publique'
+        tag: 'Voirie publique'
       }
     ]
   }

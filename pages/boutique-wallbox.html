@@ -560,8 +560,7 @@
     <div class="gar-grid">
       <div class="gar-card"><div class="icon">🛡️</div><h5>Garantie constructeur 2 ans</h5><p>Matériel E-TOTEM garanti 24 mois pièces + main d'œuvre.</p></div>
       <div class="gar-card"><div class="icon">🇫🇷</div><h5>Fabrication française</h5><p>Bornes conçues à Saint-Étienne (42), homologuées CE, IRVE.</p></div>
-      <div class="gar-card"><div class="icon">📍</div><h5>SAV local Guyane</h5><p>Équipe IRVE Qualifelec à Macouria, intervention 5 j ouvrés.</p></div>
-      <div class="gar-card"><div class="icon">💰</div><h5>Éligible ADVENIR</h5><p>Jusqu'à 2 700 € de subvention pour entreprises. On monte le dossier.</p></div>
+      <div class="gar-card"><div class="icon">📍</div><h5>SAV local Guyane</h5><p>À Macouria, avec notre électricien partenaire qualifié IRVE. Intervention 5 j ouvrés.</p></div>
       <div class="gar-card"><div class="icon">🔒</div><h5>Paiement Stripe sécurisé</h5><p>SSL, PCI-DSS niveau 1. Visa, Mastercard, Amex, Apple Pay, Google Pay.</p></div>
       <div class="gar-card"><div class="icon">📞</div><h5>Assistance 5j/7</h5><p>Hotline lundi-vendredi 8h-18h, par téléphone, email, WhatsApp.</p></div>
     </div>
@@ -572,7 +571,7 @@
 <section class="info-section alt" id="commande">
   <div class="info-block">
     <h2 class="info-title">Finaliser votre commande</h2>
-    <p class="info-sub">Remplissez ce formulaire — nous vous rappelons sous 24 h avec le devis final + lien de paiement.</p>
+    <p class="info-sub">Remplissez ce formulaire — nous vous rappelons sous 24 h pour confirmer votre commande et vous envoyer le lien de paiement.</p>
 
     <div class="form-block">
       <div id="order-summary" class="order-summary-box" style="display:none;"></div>
@@ -625,7 +624,7 @@
           <option value="">— Choisissez —</option>
           <option>Comptant (CB / virement)</option>
           <option>Paiement en 3× sans frais (partenaire bancaire)</option>
-          <option>Devis financement (ADVENIR / crédit-bail)</option>
+          <option>Devis financement (crédit-bail)</option>
         </select>
 
         <label for="installation">Installation par notre électricien partenaire IRVE ?</label>
@@ -646,8 +645,8 @@
         <!-- Bouton paiement Stripe direct (visible si commande mono-produit payable en ligne) -->
         <button type="button" id="btnPayStripe" onclick="payCartWithStripe()" style="display:none;background:#635BFF;margin-top:1.6rem;">💳 Payer par carte maintenant (1× ou 3×)</button>
 
-        <button type="submit" id="btnSubmitOrder">Envoyer ma commande (devis livraison sous 24 h) →</button>
-        <p class="rgpd" style="margin-top:1rem;text-align:center;">🔒 Paiement sécurisé Stripe · Livraison Chronopost devisée sous 24 h · Accusé immédiat</p>
+        <button type="submit" id="btnSubmitOrder">Envoyer ma commande (confirmation sous 24 h) →</button>
+        <p class="rgpd" style="margin-top:1rem;text-align:center;">🔒 Paiement sécurisé Stripe · Livraison incluse sur le littoral · Accusé immédiat</p>
       </form>
     </div>
   </div>
@@ -696,7 +695,7 @@
 
 <!-- FOOTER -->
 <footer>
-  <p><strong style="color:#fff;">EGREENCITY'S</strong> — Distributeur agréé E-TOTEM en Guyane</p>
+  <p><strong style="color:#fff;">EGREENCITY'S</strong> — Revendeur agréé E-TOTEM en Guyane</p>
   <p>1 rue Anangosi, Résidence La Rougerie — 97355 MACOURIA — Guyane française</p>
   <p>Tél : +33 6 51 14 11 18 | <a href="mailto:egreencitys@gmail.com">egreencitys@gmail.com</a> | <a href="https://egreencitys.com">egreencitys.com</a></p>
   <p><a href="/pages/boutique.html">Nos boutiques</a> · <a href="/pages/quincaillerie.html">Quincaillerie &amp; outillage</a> · <a href="/pages/legal/mentions-legales.html">Mentions légales</a> · <a href="/pages/legal/cgv.html">CGV</a> · <a href="/pages/faq.html">FAQ</a></p>
@@ -705,7 +704,7 @@
 
 <!-- STRIPE + CATALOG + COMPTE CLIENT -->
 <script src="/assets/js/stripe-config.js?v=9"></script>
-<script src="/assets/js/catalog.js?v=16"></script>
+<script src="/assets/js/catalog.js?v=17"></script>
 <script src="/assets/js/customer-account.js?v=2"></script>
   <script src="/assets/js/firebase-config.js?v=2"></script>
   <script src="/assets/js/firebase-auth.js?v=1"></script>
@@ -811,8 +810,9 @@
   }
 
   // ---- CARTE CONFIGURATEUR (e-WallBox murale : mono/tri + options a cocher) ----
-  // Etat : phase + options cochees. Par defaut TOUT decoche -> borne nue.
-  var muraleState = { phase: 'mono', opts: {} };
+  // Etat : phase + options cochees. Par defaut : prise Type 2S cochee
+  // (indispensable pour charger), cache et lecteur RFID decoches.
+  var muraleState = { phase: 'mono', opts: { p: true } };
 
   function findProduct(pid) {
     var found = null;
@@ -887,7 +887,7 @@
       +     '<span class="price-unit">tout compris</span>'
       +   '</div>'
       +   '<div class="price-split">💳 <span class="x">3×</span> <span id="mur-split">—</span> sans frais</div>'
-      +   '<div style="font-size:.72rem;color:var(--muted);margin:.6rem 0 .3rem;font-weight:600;">Borne nue — cochez vos options :</div>'
+      +   '<div style="font-size:.72rem;color:var(--muted);margin:.6rem 0 .3rem;font-weight:600;">Options (prise Type 2S cochée par défaut) :</div>'
       +   optsHtml
       +   '<div class="octroi-note" id="mur-bd" style="margin-top:.6rem;"></div>'
       +   '<ul class="product-specs">' + specsHtml + '</ul>'
