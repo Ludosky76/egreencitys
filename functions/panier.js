@@ -8,6 +8,9 @@ const POIDS_MAX_COLIS = 30; // kg — au-delà : devis
 const QTE_MAX = 20; // par référence (toutes lignes confondues)
 const REF_VALIDE = /^[A-Z0-9]{3,12}$/i;
 const REF_HOLEX = /^HX[0-9A-F]{9}$/;
+// destinations de livraison : Guyane (par défaut, inchangée) ; les autres ont leurs prix et leur forfait publiés
+// (quincaillerie-destinations.json, quincaillerie-prix-destinations.json) et ne sont payables que si panier_cb y est vrai
+const DESTINATIONS = ['gf', 'gp', 'mq', 'fr'];
 // batterie lithium vendue seule (UN3480, refusée au transport) : « Batterie… », ou kit/pack/set de batteries sans machine
 const BATT_DEBUT = /^(batterie|batteries|accu|accus)\b/i;
 const BATT_KIT = /^(kit|pack|set|lot)\b/i;
@@ -83,30 +86,51 @@ async function creerSessionPanier(corps, cleStripe) {
     if (!REF_VALIDE.test(ref) || !(q >= 1 && q <= 1000)) return { statut: 400, json: { erreur: 'panier invalide' } };
     qtes.set(ref, (qtes.get(ref) || 0) + q);
   }
+  const dest = corps.destination === undefined ? 'gf' : String(corps.destination);
+  if (!DESTINATIONS.includes(dest)) return { statut: 400, json: { erreur: 'destination' } };
+  const horsGuyane = dest !== 'gf';
   // Gamme Holex (réf. HX…) : catalogue à part, lu seulement si le panier en contient
   const avecHolex = [...qtes.keys()].some((r) => REF_HOLEX.test(r));
-  let catalogue, stock, offre, holex, reglages;
+  let catalogue, stock, offre, holex, reglages, destinations, prixDest;
   try {
-    [catalogue, stock, offre, holex, reglages] = await Promise.all([
+    [catalogue, stock, offre, holex, reglages, destinations, prixDest] = await Promise.all([
       lireJson('/assets/data/quincaillerie-catalogue.json'),
       lireJson('/assets/data/quincaillerie-stock.json'),
       lireJson('/assets/data/quincaillerie-offre.json', true),
       avecHolex ? lireJson('/assets/data/quincaillerie-holex.json') : null,
       lireJson('/assets/data/quincaillerie-paiement.json', true),
+      horsGuyane ? lireJson('/assets/data/quincaillerie-destinations.json') : null,
+      horsGuyane ? lireJson('/assets/data/quincaillerie-prix-destinations.json') : null,
     ]);
   } catch (e) {
     console.error('Lecture des données du site impossible :', e.message);
     return { statut: 503, json: { erreur: 'donnees' } };
   }
 
+  // autre destination que la Guyane : ouverte au paiement par carte, prix et forfait de la destination
+  let reglDest = null, colonne = -1, forfait = catalogue.forfait_expedition;
+  if (horsGuyane) {
+    reglDest = destinations && destinations.destinations && destinations.destinations[dest];
+    colonne = prixDest && Array.isArray(prixDest.colonnes) ? prixDest.colonnes.indexOf(dest) : -1;
+    if (!reglDest || reglDest.panier_cb !== true || colonne < 0 || !(reglDest.forfait > 0) || !/^[A-Z]{2}$/.test(String(reglDest.pays || ''))) {
+      return { statut: 409, json: { erreur: 'destination_fermee' } };
+    }
+    forfait = reglDest.forfait;
+  }
   const parRef = new Map(catalogue.articles.map((a) => [a.ref, a]));
   if (holex) holex.articles.forEach((a) => parRef.set(a.ref, a));
   const articles = [], refus = [];
   let total = 0, poids = 0, points = 0, cartons = 0;
   const unitesCarton = [];
   for (const [ref, q] of qtes) {
-    const a = parRef.get(ref);
+    let a = parRef.get(ref);
     if (!a) { refus.push({ ref, motif: 'article inconnu' }); continue; }
+    if (horsGuyane) {
+      // gamme Holex (carton) et article non chiffré pour la destination : pas de paiement par carte
+      const p = !a.pc && prixDest.prix && prixDest.prix[ref];
+      if (!p || !(p[colonne] > 0)) { refus.push({ ref, motif: 'article non proposé pour cette destination' }); continue; }
+      a = { ...a, prix: p[colonne] };
+    }
     if (q > QTE_MAX) { refus.push({ ref, motif: 'au plus ' + QTE_MAX + ' exemplaires par article (au-delà : envoyez la commande, nous vous répondons)' }); continue; }
     if (batterieSeule(a.nom)) { refus.push({ ref, motif: 'pile ou batterie au lithium vendue seule : interdite au transport aérien' }); continue; }
     if (a.devis) { refus.push({ ref, motif: 'colis de plus de 30 kg : sur devis' }); continue; }
@@ -134,7 +158,7 @@ async function creerSessionPanier(corps, cleStripe) {
   // Un seul colis : un seul forfait d'expédition. Offre de lancement : appliquée avec le VRAI
   // code Stripe (mêmes limites de date et de nombre d'utilisations que sur les liens d'article).
   const maintenant = Date.now();
-  const offreActive = !!(offre && offre.actif && offre.stripe_promotion_code
+  const offreActive = !horsGuyane && !!(offre && offre.actif && offre.stripe_promotion_code
     && maintenant >= Date.parse(offre.debut) && maintenant <= Date.parse(offre.fin));
   const offert = offreActive && total >= offre.seuil;
 
@@ -149,7 +173,7 @@ async function creerSessionPanier(corps, cleStripe) {
   // Carton Atelier : le 1er carton est compris dans les prix ; les suivants sont à la charge de la boutique (rien de facturé)
   line_items.push({
     quantity: 1,
-    price_data: { currency: 'eur', unit_amount: Math.round(catalogue.forfait_expedition * 100),
+    price_data: { currency: 'eur', unit_amount: Math.round(forfait * 100),
       product_data: { name: "Forfait d'expédition — un seul colis pour la commande" } },
   });
 
@@ -157,7 +181,7 @@ async function creerSessionPanier(corps, cleStripe) {
     mode: 'payment',
     line_items,
     locale: 'fr',
-    shipping_address_collection: { allowed_countries: ['GF', 'FR'] },
+    shipping_address_collection: { allowed_countries: horsGuyane ? [reglDest.pays] : ['GF', 'FR'] },
     phone_number_collection: { enabled: true },
     client_reference_id: 'QP-' + maintenant,
     metadata: {
@@ -166,12 +190,13 @@ async function creerSessionPanier(corps, cleStripe) {
       carton_atelier: points > 0 ? unitesCarton.reduce((s, p) => s + p, 0).toFixed(2) + ' kg, ' + cartons + ' carton(s)' : '',
       cartons_sup: cartons > 1 ? String(cartons - 1) : '',
       offre: offert ? offre.code : '',
+      destination: dest,
     },
     success_url: BOUTIQUE + '?paiement=succes&panier=1&sid={CHECKOUT_SESSION_ID}',
     cancel_url: BOUTIQUE + '#panier',
   };
   if (offert) params.discounts = [{ promotion_code: offre.stripe_promotion_code }];
-  else params.allow_promotion_codes = true;
+  else if (!horsGuyane) params.allow_promotion_codes = true;  // codes de la boutique : conçus pour la Guyane
   const email = String(corps.email || '').trim();
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) params.customer_email = email.slice(0, 200);
 
@@ -198,4 +223,4 @@ async function creerSessionPanier(corps, cleStripe) {
   return { statut: 502, json: { erreur: 'stripe' } };
 }
 
-module.exports = { creerSessionPanier, lireJson, decouper, nbCartons, batterieSeule, SITE, BOUTIQUE, QTE_MAX, REF_HOLEX };
+module.exports = { creerSessionPanier, lireJson, decouper, nbCartons, batterieSeule, SITE, BOUTIQUE, QTE_MAX, REF_HOLEX, DESTINATIONS };

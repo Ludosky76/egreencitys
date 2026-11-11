@@ -65,7 +65,9 @@
     });
     etat.liens = {};        /* liens de paiement « un article » : au prix Guyane */
     etat.offre = null;      /* offre de lancement : Guyane */
-    etat.paiement = null;   /* paiement du panier par carte et carton groupé : pas encore ouverts ici */
+    /* paiement du panier par carte : seulement si la destination y est ouverte (panier_cb) ; carton groupé : Guyane */
+    etat.paiement = (d.panier_cb === true && etat.paiement && etat.paiement.panier_cb && etat.paiement.fonction)
+      ? { panier_cb: true, fonction: etat.paiement.fonction } : null;
     /* packs : seulement là où ils sont chiffrés pour la destination (prix fixe du pack, forfait compris) ;
        super packs Holex et cartons d'outillage : Guyane */
     if (packs && etat.promo) {

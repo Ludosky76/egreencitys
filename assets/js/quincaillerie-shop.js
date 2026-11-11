@@ -1344,7 +1344,8 @@
     var t = totalPanier(), ts = Date.now();
     fetch(etat.paiement.fonction, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ panier: etat.panier.map(function (l) { return { ref: l.ref, q: l.q }; }), email: ($('q-email').value || '').trim() })
+      body: JSON.stringify({ panier: etat.panier.map(function (l) { return { ref: l.ref, q: l.q }; }), email: ($('q-email').value || '').trim(),
+        destination: DEST ? DEST.code() : 'gf' })
     }).then(function (r) { return r.json().then(function (j) { return { statut: r.status, j: j }; }); })
       .then(function (x) {
         if (x.statut === 200 && x.j.url) {
