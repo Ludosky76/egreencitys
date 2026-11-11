@@ -14,7 +14,16 @@
 (function () {
   'use strict';
 
-  var CLE_PANIER = 'egc_quinc_panier';
+  /* un panier par destination de livraison (quincaillerie-destination.js, chargé ici s'il manque à la page) */
+  function clePanier() { return window.EGCQDest ? window.EGCQDest.clePanier('egc_quinc_panier') : 'egc_quinc_panier'; }
+  function dz(cle, defaut) { var i = window.EGCQDest && !window.EGCQDest.estGuyane() && window.EGCQDest.info(); return (i && i[cle]) || defaut; }
+  var destPret = window.EGCQDest ? window.EGCQDest.pret : new Promise(function (ok) {
+    var s = document.createElement('script');
+    s.src = '/assets/js/quincaillerie-destination.js?v=1';
+    s.onload = function () { ok(window.EGCQDest ? window.EGCQDest.pret : null); };
+    s.onerror = function () { ok(null); };
+    document.head.appendChild(s);
+  });
   var URL_BOUTIQUE = '/pages/boutique-quincaillerie.html';
   /* quincaillerie-url.js ; repli sur les anciennes adresses si une page en cache ne l'a pas chargé */
   var ADR = window.EGCQUrl || {
@@ -62,7 +71,7 @@
   var PANIER_RETENTION = 7 * 24 * 3600 * 1000;
   function panier() {
     try {
-      var j = JSON.parse(localStorage.getItem(CLE_PANIER) || 'null');
+      var j = JSON.parse(localStorage.getItem(clePanier()) || 'null');
       if (!j) return [];
       if (Array.isArray(j)) return j; /* ancien format */
       return (j.maj && Date.now() - j.maj > PANIER_RETENTION) ? [] : (j.lignes || []);
@@ -80,7 +89,7 @@
     var l = p.find(function (x) { return x.ref === ref && !x.pack; });
     if (l) l.q += 1; else p.push({ ref: ref, q: 1 });
     var paquet = { maj: Date.now(), lignes: p };
-    try { localStorage.setItem(CLE_PANIER, JSON.stringify(paquet)); } catch (e) {}
+    try { localStorage.setItem(clePanier(), JSON.stringify(paquet)); } catch (e) {}
     if (window.EGCQCompte && window.EGCQCompte.utilisateur()) window.EGCQCompte.sauverPanier(paquet);
     majPastille();
     if (bouton) { bouton.textContent = '✓ Ajouté au panier'; bouton.disabled = true; }
@@ -91,7 +100,7 @@
     var l = p.find(function (x) { return x.ref === ref && !x.pack; });
     if (l) l.q += 1; else p.push({ ref: ref, q: 1 });
     var paquet = { maj: Date.now(), lignes: p };
-    try { localStorage.setItem(CLE_PANIER, JSON.stringify(paquet)); } catch (e) {}
+    try { localStorage.setItem(clePanier(), JSON.stringify(paquet)); } catch (e) {}
     /* client connecté : pousser aussi sur le compte avant de partir
        (au plus 900 ms d'attente pour ne pas bloquer la navigation) */
     var attente = (window.EGCQCompte && window.EGCQCompte.utilisateur())
@@ -208,7 +217,7 @@
       var meta = document.querySelector('meta[name="description"]');
       if (meta) meta.setAttribute('content', a.nom + ' : ' + (a.devis ? 'prix sur devis (colis de plus de 30 kg ou hors format)'
         : eur(a.prix) + ' octroi de mer et transport inclus, + forfait d’expédition unique de ' + eur(etat.catalogue.forfait_expedition) + ' par commande')
-        + '. Livré en Guyane. Réf. ' + ref + '.');
+        + '. Livré ' + dz('en', 'en Guyane') + '. Réf. ' + ref + '.');
       var canon = document.querySelector('link[rel="canonical"]');
       if (canon) canon.setAttribute('href', 'https://egreencitys.com' + ADR.fiche(a));
     }
@@ -232,11 +241,11 @@
       +     (a.devis
       ?       '<div class="qf-prix q-prix-devis">Prix sur devis</div>'
       +       '<div class="q-inclus">Colis de plus de 30&nbsp;kg ou hors format : nous chiffrons un acheminement adapté (fret), octroi de mer compris</div>'
-      +       '<div class="qf-livraison"><strong>Délai confirmé avec le devis</strong> · livré à domicile partout en Guyane</div>'
+      +       '<div class="qf-livraison"><strong>Délai confirmé avec le devis</strong> · ' + dz('delai', 'livré à domicile partout en Guyane') + '</div>'
       :       '<div class="qf-prix">' + eur(a.prix) + '<span class="q-ttc">TTC</span></div>'
       +       (a.lot > 1 ? '<div class="qf-livraison">Lot de ' + a.lot + ' pièces, soit <strong>' + eur(a.prix / a.lot) + '/pièce</strong></div>' : '')  /* prix affiché = le lot */
-      +       '<div class="q-inclus">Octroi de mer &amp; transport vers la Guyane inclus*</div>'
-      +       '<div class="qf-livraison"><strong>' + delaiTexte(ref, a) + '</strong> · livré à domicile partout en Guyane</div>')
+      +       '<div class="q-inclus">' + dz('inclus', 'Octroi de mer &amp; transport vers la Guyane inclus*') + '</div>'
+      +       '<div class="qf-livraison"><strong>' + delaiTexte(ref, a) + '</strong> · ' + dz('delai', 'livré à domicile partout en Guyane') + '</div>')
       +     '<div class="qf-boutons">'
       +     (a.pc
       ?       (statutDe(ref) !== 'introuvable' ? '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>' : '<a class="q-pay" href="' + urlDemande(ref) + '">✉️ Faire une demande</a>')
@@ -425,7 +434,8 @@
     fetch('/assets/data/quincaillerie-stock.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return { stock: {} }; }),
     fetch('/assets/data/quincaillerie-liens.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
     fetch('/assets/data/quincaillerie-offre.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-    fetch('/assets/data/quincaillerie-compat.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
+    fetch('/assets/data/quincaillerie-compat.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
+    destPret  /* destination de livraison : réglages et prix chargés */
   ]).then(function (res) {
     if (redirection) return;
     etat.compat = res[4] || {};
@@ -433,8 +443,14 @@
     etat.offre = res[3];
     etat.stock = res[1].stock || {};
     etat.liens = res[2] || {};
+    if (window.EGCQDest) window.EGCQDest.appliquer(etat);  /* prix, forfait et périmètre de la destination */
     initEvenements(); rendreMenu(); majPastille();
     if (ref) rendre(ref); else rendreIntrouvable();
+    /* article non proposé pour la destination choisie (gamme Holex, article non chiffré) */
+    if (ref && window.EGCQDest && !window.EGCQDest.estGuyane() && !etat.catalogue.articles.some(function (x) { return x.ref === ref; })) {
+      $('qf-haut').innerHTML = '<p class="q-vide" style="grid-column:1/-1;">Cet article n’est pas encore proposé pour une livraison ' + esc(window.EGCQDest.info().en)
+        + '. Changez de destination dans la barre « Livraison », ou <a href="' + URL_BOUTIQUE + '">parcourez la boutique</a>.</p>';
+    }
     /* état du bouton d'alerte une fois le compte connu */
     if (window.EGCQCompte) {
       window.EGCQCompte.pret.then(function (u) {

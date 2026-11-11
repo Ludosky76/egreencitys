@@ -1,0 +1,48 @@
+{
+ "prototype": true,
+ "ordre": ["gf", "gp", "mq", "fr"],
+ "destinations": {
+  "gf": {
+   "nom": "Guyane",
+   "en": "en Guyane",
+   "pays": "GF",
+   "code_postal": "973"
+  },
+  "gp": {
+   "nom": "Guadeloupe",
+   "en": "en Guadeloupe",
+   "pays": "GP",
+   "code_postal": "971",
+   "forfait": 17.60,
+   "inclus": "Octroi de mer, TVA 8,5 % et transport vers la Guadeloupe inclus*",
+   "inclus_court": "Octroi, TVA &amp; livraison inclus*",
+   "mentions": "* Prix tout compris : article + octroi de mer + TVA à 8,5 % + transport métropole → Guadeloupe au poids. Forfait d'expédition 17,60 € par commande. Aucune taxe à régler à la livraison. Vente à l'article ; les packs et les cartons ne sont pas proposés pour cette destination.",
+   "delai": "livré à domicile en Guadeloupe",
+   "detail_seul": true
+  },
+  "mq": {
+   "nom": "Martinique",
+   "en": "en Martinique",
+   "pays": "MQ",
+   "code_postal": "972",
+   "forfait": 17.60,
+   "inclus": "Octroi de mer, TVA 8,5 % et transport vers la Martinique inclus*",
+   "inclus_court": "Octroi, TVA &amp; livraison inclus*",
+   "mentions": "* Prix tout compris : article + octroi de mer + TVA à 8,5 % + transport métropole → Martinique au poids. Forfait d'expédition 17,60 € par commande. Aucune taxe à régler à la livraison. Vente à l'article ; les packs et les cartons ne sont pas proposés pour cette destination.",
+   "delai": "livré à domicile en Martinique",
+   "detail_seul": true
+  },
+  "fr": {
+   "nom": "France métropolitaine",
+   "en": "en France métropolitaine",
+   "pays": "FR",
+   "code_postal": "",
+   "forfait": 7.60,
+   "inclus": "Transport en France métropolitaine inclus*",
+   "inclus_court": "Livraison incluse*",
+   "mentions": "* Prix tout compris : article + transport au poids en France métropolitaine. Forfait d'expédition 7,60 € par commande.",
+   "delai": "livré à domicile en France métropolitaine",
+   "detail_seul": false
+  }
+ }
+}

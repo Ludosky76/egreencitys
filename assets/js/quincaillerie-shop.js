@@ -26,7 +26,11 @@
   'use strict';
 
   var PAR_PAGE = 24;
-  var CLE_PANIER = 'egc_quinc_panier';
+  /* un panier par destination de livraison (quincaillerie-destination.js) ; Guyane : clé d'origine */
+  var DEST = window.EGCQDest || null;
+  var HORS_GUYANE = !!DEST && !DEST.estGuyane();
+  var CLE_PANIER = DEST ? DEST.clePanier('egc_quinc_panier') : 'egc_quinc_panier';
+  function enDest() { return (DEST && DEST.info().en) || 'en Guyane'; }
   /* Chaque produit a sa propre page web statique (quincaillerie-url.js) */
   var ADR = window.EGCQUrl || { /* repli si une page en cache n'a pas chargé quincaillerie-url.js */
     fiche: function (a) { return '/pages/produit-quincaillerie.html?ref=' + encodeURIComponent(a.ref); },
@@ -180,7 +184,7 @@
     var dewalt = Object.keys(etat.f.m).length === 1 && etat.f.m.DeWalt;
     var holex = Object.keys(etat.f.m).length === 1 && etat.f.m.Holex, c = cartonConfig();
     $('q-actifs').innerHTML = (holex ? '<div class="q-bandeau-holex"><strong>Holex</strong> : outillage de précision pour l’atelier, la maintenance et le chantier — '
-        + 'forets, fraises, tarauds, mesure, serrage, outillage à main, EPI. Prix tout compris livrés en Guyane.'
+        + 'forets, fraises, tarauds, mesure, serrage, outillage à main, EPI. Prix tout compris livrés ' + enDest() + '.'
         + (groupeActif()
           ? '<br>📦 Ces articles partent par carton : <strong>carton groupé sans minimum</strong> (aucune carte demandée : vous réglez seulement quand le carton commun part), ou <strong>commande unique</strong> à partir d’environ '
             + eur(c.minimum_affiche).replace(',00', '') + ' d’articles Holex. Livraison ' + esc(c.delai) + '.'
@@ -188,7 +192,7 @@
             + eur(c.minimum_affiche).replace(',00', '') + ' d’articles Holex</strong>, livraison ' + esc(c.delai) + '. Le voyant du panier vous dit en direct ce qu’il reste.')
         + '<div id="q-carton-direct" class="q-carton-direct"></div></div>' : '')
       + (dewalt ? '<div class="q-bandeau-dewalt"><strong>DeWalt</strong> : outils filaires et sans fil, batteries 18 V XR et 54 V FlexVolt, accessoires — '
-        + 'prix tout compris livrés en Guyane. <a href="/quincaillerie-pro/marque/dewalt.html">Toute la gamme DeWalt</a></div>' : '')
+        + 'prix tout compris livrés ' + enDest() + '. <a href="/quincaillerie-pro/marque/dewalt.html">Toute la gamme DeWalt</a></div>' : '')
       + (puces.length ? '<div class="qv-puces">' + puces.join('') + '<button type="button" class="qv-puce qv-tout" data-effacer="1">Tout effacer</button></div>' : '');
   }
   /* état des filtres dans l'adresse : partageable, et conservé au retour depuis une fiche.
@@ -289,7 +293,7 @@
             + '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · délai confirmé avec le devis</div>'
           : '<div class="q-prix">' + eur(a.prix) + '<span class="q-ttc">TTC</span></div>'
             + (a.lot > 1 ? '<div class="q-poids">Lot de ' + a.lot + ', soit ' + eur(a.prix / a.lot) + '/pièce</div>' : '')  /* prix affiché = le lot */
-            + '<div class="q-inclus">Octroi &amp; livraison inclus*</div>'
+            + '<div class="q-inclus">' + ((HORS_GUYANE && DEST.info().inclus_court) || 'Octroi &amp; livraison inclus*') + '</div>'
             + (a.poids ? '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · ' + delaiTexte(a.ref, a) + '</div>' : ''))
       + '<div class="q-actions">'
       + (a.pc  /* Carton Atelier : panier seulement (pas de paiement article seul), sauf fin de série */
@@ -1216,7 +1220,7 @@
     var nbDewalt = etat.catalogue.articles.filter(function (a) { return fac(a).m === 'DeWalt'; }).length;
     var nbHolex = etat.holex ? etat.holex.articles.length : 0;
     var chips = (nbDewalt ? '<button type="button" class="q-onglet-dewalt" data-marque="DeWalt" title="Toute la gamme DeWalt">DeWalt <span>' + nbDewalt + '</span></button>' : '')
-      + '<button type="button" class="q-onglet-holex" data-marque="Holex" title="Outillage de précision Holex — envoi groupé en Carton Atelier">Holex' + (nbHolex ? ' <span>' + nbHolex.toLocaleString('fr-FR') + '</span>' : '') + '</button>'
+      + (HORS_GUYANE ? '' : '<button type="button" class="q-onglet-holex" data-marque="Holex" title="Outillage de précision Holex — envoi groupé en Carton Atelier">Holex' + (nbHolex ? ' <span>' + nbHolex.toLocaleString('fr-FR') + '</span>' : '') + '</button>')
       + '<button type="button" data-rayon="">Tous les rayons</button>';
     var menu = '<div class="q-menu-titre">Rayons</div>'
       + '<a href="#" data-rayon="">Tous les rayons <span class="nb">' + total.toLocaleString('fr-FR') + '</span></a>';
@@ -1268,6 +1272,7 @@
     if (etat.panier.length < avant) { etat.holexRetires = avant - etat.panier.length; sauver(); }
   }
   function chargerHolex() {
+    if (HORS_GUYANE) return Promise.resolve();  /* gamme Holex : Guyane seulement pour l'instant */
     if (etat.holexCharge) return etat.holexCharge;
     if ($('q-compte')) $('q-compte').classList.add('q-chargement');
     etat.holexCharge = fetch('/assets/data/quincaillerie-holex.json')
@@ -1453,6 +1458,7 @@
     var corps = {
       _subject: 'Commande quincaillerie — ' + eur(t.total),
       email: email, telephone: tel,
+      destination: DEST ? DEST.info().nom : 'Guyane',
       panier: lignes,
       carton_atelier: ci.n ? ci.n + ' article(s), ' + kgTexte(ci.kg) + ' kg, ' + ci.cartons + ' carton(s)' + (ci.lourd ? ' — PLUS DE ' + (ci.c.cartons_max || 1) + ' CARTON(S) : DEVIS' : '') : 'aucun',
       /* note interne : chaque pack à prix fixe inclut le forfait ; avec un super pack et un autre pack, il n'est dû qu'une fois */
@@ -1534,7 +1540,8 @@
     fetch('/assets/data/quincaillerie-paiement.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
     fetch('/assets/data/quincaillerie-facettes.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
     fetch('/assets/data/quincaillerie-compat.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
-    fetch('/assets/data/quincaillerie-promo.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    fetch('/assets/data/quincaillerie-promo.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+    DEST ? DEST.pret : null  /* destination de livraison : réglages et prix chargés */
   ]).then(function (res) {
     etat.promo = res[7];
     etat.facettes = res[5] || {};
@@ -1544,6 +1551,8 @@
     etat.paiement = res[4];
     etat.stock = res[1].stock || {}; etat.stockMaj = res[1].maj || 0;
     etat.liens = res[2] || {};
+    HORS_GUYANE = !!DEST && !DEST.estGuyane();  /* réglages illisibles : retour à la Guyane */
+    if (DEST) DEST.appliquer(etat);             /* prix, forfait et périmètre de la destination */
     indexer();
     var sel = $('q-cat');
     etat.catalogue.categories.forEach(function (c) {
@@ -1558,9 +1567,11 @@
     lireUrl(); /* ?q= &marque= &v= … : recherche et filtres repris de l'adresse */
     charger(); initEvenements(); initVolet(); construireRayons(); afficherOffre(); afficherPromo(); rendre(); rendrePanier();
     traiterRetourPaiement();
-    reconcilierPanierCompte();
-    chargerGroupe();
-    if (holexUtile()) chargerHolex();
+    if (!HORS_GUYANE) {  /* panier du compte, carton groupé et gamme Holex : Guyane */
+      reconcilierPanierCompte();
+      chargerGroupe();
+      if (holexUtile()) chargerHolex();
+    }
     /* anciens liens #a=REF (modal) : chaque produit a désormais sa page */
     if (location.hash.indexOf('#a=') === 0) {
       var refInitiale = decodeURIComponent(location.hash.slice(3));
