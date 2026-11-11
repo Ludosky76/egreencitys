@@ -85,9 +85,8 @@ Pour chacune des **17 URLs** du sitemap, dans Google Search Console :
 12. https://egreencitys.com/pages/economies.html
 13. https://egreencitys.com/pages/faq.html
 14. https://egreencitys.com/pages/blog.html
-15. https://egreencitys.com/blog/guide-advenir-2026.html
-16. https://egreencitys.com/pages/legal/cgv.html
-17. https://egreencitys.com/pages/legal/mentions-legales.html
+15. https://egreencitys.com/pages/legal/cgv.html
+16. https://egreencitys.com/pages/legal/mentions-legales.html
 
 ### Étape 3 — Valider la correction du 404
 
