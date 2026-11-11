@@ -19,7 +19,7 @@
   function dz(cle, defaut) { var i = window.EGCQDest && !window.EGCQDest.estGuyane() && window.EGCQDest.info(); return (i && i[cle]) || defaut; }
   var destPret = window.EGCQDest ? window.EGCQDest.pret : new Promise(function (ok) {
     var s = document.createElement('script');
-    s.src = '/assets/js/quincaillerie-destination.js?v=2';
+    s.src = '/assets/js/quincaillerie-destination.js?v=3';
     s.onload = function () { ok(window.EGCQDest ? window.EGCQDest.pret : null); };
     s.onerror = function () { ok(null); };
     document.head.appendChild(s);
@@ -449,7 +449,7 @@
     /* article non proposé pour la destination choisie (gamme Holex, article non chiffré) */
     if (ref && window.EGCQDest && !window.EGCQDest.estGuyane() && !etat.catalogue.articles.some(function (x) { return x.ref === ref; })) {
       $('qf-haut').innerHTML = '<p class="q-vide" style="grid-column:1/-1;">Cet article n’est pas encore proposé pour une livraison ' + esc(window.EGCQDest.info().en)
-        + '. Changez de destination dans la barre « Livraison », ou <a href="' + URL_BOUTIQUE + '">parcourez la boutique</a>.</p>';
+        + '. Changez de département dans la barre « Votre département », ou <a href="' + URL_BOUTIQUE + '">parcourez la boutique</a>.</p>';
     }
     /* état du bouton d'alerte une fois le compte connu */
     if (window.EGCQCompte) {

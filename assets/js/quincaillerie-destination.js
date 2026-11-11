@@ -93,7 +93,7 @@
     var options = cfg.ordre.map(function (c) {
       return '<option value="' + c + '"' + (c === code ? ' selected' : '') + '>' + cfg.destinations[c].nom + '</option>';
     }).join('');
-    b.innerHTML = '<label for="q-dest-choix"><strong>📍 Livraison :</strong></label>'
+    b.innerHTML = '<label for="q-dest-choix"><strong>📍 Votre département :</strong></label>'
       + '<select id="q-dest-choix" style="font:inherit;padding:.3rem .5rem;border-radius:8px;border:1px solid #9aa8dd;background:#fff;color:inherit;max-width:100%">' + options + '</select>'
       + (choisie ? '' : '<button type="button" id="q-dest-ok" style="font:inherit;font-weight:700;padding:.3rem .8rem;border-radius:8px;border:0;background:#2A39C0;color:#fff;cursor:pointer">Confirmer</button>'
         + '<span style="flex-basis:100%">Nous livrons en Guyane, en Guadeloupe, en Martinique et en France métropolitaine : les prix affichés sont ceux de votre destination.</span>')

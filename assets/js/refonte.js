@@ -81,7 +81,7 @@
   /* visiteur hors Guyane : pas d'offre d'installation de bornes, seulement une demande d'informations (bornes-zone.js) */
   (function () {
     var s = document.createElement('script');
-    s.src = '/assets/js/bornes-zone.js?v=1';
+    s.src = '/assets/js/bornes-zone.js?v=2';
     document.head.appendChild(s);
   })();
 
