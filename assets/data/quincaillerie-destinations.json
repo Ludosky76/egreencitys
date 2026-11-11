@@ -1,6 +1,11 @@
 {
  "prototype": true,
- "ordre": ["gf", "gp", "mq", "fr"],
+ "ordre": [
+  "gf",
+  "gp",
+  "mq",
+  "fr"
+ ],
  "destinations": {
   "gf": {
    "nom": "Guyane",
@@ -14,13 +19,43 @@
    "pays": "GP",
    "code_postal": "971",
    "panier_cb": false,
-   "forfait": 17.60,
-   "inclus": "Octroi de mer, TVA 8,5 % et transport vers la Guadeloupe inclus*",
-   "inclus_court": "Octroi, TVA &amp; livraison inclus*",
-   "mentions": "* Prix tout compris : article + octroi de mer + TVA à 8,5 % + transport métropole → Guadeloupe au poids. Forfait d'expédition 17,60 € par commande. Aucune taxe à régler à la livraison. Vente à l'article ; les packs et les cartons ne sont pas proposés pour cette destination.",
+   "inclus": "Octroi de mer et TVA 8,5 % inclus* · expédition au poids en plus",
+   "inclus_court": "Octroi &amp; TVA inclus* · + expédition",
+   "mentions": "* Prix de l'article, octroi de mer et TVA à 8,5 % compris. L'expédition vers la Guadeloupe est calculée au poids de la commande (à partir de 13,22 €) et affichée dans le panier avant validation. Aucune taxe à régler à la livraison. Vente à l'article ; les packs et les cartons ne sont pas proposés pour cette destination.",
    "holex": false,
    "delai": "livré à domicile en Guadeloupe",
-   "detail_seul": true
+   "detail_seul": true,
+   "grille": [
+    [
+     0.5,
+     13.22
+    ],
+    [
+     1,
+     20.9
+    ],
+    [
+     2,
+     28.48
+    ],
+    [
+     5,
+     42.79
+    ],
+    [
+     10,
+     68.55
+    ],
+    [
+     15,
+     143.22
+    ],
+    [
+     30,
+     157.32
+    ]
+   ],
+   "intro": "octroi de mer et TVA 8,5 % inclus dans les prix"
   },
   "mq": {
    "nom": "Martinique",
@@ -28,13 +63,43 @@
    "pays": "MQ",
    "code_postal": "972",
    "panier_cb": false,
-   "forfait": 17.60,
-   "inclus": "Octroi de mer, TVA 8,5 % et transport vers la Martinique inclus*",
-   "inclus_court": "Octroi, TVA &amp; livraison inclus*",
-   "mentions": "* Prix tout compris : article + octroi de mer + TVA à 8,5 % + transport métropole → Martinique au poids. Forfait d'expédition 17,60 € par commande. Aucune taxe à régler à la livraison. Vente à l'article ; les packs et les cartons ne sont pas proposés pour cette destination.",
+   "inclus": "Octroi de mer et TVA 8,5 % inclus* · expédition au poids en plus",
+   "inclus_court": "Octroi &amp; TVA inclus* · + expédition",
+   "mentions": "* Prix de l'article, octroi de mer et TVA à 8,5 % compris. L'expédition vers la Martinique est calculée au poids de la commande (à partir de 13,22 €) et affichée dans le panier avant validation. Aucune taxe à régler à la livraison. Vente à l'article ; les packs et les cartons ne sont pas proposés pour cette destination.",
    "holex": false,
    "delai": "livré à domicile en Martinique",
-   "detail_seul": true
+   "detail_seul": true,
+   "grille": [
+    [
+     0.5,
+     13.22
+    ],
+    [
+     1,
+     20.9
+    ],
+    [
+     2,
+     28.48
+    ],
+    [
+     5,
+     42.79
+    ],
+    [
+     10,
+     68.55
+    ],
+    [
+     15,
+     143.22
+    ],
+    [
+     30,
+     157.32
+    ]
+   ],
+   "intro": "octroi de mer et TVA 8,5 % inclus dans les prix"
   },
   "fr": {
    "nom": "France métropolitaine",
@@ -42,12 +107,50 @@
    "pays": "FR",
    "code_postal": "",
    "panier_cb": false,
-   "forfait": 7.60,
-   "inclus": "Transport en France métropolitaine inclus*",
-   "inclus_court": "Livraison incluse*",
-   "mentions": "* Prix tout compris : article + transport au poids en France métropolitaine. Forfait d'expédition 7,60 € par commande.",
+   "inclus": "Expédition au poids en plus*",
+   "inclus_court": "+ expédition au poids*",
+   "mentions": "* Prix de l'article. L'expédition en France métropolitaine est calculée au poids de la commande (à partir de 5,49 €) et affichée dans le panier avant validation. Packs à prix fixe : expédition comprise.",
    "delai": "livré à domicile en France métropolitaine",
-   "detail_seul": false
+   "detail_seul": false,
+   "grille": [
+    [
+     0.25,
+     5.49
+    ],
+    [
+     0.5,
+     7.59
+    ],
+    [
+     0.75,
+     9.29
+    ],
+    [
+     1,
+     9.59
+    ],
+    [
+     2,
+     11.19
+    ],
+    [
+     5,
+     17.39
+    ],
+    [
+     10,
+     25.29
+    ],
+    [
+     15,
+     31.99
+    ],
+    [
+     30,
+     39.59
+    ]
+   ],
+   "intro": ""
   }
  }
 }

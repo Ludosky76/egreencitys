@@ -112,10 +112,10 @@ async function creerSessionPanier(corps, cleStripe) {
   if (horsGuyane) {
     reglDest = destinations && destinations.destinations && destinations.destinations[dest];
     colonne = prixDest && Array.isArray(prixDest.colonnes) ? prixDest.colonnes.indexOf(dest) : -1;
-    if (!reglDest || reglDest.panier_cb !== true || colonne < 0 || !(reglDest.forfait > 0) || !/^[A-Z]{2}$/.test(String(reglDest.pays || ''))) {
+    if (!reglDest || reglDest.panier_cb !== true || colonne < 0 || !(reglDest.forfait > 0 || (Array.isArray(reglDest.grille) && reglDest.grille.length)) || !/^[A-Z]{2}$/.test(String(reglDest.pays || ''))) {
       return { statut: 409, json: { erreur: 'destination_fermee' } };
     }
-    forfait = reglDest.forfait;
+    forfait = reglDest.forfait;  // remplacé plus bas par la grille au poids, si la destination en a une
   }
   const parRef = new Map(catalogue.articles.map((a) => [a.ref, a]));
   if (holex) holex.articles.forEach((a) => parRef.set(a.ref, a));
@@ -138,10 +138,16 @@ async function creerSessionPanier(corps, cleStripe) {
     if (!s || !(s.s === 'disponible' || (a.pc && s.s === 'faible'))) { refus.push({ ref, motif: 'indisponible chez le fournisseur' }); continue; }
     articles.push({ a, q });
     total += a.prix * q;
-    if (a.pc) { points += a.pc * q; for (let i = 0; i < q; i++) unitesCarton.push(a.poids || 0.5); } else poids += (a.poids || 0) * q;
+    if (a.pc) { points += a.pc * q; for (let i = 0; i < q; i++) unitesCarton.push(a.poids || 0.5); } else poids += (a.poids || (horsGuyane ? 2 : 0)) * q;
   }
   if (refus.length) return { statut: 409, json: { erreur: 'panier', refus } };
   if (poids > POIDS_MAX_COLIS) return { statut: 409, json: { erreur: 'poids', poids: Math.round(poids * 10) / 10 } };
+  // destination à grille : l'expédition est le prix de la tranche de poids de la commande
+  if (horsGuyane && Array.isArray(reglDest.grille) && reglDest.grille.length) {
+    const tranche = reglDest.grille.find((t) => poids <= t[0] + 1e-9) || reglDest.grille[reglDest.grille.length - 1];
+    forfait = tranche[1];
+    if (!(forfait > 0)) return { statut: 409, json: { erreur: 'destination_fermee' } };
+  }
   // Carton Atelier : part seulement complet (minimum d'achat fournisseur) et dans sa limite de poids
   if (points > 0) {
     const c = holex.carton;
@@ -174,7 +180,7 @@ async function creerSessionPanier(corps, cleStripe) {
   line_items.push({
     quantity: 1,
     price_data: { currency: 'eur', unit_amount: Math.round(forfait * 100),
-      product_data: { name: "Forfait d'expédition — un seul colis pour la commande" } },
+      product_data: { name: horsGuyane ? 'Expédition — ' + poids.toFixed(1).replace('.', ',') + ' kg, un seul colis' : "Forfait d'expédition — un seul colis pour la commande" } },
   });
 
   const params = {

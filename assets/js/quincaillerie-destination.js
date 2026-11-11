@@ -28,6 +28,15 @@
 
   function estGuyane() { return code === 'gf'; }
   function info() { return (cfg && cfg.destinations[code]) || { nom: NOMS[code], en: '' }; }
+  /* Expédition : en Guyane, un forfait fixe par commande ; ailleurs, une grille au poids de la commande
+     (grille : [[poids maxi en kg, prix], …], la dernière ligne sert aussi au-delà — ces commandes passent sur devis). */
+  function grille() { var g = !estGuyane() && info().grille; return Array.isArray(g) && g.length ? g : null; }
+  function expedition(kg) {
+    var g = grille();
+    if (!g) return info().forfait || 0;
+    for (var i = 0; i < g.length; i++) if (kg <= g[i][0] + 1e-9) return g[i][1];
+    return g[g.length - 1][1];
+  }
   /* gamme Holex (Carton Atelier, commande unique avec minimum d'achat) : proposée dans cette destination ? */
   function holex() { return !estGuyane() && info().holex === true; }
   function chargerPrixHolex() {
@@ -86,14 +95,14 @@
   function appliquer(etat) {
     if (estGuyane() || !etat || !etat.catalogue) return;
     var d = info();
-    etat.catalogue.forfait_expedition = d.forfait;
+    etat.catalogue.forfait_expedition = grille() ? grille()[0][1] : d.forfait;  /* à la grille : le premier prix (« à partir de ») */
     if (etat.holex) convertirHolex(etat.holex);  /* fiche Holex : gamme déjà jointe au catalogue */
     etat.catalogue.articles = etat.catalogue.articles.filter(function (a) {
       if (a.pc) return a._d === code;  /* Holex : gardé seulement s'il est chiffré pour la destination */
       var p = prix && prix[a.ref];
       if (!p || !(p[colonne] > 0)) return false;       /* article non chiffré pour la destination (Holex…) */
       a.prix = p[colonne];
-      a.lien_prix = Math.round((a.prix + d.forfait) * 100) / 100;
+      a.lien_prix = Math.round((a.prix + expedition(a.poids || 2)) * 100) / 100;  /* article commandé seul */
       return true;
     });
     etat.catalogue.categories = etat.catalogue.categories.filter(function (c) {
@@ -152,15 +161,17 @@
     var h1 = document.querySelector('.q-hero h1');
     if (h1) h1.textContent = 'Quincaillerie & outillage livrés ' + d.en;
     var intro = document.querySelector('.q-hero-inner p');
-    if (intro) intro.innerHTML = Object.keys(prix || {}).length.toLocaleString('fr-FR') + ' références professionnelles au prix tout compris : <span class="inclus">'
-      + String(d.inclus || '').replace(/ inclus\*$/, ' inclus').replace(/^./, function (c) { return c.toLowerCase(); }) + '</span>. Un forfait d’expédition unique de '
-      + d.forfait.toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + '&nbsp;€ s’ajoute une fois par commande.';
+    if (intro) intro.innerHTML = Object.keys(prix || {}).length.toLocaleString('fr-FR') + ' références professionnelles'
+      + (grille() ? (d.intro ? ', <span class="inclus">' + d.intro + '</span>. ' : '. ')
+        : ' au prix tout compris : <span class="inclus">' + String(d.inclus || '').replace(/\*/g, '').replace(/^./, function (c) { return c.toLowerCase(); }) + '</span>. ')
+      + (grille() ? 'L’expédition est calculée au poids de la commande, à partir de ' : 'Un forfait d’expédition unique de ')
+      + expedition(0).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + '&nbsp;€' + (grille() ? '.' : ' s’ajoute une fois par commande.');
     document.querySelectorAll('.q-mentions').forEach(function (m) {
       m.textContent = d.mentions + ' Toute commande est vérifiée article par article avant encaissement. ';
       var a = document.createElement('a'); a.href = '/pages/legal/cgv-quincaillerie.html'; a.textContent = 'Conditions de vente'; m.appendChild(a);
     });
     var note = document.querySelector('.q-note-forfait');
-    if (note) note.innerHTML = 'Livraison à domicile ' + d.en + ', incluse dans les prix. Votre panier est conservé <strong>7 jours</strong> sur cet appareil.';
+    if (note) note.innerHTML = 'Livraison à domicile ' + d.en + (grille() ? '' : ', incluse dans les prix') + '. Votre panier est conservé <strong>7 jours</strong> sur cet appareil.';
     var cb = document.getElementById('q-cb-indice');
     if (cb) cb.textContent = 'Envoyez votre commande : nous vérifions chaque référence et vous adressons le règlement sécurisé — aucun encaissement avant validation.';
     /* entrées réservées à la Guyane (packs à prix fixe, cartons) */
@@ -194,6 +205,8 @@
     pret: pret,
     appliquer: appliquer,
     holex: holex,
+    grille: function () { return !!grille(); },
+    expedition: expedition,
     appliquerHolex: appliquerHolex,
     changer: changer,
     clePanier: function (base) { return estGuyane() ? base : base + '_' + code; }

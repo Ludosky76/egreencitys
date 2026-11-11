@@ -763,6 +763,15 @@
   function filtreHorsGroupe() { var g = enModeGroupe(); return function (l) { var a = article(l.ref); return !(g && a && a.pc && !l.pack); }; }
   /* lignes réglées en bas du panier (articles connus, hors carton groupé) */
   function lignesHorsGroupe() { var f = filtreHorsGroupe(); return etat.panier.filter(function (l) { return article(l.ref) && f(l); }); }
+  /* destinations où l'expédition se calcule au poids de la commande (grille) : poids des lignes hors packs à prix fixe */
+  function auPoids() { return HORS_GUYANE && DEST.grille(); }
+  function poidsLignes(lignes) {
+    return lignes.reduce(function (s, l) {
+      if (l.pack && prixPack(l.pack) !== null) return s;
+      var a = article(l.ref); return a ? s + (a.poids || 2) * l.q : s;
+    }, 0);
+  }
+  function kgTexteCmd(kg) { return (Math.round(kg * 10) / 10).toLocaleString('fr-FR') + ' kg'; }
   function totalPanier() {
     var vus = {};
     var lignes = etat.panier.filter(filtreHorsGroupe());
@@ -773,8 +782,9 @@
     /* packs pro à prix fixe : prix annoncé « tout compris, livré » = prix final, forfait inclus (seuls au panier) */
     var inclus = lignes.length > 0 && lignes.every(function (l) { return l.pack && prixPack(l.pack) !== null; });
     var offert = !inclus && lignes.length > 0 && forfaitOffert(t);
-    var f = lignes.length && !offert && !inclus ? etat.catalogue.forfait_expedition : 0;
-    return { articles: t, forfait: f, offert: offert, inclus: inclus, total: t + f };
+    var kg = poidsLignes(lignes);
+    var f = !lignes.length || offert || inclus ? 0 : auPoids() ? DEST.expedition(kg) : etat.catalogue.forfait_expedition;
+    return { articles: t, forfait: f, offert: offert, inclus: inclus, total: t + f, kg: kg };
   }
   function rendrePanier() {
     var corps = $('q-tiroir-corps');
@@ -853,6 +863,7 @@
     $('q-total-articles').textContent = seulGroupe ? '—' : eur(t.articles);
     $('q-total-forfait').textContent = seulGroupe ? '—' : t.inclus ? 'inclus dans le prix du pack' : t.offert ? 'offert 🎁' : eur(t.forfait);
     $('q-total').textContent = seulGroupe ? '—' : eur(t.total);
+    if (auPoids() && $('q-total-forfait').previousElementSibling) $('q-total-forfait').previousElementSibling.textContent = t.inclus ? 'Expédition' : 'Expédition (' + kgTexteCmd(t.kg) + ')';
     ['q-total-articles', 'q-total-forfait', 'q-total'].forEach(function (id) { var r = $(id).parentNode; if (r) r.style.display = seulGroupe ? 'none' : ''; });
     if ($('q-form-zone')) $('q-form-zone').style.display = seulGroupe ? 'none' : '';
     // paiement CB direct : uniquement UN article, quantité 1, disponible, lien actif
@@ -964,7 +975,8 @@
       + vignettes(pm.L)
       + '<div class="q-pack-pied"><div><div class="q-promo-prix">' + eur(total) + '</div>'
       + '<div class="q-promo-inclus">' + (HORS_GUYANE ? 'livré ' + enDest() : 'livré, octroi de mer compris')
-      + (forfaitOffert(total) ? ' · <strong>forfait offert</strong>' : ' · + forfait ' + eur(etat.catalogue.forfait_expedition)) + '</div></div>'
+      + (auPoids() ? ' · + expédition ' + eur(DEST.expedition(pm.L.reduce(function (s, x) { return s + (x.a.poids || 2); }, 0)))
+        : forfaitOffert(total) ? ' · <strong>forfait offert</strong>' : ' · + forfait ' + eur(etat.catalogue.forfait_expedition)) + '</div></div>'
       + '<button type="button" class="q-promo-btn" data-pack="' + i + '">🛒 Ajouter le pack</button></div>'
       + '</article>';
   }
@@ -1159,6 +1171,8 @@
       return s + l.q;
     }, 0);
     if (totalPanier().inclus) return '<p class="q-groupe q-groupe-ok">✅ Prix fixe du pack : <strong>transport et forfait d’expédition inclus</strong>.</p>';
+    if (auPoids()) return '<p class="q-groupe">📦 Expédition calculée au poids de la commande : <strong>' + kgTexteCmd(totalPanier().kg) + '</strong>, soit '
+      + eur(totalPanier().forfait) + '. Groupez vos achats : un seul colis.</p>';
     if (offreActive()) {
       var manque = etat.offre.seuil - totalPanier().articles;  /* hors carton groupé (totalPanier) */
       return manque > 0

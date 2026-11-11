@@ -19,7 +19,7 @@
   function dz(cle, defaut) { var i = window.EGCQDest && !window.EGCQDest.estGuyane() && window.EGCQDest.info(); return (i && i[cle]) || defaut; }
   var destPret = window.EGCQDest ? window.EGCQDest.pret : new Promise(function (ok) {
     var s = document.createElement('script');
-    s.src = '/assets/js/quincaillerie-destination.js?v=5';
+    s.src = '/assets/js/quincaillerie-destination.js?v=7';
     s.onload = function () { ok(window.EGCQDest ? window.EGCQDest.pret : null); };
     s.onerror = function () { ok(null); };
     document.head.appendChild(s);
@@ -216,6 +216,7 @@
       document.title = a.nom + ' — ' + (a.devis ? 'sur devis' : eur(a.prix)) + ' | EGREENCITY\'S PRO QUINCAILLERIE';
       var meta = document.querySelector('meta[name="description"]');
       if (meta) meta.setAttribute('content', a.nom + ' : ' + (a.devis ? 'prix sur devis (colis de plus de 30 kg ou hors format)'
+        : (window.EGCQDest && window.EGCQDest.grille()) ? eur(a.prix) + ', expédition au poids en plus'
         : eur(a.prix) + ' octroi de mer et transport inclus, + forfait d’expédition unique de ' + eur(etat.catalogue.forfait_expedition) + ' par commande')
         + '. Livré ' + dz('en', 'en Guyane') + '. Réf. ' + ref + '.');
       var canon = document.querySelector('link[rel="canonical"]');
@@ -264,6 +265,8 @@
       :         '<button type="button" class="q-pay" data-pay="' + esc(ref) + '">💳 Payer cet article seul ' + eur(a.lien_prix) + '<span class="q-pay-sub">dont ' + eur(etat.catalogue.forfait_expedition) + ' de forfait d’expédition — stock revérifié avant paiement</span></button>') : '')
       +       (offreActive()
       ?         '<p class="qf-astuce">🎁 <strong>' + esc(etat.offre.titre) + '</strong> : forfait d’expédition (' + eur(etat.offre.forfait) + ') <strong>offert dès ' + eur(etat.offre.seuil).replace(',00', '') + ' d’articles</strong>, jusqu’au ' + esc(etat.offre.fin_texte) + ' (' + etat.offre.max_commandes + ' premières commandes). Groupez vos achats : un seul colis.</p>'
+      :       (window.EGCQDest && window.EGCQDest.grille())
+      ?         '<p class="qf-astuce">📦 Expédition au poids : <strong>' + eur(window.EGCQDest.expedition(a.poids || 2)) + '</strong> pour cet article commandé seul. Elle est calculée sur le poids total de la commande : groupez vos achats, un seul colis.</p>'
       :         '<p class="qf-astuce">💡 Le forfait d’expédition (' + eur(etat.catalogue.forfait_expedition) + ') est <strong>unique par commande</strong> : ajoutez d’autres articles au panier, ils partent dans le même colis sans frais d’envoi en plus.</p>')
       :       '<a class="q-pay" href="' + urlDemande(ref) + '">✉️ Faire une demande<span class="q-pay-sub">nous confirmons prix et délai sous 24 h ouvrées — suivi dans votre espace client</span></a>'
       +       '<button type="button" class="q-alerte" data-alerte="' + esc(ref) + '">🔔 M’alerter au retour en stock</button>')
