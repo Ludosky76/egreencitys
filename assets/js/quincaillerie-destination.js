@@ -164,6 +164,19 @@
     var cb = document.getElementById('q-cb-indice');
     if (cb) cb.textContent = 'Envoyez votre commande : nous vérifions chaque référence et vous adressons le règlement sécurisé — aucun encaissement avant validation.';
     /* entrées réservées à la Guyane (packs à prix fixe, cartons) */
+    /* page d'un carton d'outillage : proposé en Guyane seulement */
+    if (/^\/carton-/.test(location.pathname) && !document.getElementById('q-dest-carton')) {
+      var mc = document.querySelector('main');
+      if (mc) {
+        var note = document.createElement('p');
+        note.id = 'q-dest-carton';
+        note.setAttribute('style', 'max-width:720px;margin:3rem auto;padding:0 1rem;text-align:center;font-size:1.05rem;line-height:1.6');
+        note.innerHTML = 'Ce carton d’outillage est proposé pour une livraison en Guyane.<br>Pour une livraison ' + d.en
+          + ', retrouvez nos articles dans <a href="/pages/boutique-quincaillerie.html">la boutique</a>.';
+        mc.parentNode.insertBefore(note, mc);
+        mc.style.display = 'none';
+      }
+    }
     /* page des packs */
     var bp = document.querySelector('.bandeau p');
     if (bp) bp.textContent = 'Machines prêtes à l’emploi, accessoires inclus : un prix tout compris, livré ' + d.en + '.';
