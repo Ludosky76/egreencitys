@@ -19,7 +19,7 @@
   function dz(cle, defaut) { var i = window.EGCQDest && !window.EGCQDest.estGuyane() && window.EGCQDest.info(); return (i && i[cle]) || defaut; }
   var destPret = window.EGCQDest ? window.EGCQDest.pret : new Promise(function (ok) {
     var s = document.createElement('script');
-    s.src = '/assets/js/quincaillerie-destination.js?v=3';
+    s.src = '/assets/js/quincaillerie-destination.js?v=4';
     s.onload = function () { ok(window.EGCQDest ? window.EGCQDest.pret : null); };
     s.onerror = function () { ok(null); };
     document.head.appendChild(s);

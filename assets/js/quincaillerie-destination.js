@@ -24,9 +24,38 @@
   var choisie = memorisee();           /* '' : première visite, destination proposée d'après le fuseau */
   var code = choisie || devinee();
   var cfg = null, prix = null, colonne = -1, packs = null;
+  var prixHolex = null, colHolex = -1, cartonHolex = null, holexCharge = null;
 
   function estGuyane() { return code === 'gf'; }
   function info() { return (cfg && cfg.destinations[code]) || { nom: NOMS[code], en: '' }; }
+  /* gamme Holex (Carton Atelier, commande unique avec minimum d'achat) : proposée dans cette destination ? */
+  function holex() { return !estGuyane() && info().holex === true; }
+  function chargerPrixHolex() {
+    if (!holexCharge) holexCharge = fetch('/assets/data/quincaillerie-holex-destinations.json', { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (p) { colHolex = (p.colonnes || []).indexOf(code); cartonHolex = (p.carton && p.carton[code]) || null; prixHolex = colHolex > -1 ? (p.prix || {}) : null; })
+      .catch(function () { prixHolex = null; });
+    return holexCharge;
+  }
+  /* gamme Holex lue (quincaillerie-holex.json) : prix et minimum d'achat de la destination ; article non chiffré retiré */
+  function convertirHolex(h) {
+    if (!h || h._dest === code) return h;
+    h.articles = prixHolex ? h.articles.filter(function (a) {
+      var p = prixHolex[a.ref];
+      if (!p || !(p[colHolex] > 0)) return false;
+      a.prix = p[colHolex];
+      a._d = code;  /* chiffré pour la destination */
+      return true;
+    }) : [];
+    if (cartonHolex && h.carton) { h.carton.eur_par_point = cartonHolex.eur_par_point; h.carton.minimum_affiche = cartonHolex.minimum_affiche; }
+    h._dest = code;
+    return h;
+  }
+  function appliquerHolex(h) {
+    if (estGuyane()) return Promise.resolve(h);
+    if (!holex()) { h.articles = []; return Promise.resolve(h); }
+    return chargerPrixHolex().then(function () { return convertirHolex(h); });
+  }
   function changer(c) {
     if (CODES.indexOf(c) < 0) return;
     try { localStorage.setItem(CLE, c); } catch (e) {}
@@ -46,6 +75,11 @@
       /* réglages ou prix illisibles : on ne montre jamais un prix Guyane pour une autre destination */
       code = 'gf'; cfg = cfg || null; prix = null;
     })
+    .then(function () {
+      /* fiche d'un article Holex : ses prix sont nécessaires dès l'affichage */
+      var ref = new URLSearchParams(location.search).get('ref') || (document.body && document.body.getAttribute('data-ref')) || '';
+      return holex() && /^HX/.test(ref) ? chargerPrixHolex() : null;
+    })
     .then(function () { monterBarre(); textes(); return code; });
 
   /* etat de la boutique ou de la fiche (catalogue, liens, offre, paiement, promo) : mis à la destination */
@@ -53,7 +87,9 @@
     if (estGuyane() || !etat || !etat.catalogue) return;
     var d = info();
     etat.catalogue.forfait_expedition = d.forfait;
+    if (etat.holex) convertirHolex(etat.holex);  /* fiche Holex : gamme déjà jointe au catalogue */
     etat.catalogue.articles = etat.catalogue.articles.filter(function (a) {
+      if (a.pc) return a._d === code;  /* Holex : gardé seulement s'il est chiffré pour la destination */
       var p = prix && prix[a.ref];
       if (!p || !(p[colonne] > 0)) return false;       /* article non chiffré pour la destination (Holex…) */
       a.prix = p[colonne];
@@ -144,6 +180,8 @@
     info: info,
     pret: pret,
     appliquer: appliquer,
+    holex: holex,
+    appliquerHolex: appliquerHolex,
     changer: changer,
     clePanier: function (base) { return estGuyane() ? base : base + '_' + code; }
   };

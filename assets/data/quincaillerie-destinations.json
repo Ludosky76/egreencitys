@@ -17,7 +17,8 @@
    "forfait": 17.60,
    "inclus": "Octroi de mer, TVA 8,5 % et transport vers la Guadeloupe inclus*",
    "inclus_court": "Octroi, TVA &amp; livraison inclus*",
-   "mentions": "* Prix tout compris : article + octroi de mer + TVA à 8,5 % + transport métropole → Guadeloupe au poids. Forfait d'expédition 17,60 € par commande. Aucune taxe à régler à la livraison. Vente à l'article ; les packs et les cartons ne sont pas proposés pour cette destination.",
+   "mentions": "* Prix tout compris : article + octroi de mer + TVA à 8,5 % + transport métropole → Guadeloupe au poids. Forfait d'expédition 17,60 € par commande. Aucune taxe à régler à la livraison. Vente à l'article ; gamme Holex en Carton Atelier, à partir d'un minimum d'achat. Les packs ne sont pas proposés pour cette destination.",
+   "holex": true,
    "delai": "livré à domicile en Guadeloupe",
    "detail_seul": true
   },
@@ -30,7 +31,8 @@
    "forfait": 17.60,
    "inclus": "Octroi de mer, TVA 8,5 % et transport vers la Martinique inclus*",
    "inclus_court": "Octroi, TVA &amp; livraison inclus*",
-   "mentions": "* Prix tout compris : article + octroi de mer + TVA à 8,5 % + transport métropole → Martinique au poids. Forfait d'expédition 17,60 € par commande. Aucune taxe à régler à la livraison. Vente à l'article ; les packs et les cartons ne sont pas proposés pour cette destination.",
+   "mentions": "* Prix tout compris : article + octroi de mer + TVA à 8,5 % + transport métropole → Martinique au poids. Forfait d'expédition 17,60 € par commande. Aucune taxe à régler à la livraison. Vente à l'article ; gamme Holex en Carton Atelier, à partir d'un minimum d'achat. Les packs ne sont pas proposés pour cette destination.",
+   "holex": true,
    "delai": "livré à domicile en Martinique",
    "detail_seul": true
   },

@@ -1220,7 +1220,7 @@
     var nbDewalt = etat.catalogue.articles.filter(function (a) { return fac(a).m === 'DeWalt'; }).length;
     var nbHolex = etat.holex ? etat.holex.articles.length : 0;
     var chips = (nbDewalt ? '<button type="button" class="q-onglet-dewalt" data-marque="DeWalt" title="Toute la gamme DeWalt">DeWalt <span>' + nbDewalt + '</span></button>' : '')
-      + (HORS_GUYANE ? '' : '<button type="button" class="q-onglet-holex" data-marque="Holex" title="Outillage de précision Holex — envoi groupé en Carton Atelier">Holex' + (nbHolex ? ' <span>' + nbHolex.toLocaleString('fr-FR') + '</span>' : '') + '</button>')
+      + (HORS_GUYANE && !DEST.holex() ? '' : '<button type="button" class="q-onglet-holex" data-marque="Holex" title="Outillage de précision Holex — envoi groupé en Carton Atelier">Holex' + (nbHolex ? ' <span>' + nbHolex.toLocaleString('fr-FR') + '</span>' : '') + '</button>')
       + '<button type="button" data-rayon="">Tous les rayons</button>';
     var menu = '<div class="q-menu-titre">Rayons</div>'
       + '<a href="#" data-rayon="">Tous les rayons <span class="nb">' + total.toLocaleString('fr-FR') + '</span></a>';
@@ -1272,11 +1272,12 @@
     if (etat.panier.length < avant) { etat.holexRetires = avant - etat.panier.length; sauver(); }
   }
   function chargerHolex() {
-    if (HORS_GUYANE) return Promise.resolve();  /* gamme Holex : Guyane seulement pour l'instant */
+    if (HORS_GUYANE && !DEST.holex()) return Promise.resolve();  /* gamme Holex : Guyane, et destinations où elle est ouverte */
     if (etat.holexCharge) return etat.holexCharge;
     if ($('q-compte')) $('q-compte').classList.add('q-chargement');
     etat.holexCharge = fetch('/assets/data/quincaillerie-holex.json')
       .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (h) { return HORS_GUYANE ? DEST.appliquerHolex(h) : h; })  /* prix et minimum d'achat de la destination */
       .then(function (h) {
         etat.holex = h;
         var sel = $('q-cat');
@@ -1572,7 +1573,7 @@
       reconcilierPanierCompte();
       chargerGroupe();
       if (holexUtile()) chargerHolex();
-    }
+    } else if (DEST.holex() && holexUtile()) chargerHolex();  /* Holex sans carton groupé */
     /* anciens liens #a=REF (modal) : chaque produit a désormais sa page */
     if (location.hash.indexOf('#a=') === 0) {
       var refInitiale = decodeURIComponent(location.hash.slice(3));
