@@ -963,7 +963,7 @@
       + '<p class="q-pack-liste">' + pm.L.map(function (x) { return esc(x.nom); }).join(' · ') + '</p></div>'
       + vignettes(pm.L)
       + '<div class="q-pack-pied"><div><div class="q-promo-prix">' + eur(total) + '</div>'
-      + '<div class="q-promo-inclus">livré, octroi de mer compris'
+      + '<div class="q-promo-inclus">' + (HORS_GUYANE ? 'livré ' + enDest() : 'livré, octroi de mer compris')
       + (forfaitOffert(total) ? ' · <strong>forfait offert</strong>' : ' · + forfait ' + eur(etat.catalogue.forfait_expedition)) + '</div></div>'
       + '<button type="button" class="q-promo-btn" data-pack="' + i + '">🛒 Ajouter le pack</button></div>'
       + '</article>';
@@ -975,7 +975,7 @@
       + '<p class="q-pack-liste">' + esc(p.accroche ? p.accroche + ' — ' : '') + pp.L.length + ' articles · ' + esc(p.colis || '1 colis') + '</p></div>'
       + vignettes(pp.L, pp.sup)
       + '<div class="q-pack-pied"><div><div class="q-promo-prix">' + eur(p.prix) + '</div>'
-      + '<div class="q-promo-inclus">' + esc(p.prix_txt || 'le pack complet') + ', livré, octroi de mer compris'
+      + '<div class="q-promo-inclus">' + esc(p.prix_txt || 'le pack complet') + (HORS_GUYANE ? ', livré ' + enDest() : ', livré, octroi de mer compris')
       + (p.delai ? ' · délai ' + esc(p.delai) + ', confirmé sous 24 h ouvrées' : '')
       + ' · <a href="/packs-pro/' + (pp.sup ? '#cat=superpacks' : '') + '">détails</a></div></div>'
       + '<button type="button" class="q-promo-btn" data-pro="' + j + '"' + (pp.indispo ? ' disabled>' + TXT_INDISPO : '>' + TXT_AJOUT) + '</button></div>'

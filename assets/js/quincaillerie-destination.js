@@ -23,7 +23,7 @@
   }
   var choisie = memorisee();           /* '' : première visite, destination proposée d'après le fuseau */
   var code = choisie || devinee();
-  var cfg = null, prix = null, colonne = -1;
+  var cfg = null, prix = null, colonne = -1, packs = null;
 
   function estGuyane() { return code === 'gf'; }
   function info() { return (cfg && cfg.destinations[code]) || { nom: NOMS[code], en: '' }; }
@@ -40,7 +40,7 @@
       if (estGuyane()) return null;
       return fetch('/assets/data/quincaillerie-prix-destinations.json', { cache: 'no-store' })
         .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-        .then(function (p) { prix = p.prix || {}; colonne = (p.colonnes || []).indexOf(code); });
+        .then(function (p) { prix = p.prix || {}; colonne = (p.colonnes || []).indexOf(code); packs = (p.packs && p.packs[code]) || null; });
     })
     .catch(function () {
       /* réglages ou prix illisibles : on ne montre jamais un prix Guyane pour une autre destination */
@@ -66,7 +66,16 @@
     etat.liens = {};        /* liens de paiement « un article » : au prix Guyane */
     etat.offre = null;      /* offre de lancement : Guyane */
     etat.paiement = null;   /* paiement du panier par carte et carton groupé : pas encore ouverts ici */
-    etat.promo = null;      /* packs à prix fixe : prix Guyane */
+    /* packs : seulement là où ils sont chiffrés pour la destination (prix fixe du pack, forfait compris) ;
+       super packs Holex et cartons d'outillage : Guyane */
+    if (packs && etat.promo) {
+      etat.promo.packs_pro = (etat.promo.packs_pro || []).filter(function (pk) {
+        if (!(packs[pk.id] > 0)) return false;
+        pk.prix = packs[pk.id];
+        return true;
+      });
+      etat.promo.cartons = [];
+    } else etat.promo = null;
     /* le panier du compte client est celui de la Guyane : on ne l'écrase pas */
     if (window.EGCQCompte) window.EGCQCompte.sauverPanier = function () { return Promise.resolve(); };
   }
@@ -117,7 +126,14 @@
     var cb = document.getElementById('q-cb-indice');
     if (cb) cb.textContent = 'Envoyez votre commande : nous vérifions chaque référence et vous adressons le règlement sécurisé — aucun encaissement avant validation.';
     /* entrées réservées à la Guyane (packs à prix fixe, cartons) */
-    document.querySelectorAll('a[href^="/packs-pro"], a[href^="/carton-"], a[href^="/quincaillerie-pro/holex"]').forEach(function (a) { a.style.display = 'none'; });
+    /* page des packs */
+    var bp = document.querySelector('.bandeau p');
+    if (bp) bp.textContent = 'Machines prêtes à l’emploi, accessoires inclus : un prix tout compris, livré ' + d.en + '.';
+    var at = document.querySelector('.atouts .atout div');
+    if (at) at.innerHTML = '<b>Un seul prix</b>transport inclus';
+    document.querySelectorAll('p.mentions').forEach(function (m) { m.textContent = 'Prix tout compris : transport ' + d.en + ' inclus, 1 colis par pack. Selon disponibilité ; délai de livraison confirmé à la commande. Batteries lithium expédiées uniquement avec leur machine.'; });
+    document.querySelectorAll('.faq details').forEach(function (x) { if (/Que comprend le prix/.test(x.textContent)) x.querySelector('p').textContent = 'Les articles et le transport ' + d.en + '. Le prix affiché est le prix final du pack.'; });
+    document.querySelectorAll((packs ? '' : 'a[href^="/packs-pro"], ') + 'a[href^="/carton-"], a[href^="/quincaillerie-pro/holex"]').forEach(function (a) { a.style.display = 'none'; });
   }
 
   window.EGCQDest = {

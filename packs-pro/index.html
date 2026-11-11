@@ -114,9 +114,12 @@
     <a class="retour" href="/pages/boutique-quincaillerie.html">← Toute la boutique quincaillerie</a>
   </main>
   <div class="toast" id="toast" role="status"></div>
+  <script src="/assets/js/quincaillerie-destination.js?v=2"></script>
   <script>
   (function () {
-    var CLE = 'egc_quinc_panier', RET = 7 * 24 * 3600 * 1000;
+    var DEST = window.EGCQDest || null;  /* destination de livraison : prix et panier propres */
+    var LIVRE = DEST && !DEST.estGuyane() ? ', livré chez vous ' + DEST.info().en : ', livré chez vous en Guyane, octroi de mer compris';
+    var CLE = DEST ? DEST.clePanier('egc_quinc_panier') : 'egc_quinc_panier', RET = 7 * 24 * 3600 * 1000;
     var CATS = [['tous', 'Tous les packs'], ['machines', 'Packs machines'], ['superpacks', 'Super packs Holex'], ['cartons', 'Cartons d’outillage']];
     var etat = { cat: 'tous', packs: [], cartons: [], art: {}, holex: null, holexEchec: false };
     function $(i) { return document.getElementById(i); }
@@ -163,7 +166,7 @@
         + (p.accroche ? '<div class="acc">' + esc(p.accroche) + '</div>' : '')
         + '<p class="sous">' + esc(p.sous_titre) + '</p>' + liste(L)
         + '<div class="prix-bloc"><div class="prix">' + eur(p.prix) + '</div>'
-        + '<div class="inclus">' + esc(p.prix_txt || 'le pack complet') + ', livré chez vous en Guyane, octroi de mer compris</div>'
+        + '<div class="inclus">' + esc(p.prix_txt || 'le pack complet') + LIVRE + '</div>'
         + '<button type="button" class="ajout' + (deja ? ' ok' : '') + '" data-i="' + i + '"' + (ok && !verif ? '' : ' disabled') + '>'
         + (verif ? 'Vérification de la disponibilité…' : !ok ? 'Momentanément indisponible' : deja ? '✓ Dans le panier — voir le panier' : '🛒 Ajouter le pack au panier') + '</button>'
         + '<div class="note">' + esc(p.colis || '') + (p.delai ? ' · délai ' + esc(p.delai) + ', confirmé sous 24 h ouvrées' : ' · délai confirmé sous 24 h ouvrées') + '</div></div></div></article>';
@@ -175,7 +178,7 @@
         + '<div class="corps"><span class="mq">Carton d’outillage</span><h3>' + esc(c.titre) + '</h3>'
         + '<p class="sous">' + esc(c.sous_titre) + '</p>'
         + '<div class="prix-bloc"><div class="prix">' + eur(total) + '</div>'
-        + '<div class="inclus">le carton complet, livré chez vous en Guyane, octroi de mer compris</div>'
+        + '<div class="inclus">le carton complet' + LIVRE + '</div>'
         + '<a class="ajout" href="/' + esc(c.id) + '/">Voir le contenu du carton →</a>'
         + '<div class="note">' + esc(c.colis || '') + '</div></div></div></article>';
     }
@@ -204,8 +207,15 @@
       clearTimeout(toast.h); toast.h = setTimeout(function () { t.style.display = 'none'; }, 5000);
     }
     function json(u) { return fetch(u + '?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }); }
-    Promise.all([json('/assets/data/quincaillerie-promo.json'), json('/assets/data/quincaillerie-catalogue.json')])
+    Promise.all([json('/assets/data/quincaillerie-promo.json'), json('/assets/data/quincaillerie-catalogue.json'), DEST ? DEST.pret : null])
       .then(function (r) {
+        if (DEST && !DEST.estGuyane()) {
+          var e = { catalogue: r[1], promo: r[0] };
+          DEST.appliquer(e);  /* prix des articles et des packs de la destination */
+          LIVRE = ', livré chez vous ' + DEST.info().en;
+          if (!e.promo) { $('contenu').innerHTML = '<p class="vide">Les packs ne sont pas proposés pour une livraison ' + esc(DEST.info().en) + '. Les articles se commandent à l’unité dans la boutique.</p>'; return; }
+          r[0] = e.promo;
+        }
         r[1].articles.forEach(function (a) { etat.art[a.ref] = a; });
         etat.packs = r[0].packs_pro || [];
         etat.cartons = (r[0].cartons || []).filter(function (c) { return !c.test; });
