@@ -776,9 +776,7 @@
           +   '</div>'
           +   '<div class="price-split">💳 <span class="x">3×</span> ' + window.formatPrice(priceSplit3) + ' sans frais</div>'
           +   '<div class="octroi-note">'
-          +     '<div class="bd-row"><span>Borne ' + weight + ' kg</span><span>' + window.formatPrice(bd.produit) + '</span></div>'
-          +     '<div class="bd-row"><span>🏛️ Octroi de mer (20 %)</span><span>' + window.formatPrice(bd.octroi) + '</span></div>'
-          +     '<div class="bd-row"><span>🚚 Livraison Chronopost DOM</span><span>' + window.formatPrice(bd.livraison) + '</span></div>'
+          +     '<div class="bd-row"><span>Borne ' + weight + ' kg</span></div>'
           +     '<div class="bd-row bd-total"><span>Total livré chez vous</span><span>' + window.formatPrice(bd.total) + '</span></div>'
           +   '</div>'
           +   '<ul class="product-specs">' + specsHtml + '</ul>'
@@ -920,9 +918,7 @@
     if (el('mur-price')) el('mur-price').textContent = window.formatPrice(bd.total);
     if (el('mur-split')) el('mur-split').textContent = window.formatPrice(Math.ceil(bd.total / 3));
     if (el('mur-bd')) el('mur-bd').innerHTML = ''
-      + '<div class="bd-row"><span>Borne ' + weight + ' kg (' + (muraleState.phase === 'mono' ? 'mono 7 kW' : 'tri 22 kW') + ')</span><span>' + window.formatPrice(bd.produit) + '</span></div>'
-      + '<div class="bd-row"><span>🏛️ Octroi de mer (20 %)</span><span>' + window.formatPrice(bd.octroi) + '</span></div>'
-      + '<div class="bd-row"><span>🚚 Livraison Chronopost DOM</span><span>' + window.formatPrice(bd.livraison) + '</span></div>'
+      + '<div class="bd-row"><span>Borne ' + weight + ' kg (' + (muraleState.phase === 'mono' ? 'mono 7 kW' : 'tri 22 kW') + ')</span></div>'
       + '<div class="bd-row bd-total"><span>Total livré chez vous</span><span>' + window.formatPrice(bd.total) + '</span></div>';
     var pay = el('mur-pay');
     if (pay) {
@@ -977,9 +973,7 @@
     content.innerHTML = ''
       + '<div class="drawer-summary">'
       +   '<div class="name">' + product.name + '</div>'
-      +   '<div class="bd-row"><span id="sumProduitLbl">Borne ' + weight + ' kg</span><span id="sumProduit">' + window.formatPrice(bd.produit) + '</span></div>'
-      +   '<div class="bd-row"><span>🏛️ Octroi de mer (20 %)</span><span id="sumOctroi">' + window.formatPrice(bd.octroi) + '</span></div>'
-      +   '<div class="bd-row"><span>🚚 Livraison Chronopost DOM</span><span id="sumLivraison">' + window.formatPrice(bd.livraison) + '</span></div>'
+      +   '<div class="bd-row"><span id="sumProduitLbl">Borne ' + weight + ' kg</span></div>'
       +   '<div class="bd-row bd-total"><span>Total livré chez vous</span><span id="sumTotal">' + window.formatPrice(bd.total) + '</span></div>'
       +   '<div class="base-price" style="margin-top:.4rem;font-size:.72rem;">Tout compris, un seul paiement. Prix sans TVA (Guyane). Livraison littoral guyanais.</div>'
       + '</div>'
