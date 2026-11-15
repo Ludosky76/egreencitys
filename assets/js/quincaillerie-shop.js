@@ -17,7 +17,7 @@
    le montant restant. Ni le montant d'achat ni le fournisseur ne sont affichés.
 
    Prix affiché = tout compris (produit + octroi de mer + transport au poids).
-   Le forfait d'expédition (21,12 €) s'ajoute UNE FOIS par commande : il est
+   Le forfait d'expédition (21 €) s'ajoute UNE FOIS par commande : il est
    déjà inclus dans le prix des liens Stripe mono-article, et ajouté une seule
    fois au total du panier.
 
@@ -1447,20 +1447,24 @@
           alert('Cet article vient de passer indisponible chez le fournisseur.\nUtilisez « Envoyer ma commande » : nous vérifions et vous confirmons le délai avant tout encaissement.');
           return;
         }
-        var url = etat.liens[ref];
-        var sep = url.indexOf('?') > -1 ? '&' : '?';
         var ts = Date.now();
-        /* mémorise l'achat en cours : au retour ?paiement=succes, la
-           commande est enregistrée dans l'espace client (option B) */
-        var a = article(ref);
-        var offert = a && forfaitOffert(a.prix);
-        try {
-          localStorage.setItem('egc_quinc_commande', JSON.stringify({
-            ref: ref, nom: a ? a.nom : '', montant: a ? (offert ? a.prix : a.lien_prix) : 0, ts: ts
-          }));
-        } catch (e) {}
-        window.location.href = url + sep + 'client_reference_id=' + encodeURIComponent('QF-' + ref + '_' + ts)
-          + (offert ? '&prefilled_promo_code=' + encodeURIComponent(etat.offre.code) : '');
+        /* 15/11/2026 : article seul payé par la fonction serveur (prix et forfait de 21 € relus côté serveur),
+           plus par le lien Stripe fixe (créé avec l'ancien forfait de 21,12 €) */
+        var art = article(ref);
+        var offert = art && forfaitOffert(art.prix);
+        return fetch(etat.paiement && etat.paiement.fonction, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ panier: [{ ref: ref, q: 1 }], destination: (window.EGCQDest ? window.EGCQDest.code() : 'gf') })
+        }).then(function (r) { return r.json().then(function (j) { return { statut: r.status, j: j }; }); })
+          .then(function (x) {
+            if (x.statut !== 200 || !x.j.url) throw 0;
+            try {
+              localStorage.setItem('egc_quinc_commande', JSON.stringify({
+                ref: ref, nom: art ? art.nom : '', montant: art ? (offert && x.j.offert !== false ? art.prix : art.lien_prix) : 0, ts: ts
+              }));
+            } catch (e) {}
+            window.location.href = x.j.url;
+          });
       })
       .catch(function () { alert('Vérification de disponibilité impossible — réessayez dans un instant.'); })
       .finally(function () { if (bouton) { bouton.disabled = false; bouton.classList.remove('q-verif'); } });

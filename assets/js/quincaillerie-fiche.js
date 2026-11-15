@@ -133,19 +133,24 @@
           location.reload();
           return;
         }
-        var url = etat.liens[ref];
-        var sep = url.indexOf('?') > -1 ? '&' : '?';
         var ts = Date.now();
-        /* option B : mémorise l'achat, enregistré au retour sur la boutique */
+        /* 15/11/2026 : article seul payé par la fonction serveur (prix et forfait de 21 € relus côté serveur),
+           plus par le lien Stripe fixe (créé avec l'ancien forfait de 21,12 €) */
         var art = etat.catalogue.articles.find(function (x) { return x.ref === ref; });
         var offert = art && forfaitOffert(art.prix);
-        try {
-          localStorage.setItem('egc_quinc_commande', JSON.stringify({
-            ref: ref, nom: art ? art.nom : '', montant: art ? (offert ? art.prix : art.lien_prix) : 0, ts: ts
-          }));
-        } catch (e) {}
-        window.location.href = url + sep + 'client_reference_id=' + encodeURIComponent('QF-' + ref + '_' + ts)
-          + (offert ? '&prefilled_promo_code=' + encodeURIComponent(etat.offre.code) : '');
+        return fetch(etat.paiement && etat.paiement.fonction, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ panier: [{ ref: ref, q: 1 }], destination: (window.EGCQDest ? window.EGCQDest.code() : 'gf') })
+        }).then(function (r) { return r.json().then(function (j) { return { statut: r.status, j: j }; }); })
+          .then(function (x) {
+            if (x.statut !== 200 || !x.j.url) throw 0;
+            try {
+              localStorage.setItem('egc_quinc_commande', JSON.stringify({
+                ref: ref, nom: art ? art.nom : '', montant: art ? (offert && x.j.offert !== false ? art.prix : art.lien_prix) : 0, ts: ts
+              }));
+            } catch (e) {}
+            window.location.href = x.j.url;
+          });
       })
       .catch(function () { alert('Vérification de disponibilité impossible — réessayez dans un instant.'); })
       .finally(function () { if (bouton) { bouton.disabled = false; bouton.classList.remove('q-verif'); } });
@@ -154,7 +159,8 @@
   /* ---------------- fiche détaillée (tranches) ---------------------- */
   function cartonNom() { return (etat.holex && etat.holex.carton.nom) || 'Carton Atelier'; }
   /* carton groupé ouvert (quincaillerie-paiement.json → groupe, même règle que la boutique) : proposé aussi sur la fiche Holex */
-  function groupeActif() { return !!(etat.paiement && etat.paiement.groupe && window.firebase && firebase.apps && firebase.apps.length); }
+  function groupeActif() { return !!(etat.paiement && etat.paiement.groupe && window.firebase && firebase.apps && firebase.apps.length)
+    && !(etat.holex && etat.holex.carton && etat.holex.carton.modele === 'fr'); }  /* minimum 50 € : plus de carton groupé */
   function chargerTranche(ref, a) {
     if (a && a.pc && a.fam) {  /* gamme Holex : caractéristiques par famille */
       return fetch('/assets/data/fiches/hx/' + encodeURIComponent(String(a.fam).replace(/[^A-Za-z0-9_-]/g, '_')) + '.json')
@@ -262,7 +268,7 @@
       +     '<div class="qf-boutons">'
       +     (a.pc
       ?       (statutDe(ref) !== 'introuvable' ? '<button type="button" class="q-add" data-add="' + esc(ref) + '">🛒 Ajouter au panier</button>' : '<a class="q-pay" href="' + urlDemande(ref) + '">✉️ Faire une demande</a>')
-      +       '<p class="qf-astuce">📦 Cet article part dans le <strong>' + esc(cartonNom()) + '</strong>, avec vos autres articles Holex : commande possible <strong>à partir d’environ '
+      +       '<p class="qf-astuce">📦 Cet article part dans le <strong>' + esc(cartonNom()) + '</strong>, avec vos autres articles Holex : commande possible <strong>à partir de '
       +       eur((etat.holex && etat.holex.carton.minimum_affiche) || 940).replace(',00', '') + ' d’articles Holex</strong>'
       +       (groupeActif()
       ?         ' (le voyant du panier indique ce qu’il reste), ou <strong>sans minimum par le carton groupé</strong> : envoi quand le carton est complet, paiement par lien seulement au départ du carton'
@@ -287,7 +293,7 @@
       +   '</div>'
       +   '<ul class="qf-reassurance">'
       +     '<li>✔ Paiement par carte sécurisé (Stripe) — aucune donnée bancaire conservée</li>'
-      +     '<li>✔ Forfait d’expédition unique de 21,12&nbsp;€ par commande, quel que soit le nombre d’articles</li>'
+      +     '<li>✔ Forfait d’expédition unique de 21&nbsp;€ par commande, quel que soit le nombre d’articles</li>'
       +     '<li>✔ Garanties légales de conformité et des vices cachés — <a href="/pages/legal/cgv-quincaillerie.html">conditions de vente</a></li>'
       +     '<li>✔ Plus de 30&nbsp;kg ? <a href="/pages/quincaillerie.html">Demandez un devis</a></li>'
       +   '</ul>'
