@@ -7,6 +7,9 @@
    Liens CB  : /assets/data/quincaillerie-liens.json      (liens Stripe par ref)
    Holex     : /assets/data/quincaillerie-holex.json      (gamme Holex, chargée à part :
                recherche, onglet Holex, ou panier qui en contient)
+   Marques   : /assets/data/quincaillerie-marques.json    (gamme Milwaukee / Bosch, réf. MB…, chargée
+               à part de la même façon : marque filtrée, rayons outillage, recherche, panier ;
+               sans carton : colis normal de la commande, un seul forfait ; Guyane seulement)
 
    « Carton Atelier » : les articles Holex partent ensemble, en un carton,
    quand leur commande fournisseur atteint le minimum. Chaque article porte ses
@@ -39,6 +42,7 @@
 
   var etat = {
     catalogue: null, stock: {}, stockMaj: 0, liens: {}, index: {}, holex: null, holexCharge: null,
+    marques: null, marquesCharge: null, chargements: 0,
     recherche: '', mots: [], cat: '', dispo: false, tri: 'pertinence',
     f: { m: {}, a: {}, v: {}, b: {}, p: {}, pmin: '', pmax: '' }, facettes: {}, compat: {}, marquesToutes: false,
     visibles: PAR_PAGE, panier: []
@@ -51,6 +55,8 @@
     });
   }
   function $(id) { return document.getElementById(id); }
+  /* gamme Milwaukee / Bosch (réf. MB…) : disponibilité, délai et marque publiés avec la gamme */
+  function estMB(ref) { return /^MB/.test(ref || ''); }
 
   /* ---------------- stock ---------------- */
   var LIBELLES = {
@@ -63,7 +69,7 @@
   function statutDe(ref) {
     var s = etat.stock[ref];
     if (s && s.s) return s.s;
-    var a = etat.index[ref];  /* gamme Holex : disponibilité relevée avec le catalogue */
+    var a = etat.index[ref];  /* gammes Holex et Milwaukee / Bosch : disponibilité relevée avec la gamme */
     return (a && a.s) || 'inconnu';
   }
   function badgeStock(ref) {
@@ -78,6 +84,7 @@
   function delaiTexte(ref, a, long) {
     if (a && a.pc) return long ? 'part dans le Carton Atelier, ' + cartonConfig().delai : 'envoi groupé · Carton Atelier';
     if (statutDe(ref) === 'disponible') {
+      if (a && estMB(a.ref) && typeof a.delai === 'string') return long ? 'livraison en ' + a.delai : 'livré en ' + a.delai.replace(' jours ', ' j ');
       return long ? 'livraison sous 7 jours ouvrés' : 'livré sous 7 j ouvrés';
     }
     return long ? 'disponibilité à confirmer — faites une demande' : 'disponibilité sur demande';
@@ -97,7 +104,7 @@
       libelles: { '<500': 'Moins de 500 W', '500-999': '500 à 999 W', '1000-1499': '1 000 à 1 499 W', '1500-1999': '1 500 à 1 999 W', '2000+': '2 000 W et plus' },
       valeur: function (f) { var w = f.p; return !w ? '' : w < 500 ? '<500' : w < 1000 ? '500-999' : w < 1500 ? '1000-1499' : w < 2000 ? '1500-1999' : '2000+'; } }
   ];
-  function fac(a) { return etat.facettes[a.ref] || (a.pc ? { m: a.marque } : {}); }
+  function fac(a) { return etat.facettes[a.ref] || ((a.pc || estMB(a.ref)) ? { m: a.marque } : {}); }
   function sansAccents(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
   function texteRecherche(a) {
     if (!a._q) { var f = fac(a); a._q = sansAccents([a.nom, f.m || a.marque, a.ref, a.ean || '', f.v, f.v ? f.v.replace(' ', '') : ''].join(' '));  /* EAN : recherche par code-barres */ }
@@ -278,10 +285,10 @@
 
   function carte(a) {
     var dispo = statutDe(a.ref) === 'disponible';
-    var lien = etat.liens[a.ref];
+    var lien = !estMB(a.ref) && etat.liens[a.ref];  /* gamme Milwaukee / Bosch : bouton panier seulement */
     var fiche = ADR.fiche(a);
     return '<article class="q-card" data-ref="' + esc(a.ref) + '">'
-      + '<a class="q-lien q-img" href="' + fiche + '"><img loading="lazy" src="' + esc(a.img) + '" alt="' + esc(a.nom) + '" onerror="this.parentNode.classList.add(\'q-noimg\')"></a>'
+      + '<a class="q-lien q-img' + (a.img ? '' : ' q-noimg') + '" href="' + fiche + '"><img loading="lazy" src="' + esc(a.img) + '" alt="' + esc(a.nom) + '" onerror="this.parentNode.classList.add(\'q-noimg\')"></a>'
       + '<div class="q-body">'
       + '<div class="q-ref">Réf. ' + esc(a.ref) + (a.ean && !a.pc ? '<span class="q-ean"> · EAN ' + esc(a.ean) + '</span>' : '') + '</div>'
       + (fac(a).m ? '<div class="q-marque">' + esc(fac(a).m) + '</div>' : '')
@@ -312,6 +319,8 @@
   }
 
   function rendre() {
+    /* marque, rayon ou recherche qui la concerne ; après un échec (coupure réseau), nouvel essai à la prochaine action passé 10 s */
+    if (!etat.marquesCharge && marquesUtile() && (!etat.marquesEchec || Date.now() - (etat.marquesEchecT || 0) > 10000)) chargerMarques();
     var res = filtres();
     var grille = $('q-grille');
     grille.innerHTML = res.slice(0, etat.visibles).map(carte).join('')
@@ -365,9 +374,10 @@
         etat.panier = distant.lignes;
         etat.panierMaj = distant.maj;
         try { localStorage.setItem(CLE_PANIER, JSON.stringify(distant)); } catch (e) {}
-        purgerHolex();
+        purgerHolex(); purgerMarques();
         rendre(); rendrePanier();
         if (holexUtile()) chargerHolex();
+        if (marquesUtile()) chargerMarques();
       } else if (etat.panier.length) {
         window.EGCQCompte.sauverPanier({ maj: etat.panierMaj || Date.now(), lignes: etat.panier });
       }
@@ -467,7 +477,48 @@
     return BATT_DEBUT.test(nom) || (BATT_KIT.test(nom) && BATT_MOT.test(nom) && !BATT_MACHINE.test(nom))
       || (PILE_DEBUT.test(nom) && PILE_LITHIUM.test(nom));
   }
-  function groupeActif() { return !!(etat.paiement && etat.paiement.groupe && window.firebase && firebase.apps && firebase.apps.length); }
+  /* gamme Milwaukee / Bosch (réf. MB) : libellés propres à ces marques — MÊME règle que functions/panier.js (batterieSeuleMB)
+     et le script privé de construction de la gamme (batterie_seule_mb). Limites de mot (?:^|[^\p{L}\p{N}_]) … (?![\p{L}\p{N}_]) (sans lookbehind). */
+  var MB_MARQUE = /^(milwaukee|bosch)(\s+professional)?\s*:?\s+/i, MB_CTX_BATT = /^(batter|accu|chargeur|piles?(?![\p{L}\p{N}_]))/iu;
+  var MB_SANS_BATT = /sans (batterie|accu)/i, MB_NRG = /nrg/i, MB_KIT_DEMARRAGE = /kit de d[ée]marrage/i;
+  var MB_FORT = /^(bloc-?batteries?|accumulateurs?|li-?ion(?![\p{L}\p{N}_])|jeu de batteries|procore)/iu;
+  var MB_KIT_BATT = /batter|\+|(?:^|[^\p{L}\p{N}_])(exba|gba)/iu;
+  var MB_MACHINE = new RegExp('(?:^|[^\\p{L}\\p{N}_])(perceuses?|visseuses?|perforateurs?|meuleuses?|scies?|ponceuses?|cl[ée]s?|boulonneuses?|d[ée]fonceuses?|rabots?|'
+    + 'marteaux?|burineurs?|lampes?|projecteurs?|souffleurs?|tondeuses?|taille-haies?|d[ée]broussailleuses?|tron[çc]onneuses?|'
+    + 'aspirateurs?|radios?|agrafeuses?|cloueurs?|riveteuses?|pistolets?|polisseuses?|multi-?outils?|outils?|malaxeurs?|'
+    + 'cisailles?|d[ée]capeurs?|lasers?|voyants?|cam[ée]ras?|d[ée]tecteurs?|localisateurs?|appareils?|ventilateurs?|boosters?|'
+    + 'inverseurs?|pompes?|sertisseuses?|coupe-?tubes?|torches?|enceintes?|vestes?|gilets?|machines?|tournevis|grignoteuses?|'
+    + 'compresseurs?|gonfleurs?|d[ée]coupeuses?|t[ée]l[ée]m[èe]tres?|niveaux?|pulv[ée]risateurs?|tarauds?|vibrateurs?|pinces?|'
+    + 'presses?|cliquets?|combi|power pack)(?![\\p{L}\\p{N}_])', 'iu');
+  var MB_CHARGEUR = /chargeur|charger|caricatore/i, MB_CHARGEUR_AVEC_BATT = /\+|battery|(?:^|[^\p{L}\p{N}_])(kit|pack)(?![\p{L}\p{N}_])/iu;
+  var MB_AH = /(?:^|[^\p{L}\p{N}_])\d+([.,]\d+)?\s*ah(?![\p{L}\p{N}_])/iu;
+  var MB_OBJET = /adaptateur|bo[iî]tier|bague|support|(?:^|[^\p{L}\p{N}_])sac(?![\p{L}\p{N}_])|accessoires?|station de charge/iu;
+  var MB_MOT_BATT = /(?:^|[^\p{L}\p{N}_])(batterie|batteries|battery|accu|accus|accumulateurs?|li-?ion)(?![\p{L}\p{N}_])/iu;
+  function batterieSeuleMB(nom, sr) {
+    nom = String(nom || '').trim();
+    var n = nom.replace(MB_MARQUE, '');
+    if (batterieSeule(nom) || batterieSeule(n)) return true;
+    if (MB_SANS_BATT.test(n)) return false;
+    if (MB_NRG.test(n)) return true;
+    sr = String(sr || '').trim();
+    if (sr && !MB_CTX_BATT.test(sr)) return false;
+    if (MB_FORT.test(n) || (MB_KIT_DEMARRAGE.test(n) && MB_KIT_BATT.test(n))) return true;
+    if (MB_MACHINE.test(n)) return false;
+    if (MB_CHARGEUR.test(n) && !MB_CHARGEUR_AVEC_BATT.test(n) && !MB_AH.test(n)) return false;
+    if (MB_OBJET.test(n)) return false;
+    return MB_AH.test(n) || MB_MOT_BATT.test(n);
+  }
+  /* fin des règles batterie */
+  /* petite vignette (panier, suggestions) : sans photo (gamme Milwaukee / Bosch en attente de ses photos), pictogramme 🔧 au lieu d'un src vide */
+  function vignettePanier(img, px, attrs) {
+    if (img) return '<img src="' + esc(img) + '" alt=""' + (attrs || '') + ' onerror="this.style.visibility=&#39;hidden&#39;">';
+    return '<span aria-hidden="true" style="display:inline-flex;align-items:center;justify-content:center;flex:0 0 ' + px + 'px;width:' + px + 'px;height:' + px
+      + 'px;font-size:' + Math.round(px / 2.3) + 'px;opacity:.35">🔧</span>';
+  }
+  function batterieArticle(a) { return !!a && (batterieSeule(a.nom) || (estMB(a.ref) && batterieSeuleMB(a.nom, a.sr))); }
+  /* modèle « France » (minimum 50 € d'articles Holex) : plus de carton groupé, commande unique seulement */
+  function groupeActif() { return !!(etat.paiement && etat.paiement.groupe && window.firebase && firebase.apps && firebase.apps.length)
+    && !(etat.holex && etat.holex.carton && etat.holex.carton.modele === 'fr'); }
   /* onglet par défaut : commande unique seulement si elle peut partir (carton complet ET un seul colis de 10 kg), sinon carton groupé */
   function modeHolex(ci) { return !groupeActif() ? 'unique' : (etat.modeHolex || (ci.complet && !ci.lourd ? 'unique' : 'groupe')); }
   /* carton en cours (lecture publique : numero, statut, total, objectif, nb, poids — aucune donnée client), relu au plus
@@ -495,7 +546,7 @@
   /* motif pour lequel une ligne Holex ne peut pas partir dans le carton groupé (le serveur la refuserait), '' sinon */
   function motifHorsGroupe(l) {
     var a = article(l.ref);
-    if (a && batterieSeule(a.nom)) return 'pile ou batterie au lithium sans machine : interdite au transport aérien';
+    if (batterieArticle(a)) return 'pile ou batterie au lithium sans machine : interdite au transport aérien';
     if (aConfirmer(l.ref)) return 'disponibilité à confirmer';
     if (l.q > QTE_MAX_CB) return 'au plus ' + QTE_MAX_CB + ' exemplaires';
     return '';
@@ -505,7 +556,7 @@
      trop forte (son formulaire l'accepte) et dans son colis de 10 kg : disponibilité à confirmer et batterie seule y sont
      refusées aussi (« demander » : nous vérifions la disponibilité) */
   function uniqueSolution(ci) {
-    return !ci.lourd && lignesNonEligibles().every(function (l) { var a = article(l.ref); return !(a && batterieSeule(a.nom)) && !aConfirmer(l.ref); });
+    return !ci.lourd && lignesNonEligibles().every(function (l) { var a = article(l.ref); return !batterieArticle(a) && !aConfirmer(l.ref); });
   }
   function saisieGroupe(id, defaut) { return etat.saisieGroupe && etat.saisieGroupe[id] !== undefined ? etat.saisieGroupe[id] : defaut; }
   /* le carton groupé peut-il prendre TOUS les articles Holex du panier ? (sinon : commande unique, demande ou devis) */
@@ -789,6 +840,7 @@
   function rendrePanier() {
     var corps = $('q-tiroir-corps');
     if (etat.holex) purgerHolex();  /* pack remis au panier après le chargement de la gamme : jamais incomplet à son prix fixe */
+    if (etat.marques) purgerMarques();
     if (!etat.panier.length) {
       corps.innerHTML = (etat.packsRetires ? '<p class="q-carton-note" role="status">ℹ️ Un pack de votre panier n’est plus proposé tel quel : il a été retiré. Écrivez-nous, nous vous proposons une composition proche.</p>' : '')
         + '<p class="q-vide">Votre panier est vide.</p>';
@@ -809,7 +861,7 @@
         var pkDef = ((etat.promo && etat.promo.packs_pro) || []).find(function (p) { return p.id === l.pack; });
         var nomDe = function (x) { var y = pkDef && (pkDef.articles || []).find(function (z) { return z.ref === x.ref; }); return (y && y.nom) || article(x.ref).nom; };
         return '<div class="q-ligne q-ligne-pack">'
-          + '<img src="' + esc(a.img) + '" alt="">'
+          + vignettePanier(a.img, 46)
           + '<div class="q-ligne-infos"><div class="q-ligne-nom"><span class="q-pack-promo">' + (prixPack(l.pack) !== null ? (/^HX/.test(l.ref) ? 'Holex' : 'Pack pro') : 'Offre spéciale') + '</span> ' + esc(l.packTitre || 'Pack') + '</div>'
           + '<div class="q-ligne-prix"><strong>' + eur(tp) + '</strong> · ' + lp.length + ' articles, 1 colis'
           + (pkDef && pkDef.delai ? ' · délai ' + esc(pkDef.delai) + ', confirmé sous 24 h ouvrées' : '') + '</div>'
@@ -820,7 +872,7 @@
           + '</div>';
       }
       return '<div class="q-ligne">'
-        + '<img src="' + esc(a.img) + '" alt="">'
+        + vignettePanier(a.img, 46)
         + '<div class="q-ligne-infos"><div class="q-ligne-nom">' + esc(a.nom) + '</div>'
         + '<div class="q-ligne-prix">' + eur(a.prix) + ' × '
         + '<button type="button" data-moins="' + esc(l.ref) + '">−</button> ' + l.q + ' '
@@ -834,6 +886,13 @@
         + (etat.holexEchec ? '<button type="button" class="q-reessayer" data-holex-recharger="1">Réessayer</button>' : '') + '</p></div>');
       if (!etat.holexEchec) chargerHolex();
     } else if (ci.n) corps.insertAdjacentHTML('afterbegin', groupeActif() ? blocChoix(ci) : blocCarton(ci));
+    if (marquesAttente()) {  /* gamme Milwaukee / Bosch pas encore là (ou échec) : rien ne part en attendant */
+      corps.insertAdjacentHTML('afterbegin', '<p class="q-carton-note" role="status">⏳ Chargement de vos articles… '
+        + (etat.marquesEchec ? '<button type="button" class="q-reessayer" data-mb-recharger="1">Réessayer</button>' : '') + '</p>');
+      if (!etat.marquesEchec) chargerMarques();
+    }
+    if (etat.marquesRetires) corps.insertAdjacentHTML('afterbegin', '<p class="q-carton-note" role="status">ℹ️ '
+      + (etat.marquesRetires > 1 ? etat.marquesRetires + ' articles de votre panier ne sont plus proposés : ils ont été retirés.' : 'Un article de votre panier n’est plus proposé : il a été retiré.') + '</p>');
     if (etat.holexRetires) corps.insertAdjacentHTML('afterbegin', '<p class="q-carton-note" role="status">ℹ️ '
       + (etat.packsRetires ? 'Un pack de votre panier n’est plus proposé tel quel : il a été retiré. Écrivez-nous, nous vous proposons une composition proche.'
         : etat.holexRetires > 1 ? etat.holexRetires + ' articles Holex de votre panier ne sont plus proposés : ils ont été retirés.' : 'Un article Holex de votre panier n’est plus proposé : il a été retiré.') + '</p>');
@@ -848,10 +907,10 @@
     /* tout le panier part par le carton groupé : en bas, ni total à 0 €, ni indication de paiement, ni formulaire (messageGroupage le dit) */
     var seulGroupe = groupe && !lignesHorsGroupe().length;
     var bloque = ci.attente || (ci.n > 0 && (groupe || (!ci.complet && !tropLourd)));
-    if ($('q-envoyer')) $('q-envoyer').disabled = bloque || !!etat.envoiEnCours;
+    if ($('q-envoyer')) $('q-envoyer').disabled = bloque || marquesAttente() || !!etat.envoiEnCours;
     var nb = $('q-carton-bloque');
     if (!nb && $('q-form')) { nb = document.createElement('p'); nb.id = 'q-carton-bloque'; nb.className = 'q-carton-note'; $('q-form').appendChild(nb); }
-    if (nb) nb.innerHTML = ci.attente ? '⏳ Vos articles Holex se chargent : la commande sera possible dans un instant.'
+    if (nb) nb.innerHTML = ci.attente || marquesAttente() ? '⏳ Vos articles se chargent : la commande sera possible dans un instant.'
       : groupe ? '👥 Vos articles Holex partent par le carton groupé (bouton plus haut) : le total ci-dessus ne les comprend pas. Vos autres articles se commandent ensuite, avec leur propre forfait d’expédition.'
       : tropLourd && ci.n > 0 ? (!choixGroupe && !ci.lourdGroupe && groupeActif()
         ? '📦 Commande Holex trop lourde pour la commande unique (un seul colis de ' + ci.c.poids_max + ' kg) : passez au carton groupé (plus haut, sans minimum), ou envoyez-la par ce formulaire, nous vous proposons un devis.'
@@ -882,7 +941,7 @@
       && etat.panier.length <= 50
       && Object.values(etat.panier.reduce(function (m, l) { m[l.ref] = (m[l.ref] || 0) + l.q; return m; }, {})).every(function (q) { return q <= QTE_MAX_CB; })
       /* Carton Atelier : paiement par carte seulement quand le serveur le gère (réglage carton_cb) et carton complet */
-      && !ci.attente && (!ci.n || (modeHolex(ci) === 'unique' && etat.paiement.carton_cb && ci.complet && !ci.lourd))
+      && !ci.attente && !marquesAttente() && (!ci.n || (modeHolex(ci) === 'unique' && etat.paiement.carton_cb && ci.complet && !ci.lourd))
       /* prix fixe de pack inconnu du serveur de paiement : ces packs passent par le formulaire */
       && !etat.panier.some(function (l) { return l.pack && typeof l.packPrix === 'number'; });
     if (bp) {
@@ -1194,7 +1253,7 @@
     if (s.length) {
       html += '<div class="q-sugg"><div class="q-sugg-titre">Accessoires compatibles · même colis</div>' + s.map(function (x) {
         var a = x.a;
-        return '<div class="q-sugg-ligne"><img src="' + esc(a.img) + '" alt="" loading="lazy">'
+        return '<div class="q-sugg-ligne">' + vignettePanier(a.img, 34, ' loading="lazy"')
           + '<span class="q-sugg-txt"><a class="q-sugg-nom" href="' + ADR.fiche(a) + '">' + esc(a.nom) + '</a>'
           + (plusieurs && x.pour ? '<small class="q-sugg-pour">pour : ' + esc(x.pour.nom.length > 48 ? x.pour.nom.slice(0, 46) + '…' : x.pour.nom) + '</small>' : '') + '</span>'
           + '<span class="q-sugg-prix">' + eur(a.prix) + '</span>'
@@ -1288,7 +1347,7 @@
   function chargerHolex() {
     if (HORS_GUYANE && !DEST.holex()) return Promise.resolve();  /* gamme Holex : Guyane, et destinations où elle est ouverte */
     if (etat.holexCharge) return etat.holexCharge;
-    if ($('q-compte')) $('q-compte').classList.add('q-chargement');
+    chargement(1);
     etat.holexCharge = fetch('/assets/data/quincaillerie-holex.json')
       .then(function (r) { if (!r.ok) throw 0; return r.json(); })
       .then(function (h) { return HORS_GUYANE ? DEST.appliquerHolex(h) : h; })  /* prix et minimum d'achat de la destination */
@@ -1308,7 +1367,7 @@
         rendreRayons(); rendre(); rendrePanier();
       })
       .catch(function () { etat.holexCharge = null; etat.holexEchec = true; if (etat.panier.some(function (l) { return /^HX/.test(l.ref); })) rendrePanier(); })
-      .then(function () { if ($('q-compte')) $('q-compte').classList.remove('q-chargement'); });
+      .then(function () { chargement(-1); });
     return etat.holexCharge;
   }
   function holexUtile() {
@@ -1316,6 +1375,63 @@
     return etat.f.m.Holex || etat.cat === 'usinage' || p.get('cat') === 'usinage' || etat.catDemandee === 'usinage' || etat.mots.length
       || etat.panier.some(function (l) { return /^HX/.test(l.ref); });
   }
+  /* indicateur de chargement (compteur d'articles) : allumé tant qu'une gamme chargée à part arrive */
+  function chargement(d) {
+    etat.chargements = Math.max(0, etat.chargements + d);
+    if ($('q-compte')) $('q-compte').classList.toggle('q-chargement', etat.chargements > 0);
+  }
+
+  /* ---------------- gamme Milwaukee / Bosch (assets/data/quincaillerie-marques.json) ----------------
+     Chargée à la demande comme la gamme Holex (marque Milwaukee ou Bosch filtrée, rayon qui en contient,
+     recherche, panier ou adresse qui en contient), puis ajoutée au
+     catalogue une fois pour toutes. Pas de carton : ces articles partent dans le colis de la commande
+     (≤ 30 kg, un seul forfait). Guyane seulement : aucun prix publié pour les autres destinations. */
+  /* tous les rayons où la gamme a des articles (contrôlé par le script de construction de la gamme) */
+  var RAYONS_MARQUES = ['electroportatif', 'outillage-main', 'sciage-coupe', 'eclairage', 'divers', 'mesure-tracage', 'rangement', 'vetements', 'epi-securite'];
+  /* article retiré de la gamme depuis qu'il a été mis au panier : on l'enlève et on prévient une fois */
+  function purgerMarques() {
+    if (!etat.marques) return;
+    var avant = etat.panier.length, packs = {};
+    etat.panier.forEach(function (l) { if (l.pack && estMB(l.ref) && !article(l.ref)) packs[l.pack] = 1; });
+    etat.panier = etat.panier.filter(function (l) { return !(l.pack && packs[l.pack]) && (!estMB(l.ref) || article(l.ref)); });
+    if (Object.keys(packs).length) etat.packsRetires = Object.keys(packs).length;
+    if (etat.panier.length < avant) { etat.marquesRetires = avant - etat.panier.length; sauver(); }
+  }
+  function chargerMarques() {
+    if (HORS_GUYANE) return Promise.resolve();
+    if (etat.marquesCharge) return etat.marquesCharge;
+    chargement(1);
+    etat.marquesEchec = false;
+    etat.marquesCharge = fetch('/assets/data/quincaillerie-marques.json')
+      .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (m) {
+        etat.marques = m;
+        var sel = $('q-cat');
+        (m.categories || []).forEach(function (c) {
+          if (etat.catalogue.categories.some(function (x) { return x.slug === c.slug; })) return;
+          etat.catalogue.categories.push(c);
+          var o = document.createElement('option'); o.value = c.slug; o.textContent = c.nom; sel.appendChild(o);
+        });
+        var nouveaux = m.articles.filter(function (a) { return !etat.index[a.ref]; });
+        nouveaux.forEach(function (a) { etat.index[a.ref] = a; });
+        etat.catalogue.articles = etat.catalogue.articles.concat(nouveaux);
+        purgerMarques();
+        var catUrl = etat.catDemandee;
+        if (!etat.cat && catUrl && (m.categories || []).some(function (c) { return c.slug === catUrl; })) { etat.cat = catUrl; sel.value = catUrl; }
+        rendreRayons(); rendre(); rendrePanier();
+      })
+      .catch(function () { etat.marquesCharge = null; etat.marquesEchec = true; etat.marquesEchecT = Date.now(); if (etat.panier.some(function (l) { return estMB(l.ref); })) rendrePanier(); })
+      .then(function () { chargement(-1); });
+    return etat.marquesCharge;
+  }
+  function marquesUtile() {
+    if (HORS_GUYANE) return false;
+    var c = etat.cat || new URLSearchParams(location.search).get('cat') || etat.catDemandee;
+    return !!(etat.f.m.Milwaukee || etat.f.m.Bosch || RAYONS_MARQUES.indexOf(c) > -1 || etat.mots.length
+      || etat.panier.some(function (l) { return estMB(l.ref); }));
+  }
+  /* lignes Milwaukee / Bosch au panier, gamme pas encore chargée : rien ne part tant qu'on ne les connaît pas */
+  function marquesAttente() { return !HORS_GUYANE && !etat.marques && etat.panier.some(function (l) { return estMB(l.ref); }); }
 
   /* ---------------- paiement sécurisé ---------------- */
   function verifierPuisPayer(ref) {
@@ -1382,8 +1498,8 @@
             + '\nRetirez-les du panier, ou envoyez la commande : nous vous confirmons le délai.');
           return fetch('/assets/data/quincaillerie-stock.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); })
             .then(function (j) {
-              /* Holex : sa disponibilité vient de la gamme chargée une fois ; on marque les refus pour ne plus proposer la carte */
-              x.j.refus.forEach(function (r) { var a = /^HX/.test(r.ref) && article(r.ref); if (a && /indisponible/.test(r.motif)) a.s = 'rupture'; });
+              /* Holex, Milwaukee / Bosch : disponibilité venue de la gamme chargée une fois ; on marque les refus pour ne plus proposer la carte */
+              x.j.refus.forEach(function (r) { var a = (/^HX/.test(r.ref) || estMB(r.ref)) && article(r.ref); if (a && /indisponible/.test(r.motif)) a.s = 'rupture'; });
               etat.stock = j.stock || etat.stock; rendre(); rendrePanier();
             });
         }
@@ -1442,6 +1558,8 @@
     bandeau.style.cssText = 'position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#17631a;color:#fff;padding:.7rem 1.3rem;border-radius:50px;font-weight:700;font-size:.85rem;z-index:99999;box-shadow:0 10px 28px rgba(0,0,0,.35);';
     bandeau.textContent = cmd && cmd.carton
       ? '✅ Paiement validé — merci ! Carton Atelier : livraison ' + cartonConfig().delai + '.'
+      : cmd && /(^|[x,])MB/.test(String(cmd.ref || ''))  /* gamme Milwaukee / Bosch : son délai */
+      ? '✅ Paiement validé — merci ! Livraison en environ 10 jours ouvrés.'
       : '✅ Paiement validé — merci ! Article disponible : livraison sous 7 jours ouvrés.';
     document.body.appendChild(bandeau);
     setTimeout(function () { bandeau.remove(); }, 7000);
@@ -1457,6 +1575,7 @@
     var ci = cartonInfo();
     if (etat.envoiEnCours) return;
     if (ci.attente) { alert('Vos articles Holex se chargent encore : réessayez dans un instant.'); chargerHolex(); return; }
+    if (marquesAttente()) { alert('Vos articles se chargent encore : réessayez dans un instant.'); etat.marquesEchec = false; chargerMarques(); return; }
     if (ci.n && !ci.complet && !ci.lourd) { alert('Le Carton Atelier n’est pas encore complet : encore ' + eur(ci.reste) + ' d’articles Holex, ou retirez-les pour commander le reste.'); return; }
     var t = totalPanier();
     var vusPack = {};
@@ -1503,7 +1622,7 @@
 
   /* ---------------- init ---------------- */
   function initEvenements() {
-    $('q-recherche').addEventListener('input', function () { etat.recherche = this.value; majMots(); etat.visibles = PAR_PAGE; rendre(); if (etat.mots.length) chargerHolex(); });
+    $('q-recherche').addEventListener('input', function () { etat.recherche = this.value; majMots(); etat.visibles = PAR_PAGE; rendre(); if (etat.mots.length) { chargerHolex(); chargerMarques(); } });
     $('q-cat').addEventListener('change', function () { etat.cat = this.value; etat.visibles = PAR_PAGE; rendre(); majRayons(); });
     $('q-dispo').addEventListener('change', function () { etat.dispo = this.checked; etat.visibles = PAR_PAGE; rendre(); });
     $('q-tri').addEventListener('change', function () { etat.tri = this.value; rendre(); });
@@ -1529,12 +1648,13 @@
     $('q-payer-cb').addEventListener('click', function () { verifierPuisPayer(etat.panier[0].ref); });
     if ($('q-payer-panier')) $('q-payer-panier').addEventListener('click', payerPanier);
     document.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-add],[data-pay],[data-plus],[data-moins],[data-suppr],[data-suppr-pack],[data-holex-recharger],[data-mode-holex],[data-groupe-rejoindre],[data-groupe-verifier]');
+      var t = e.target.closest('[data-add],[data-pay],[data-plus],[data-moins],[data-suppr],[data-suppr-pack],[data-holex-recharger],[data-mb-recharger],[data-mode-holex],[data-groupe-rejoindre],[data-groupe-verifier]');
       if (!t) return;
       if (t.dataset.modeHolex) { etat.modeHolex = t.dataset.modeHolex; rendrePanier(); majCartonMini(); if (t.dataset.modeHolex === 'groupe') chargerGroupe(true); return; }
       if (t.dataset.groupeRejoindre) { rejoindreGroupe(t); return; }
       if (t.dataset.groupeVerifier) { verifierEmailGroupe(t); return; }
       if (t.dataset.holexRecharger) { etat.holexEchec = false; chargerHolex(); rendrePanier(); return; }
+      if (t.dataset.mbRecharger) { etat.marquesEchec = false; chargerMarques(); rendrePanier(); return; }
       if (t.dataset.add) ajouter(t.dataset.add);
       if (t.dataset.pay) verifierPuisPayer(t.dataset.pay);
       if (t.dataset.plus) { etat.panier.find(function (x) { return x.ref === t.dataset.plus && !x.pack; }).q += 1; sauver(); rendrePanier(); majPastille(); }
@@ -1587,6 +1707,7 @@
       reconcilierPanierCompte();
       chargerGroupe();
       if (holexUtile()) chargerHolex();
+      if (marquesUtile()) chargerMarques();  /* gamme Milwaukee / Bosch : Guyane */
     } else if (DEST.holex() && holexUtile()) chargerHolex();  /* Holex sans carton groupé */
     /* anciens liens #a=REF (modal) : chaque produit a désormais sa page */
     if (location.hash.indexOf('#a=') === 0) {

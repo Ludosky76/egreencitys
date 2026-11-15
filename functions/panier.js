@@ -8,6 +8,8 @@ const POIDS_MAX_COLIS = 30; // kg — au-delà : devis
 const QTE_MAX = 20; // par référence (toutes lignes confondues)
 const REF_VALIDE = /^[A-Z0-9]{3,12}$/i;
 const REF_HOLEX = /^HX[0-9A-F]{9}$/;
+// gamme Milwaukee / Bosch (quincaillerie-marques.json) : sans carton, colis normal de la commande, disponibilité publiée avec la gamme
+const REF_MARQUES = /^MB[0-9A-F]{9}$/;
 // destinations de livraison : Guyane (par défaut, inchangée) ; les autres ont leurs prix et leur forfait publiés
 // (quincaillerie-destinations.json, quincaillerie-prix-destinations.json) et ne sont payables que si panier_cb y est vrai
 const DESTINATIONS = ['gf', 'gp', 'mq', 'fr'];
@@ -25,6 +27,45 @@ function batterieSeule(nom) {
   nom = String(nom || '').trim();
   return BATT_DEBUT.test(nom) || (BATT_KIT.test(nom) && BATT_MOT.test(nom) && !MACHINE.test(nom))
     || (PILE_DEBUT.test(nom) && LITHIUM.test(nom));
+}
+/* Gamme Milwaukee / Bosch (réf. MB) : libellés propres à ces marques (« Li-Ion Système M12B4, 4,0 Ah », « Accumulateur… »,
+   « Bloc-batterie… », « Jeu de batteries… », « ProCORE… », « Bosch Professional Kit: 3 batteries… », kits « NRG » ou
+   « Kit de démarrage » = batteries + chargeur sans machine). MÊME règle que le script privé de construction de la gamme (batterie_seule_mb)
+   et assets/js/quincaillerie-shop.js (batterieSeuleMB) : toute modification se fait aux trois endroits.
+   Dans le rayon (sr) d'une machine, « … à batterie » veut dire « sans fil » : seules la règle commune et NRG s'y appliquent.
+   Limites de mot : (?:^|[^\p{L}\p{N}_]) … (?![\p{L}\p{N}_]) = \b de Python (lettres accentuées comprises). */
+const MB_MARQUE = /^(milwaukee|bosch)(\s+professional)?\s*:?\s+/i;
+const MB_CTX_BATT = /^(batter|accu|chargeur|piles?(?![\p{L}\p{N}_]))/iu;
+const MB_SANS_BATT = /sans (batterie|accu)/i;
+const MB_NRG = /nrg/i;
+const MB_FORT = /^(bloc-?batteries?|accumulateurs?|li-?ion(?![\p{L}\p{N}_])|jeu de batteries|procore)/iu;
+const MB_KIT_DEMARRAGE = /kit de d[ée]marrage/i;
+const MB_KIT_BATT = /batter|\+|(?:^|[^\p{L}\p{N}_])(exba|gba)/iu;
+const MB_MACHINE = new RegExp('(?:^|[^\\p{L}\\p{N}_])(perceuses?|visseuses?|perforateurs?|meuleuses?|scies?|ponceuses?|cl[ée]s?|boulonneuses?|d[ée]fonceuses?|rabots?|'
+  + 'marteaux?|burineurs?|lampes?|projecteurs?|souffleurs?|tondeuses?|taille-haies?|d[ée]broussailleuses?|tron[çc]onneuses?|'
+  + 'aspirateurs?|radios?|agrafeuses?|cloueurs?|riveteuses?|pistolets?|polisseuses?|multi-?outils?|outils?|malaxeurs?|'
+  + 'cisailles?|d[ée]capeurs?|lasers?|voyants?|cam[ée]ras?|d[ée]tecteurs?|localisateurs?|appareils?|ventilateurs?|boosters?|'
+  + 'inverseurs?|pompes?|sertisseuses?|coupe-?tubes?|torches?|enceintes?|vestes?|gilets?|machines?|tournevis|grignoteuses?|'
+  + 'compresseurs?|gonfleurs?|d[ée]coupeuses?|t[ée]l[ée]m[èe]tres?|niveaux?|pulv[ée]risateurs?|tarauds?|vibrateurs?|pinces?|'
+  + 'presses?|cliquets?|combi|power pack)(?![\\p{L}\\p{N}_])', 'iu');
+const MB_CHARGEUR = /chargeur|charger|caricatore/i;
+const MB_CHARGEUR_AVEC_BATT = /\+|battery|(?:^|[^\p{L}\p{N}_])(kit|pack)(?![\p{L}\p{N}_])/iu;
+const MB_AH = /(?:^|[^\p{L}\p{N}_])\d+([.,]\d+)?\s*ah(?![\p{L}\p{N}_])/iu;
+const MB_OBJET = /adaptateur|bo[iî]tier|bague|support|(?:^|[^\p{L}\p{N}_])sac(?![\p{L}\p{N}_])|accessoires?|station de charge/iu;
+const MB_MOT_BATT = /(?:^|[^\p{L}\p{N}_])(batterie|batteries|battery|accu|accus|accumulateurs?|li-?ion)(?![\p{L}\p{N}_])/iu;
+function batterieSeuleMB(nom, sr) {
+  nom = String(nom || '').trim();
+  const n = nom.replace(MB_MARQUE, '');
+  if (batterieSeule(nom) || batterieSeule(n)) return true;
+  if (MB_SANS_BATT.test(n)) return false;
+  if (MB_NRG.test(n)) return true;                       // Milwaukee NRG : batteries + chargeur, sans machine
+  sr = String(sr || '').trim();
+  if (sr && !MB_CTX_BATT.test(sr)) return false;         // rayon d'une machine ou d'un accessoire
+  if (MB_FORT.test(n) || (MB_KIT_DEMARRAGE.test(n) && MB_KIT_BATT.test(n))) return true;
+  if (MB_MACHINE.test(n)) return false;
+  if (MB_CHARGEUR.test(n) && !MB_CHARGEUR_AVEC_BATT.test(n) && !MB_AH.test(n)) return false;  // chargeur seul
+  if (MB_OBJET.test(n)) return false;
+  return MB_AH.test(n) || MB_MOT_BATT.test(n);
 }
 const CACHE_MS = 90 * 1000;
 const cache = new Map(); // chemin -> { t, promesse } : une instance ne relit pas les 7 Mo publiés à chaque appel
@@ -91,9 +132,10 @@ async function creerSessionPanier(corps, cleStripe) {
   const horsGuyane = dest !== 'gf';
   // Gamme Holex (réf. HX…) : catalogue à part, lu seulement si le panier en contient
   const avecHolex = [...qtes.keys()].some((r) => REF_HOLEX.test(r));
-  let catalogue, stock, offre, holex, reglages, destinations, prixDest;
+  const avecMarques = [...qtes.keys()].some((r) => REF_MARQUES.test(r));
+  let catalogue, stock, offre, holex, reglages, destinations, prixDest, marques;
   try {
-    [catalogue, stock, offre, holex, reglages, destinations, prixDest] = await Promise.all([
+    [catalogue, stock, offre, holex, reglages, destinations, prixDest, marques] = await Promise.all([
       lireJson('/assets/data/quincaillerie-catalogue.json'),
       lireJson('/assets/data/quincaillerie-stock.json'),
       lireJson('/assets/data/quincaillerie-offre.json', true),
@@ -101,6 +143,8 @@ async function creerSessionPanier(corps, cleStripe) {
       lireJson('/assets/data/quincaillerie-paiement.json', true),
       horsGuyane ? lireJson('/assets/data/quincaillerie-destinations.json') : null,
       horsGuyane ? lireJson('/assets/data/quincaillerie-prix-destinations.json') : null,
+      // facultatif : gamme absente (404) = chaque réf. MB refusée « article inconnu » (409), le reste du panier n'est pas bloqué
+      avecMarques ? lireJson('/assets/data/quincaillerie-marques.json', true) : null,
     ]);
   } catch (e) {
     console.error('Lecture des données du site impossible :', e.message);
@@ -119,6 +163,8 @@ async function creerSessionPanier(corps, cleStripe) {
   }
   const parRef = new Map(catalogue.articles.map((a) => [a.ref, a]));
   if (holex) holex.articles.forEach((a) => parRef.set(a.ref, a));
+  // réf. MB : seulement celles de la gamme Milwaukee / Bosch (jamais une réf. du catalogue remplacée)
+  if (marques) marques.articles.forEach((a) => { if (REF_MARQUES.test(a.ref) && !a.pc) parRef.set(a.ref, a); });
   const articles = [], refus = [];
   let total = 0, poids = 0, points = 0, cartons = 0;
   const unitesCarton = [];
@@ -132,9 +178,11 @@ async function creerSessionPanier(corps, cleStripe) {
       a = { ...a, prix: p[colonne] };
     }
     if (q > QTE_MAX) { refus.push({ ref, motif: 'au plus ' + QTE_MAX + ' exemplaires par article (au-delà : envoyez la commande, nous vous répondons)' }); continue; }
-    if (batterieSeule(a.nom)) { refus.push({ ref, motif: 'pile ou batterie au lithium vendue seule : interdite au transport aérien' }); continue; }
+    // gamme Milwaukee / Bosch : marque en tête du nom et libellés propres à ces marques (batterieSeuleMB, nom + type de produit)
+    if (batterieSeule(a.nom) || (REF_MARQUES.test(ref) && batterieSeuleMB(a.nom, a.sr))) { refus.push({ ref, motif: 'pile ou batterie au lithium vendue seule : interdite au transport aérien' }); continue; }
     if (a.devis) { refus.push({ ref, motif: 'colis de plus de 30 kg : sur devis' }); continue; }
-    const s = a.pc ? { s: a.s } : (stock.stock || {})[ref];  // Holex : disponibilité publiée avec sa gamme
+    // Holex, Milwaukee / Bosch : disponibilité publiée avec leur gamme ; catalogue : relevé horaire (stock.json)
+    const s = (a.pc || REF_MARQUES.test(ref)) ? { s: a.s } : (stock.stock || {})[ref];
     if (!s || !(s.s === 'disponible' || (a.pc && s.s === 'faible'))) { refus.push({ ref, motif: 'indisponible chez le fournisseur' }); continue; }
     articles.push({ a, q });
     total += a.prix * q;
@@ -229,4 +277,4 @@ async function creerSessionPanier(corps, cleStripe) {
   return { statut: 502, json: { erreur: 'stripe' } };
 }
 
-module.exports = { creerSessionPanier, lireJson, decouper, nbCartons, batterieSeule, SITE, BOUTIQUE, QTE_MAX, REF_HOLEX, DESTINATIONS };
+module.exports = { creerSessionPanier, lireJson, decouper, nbCartons, batterieSeule, batterieSeuleMB, SITE, BOUTIQUE, QTE_MAX, REF_HOLEX, REF_MARQUES, DESTINATIONS };

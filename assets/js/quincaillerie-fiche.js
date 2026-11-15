@@ -51,16 +51,17 @@
   function statutDe(ref) {
     var s = etat.stock[ref];
     if (s && s.s) return s.s;
-    var a = /^HX/.test(ref) && etat.catalogue && etat.catalogue.articles.find(function (x) { return x.ref === ref; });
-    return (a && a.s) || 'inconnu';  /* gamme Holex : disponibilité relevée avec son catalogue */
+    var a = /^(HX|MB)/.test(ref) && etat.catalogue && etat.catalogue.articles.find(function (x) { return x.ref === ref; });
+    return (a && a.s) || 'inconnu';  /* gammes Holex et Milwaukee / Bosch : disponibilité relevée avec leur gamme */
   }
+  function estMB(ref) { return /^MB/.test(ref || ''); }
   function badgeStock(ref) {
     var l = LIBELLES[statutDe(ref)] || LIBELLES.inconnu;
     return '<span class="qs ' + l[1] + '">' + l[0] + '</span>';
   }
   function delaiTexte(ref, a) {
     if (a && a.pc) return 'part dans le ' + cartonNom() + ', livraison ' + ((etat.holex && etat.holex.carton.delai) || 'environ 2 semaines après l’envoi du carton');
-    if (statutDe(ref) === 'disponible') return 'livraison sous 7 jours ouvrés';
+    if (statutDe(ref) === 'disponible') return (a && estMB(ref) && typeof a.delai === 'string') ? 'livraison en ' + a.delai : 'livraison sous 7 jours ouvrés';
     return 'disponibilité à confirmer — faites une demande';
   }
   function urlDemande(ref) { return '/pages/demande-produit.html?ref=' + encodeURIComponent(ref); }
@@ -163,6 +164,17 @@
           var canon = document.querySelector('link[rel="canonical"]');
           if (j._page && canon) canon.setAttribute('href', 'https://egreencitys.com' + j._page);
           var o = {}; o[ref] = { c: (a.lot > 1 ? ['Vendu par lot de ' + a.lot + ' pièces (prix affiché pour le lot, soit ' + eur(a.prix / a.lot) + '/pièce)'] : []).concat(j[ref] || []) }; return o;
+        })
+        .catch(function () { return {}; });
+    }
+    if (estMB(ref)) {  /* gamme Milwaukee / Bosch : caractéristiques [clé, valeur] par seau (2 derniers caractères de la réf.) */
+      return fetch('/assets/data/fiches/mb/' + encodeURIComponent(ref.slice(-2)) + '.json')
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (j) {
+          var o = {};
+          o[ref] = { c: (a && a.lot > 1 ? ['Vendu par lot de ' + a.lot + ' pièces (prix affiché pour le lot, soit ' + eur(a.prix / a.lot) + '/pièce)'] : [])
+            .concat((j[ref] || []).map(function (p) { return Array.isArray(p) ? p[0] + ' : ' + p[1] : String(p); })) };
+          return o;
         })
         .catch(function () { return {}; });
     }
@@ -269,7 +281,8 @@
       ?         '<p class="qf-astuce">📦 Expédition au poids : <strong>' + eur(window.EGCQDest.expedition(a.poids || 2)) + '</strong> pour cet article commandé seul. Elle est calculée sur le poids total de la commande : groupez vos achats, un seul colis.</p>'
       :         '<p class="qf-astuce">💡 Le forfait d’expédition (' + eur(etat.catalogue.forfait_expedition) + ') est <strong>unique par commande</strong> : ajoutez d’autres articles au panier, ils partent dans le même colis sans frais d’envoi en plus.</p>')
       :       '<a class="q-pay" href="' + urlDemande(ref) + '">✉️ Faire une demande<span class="q-pay-sub">nous confirmons prix et délai sous 24 h ouvrées — suivi dans votre espace client</span></a>'
-      +       '<button type="button" class="q-alerte" data-alerte="' + esc(ref) + '">🔔 M’alerter au retour en stock</button>')
+      /* gamme Milwaukee / Bosch : pas d'alerte (l'espace client ne suit que le stock du catalogue) — « Faire une demande » seulement */
+      +       (estMB(ref) ? '' : '<button type="button" class="q-alerte" data-alerte="' + esc(ref) + '">🔔 M’alerter au retour en stock</button>'))
       +     '</div>'
       +   '</div>'
       +   '<ul class="qf-reassurance">'
@@ -418,10 +431,21 @@
         return x[0];
       });
   }
+  if (estMB(ref)) {  /* gamme Milwaukee / Bosch : fichier à part, joint au catalogue (pas de carton) */
+    catalogue = Promise.all([catalogue, fetch('/assets/data/quincaillerie-marques.json').then(function (r) { if (!r.ok) throw 0; return r.json(); })])
+      .then(function (x) {
+        etat.marques = x[1];
+        x[0].articles = x[0].articles.concat(x[1].articles);
+        x[0].categories = x[0].categories.concat((x[1].categories || []).filter(function (c) {
+          return !x[0].categories.some(function (k) { return k.slug === c.slug; });
+        }));
+        return x[0];
+      });
+  }
   /* ancienne adresse ?ref= : départ vers la page statique dès l'arrivée du catalogue (sans attendre
      stock, liens ni offre), en gardant utm et ancre */
   var redirection = false;
-  if (!pageStatique && refParam && window.EGCQUrl && !/^HX/.test(refParam)) {  /* Holex : pas de page statique */
+  if (!pageStatique && refParam && window.EGCQUrl && !/^(HX|MB)/.test(refParam)) {  /* Holex, Milwaukee / Bosch : pas de page statique */
     catalogue.then(function (c) {
       var art = c.articles.find(function (x) { return x.ref === refParam; });
       if (!art) return;
