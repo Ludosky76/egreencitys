@@ -1065,16 +1065,20 @@
   /* Packs « pro » à prix fixe (promo.json → packs_pro, page /packs-pro/) : affichés si tous leurs articles sont au catalogue. */
   /* super pack Holex (categorie « superpacks ») : ses photos sont dans promo.json, il s'affiche sans charger la gamme Holex */
   function estSuper(pk) { return pk.categorie === 'superpacks'; }
-  /* super pack commandable : toutes ses réf. dans la gamme Holex chargée et « disponible » ; null tant que la gamme n'est pas là */
+  /* pack composé d'articles des gammes chargées à part (Holex HX…, Milwaukee / Bosch MB…) : photos dans promo.json comme un super pack */
+  function packGamme(pk) { return estSuper(pk) || (pk.articles || []).some(function (x) { return /^(HX|MB)/.test(x.ref); }); }
+  function packAHX(pk) { return estSuper(pk) || (pk.articles || []).some(function (x) { return /^HX/.test(x.ref); }); }
+  function packAMB(pk) { return (pk.articles || []).some(function (x) { return estMB(x.ref); }); }
+  /* pack de gamme commandable : toutes ses réf. dans les gammes chargées et « disponible » ; null tant qu'une gamme utile n'est pas là */
   function superOk(pk) {
-    if (!etat.holex) return null;
+    if ((packAHX(pk) && !etat.holex) || (packAMB(pk) && !etat.marques)) return null;
     return (pk.articles || []).every(function (x) { var a = article(x.ref); return a && !a.devis && statutDe(x.ref) === 'disponible'; });
   }
   var TXT_AJOUT = '🛒 Ajouter le pack', TXT_INDISPO = 'Momentanément indisponible';
   /* gamme chargée (ou rechargée) : boutons des super packs mis à jour, copie de défilement comprise */
   function majSupers() {
     (etat.pros || []).forEach(function (pp, j) {
-      if (!pp.sup) return;
+      if (!pp.g) return;
       pp.indispo = superOk(pp.pack) === false;
       document.querySelectorAll('[data-pro="' + j + '"]').forEach(function (b) { b.disabled = pp.indispo; b.textContent = pp.indispo ? TXT_INDISPO : TXT_AJOUT; });
     });
@@ -1082,9 +1086,9 @@
   function packsPro() {
     var p = etat.promo;
     return ((p && p.packs_pro) || []).map(function (pk) {
-      var sup = estSuper(pk);
-      var L = (pk.articles || []).map(function (x) { return { a: article(x.ref) || (sup && x.img ? { ref: x.ref, img: x.img } : null), nom: x.nom }; });
-      return L.length && L.every(function (x) { return x.a && !x.a.devis; }) ? { pack: pk, L: L, sup: sup, indispo: sup && superOk(pk) === false } : null;
+      var sup = estSuper(pk), g = packGamme(pk);
+      var L = (pk.articles || []).map(function (x) { return { a: article(x.ref) || (g && x.img ? { ref: x.ref, img: x.img } : null), nom: x.nom }; });
+      return L.length && L.every(function (x) { return x.a && !x.a.devis; }) ? { pack: pk, L: L, sup: sup, g: g, indispo: g && superOk(pk) === false } : null;
     }).filter(Boolean);
   }
   function vignettes(L, sansLien) {  /* super pack : aucune fiche liée (on n'y montre que le contenu et le prix du pack) */
@@ -1114,7 +1118,7 @@
       + '<div class="q-pack-pied"><div><div class="q-promo-prix">' + eur(p.prix) + '</div>'
       + '<div class="q-promo-inclus">' + esc(p.prix_txt || 'le pack complet') + (HORS_GUYANE ? ', livré ' + enDest() : ', livré, octroi de mer compris')
       + (p.delai ? ' · délai ' + esc(p.delai) + ', confirmé sous 24 h ouvrées' : '')
-      + ' · <a href="/packs-pro/' + (pp.sup ? '#cat=superpacks' : '') + '">détails</a></div></div>'
+      + ' · <a href="/packs-pro/' + (pp.sup ? '#cat=superpacks' : p.categorie === 'accessoires' ? '#cat=accessoires' : '') + '">détails</a></div></div>'
       + '<button type="button" class="q-promo-btn" data-pro="' + j + '"' + (pp.indispo ? ' disabled>' + TXT_INDISPO : '>' + TXT_AJOUT) + '</button></div>'
       + '</article>';
   }
@@ -1191,9 +1195,10 @@
     etat.pros = pros;
     var onglets = [];
     if (packs.length) onglets.push({ cle: 'moment', titre: '🔥 Packs du moment', cartes: packs.map(cartePackMoment) });
-    var machines = [], supers = [];
-    pros.forEach(function (pp, j) { (pp.sup ? supers : machines).push(cartePackPro(pp, j)); });  /* j = index dans pros (data-pro) */
+    var machines = [], accs = [], supers = [];
+    pros.forEach(function (pp, j) { (pp.sup ? supers : pp.pack.categorie === 'accessoires' ? accs : machines).push(cartePackPro(pp, j)); });  /* j = index dans pros (data-pro) */
     if (machines.length) onglets.push({ cle: 'pro', titre: '⚡ Packs pro machines', cartes: machines });
+    if (accs.length) onglets.push({ cle: 'acc', titre: '🧰 Packs accessoires', cartes: accs });
     if (supers.length) onglets.push({ cle: 'super', titre: '💎 Super packs Holex', cartes: supers });
     var d = document.createElement('div');  /* pas <section> : refonte.css force un padding !important sur les sections en mobile */
     d.id = 'q-promo'; d.className = 'q-op'; d.setAttribute('role', 'region'); d.setAttribute('aria-label', 'Packs');
@@ -1234,13 +1239,13 @@
       } else if ((b = e.target.closest('[data-pro]'))) {
         if (b.disabled) return;
         var pp = pros[+b.dataset.pro], p = pp.pack;
-        if (pp.sup) {  /* super pack : jamais ajouté sans avoir vérifié la gamme Holex (réf. présentes et « disponible ») */
+        if (pp.g) {  /* pack de gamme : jamais ajouté sans avoir vérifié ses gammes (réf. présentes et « disponible ») */
           var ok = superOk(p);
           if (ok === null) {
             b.disabled = true; b.textContent = 'Vérification de la disponibilité…';
-            chargerHolex().then(function () {
+            Promise.all([packAHX(p) ? chargerHolex() : null, packAMB(p) ? chargerMarques() : null]).then(function () {
               majSupers();
-              if (!etat.holex) { b.disabled = false; b.textContent = TXT_AJOUT; return; }  /* échec : nouvel essai au prochain clic */
+              if (superOk(p) === null) { b.disabled = false; b.textContent = TXT_AJOUT; return; }  /* échec : nouvel essai au prochain clic */
               if (superOk(p)) b.click();
             });
             return;
@@ -1483,7 +1488,7 @@
         var nouveaux = m.articles.filter(function (a) { return !etat.index[a.ref]; });
         nouveaux.forEach(function (a) { etat.index[a.ref] = a; });
         etat.catalogue.articles = etat.catalogue.articles.concat(nouveaux);
-        purgerMarques();
+        purgerMarques(); majSupers();
         var catUrl = etat.catDemandee;
         if (!etat.cat && catUrl && (m.categories || []).some(function (c) { return c.slug === catUrl; })) { etat.cat = catUrl; sel.value = catUrl; }
         rendreRayons(); rendre(); rendrePanier();

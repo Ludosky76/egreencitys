@@ -107,7 +107,7 @@
     <div id="contenu"><p class="vide">Chargement…</p></div>
     <div class="faq">
       <details><summary>Comment commander un pack ?</summary><p>Ajoutez le pack au panier puis envoyez la commande. Nous vérifions chaque article chez le fournisseur et vous confirmons le délai et le règlement sous 24 h ouvrées. Rien n’est encaissé avant.</p></details>
-      <details><summary>Les batteries sont-elles incluses ?</summary><p>Oui quand c’est indiqué (« 2 batteries 4 Ah », « 2 batteries 5 Ah »…). Les machines notées « machine seule » sont livrées sans batterie : elles utilisent les batteries du même pack, ou les vôtres quand le pack n’en contient pas (Duo Makita LXT, pour batteries Makita 18 V LXT). Les batteries lithium sont expédiées uniquement avec leur machine.</p></details>
+      <details><summary>Les batteries sont-elles incluses ?</summary><p>Oui quand c’est indiqué (« 2 batteries 4 Ah », « 2 batteries 5 Ah »…). Les machines notées « machine seule » ou « sans batterie ni chargeur » sont livrées sans batterie : elles utilisent les batteries du même pack, ou les vôtres quand le pack n’en contient pas (Duo Makita LXT, pour batteries Makita 18 V LXT). Les batteries lithium sont expédiées uniquement avec leur machine.</p></details>
       <details><summary>Que comprend le prix ?</summary><p>Les articles, l’octroi de mer et le transport jusqu’en Guyane (littoral). Le prix affiché est le prix final du pack.</p></details>
     </div>
     <p style="margin-top:22px;text-align:center;font-size:.9rem"><a href="/pages/demande-produit.html?chantier=1" style="color:inherit;text-decoration:underline">📋 Devis chantier (pros, mairies)&nbsp;: SIRET demandé, réponse sous 24&nbsp;h ouvrées</a></p>
@@ -121,8 +121,8 @@
     var DEST = window.EGCQDest || null;  /* destination de livraison : prix et panier propres */
     var LIVRE = DEST && !DEST.estGuyane() ? ', livré chez vous ' + DEST.info().en : ', livré chez vous en Guyane, octroi de mer compris';
     var CLE = DEST ? DEST.clePanier('egc_quinc_panier') : 'egc_quinc_panier', RET = 7 * 24 * 3600 * 1000;
-    var CATS = [['tous', 'Tous les packs'], ['machines', 'Packs machines'], ['superpacks', 'Super packs Holex'], ['cartons', 'Cartons d’outillage']];
-    var etat = { cat: 'tous', packs: [], cartons: [], art: {}, holex: null, holexEchec: false };
+    var CATS = [['tous', 'Tous les packs'], ['machines', 'Packs machines'], ['accessoires', 'Packs accessoires'], ['superpacks', 'Super packs Holex'], ['cartons', 'Cartons d’outillage']];
+    var etat = { cat: 'tous', packs: [], cartons: [], art: {}, holex: null, holexEchec: false, marques: null, marquesEchec: false };
     function $(i) { return document.getElementById(i); }
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
     function eur(v) { return v.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ' €'; }
@@ -140,6 +140,18 @@
       $('pastille').textContent = n;
     }
     function dansPanier(id) { return lire().some(function (l) { return l.pack === id; }); }
+    /* pack composé d'articles des gammes Holex (HX…) ou Milwaukee / Bosch (MB…) : photos lues dans promo.json,
+       disponibilité vérifiée dans ces gammes, chargées à part comme dans la boutique */
+    function aHX(p) { return p.articles.some(function (x) { return /^HX/.test(x.ref); }); }
+    function aMB(p) { return p.articles.some(function (x) { return /^MB/.test(x.ref); }); }
+    function deGamme(p) { return p.categorie === 'superpacks' || aHX(p) || aMB(p); }
+    function gammeArt(ref) { return /^HX/.test(ref) ? etat.holex && etat.holex[ref] : /^MB/.test(ref) ? etat.marques && etat.marques[ref] : etat.art[ref]; }
+    /* null : gamme pas encore lue ; true / false : chaque réf. présente, chiffrée et « disponible » */
+    function gammeOk(p) {
+      if ((aHX(p) && !etat.holex) || (aMB(p) && !etat.marques)) return null;
+      return p.articles.every(function (x) { var a = gammeArt(x.ref); return a && !a.devis && (!/^(HX|MB)/.test(x.ref) || a.s === 'disponible'); });
+    }
+    function gammeEchec(p) { return (aHX(p) && etat.holexEchec) || (aMB(p) && etat.marquesEchec); }
     function photos(L, et, nb) {
       var imgs = L.filter(function (x) { return x.a; }).slice(0, 3);
       return '<div class="photos n' + imgs.length + '"><span class="et">' + esc(et) + '</span>'
@@ -149,17 +161,19 @@
     function liste(L) {
       return '<ul>' + L.map(function (x) {
         var lien = !x.sup && x.a && window.EGCQUrl ? window.EGCQUrl.fiche(x.a) : null;  /* super pack : aucune fiche liée */
-        return '<li>' + (lien ? '<a href="' + esc(lien) + '">' + esc(x.nom) + '</a>' : esc(x.nom)) + '</li>';
+        var nom = (x.q > 1 && !/^\d+ × /.test(x.nom) ? x.q + ' × ' : '') + x.nom;  /* quantité du pack (champ q) */
+        return '<li>' + (lien ? '<a href="' + esc(lien) + '">' + esc(nom) + '</a>' : esc(nom)) + '</li>';
       }).join('') + '</ul>';
     }
     function cartePack(p, i) {
-      var sup = p.categorie === 'superpacks';  /* super pack Holex : photos lues dans promo.json */
-      var L = p.articles.map(function (x) { return { a: etat.art[x.ref] || (sup && x.img ? { ref: x.ref, img: x.img } : null), nom: x.nom, sup: sup }; });
+      var sup = p.categorie === 'superpacks', g = deGamme(p);  /* super pack Holex, pack Milwaukee / Bosch / Holex : photos lues dans promo.json */
+      var L = p.articles.map(function (x) { return { a: etat.art[x.ref] || (g && x.img ? { ref: x.ref, img: x.img } : null), nom: x.nom, q: x.q || 1, sup: sup }; });
       var ok = L.every(function (x) { return x.a && !x.a.devis; });
-      /* super pack : bouton actif seulement quand la gamme Holex est lue et que chaque réf. y est « disponible »
+      /* pack de gamme : bouton actif seulement quand ses gammes sont lues et que chaque réf. y est « disponible »
          (gamme illisible : bouton actif, le panier la recharge et retire un pack incomplet) */
-      var verif = sup && !etat.holex && !etat.holexEchec;
-      if (sup && etat.holex) ok = p.articles.every(function (x) { var a = etat.holex[x.ref]; return a && !a.devis && a.s === 'disponible'; });
+      var gok = g ? gammeOk(p) : null;
+      var verif = g && gok === null && !gammeEchec(p);
+      if (g && gok !== null) ok = gok;
       var deja = dansPanier(p.id);
       return '<article class="pk" data-cat="' + esc(p.categorie || 'machines') + '">'
         + photos(L, p.etiquette || 'Nouveau', L.length + (L.length > 1 ? ' articles' : ' article'))
@@ -186,8 +200,9 @@
     function rendre() {
       var machines = etat.packs.filter(function (p) { return (p.categorie || 'machines') === 'machines'; });
       var supers = etat.packs.filter(function (p) { return p.categorie === 'superpacks'; });
+      var accs = etat.packs.filter(function (p) { return p.categorie === 'accessoires'; });
       var cartons = etat.cartons;
-      var n = { tous: machines.length + supers.length + cartons.length, machines: machines.length, superpacks: supers.length, cartons: cartons.length };
+      var n = { tous: machines.length + accs.length + supers.length + cartons.length, machines: machines.length, accessoires: accs.length, superpacks: supers.length, cartons: cartons.length };
       $('filtres').innerHTML = CATS.filter(function (c) { return n[c[0]] > 0; }).map(function (c) {
         return '<button type="button" data-cat="' + c[0] + '" aria-pressed="' + (etat.cat === c[0]) + '">' + c[1] + ' <span>' + n[c[0]] + '</span></button>';
       }).join('');
@@ -195,6 +210,9 @@
       if ((etat.cat === 'tous' || etat.cat === 'machines') && machines.length)
         h += '<h2 class="sec">Packs machines <small>batteries et accessoires inclus selon le pack</small></h2><div class="packs">'
           + machines.map(function (p) { return cartePack(p, etat.packs.indexOf(p)); }).join('') + '</div>';
+      if ((etat.cat === 'tous' || etat.cat === 'accessoires') && accs.length)
+        h += '<h2 class="sec">Packs accessoires <small>forets, embouts et petit outillage, livrés en 1 colis</small></h2><div class="packs">'
+          + accs.map(function (p) { return cartePack(p, etat.packs.indexOf(p)); }).join('') + '</div>';
       if ((etat.cat === 'tous' || etat.cat === 'superpacks') && supers.length)
         h += '<h2 class="sec">Super packs Holex <small>outillage de précision, livré en 1 colis</small></h2><div class="packs">'
           + supers.map(function (p) { return cartePack(p, etat.packs.indexOf(p)); }).join('') + '</div>';
@@ -208,6 +226,12 @@
       clearTimeout(toast.h); toast.h = setTimeout(function () { t.style.display = 'none'; }, 5000);
     }
     function json(u) { return fetch(u + '?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }); }
+    function charger(fichier, cle, echec) {
+      fetch('/assets/data/' + fichier + '.json').then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (h) { var m = {}; (h.articles || []).forEach(function (a) { m[a.ref] = a; }); etat[cle] = m; })
+        .catch(function () { etat[echec] = true; })
+        .then(rendre);
+    }
     Promise.all([json('/assets/data/quincaillerie-promo.json'), json('/assets/data/quincaillerie-catalogue.json'), DEST ? DEST.pret : null])
       .then(function (r) {
         if (DEST && !DEST.estGuyane()) {
@@ -223,12 +247,10 @@
         var q = (location.hash.match(/cat=(\w+)/) || [])[1];
         if (q && CATS.some(function (c) { return c[0] === q; })) etat.cat = q;
         rendre();
-        /* super packs : disponibilité lue dans la gamme Holex (même adresse que la boutique, cache du navigateur partagé) */
-        if (etat.packs.some(function (p) { return p.categorie === 'superpacks'; }))
-          fetch('/assets/data/quincaillerie-holex.json').then(function (r) { if (!r.ok) throw 0; return r.json(); })
-            .then(function (h) { var m = {}; (h.articles || []).forEach(function (a) { m[a.ref] = a; }); etat.holex = m; })
-            .catch(function () { etat.holexEchec = true; })
-            .then(rendre);
+        /* packs de gamme : disponibilité lue dans les gammes Holex et Milwaukee / Bosch (mêmes adresses que la boutique,
+           cache du navigateur partagé), chacune chargée seulement si un pack en contient */
+        if (etat.packs.some(function (p) { return p.categorie === 'superpacks' || aHX(p); })) charger('quincaillerie-holex', 'holex', 'holexEchec');
+        if (etat.packs.some(aMB)) charger('quincaillerie-marques', 'marques', 'marquesEchec');
       })
       .catch(function () { $('contenu').innerHTML = '<p class="vide">Chargement impossible, réessayez dans un instant.</p>'; });
     $('filtres').addEventListener('click', function (e) {
@@ -242,7 +264,7 @@
       var b = e.target.closest('button[data-i]');
       if (!b || b.disabled) return;
       var p = etat.packs[+b.dataset.i];
-      if (p.categorie === 'superpacks' && etat.holex && !p.articles.every(function (x) { var a = etat.holex[x.ref]; return a && a.s === 'disponible'; })) return;
+      if (deGamme(p) && gammeOk(p) === false) return;
       if (dansPanier(p.id)) { window.location.href = '/pages/boutique-quincaillerie.html#panier'; return; }
       var lignes = lire().filter(function (l) { return l.pack !== p.id; });
       p.articles.forEach(function (x) { lignes.push({ ref: x.ref, q: x.q || 1, pack: p.id, packTitre: p.titre, packPrix: p.prix }); });

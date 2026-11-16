@@ -740,6 +740,184 @@
    "prix_txt": "le duo en machines seules + 6 accessoires"
   },
   {
+   "id": "mixte-fixation-chantier",
+   "etiquette": "Nouveau pack",
+   "titre": "Pack perçage-vissage chantier",
+   "marque": "Milwaukee · Holex",
+   "sous_titre": "Forets SDS-plus 4 taillants de 6 à 10 mm, 20 embouts à chocs PZ2 et TX20, porte-embouts magnétiques, niveau aimanté et lunettes de protection",
+   "prix": 369,
+   "colis": "1 colis, environ 1,5 kg",
+   "delai": "environ 10 jours ouvrés",
+   "articles": [
+    {
+     "ref": "MB8636EBD31",
+     "nom": "Foret SDS-plus Milwaukee MX4 6 x 110 mm",
+     "q": 2,
+     "img": "/assets/img/mb/aefead06a22b57.webp"
+    },
+    {
+     "ref": "MB2B256A44A",
+     "nom": "Porte-embout magnétique Milwaukee SHOCKWAVE 152 mm",
+     "q": 2,
+     "img": "/assets/img/mb/b9ef0de86d24d6.webp"
+    },
+    {
+     "ref": "HX771D93F7E",
+     "nom": "Niveau à bulle aluminium aimanté Holex 400 mm",
+     "img": "/assets/img/hx/130d5c38d4cbd1.webp"
+    },
+    {
+     "ref": "MB475D432D3",
+     "nom": "Foret SDS-plus Milwaukee MX4 8 x 160 mm",
+     "q": 2,
+     "img": "/assets/img/mb/aefead06a22b57.webp"
+    },
+    {
+     "ref": "MBD95959DCB",
+     "nom": "Foret SDS-plus Milwaukee MX4 10 x 160 mm",
+     "img": "/assets/img/mb/aefead06a22b57.webp"
+    },
+    {
+     "ref": "MB654480555",
+     "nom": "Embout à chocs Milwaukee SHOCKWAVE PZ2 50 mm",
+     "q": 10,
+     "img": "/assets/img/mb/296326fd760c37.webp"
+    },
+    {
+     "ref": "MB00A186E1B",
+     "nom": "Embout à chocs Milwaukee SHOCKWAVE TX20 50 mm",
+     "q": 10,
+     "img": "/assets/img/mb/a1de21e3a35c87.webp"
+    },
+    {
+     "ref": "HX39D480698",
+     "nom": "Lunettes de protection confort Holex EN 166",
+     "q": 2,
+     "img": "/assets/img/hx/4b59ee09492b4f.webp"
+    }
+   ],
+   "categorie": "accessoires",
+   "accroche": "Percer et visser sur chantier"
+  },
+  {
+   "id": "m12-perceuse-chantier",
+   "etiquette": "Nouveau pack",
+   "titre": "Pack perceuse à percussion M12 FUEL",
+   "marque": "Milwaukee · M12",
+   "sous_titre": "Perceuse-visseuse à percussion Milwaukee M12 FUEL avec 2 batteries 2 Ah, chargeur et coffret, embouts à chocs PZ2 et TX20, porte-embout magnétique et forets béton",
+   "prix": 589,
+   "colis": "1 colis, environ 5,5 kg",
+   "delai": "environ 10 jours ouvrés",
+   "articles": [
+    {
+     "ref": "MB4069C7468",
+     "nom": "Perceuse-visseuse à percussion Milwaukee M12 FUEL, 2 batteries 2 Ah, chargeur, coffret",
+     "img": "/assets/img/mb/3f2416d7ef9608.webp"
+    },
+    {
+     "ref": "MB654480555",
+     "nom": "Embout à chocs Milwaukee PZ2 50 mm",
+     "q": 10,
+     "img": "/assets/img/mb/296326fd760c37.webp"
+    },
+    {
+     "ref": "MB00A186E1B",
+     "nom": "Embout à chocs Milwaukee TX20 50 mm",
+     "q": 5,
+     "img": "/assets/img/mb/a1de21e3a35c87.webp"
+    },
+    {
+     "ref": "MB2B256A44A",
+     "nom": "Porte-embout magnétique Milwaukee 152 mm",
+     "img": "/assets/img/mb/b9ef0de86d24d6.webp"
+    },
+    {
+     "ref": "MB586FC5818",
+     "nom": "Foret béton carbure Milwaukee 6 mm",
+     "q": 3,
+     "img": "/assets/img/mb/bffe419a5556e5.webp"
+    },
+    {
+     "ref": "MB57963CACB",
+     "nom": "Foret béton carbure Milwaukee 8 mm",
+     "q": 3,
+     "img": "/assets/img/mb/bffe419a5556e5.webp"
+    }
+   ],
+   "categorie": "machines",
+   "accroche": "Compacte pour l'électricité et la plomberie"
+  },
+  {
+   "id": "mixte-perforation-m12",
+   "etiquette": "Nouveau pack",
+   "titre": "Pack perforateur et tournevis M12",
+   "marque": "Milwaukee · M12",
+   "sous_titre": "Perforateur SDS-plus M12 FUEL avec 2 batteries 5,0 Ah, chargeur et coffret, tournevis M12 sans batterie, forets SDS-plus 6 à 10 mm, embouts à chocs, niveau aimanté et lunettes",
+   "prix": 1109,
+   "colis": "1 colis, environ 9 kg",
+   "delai": "environ 10 jours ouvrés",
+   "articles": [
+    {
+     "ref": "MB334D01477",
+     "nom": "Perforateur SDS-plus Milwaukee M12 FUEL, 2 batteries 5,0 Ah, chargeur, coffret",
+     "img": "/assets/img/mb/54f8b338a1b96b.webp"
+    },
+    {
+     "ref": "MB6C59D397C",
+     "nom": "Tournevis Milwaukee M12 (sans batterie ni chargeur)",
+     "img": "/assets/img/mb/6b994f5981a8b2.webp"
+    },
+    {
+     "ref": "MB8636EBD31",
+     "nom": "Foret SDS-plus Milwaukee MX4 6 x 110 mm",
+     "q": 2,
+     "img": "/assets/img/mb/aefead06a22b57.webp"
+    },
+    {
+     "ref": "MB475D432D3",
+     "nom": "Foret SDS-plus Milwaukee MX4 8 x 160 mm",
+     "q": 2,
+     "img": "/assets/img/mb/aefead06a22b57.webp"
+    },
+    {
+     "ref": "MBD95959DCB",
+     "nom": "Foret SDS-plus Milwaukee MX4 10 x 160 mm",
+     "q": 2,
+     "img": "/assets/img/mb/aefead06a22b57.webp"
+    },
+    {
+     "ref": "MB654480555",
+     "nom": "Embout à chocs Milwaukee SHOCKWAVE PZ2 50 mm",
+     "q": 10,
+     "img": "/assets/img/mb/296326fd760c37.webp"
+    },
+    {
+     "ref": "MB00A186E1B",
+     "nom": "Embout à chocs Milwaukee SHOCKWAVE TX20 50 mm",
+     "q": 10,
+     "img": "/assets/img/mb/a1de21e3a35c87.webp"
+    },
+    {
+     "ref": "MB2B256A44A",
+     "nom": "Porte-embout magnétique Milwaukee SHOCKWAVE 152 mm",
+     "img": "/assets/img/mb/b9ef0de86d24d6.webp"
+    },
+    {
+     "ref": "HX771D93F7E",
+     "nom": "Niveau à bulle aluminium aimanté Holex 400 mm",
+     "img": "/assets/img/hx/130d5c38d4cbd1.webp"
+    },
+    {
+     "ref": "HX39D480698",
+     "nom": "Lunettes de protection confort Holex EN 166",
+     "q": 2,
+     "img": "/assets/img/hx/4b59ee09492b4f.webp"
+    }
+   ],
+   "categorie": "machines",
+   "accroche": "Percer le béton et visser avec les mêmes batteries"
+  },
+  {
    "id": "superpack-electricien-vde",
    "categorie": "superpacks",
    "etiquette": "Nouveau pack",
