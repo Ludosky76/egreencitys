@@ -1,6 +1,31 @@
 {
- "genere_le": "2026-11-16T06:34:55",
+ "genere_le": "2026-11-16T21:59:32",
  "produits": [
+  {
+   "ref": "648XJ",
+   "date": "2026-11-16",
+   "lien": "https://www.instagram.com/p/Df0KVAOCjDr/"
+  },
+  {
+   "ref": "483JL",
+   "date": "2026-11-16",
+   "lien": "https://www.instagram.com/p/Dfz8mZXCO-V/"
+  },
+  {
+   "ref": "6629F",
+   "date": "2026-11-16",
+   "lien": "https://www.instagram.com/p/DfzMgtOiDJI/"
+  },
+  {
+   "ref": "702VL",
+   "date": "2026-11-16",
+   "lien": "https://www.instagram.com/p/Dfy-wfoiWeZ/"
+  },
+  {
+   "ref": "93086",
+   "date": "2026-11-16",
+   "lien": "https://www.instagram.com/p/DfyxJ8Pijl_/"
+  },
   {
    "ref": "860CA",
    "date": "2026-11-15",
@@ -35,31 +60,6 @@
    "ref": "961KW",
    "date": "2026-11-11",
    "lien": "https://www.instagram.com/p/DfnRI6YCl5T/"
-  },
-  {
-   "ref": "262PF",
-   "date": "2026-11-10",
-   "lien": "https://www.instagram.com/p/DfkmzJnqeEG/"
-  },
-  {
-   "ref": "2683V",
-   "date": "2026-11-10",
-   "lien": "https://www.instagram.com/p/DfkO5gSCU12/"
-  },
-  {
-   "ref": "265XH",
-   "date": "2026-11-10",
-   "lien": "https://www.instagram.com/p/DfjwZuViyeH/"
-  },
-  {
-   "ref": "322PV",
-   "date": "2026-11-08",
-   "lien": "https://www.instagram.com/p/DffpXDbCkee/"
-  },
-  {
-   "ref": "101JL",
-   "date": "2026-11-08",
-   "lien": "https://www.instagram.com/p/DfelpySCsp_/"
   }
  ]
 }
