@@ -52,8 +52,8 @@
   <nav class="qf-fil" id="qd-fil" aria-label="Fil d'Ariane"><a href="/pages/boutique-quincaillerie.html">Boutique quincaillerie</a> › <span>Demande produit</span></nav>
 
   <main class="qf-detail" style="margin-top:1rem;">
-    <h1 style="font-size:clamp(1.1rem,2.2vw,1.4rem);font-weight:800;color:var(--ink);margin-bottom:.3rem;">✉️ Demande de produit</h1>
-    <p style="font-size:.86rem;color:var(--muted);max-width:95ch;margin-bottom:1rem;">
+    <h1 id="qd-titre" style="font-size:clamp(1.1rem,2.2vw,1.4rem);font-weight:800;color:var(--ink);margin-bottom:.3rem;">✉️ Demande de produit</h1>
+    <p id="qd-intro" style="font-size:.86rem;color:var(--muted);max-width:95ch;margin-bottom:1rem;">
       Cet article n'est pas disponible immédiatement chez notre fournisseur. Envoyez-nous votre demande :
       nous vérifions la référence et revenons vers vous <strong>sous 24&nbsp;h ouvrées</strong> avec le prix
       et le délai confirmés — aucune commande ni aucun paiement avant votre accord.
@@ -77,8 +77,13 @@
         <div><label for="qd-nom">Votre nom</label><input type="text" id="qd-nom" autocomplete="name"></div>
         <div><label for="qd-email">Votre email *</label><input type="email" id="qd-email" required autocomplete="email"></div>
       </div>
-      <div style="display:grid;grid-template-columns:140px 1fr;gap:.8rem;">
-        <div><label for="qd-qte">Quantité</label><input type="number" id="qd-qte" min="1" value="1"></div>
+      <!-- devis chantier (?chantier=1) : entreprise ou collectivité + SIRET -->
+      <div id="qd-chantier" style="display:none;grid-template-columns:1fr 1fr;gap:.8rem;">
+        <div><label for="qd-entreprise">Entreprise ou collectivité *</label><input type="text" id="qd-entreprise" autocomplete="organization" maxlength="120"></div>
+        <div><label for="qd-siret">SIRET (14 chiffres) *</label><input type="text" id="qd-siret" inputmode="numeric" maxlength="20"></div>
+      </div>
+      <div id="qd-ligne-qte" style="display:grid;grid-template-columns:140px 1fr;gap:.8rem;">
+        <div id="qd-qte-bloc"><label for="qd-qte">Quantité</label><input type="number" id="qd-qte" min="1" value="1"></div>
         <div><label for="qd-tel">Téléphone (WhatsApp)</label><input type="tel" id="qd-tel" autocomplete="tel"></div>
       </div>
       <label for="qd-message">Votre message (précisions, usage, échéance…)</label>
@@ -103,9 +108,19 @@
   <script>
   (function () {
     'use strict';
-    var ref = new URLSearchParams(location.search).get('ref') || '';
+    var prm = new URLSearchParams(location.search);
+    var ref = prm.get('ref') || '';
     var article = null;
     var utilisateur = null;
+    /* devis chantier (lien du panier dès 1 000 € et de la page packs pro) : ?chantier=1&dest=gf&lignes=REF*Q,REF*Q */
+    var chantier = prm.get('chantier') === '1';
+    var DESTS = { gf: 'Guyane', gp: 'Guadeloupe', mq: 'Martinique', fr: 'France métropolitaine' };
+    var destNom = DESTS[prm.get('dest')] || '';
+    var lignes = !chantier ? [] : (prm.get('lignes') || '').split(',').map(function (x) {
+      var i = x.lastIndexOf('*'), r = (i > 0 ? x.slice(0, i) : x).trim();
+      var q = Math.min(999, Math.max(1, parseInt(i > 0 ? x.slice(i + 1) : '1', 10) || 1));
+      return /^[A-Za-z0-9._-]{1,30}$/.test(r) ? { ref: r, q: q, nom: '', prix: null } : null;
+    }).filter(Boolean).slice(0, 80);
 
     function $(id) { return document.getElementById(id); }
     function esc(s) {
@@ -140,6 +155,45 @@
       }
     } catch (e) { $('qd-connexion').style.display = ''; }
 
+    /* ---- Devis chantier : liste des articles du panier, entreprise et SIRET ---- */
+    function texteLignes() {
+      return lignes.map(function (l) { return l.ref + ' × ' + l.q + (l.nom ? ' — ' + l.nom : ''); }).join('\n');
+    }
+    if (chantier) {
+      document.title = 'Devis chantier | EGREENCITY\'S PRO QUINCAILLERIE';
+      $('qd-titre').textContent = '📋 Devis chantier (pros, mairies)';
+      $('qd-intro').innerHTML = 'Envoyez la liste de votre chantier : nous vérifions chaque référence et vous adressons un <strong>devis sous 24&nbsp;h ouvrées</strong>, '
+        + 'avec la disponibilité et le délai confirmés. Le <strong>SIRET</strong> de l’entreprise ou de la collectivité est demandé. Aucune commande ni aucun paiement avant votre accord.';
+      $('qd-chantier').style.display = 'grid';
+      $('qd-qte-bloc').style.display = 'none';
+      $('qd-ligne-qte').style.gridTemplateColumns = '1fr';
+      $('qd-entreprise').required = true; $('qd-siret').required = true;
+      $('qd-message').placeholder = lignes.length ? 'Ex. : chantier à Kourou, livraison souhaitée avant la fin du mois, bon de commande à suivre.'
+        : 'Listez les articles voulus (référence et quantité), le lieu du chantier et l’échéance.';
+      var bloc = $('qd-produit');
+      bloc.style.display = 'block';
+      if (!lignes.length) bloc.style.display = 'none';
+      else {
+        var fichiers = ['/assets/data/quincaillerie-catalogue.json'];
+        if (lignes.some(function (l) { return /^HX/.test(l.ref); })) fichiers.push('/assets/data/quincaillerie-holex.json');
+        if (lignes.some(function (l) { return /^MB/.test(l.ref); })) fichiers.push('/assets/data/quincaillerie-marques.json');
+        var afficherLignes = function () {
+          bloc.innerHTML = '<div style="font-weight:700;color:var(--ink);font-size:.92rem;margin-bottom:.4rem;">Articles de votre panier (' + lignes.length + ' réf.)'
+            + (destNom ? ' · livraison en ' + esc(destNom) : '') + '</div>'
+            + '<ul style="margin:0;padding-left:1.1rem;font-size:.82rem;line-height:1.5;">'
+            + lignes.map(function (l) { return '<li><span class="q-ref">Réf. ' + esc(l.ref) + '</span> × <strong>' + l.q + '</strong>' + (l.nom ? ' — ' + esc(l.nom) : '') + '</li>'; }).join('')
+            + '</ul>';
+        };
+        afficherLignes();
+        Promise.all(fichiers.map(function (f) { return fetch(f).then(function (r) { return r.json(); }).catch(function () { return { articles: [] }; }); }))
+          .then(function (cats) {
+            var index = {};
+            cats.forEach(function (c) { (c.articles || []).forEach(function (a) { index[a.ref] = a; }); });
+            lignes.forEach(function (l) { var a = index[l.ref]; if (a) { l.nom = a.nom; l.prix = typeof a.prix === 'number' ? a.prix : null; } });
+            afficherLignes();
+          });
+      }
+    } else
     /* ---- Article demandé ---- */
     /* réf. HX… (gamme Holex) et MB… (gamme Milwaukee / Bosch) : fichiers à part */
     fetch(/^HX/.test(ref) ? '/assets/data/quincaillerie-holex.json' : /^MB/.test(ref) ? '/assets/data/quincaillerie-marques.json' : '/assets/data/quincaillerie-catalogue.json')
@@ -171,10 +225,11 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
-          _subject: 'Demande produit quincaillerie — ' + d.ref,
+          _subject: chantier ? 'Devis chantier quincaillerie — ' + d.entreprise : 'Demande produit quincaillerie — ' + d.ref,
           _template: 'box',
           reference: d.ref, produit: d.produit, quantite: d.qte,
           nom: d.nom, email: d.email, telephone: d.tel,
+          entreprise: d.entreprise, siret: d.siret, destination: d.destination, articles: d.lignes,  /* devis chantier seulement */
           message: d.message,
           suivi: d.uid ? 'Compte client : demande enregistrée (espace admin > Demandes produits)' : 'Sans compte : répondre par email'
         })
@@ -195,6 +250,22 @@
         message: $('qd-message').value.trim(),
         uid: utilisateur ? utilisateur.uid : null
       };
+      if (chantier) {
+        /* champs de la demande bornés par les règles Firestore (ref < 40, produit < 300, qte ≤ 999, message < 2000) :
+           SIRET, entreprise et liste vont dans le message ; l'email de notification reçoit la liste complète */
+        var siret = $('qd-siret').value.replace(/\D/g, ''), entreprise = $('qd-entreprise').value.trim().slice(0, 120);
+        if (!entreprise) { alert('Indiquez le nom de l’entreprise ou de la collectivité.'); return; }
+        if (siret.length !== 14) { alert('Le SIRET comporte 14 chiffres.'); return; }
+        var liste = texteLignes();
+        d.ref = 'DEVIS-CHANTIER';
+        d.produit = ('Devis chantier — ' + entreprise + (lignes.length ? ' — ' + lignes.length + ' réf.' : '')).slice(0, 299);
+        d.qte = Math.min(999, Math.max(1, lignes.reduce(function (s, l) { return s + l.q; }, 0)));
+        d.entreprise = entreprise; d.siret = siret; d.destination = destNom || undefined; d.lignes = liste || undefined;
+        var entete = 'DEVIS CHANTIER\nSIRET : ' + siret + '\nEntreprise / collectivité : ' + entreprise + (destNom ? '\nLivraison : ' + destNom : '')
+          + (d.message ? '\n\n' + d.message : '');
+        var complet = entete + (liste ? '\n\nArticles :\n' + liste : '');
+        d.message = complet.length < 1990 ? complet : complet.slice(0, 1940) + '\n… (liste complète dans l’email de notification)';
+      }
       var bouton = $('qd-envoyer');
       bouton.disabled = true; bouton.textContent = 'Envoi…';
 

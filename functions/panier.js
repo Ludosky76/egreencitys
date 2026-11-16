@@ -114,6 +114,19 @@ function refusDuCode(e) {
     && (/discount|promotion|coupon/i.test(String(e.param || '')) || /promotion|coupon|code/i.test(String(e.message || '')));
 }
 
+/* source de la visite envoyée par la boutique ({ source, medium, campaign, content, fbclid }) -> metadata src_* :
+   texte nettoyé, 100 caractères au plus, clé absente si vide ; fbclid : présence seulement ('1') */
+function metadataSource(src) {
+  const md = {};
+  if (!src || typeof src !== 'object' || Array.isArray(src)) return md;
+  for (const k of ['source', 'medium', 'campaign', 'content', 'fbclid']) {
+    let v = typeof src[k] === 'string' ? src[k].replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, 100).trim() : '';
+    if (k === 'fbclid' && v) v = '1';
+    if (v) md['src_' + k] = v;
+  }
+  return md;
+}
+
 async function creerSessionPanier(corps, cleStripe) {
   corps = (corps && typeof corps === 'object') ? corps : {};
   const lignes = Array.isArray(corps.panier) ? corps.panier : [];
@@ -245,9 +258,12 @@ async function creerSessionPanier(corps, cleStripe) {
       cartons_sup: cartons > 1 ? String(cartons - 1) : '',
       offre: offert ? offre.code : '',
       destination: dest,
+      ...metadataSource(corps.source),
     },
     success_url: BOUTIQUE + '?paiement=succes&panier=1&sid={CHECKOUT_SESSION_ID}',
     cancel_url: BOUTIQUE + '#panier',
+    // page expirée (24 h par défaut, expires_at non fixé) : Stripe fournit un lien de reprise (recapPaiements, functions/recap.js)
+    after_expiration: { recovery: { enabled: true, allow_promotion_codes: false } },
   };
   if (offert) params.discounts = [{ promotion_code: offre.stripe_promotion_code }];
   else if (!horsGuyane) params.allow_promotion_codes = true;  // codes de la boutique : conçus pour la Guyane
@@ -277,4 +293,4 @@ async function creerSessionPanier(corps, cleStripe) {
   return { statut: 502, json: { erreur: 'stripe' } };
 }
 
-module.exports = { creerSessionPanier, lireJson, decouper, nbCartons, batterieSeule, batterieSeuleMB, SITE, BOUTIQUE, QTE_MAX, REF_HOLEX, REF_MARQUES, DESTINATIONS };
+module.exports = { creerSessionPanier, metadataSource, lireJson, decouper, nbCartons, batterieSeule, batterieSeuleMB, SITE, BOUTIQUE, QTE_MAX, REF_HOLEX, REF_MARQUES, DESTINATIONS };

@@ -14,9 +14,36 @@
 (function () {
   'use strict';
 
+  /* source de la visite (utm_source / medium / campaign / content ; fbclid : présence seulement), lue dans
+     l'adresse à l'arrivée, gardée 30 jours sur l'appareil après consentement (sinon le temps de l'onglet) ;
+     envoyée au paiement (même clé et même règle que quincaillerie-shop.js) */
+  var CLE_SOURCE = 'egc_quinc_source', SOURCE_DUREE = 30 * 24 * 3600 * 1000;
+  function sourceVisite() {
+    var s = null;
+    try {
+      /* 30 jours sur l'appareil (localStorage) seulement si la bannière a été acceptée (cookieConsent, comme GA4) ;
+         sinon : onglet en cours seulement (sessionStorage), et toute ancienne copie de 30 jours est effacée */
+      var accepte = localStorage.getItem('cookieConsent') === 'accept';
+      var depot = accepte ? localStorage : sessionStorage;
+      if (!accepte) localStorage.removeItem(CLE_SOURCE);
+      var p = new URLSearchParams(location.search), v = {};
+      ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].forEach(function (k) { var x = (p.get(k) || '').trim().slice(0, 100); if (x) v[k.slice(4)] = x; });
+      if (p.get('fbclid')) v.fbclid = '1';
+      if (Object.keys(v).length) { s = v; depot.setItem(CLE_SOURCE, JSON.stringify({ ts: Date.now(), v: v })); }
+      else {
+        var m = JSON.parse(depot.getItem(CLE_SOURCE) || (accepte && sessionStorage.getItem(CLE_SOURCE)) || 'null');
+        if (m && m.v && Date.now() - m.ts < SOURCE_DUREE) s = m.v; else if (m) depot.removeItem(CLE_SOURCE);
+      }
+    } catch (e) {}
+    return s;
+  }
+  var SOURCE = sourceVisite();
+
   /* un panier par destination de livraison (quincaillerie-destination.js, chargé ici s'il manque à la page) */
   function clePanier() { return window.EGCQDest ? window.EGCQDest.clePanier('egc_quinc_panier') : 'egc_quinc_panier'; }
   function dz(cle, defaut) { var i = window.EGCQDest && !window.EGCQDest.estGuyane() && window.EGCQDest.info(); return (i && i[cle]) || defaut; }
+  /* libellé de taxe à côté du prix : Guyane, TVA non applicable (art. 294 du CGI, CGV art. 4) ; autres destinations : inchangé */
+  function badgeTaxe() { return window.EGCQDest && !window.EGCQDest.estGuyane() ? '<span class="q-ttc">TTC</span>' : '<span class="q-ttc" title="Prix net : TVA non applicable en Guyane (art. 294 du CGI)">sans TVA</span>'; }
   var destPret = window.EGCQDest ? window.EGCQDest.pret : new Promise(function (ok) {
     var s = document.createElement('script');
     s.src = '/assets/js/quincaillerie-destination.js?v=7';
@@ -84,11 +111,19 @@
     $('q-pastille').textContent = n;
     $('q-pastille').style.display = n ? '' : 'none';
   }
+  /* mesure d'audience (GA4, seulement après consentement : window.gtag absent sinon) */
+  function articleDe(ref) { return etat.catalogue ? etat.catalogue.articles.find(function (x) { return x.ref === ref; }) : null; }
+  function gaArticle(evenement, ref) {
+    if (!window.gtag) return;
+    var a = articleDe(ref), px = a && typeof a.prix === 'number' ? a.prix : 0;
+    gtag('event', evenement, { currency: 'EUR', value: px, items: [{ item_id: ref, item_name: a ? a.nom : ref, price: px, quantity: 1 }] });
+  }
   /* accessoire compatible : ajouté sans quitter la fiche (on peut prendre l'outil ensuite) */
   function ajouterSurPlace(ref, bouton) {
     var p = panier();
     var l = p.find(function (x) { return x.ref === ref && !x.pack; });
     if (l) l.q += 1; else p.push({ ref: ref, q: 1 });
+    gaArticle('add_to_cart', ref);
     var paquet = { maj: Date.now(), lignes: p };
     try { localStorage.setItem(clePanier(), JSON.stringify(paquet)); } catch (e) {}
     if (window.EGCQCompte && window.EGCQCompte.utilisateur()) window.EGCQCompte.sauverPanier(paquet);
@@ -100,6 +135,7 @@
     var p = panier();
     var l = p.find(function (x) { return x.ref === ref && !x.pack; });
     if (l) l.q += 1; else p.push({ ref: ref, q: 1 });
+    gaArticle('add_to_cart', ref);
     var paquet = { maj: Date.now(), lignes: p };
     try { localStorage.setItem(clePanier(), JSON.stringify(paquet)); } catch (e) {}
     /* client connecté : pousser aussi sur le compte avant de partir
@@ -138,9 +174,11 @@
            plus par le lien Stripe fixe (créé avec l'ancien forfait de 21,12 €) */
         var art = etat.catalogue.articles.find(function (x) { return x.ref === ref; });
         var offert = art && forfaitOffert(art.prix);
-        return fetch(etat.paiement && etat.paiement.fonction, {
+        if (!(etat.paiement && etat.paiement.fonction)) throw 0;  /* quincaillerie-paiement.json absent : pas d'appel vers « undefined » */
+        gaArticle('begin_checkout', ref);
+        return fetch(etat.paiement.fonction, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ panier: [{ ref: ref, q: 1 }], destination: (window.EGCQDest ? window.EGCQDest.code() : 'gf') })
+          body: JSON.stringify({ panier: [{ ref: ref, q: 1 }], destination: (window.EGCQDest ? window.EGCQDest.code() : 'gf'), source: SOURCE || undefined })
         }).then(function (r) { return r.json().then(function (j) { return { statut: r.status, j: j }; }); })
           .then(function (x) {
             if (x.statut !== 200 || !x.j.url) throw 0;
@@ -221,6 +259,7 @@
   function rendreIntrouvable() {
     var rob = document.querySelector('meta[name="robots"]');
     if (rob) rob.setAttribute('content', 'noindex, follow');
+    waArticle('', '');
     $('qf-haut').innerHTML = '<p class="q-vide" style="grid-column:1/-1;">Article introuvable dans le catalogue.<br><a href="'
       + URL_BOUTIQUE + '">← Retour au catalogue</a></p>';
   }
@@ -228,6 +267,7 @@
   function rendre(ref) {
     var a = etat.catalogue.articles.find(function (x) { return x.ref === ref; });
     if (!a) { rendreIntrouvable(); return; }
+    waArticle(ref, a.nom);
 
     /* page statique : titre, description et canonique sont déjà justes (générés) — on n'y touche pas */
     if (!pageStatique) {
@@ -261,7 +301,7 @@
       ?       '<div class="qf-prix q-prix-devis">Prix sur devis</div>'
       +       '<div class="q-inclus">Colis de plus de 30&nbsp;kg ou hors format : nous chiffrons un acheminement adapté (fret), octroi de mer compris</div>'
       +       '<div class="qf-livraison"><strong>Délai confirmé avec le devis</strong> · ' + dz('delai', 'livré à domicile partout en Guyane') + '</div>'
-      :       '<div class="qf-prix">' + eur(a.prix) + '<span class="q-ttc">TTC</span></div>'
+      :       '<div class="qf-prix">' + eur(a.prix) + badgeTaxe() + '</div>'
       +       (a.lot > 1 ? '<div class="qf-livraison">Lot de ' + a.lot + ' pièces, soit <strong>' + eur(a.prix / a.lot) + '/pièce</strong></div>' : '')  /* prix affiché = le lot */
       +       '<div class="q-inclus">' + dz('inclus', 'Octroi de mer &amp; transport vers la Guyane inclus*') + '</div>'
       +       '<div class="qf-livraison"><strong>' + delaiTexte(ref, a) + '</strong> · ' + dz('delai', 'livré à domicile partout en Guyane') + '</div>')
@@ -344,9 +384,9 @@
           + (marqueDe(m) ? '<div class="q-marque">' + esc(marqueDe(m)) + '</div>' : '')
           + '<a class="q-lien" href="' + fiche + '"><h3 class="q-nom">' + esc(m.nom) + '</h3></a>'
           + badgeStock(m.ref)
-          + '<div class="q-prix">' + eur(m.prix) + '<span class="q-ttc">TTC</span></div>'
+          + '<div class="q-prix">' + eur(m.prix) + badgeTaxe() + '</div>'
           + (m.lot > 1 ? '<div class="q-poids">Lot de ' + m.lot + ', soit ' + eur(m.prix / m.lot) + '/pièce</div>' : '')
-          + '<div class="q-inclus">Octroi &amp; livraison inclus*</div>'
+          + '<div class="q-inclus">' + dz('inclus_court', 'Octroi &amp; transport inclus* · + forfait') + '</div>'
           + '</div></article>';
       }).join('');
       $('qf-meme').hidden = false;
@@ -377,7 +417,7 @@
         + (marqueDe(m) ? '<div class="q-marque">' + esc(marqueDe(m)) + '</div>' : '')
         + '<a class="q-lien" href="' + fiche + '"><h3 class="q-nom">' + esc(m.nom) + '</h3></a>'
         + badgeStock(m.ref)
-        + '<div class="q-prix">' + eur(m.prix) + '<span class="q-ttc">TTC</span></div>'
+        + '<div class="q-prix">' + eur(m.prix) + badgeTaxe() + '</div>'
         + (statutDe(m.ref) === 'disponible' ? '<button type="button" class="q-add" data-ajout="' + esc(m.ref) + '">🛒 Ajouter au panier</button>' : '')
         + '</div></article>';
     }).join('') + '</div>';
@@ -425,10 +465,27 @@
   var pageStatique = document.body.getAttribute('data-ref');
   var ref = pageStatique || refParam || '';
 
+  /* bouton WhatsApp flottant, style .egc-wa-float de mobile-nav.js (qui n'en pose pas un second) ; message prérempli avec l'article */
+  var WA_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>';
+  function boutonWhatsApp(texte) {
+    var b = document.querySelector('.egc-wa-float, .whatsapp-float');
+    if (!b) {
+      b = document.createElement('a'); b.className = 'egc-wa-float'; b.target = '_blank'; b.rel = 'noopener';
+      b.setAttribute('aria-label', 'Nous écrire sur WhatsApp'); b.innerHTML = WA_SVG; document.body.appendChild(b);
+    }
+    b.href = 'https://wa.me/33651141118?text=' + encodeURIComponent(texte);
+  }
+  function waArticle(r, nom) {
+    boutonWhatsApp(r ? 'Bonjour, je souhaite des informations sur l’article ' + r + (nom ? ' — ' + nom : '') : 'Bonjour, j’ai une question sur la boutique outillage');
+  }
+  var h1Statique = pageStatique && document.querySelector('h1');
+  waArticle(ref, h1Statique ? h1Statique.textContent.trim() : '');  /* nom complété dès que la fiche est rendue (rendre) */
+
   var catalogue = fetch('/assets/data/quincaillerie-catalogue.json').then(function (r) { return r.json(); });
+  /* adresse de la fonction de paiement (« Payer cet article seul ») et carton groupé : chargée pour toutes les fiches */
+  var paiement = fetch('/assets/data/quincaillerie-paiement.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
   if (/^HX/.test(ref)) {
-    catalogue = Promise.all([catalogue, fetch('/assets/data/quincaillerie-holex.json').then(function (r) { return r.json(); }),
-      fetch('/assets/data/quincaillerie-paiement.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })])
+    catalogue = Promise.all([catalogue, fetch('/assets/data/quincaillerie-holex.json').then(function (r) { return r.json(); }), paiement])
       .then(function (x) {
         etat.holex = x[1];
         etat.paiement = x[2];  /* carton groupé ouvert ? (groupeActif) */
@@ -468,9 +525,11 @@
     fetch('/assets/data/quincaillerie-liens.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
     fetch('/assets/data/quincaillerie-offre.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
     fetch('/assets/data/quincaillerie-compat.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
-    destPret  /* destination de livraison : réglages et prix chargés */
+    destPret,  /* destination de livraison : réglages et prix chargés */
+    paiement
   ]).then(function (res) {
     if (redirection) return;
+    etat.paiement = etat.paiement || res[6];
     etat.compat = res[4] || {};
     etat.catalogue = res[0];
     etat.offre = res[3];

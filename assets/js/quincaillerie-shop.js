@@ -28,12 +28,49 @@
 (function () {
   'use strict';
 
+  /* source de la visite (utm_source / medium / campaign / content ; fbclid : présence seulement), lue dans
+     l'adresse à l'arrivée, gardée 30 jours sur l'appareil après consentement (sinon le temps de l'onglet) ;
+     envoyée au paiement (functions/panier.js → metadata src_*) */
+  var CLE_SOURCE = 'egc_quinc_source', SOURCE_DUREE = 30 * 24 * 3600 * 1000;
+  function sourceVisite() {
+    var s = null;
+    try {
+      /* 30 jours sur l'appareil (localStorage) seulement si la bannière a été acceptée (cookieConsent, comme GA4) ;
+         sinon : onglet en cours seulement (sessionStorage), et toute ancienne copie de 30 jours est effacée */
+      var accepte = localStorage.getItem('cookieConsent') === 'accept';
+      var depot = accepte ? localStorage : sessionStorage;
+      if (!accepte) localStorage.removeItem(CLE_SOURCE);
+      var p = new URLSearchParams(location.search), v = {};
+      ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].forEach(function (k) { var x = (p.get(k) || '').trim().slice(0, 100); if (x) v[k.slice(4)] = x; });
+      if (p.get('fbclid')) v.fbclid = '1';
+      if (Object.keys(v).length) { s = v; depot.setItem(CLE_SOURCE, JSON.stringify({ ts: Date.now(), v: v })); }
+      else {
+        var m = JSON.parse(depot.getItem(CLE_SOURCE) || (accepte && sessionStorage.getItem(CLE_SOURCE)) || 'null');
+        if (m && m.v && Date.now() - m.ts < SOURCE_DUREE) s = m.v; else if (m) depot.removeItem(CLE_SOURCE);
+      }
+    } catch (e) {}
+    return s;
+  }
+  var SOURCE = sourceVisite();
+
   var PAR_PAGE = 24;
   /* un panier par destination de livraison (quincaillerie-destination.js) ; Guyane : clé d'origine */
   var DEST = window.EGCQDest || null;
   var HORS_GUYANE = !!DEST && !DEST.estGuyane();
   var CLE_PANIER = DEST ? DEST.clePanier('egc_quinc_panier') : 'egc_quinc_panier';
   function enDest() { return (DEST && DEST.info().en) || 'en Guyane'; }
+  /* libellé de taxe à côté du prix : Guyane, TVA non applicable (art. 294 du CGI, CGV art. 4) ; autres destinations : inchangé */
+  function badgeTaxe() { return HORS_GUYANE ? '<span class="q-ttc">TTC</span>' : '<span class="q-ttc" title="Prix net : TVA non applicable en Guyane (art. 294 du CGI)">sans TVA</span>'; }
+  /* bouton WhatsApp flottant, style .egc-wa-float de mobile-nav.js (qui n'en pose pas un second) ; le tiroir du panier passe par-dessus */
+  (function () {
+    if (document.querySelector('.egc-wa-float, .whatsapp-float')) return;
+    var b = document.createElement('a');
+    b.className = 'egc-wa-float'; b.target = '_blank'; b.rel = 'noopener';
+    b.href = 'https://wa.me/33651141118?text=' + encodeURIComponent('Bonjour, j’ai une question sur la boutique outillage');
+    b.setAttribute('aria-label', 'Nous écrire sur WhatsApp');
+    b.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>';
+    document.body.appendChild(b);
+  })();
   /* Chaque produit a sa propre page web statique (quincaillerie-url.js) */
   var ADR = window.EGCQUrl || { /* repli si une page en cache n'a pas chargé quincaillerie-url.js */
     fiche: function (a) { return '/pages/produit-quincaillerie.html?ref=' + encodeURIComponent(a.ref); },
@@ -90,6 +127,14 @@
     return long ? 'disponibilité à confirmer — faites une demande' : 'disponibilité sur demande';
   }
   function urlDemande(ref) { return '/pages/demande-produit.html?ref=' + encodeURIComponent(ref); }
+  /* devis chantier (pros, mairies) : proposé dès 1 000 € d'articles ; la page de demande lit ?chantier=1&lignes=REF*Q,REF*Q */
+  var SEUIL_DEVIS_CHANTIER = 1000;
+  function urlDevisChantier(lignes) {
+    var q = {}, ordre = [];
+    lignes.forEach(function (l) { if (!l.ref) return; if (!q[l.ref]) { q[l.ref] = 0; ordre.push(l.ref); } q[l.ref] += l.q || 1; });
+    return '/pages/demande-produit.html?chantier=1&dest=' + encodeURIComponent(DEST ? DEST.code() : 'gf')
+      + '&lignes=' + encodeURIComponent(ordre.map(function (r) { return r + '*' + q[r]; }).join(','));
+  }
 
   /* ---------------- filtres (volet masquable) ----------------
      Valeurs par article dans quincaillerie-facettes.json (générées par _tools/quinc_pages_seo.py) :
@@ -298,9 +343,9 @@
           ? '<div class="q-prix q-prix-devis">Prix sur devis</div>'
             + '<div class="q-inclus">Colis de plus de 30 kg ou hors format : acheminement adapté</div>'
             + '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · délai confirmé avec le devis</div>'
-          : '<div class="q-prix">' + eur(a.prix) + '<span class="q-ttc">TTC</span></div>'
+          : '<div class="q-prix">' + eur(a.prix) + badgeTaxe() + '</div>'
             + (a.lot > 1 ? '<div class="q-poids">Lot de ' + a.lot + ', soit ' + eur(a.prix / a.lot) + '/pièce</div>' : '')  /* prix affiché = le lot */
-            + '<div class="q-inclus">' + ((HORS_GUYANE && DEST.info().inclus_court) || 'Octroi &amp; livraison inclus*') + '</div>'
+            + '<div class="q-inclus">' + ((HORS_GUYANE && DEST.info().inclus_court) || 'Octroi &amp; transport inclus* · + forfait') + '</div>'
             + (a.poids ? '<div class="q-poids">' + a.poids.toLocaleString('fr-FR') + ' kg · ' + delaiTexte(a.ref, a) + '</div>' : ''))
       + '<div class="q-actions">'
       + (a.pc  /* Carton Atelier : panier seulement (pas de paiement article seul), sauf fin de série */
@@ -797,9 +842,17 @@
     $('q-pastille').style.display = n ? '' : 'none';
   }
   var QTE_MAX_CB = 20;  /* paiement par carte : 20 exemplaires par article au plus (functions/panier.js) ; le formulaire accepte davantage */
+  /* mesure d'audience (GA4, seulement après consentement : window.gtag absent sinon) : un exemplaire de chaque réf. ajoutée */
+  function gaAjout(refs) {
+    if (!window.gtag || !refs.length) return;
+    var items = [], value = 0;
+    refs.forEach(function (r) { var a = article(r); var px = a && typeof a.prix === 'number' ? a.prix : 0; value += px; items.push({ item_id: r, item_name: a ? a.nom : r, price: px, quantity: 1 }); });
+    gtag('event', 'add_to_cart', { currency: 'EUR', value: Math.round(value * 100) / 100, items: items });
+  }
   function ajouter(ref) {
     var l = etat.panier.find(function (x) { return x.ref === ref && !x.pack; });
     if (l) l.q += 1; else etat.panier.push({ ref: ref, q: 1 });
+    gaAjout([ref]);
     sauver(); majPastille(); rendrePanier();
     $('q-tiroir').classList.add('ouvert');
   }
@@ -949,6 +1002,16 @@
       bp.textContent = '💳 Payer le panier par carte — ' + eur(t.total);
     }
     $('q-cb-indice').style.display = (ok || okPanier || seulGroupe) ? 'none' : '';
+    /* lien secondaire sous le paiement : devis chantier dès SEUIL_DEVIS_CHANTIER d'articles (hors carton groupé) */
+    var dc = $('q-devis-chantier');
+    if (!dc) {
+      dc = document.createElement('a'); dc.id = 'q-devis-chantier';
+      dc.setAttribute('style', 'display:block;text-align:center;font-size:.74rem;line-height:1.4;color:inherit;text-decoration:underline;margin:0 0 .5rem;');
+      $('q-cb-indice').parentNode.insertBefore(dc, $('q-cb-indice'));
+    }
+    var okDevis = !seulGroupe && t.articles >= SEUIL_DEVIS_CHANTIER;
+    dc.style.display = okDevis ? 'block' : 'none';
+    if (okDevis) { dc.href = urlDevisChantier(lignesHorsGroupe()); dc.textContent = '📋 Devis chantier (pros, mairies) : SIRET demandé, réponse sous 24 h ouvrées'; }
   }
 
   /* ---------------- offre de lancement (assets/data/quincaillerie-offre.json) ----------------
@@ -961,6 +1024,9 @@
   function forfaitOffert(montantArticles) { return offreActive() && montantArticles >= etat.offre.seuil; }
   function afficherOffre() {
     if (!offreActive() || $('q-offre')) return;
+    /* phrase du forfait dans l'en-tête : l'offre tant qu'elle court (texte d'origine de la page ensuite) */
+    if ($('q-hero-forfait')) $('q-hero-forfait').textContent = 'Forfait d’expédition offert dès ' + eur(etat.offre.seuil).replace(/,00 €$/, ' €').replace(/ €$/, ' €')
+      + ' d’articles jusqu’au ' + etat.offre.fin_texte + (etat.offre.max_commandes ? ' (' + etat.offre.max_commandes + ' premières commandes)' : '') + ', sinon ' + eur(etat.offre.forfait).replace(/,00 €$/, ' €').replace(/ €$/, ' €') + ' par commande.';
     var o = etat.offre, d = document.createElement('div');
     d.id = 'q-offre'; d.className = 'q-offre';
     d.innerHTML = '🎁 <strong>' + esc(o.titre) + '</strong> : forfait d’expédition (' + eur(o.forfait) + ') <strong>offert dès '
@@ -1160,9 +1226,11 @@
       if (t) { ouvrir(t.dataset.onglet); return; }
       var b = e.target.closest('[data-pack]');
       if (b) {
+        var ajoutes = [];
         packs[+b.dataset.pack].L.forEach(function (x) {
-          if (!etat.panier.some(function (l) { return l.ref === x.a.ref; })) etat.panier.push({ ref: x.a.ref, q: 1 });
+          if (!etat.panier.some(function (l) { return l.ref === x.a.ref; })) { etat.panier.push({ ref: x.a.ref, q: 1 }); ajoutes.push(x.a.ref); }
         });
+        gaAjout(ajoutes);
       } else if ((b = e.target.closest('[data-pro]'))) {
         if (b.disabled) return;
         var pp = pros[+b.dataset.pro], p = pp.pack;
@@ -1452,9 +1520,11 @@
            plus par le lien Stripe fixe (créé avec l'ancien forfait de 21,12 €) */
         var art = article(ref);
         var offert = art && forfaitOffert(art.prix);
+        if (window.gtag) gtag('event', 'begin_checkout', { currency: 'EUR', value: art && typeof art.prix === 'number' ? art.prix : 0,
+          items: [{ item_id: ref, item_name: art ? art.nom : ref, price: art ? art.prix : 0, quantity: 1 }] });
         return fetch(etat.paiement && etat.paiement.fonction, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ panier: [{ ref: ref, q: 1 }], destination: (window.EGCQDest ? window.EGCQDest.code() : 'gf') })
+          body: JSON.stringify({ panier: [{ ref: ref, q: 1 }], destination: (window.EGCQDest ? window.EGCQDest.code() : 'gf'), source: SOURCE || undefined })
         }).then(function (r) { return r.json().then(function (j) { return { statut: r.status, j: j }; }); })
           .then(function (x) {
             if (x.statut !== 200 || !x.j.url) throw 0;
@@ -1477,10 +1547,12 @@
     var bp = $('q-payer-panier');
     bp.disabled = true; bp.classList.add('q-verif');
     var t = totalPanier(), ts = Date.now();
+    if (window.gtag) gtag('event', 'begin_checkout', { currency: 'EUR', value: t.total,
+      items: etat.panier.map(function (l) { var a = article(l.ref); return { item_id: l.ref, item_name: a ? a.nom : l.ref, quantity: l.q }; }) });
     fetch(etat.paiement.fonction, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ panier: etat.panier.map(function (l) { return { ref: l.ref, q: l.q }; }), email: ($('q-email').value || '').trim(),
-        destination: DEST ? DEST.code() : 'gf' })
+        destination: DEST ? DEST.code() : 'gf', source: SOURCE || undefined })
     }).then(function (r) { return r.json().then(function (j) { return { statut: r.status, j: j }; }); })
       .then(function (x) {
         if (x.statut === 200 && x.j.url) {
@@ -1661,7 +1733,7 @@
       if (t.dataset.mbRecharger) { etat.marquesEchec = false; chargerMarques(); rendrePanier(); return; }
       if (t.dataset.add) ajouter(t.dataset.add);
       if (t.dataset.pay) verifierPuisPayer(t.dataset.pay);
-      if (t.dataset.plus) { etat.panier.find(function (x) { return x.ref === t.dataset.plus && !x.pack; }).q += 1; sauver(); rendrePanier(); majPastille(); }
+      if (t.dataset.plus) { etat.panier.find(function (x) { return x.ref === t.dataset.plus && !x.pack; }).q += 1; gaAjout([t.dataset.plus]); sauver(); rendrePanier(); majPastille(); }
       if (t.dataset.moins) {
         var l = etat.panier.find(function (x) { return x.ref === t.dataset.moins && !x.pack; });
         l.q -= 1; if (l.q <= 0) etat.panier = etat.panier.filter(function (x) { return x !== l; });

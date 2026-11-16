@@ -51,6 +51,7 @@ const Stripe = require('stripe');
 const { creerSessionPanier } = require('./panier');
 const groupe = require('./groupe');
 const { creerNotifier } = require('./notifier');
+const { recapPaiements } = require('./recap');
 
 admin.initializeApp();
 
@@ -101,6 +102,19 @@ exports.groupe = onRequest(
 exports.gererCartons = onSchedule(
   { schedule: 'every 10 minutes', region: 'europe-west1', secrets: [STRIPE_SECRET_KEY, BREVO_API_KEY], timeoutSeconds: 540 },
   async () => { console.log('cartons groupés :', JSON.stringify(await groupe.gerer(ctxGroupe()))); }
+);
+
+/* chaque jour à 7 h (Guyane) : récapitulatif des pages de paiement des dernières 24 h au gérant (functions/recap.js) :
+   créées / payées / ouvertes sur 24 h, pages expirées dans les dernières 24 h (sessions lues sur 48 h), détail des non payées
+   et lien de reprise Stripe. Aucune session : pas d'email. Avant activation : rubrique « Commandes et paiement » des mentions légales.
+   Même adresse que les alertes du carton groupé (groupe.js, email_admin) ; clé Brevo « - » = mode test (journalisé). */
+const EMAIL_GERANT = 'egreencitys@gmail.com';
+exports.recapPaiements = onSchedule(
+  { schedule: 'every day 07:00', timeZone: 'America/Cayenne', region: 'europe-west1', secrets: [STRIPE_SECRET_KEY, BREVO_API_KEY], timeoutSeconds: 120 },
+  async () => {
+    const c = ctxGroupe();
+    console.log('récapitulatif des paiements :', JSON.stringify(await recapPaiements({ stripe: c.stripe, notifier: c.notifier, destinataire: EMAIL_GERANT })));
+  }
 );
 
 exports.paiementPanier = onRequest(
