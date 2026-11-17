@@ -175,6 +175,22 @@
       var verif = g && gok === null && !gammeEchec(p);
       if (g && gok !== null) ok = gok;
       var deja = dansPanier(p.id);
+      /* pack « sur demande » (champ sur_demande) : commandé chez le fabricant, pas de panier ni de paiement par carte ;
+         le bouton ouvre le formulaire de demande (prix du pack rappelé, réponse sous 24 h ouvrées) */
+      if (p.sur_demande) {
+        ok = L.every(function (x) { return x.a; });
+        return '<article class="pk" data-cat="' + esc(p.categorie || 'machines') + '">'
+          + photos(L, p.etiquette || 'Sur demande', 'Kit complet')
+          + '<div class="corps"><span class="mq">' + esc(p.marque || '') + '</span><h3>' + esc(p.titre) + '</h3>'
+          + (p.accroche ? '<div class="acc">' + esc(p.accroche) + '</div>' : '')
+          + '<p class="sous">' + esc(p.sous_titre) + '</p>' + (p.contenu ? '<ul>' + p.contenu.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : liste(L))
+          + '<div class="prix-bloc"><div class="prix">' + eur(p.prix) + '</div>'
+          + '<div class="inclus">' + esc(p.prix_txt || 'le pack complet') + LIVRE + '</div>'
+          + (ok ? '<a class="ajout" href="/pages/demande-produit.html?pack=' + encodeURIComponent(p.id) + '">📩 Demander ce pack (sans engagement)</a>'
+            : '<button type="button" class="ajout" disabled>Momentanément indisponible</button>')
+          + '<div class="note">Sur demande · ' + esc(p.colis || '1 colis') + (p.delai ? ' · délai ' + esc(p.delai) : '')
+          + ' · réponse sous 24 h ouvrées, aucun paiement avant votre accord</div></div></div></article>';
+      }
       return '<article class="pk" data-cat="' + esc(p.categorie || 'machines') + '">'
         + photos(L, p.etiquette || 'Nouveau', L.length + (L.length > 1 ? ' articles' : ' article'))
         + '<div class="corps"><span class="mq">' + esc(p.marque || '') + '</span><h3>' + esc(p.titre) + '</h3>'

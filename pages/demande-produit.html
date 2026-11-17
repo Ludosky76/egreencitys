@@ -109,7 +109,8 @@
   (function () {
     'use strict';
     var prm = new URLSearchParams(location.search);
-    var ref = prm.get('ref') || '';
+    var packId = (prm.get('pack') || '').replace(/[^a-z0-9-]/g, '').slice(0, 39);  /* pack « sur demande » de /packs-pro/ */
+    var ref = packId || prm.get('ref') || '';
     var article = null;
     var utilisateur = null;
     /* devis chantier (lien du panier dès 1 000 € et de la page packs pro) : ?chantier=1&dest=gf&lignes=REF*Q,REF*Q */
@@ -193,6 +194,44 @@
             afficherLignes();
           });
       }
+    } else if (packId) {
+      /* ---- Pack « sur demande » (?pack=<id>, page /packs-pro/) : titre, contenu et prix du pack lus dans promo.json ---- */
+      fetch('/assets/data/quincaillerie-promo.json?t=' + Date.now(), { cache: 'no-store' })
+        .then(function (r) { return r.json(); })
+        .then(function (pr) {
+          var p = (pr.packs_pro || []).find(function (x) { return x.id === packId && x.sur_demande; });
+          var bloc = $('qd-produit');
+          if (!p) {
+            bloc.innerHTML = '<p style="margin:0;font-size:.86rem;">Pack introuvable — précisez votre demande dans le message ci-dessous, ou <a href="/packs-pro/">voyez les packs pro</a>.</p>';
+            return;
+          }
+          var art0 = (p.articles || [])[0];
+          var img = (art0 && art0.img) || '';
+          article = { ref: p.id, nom: p.titre, prix: p.prix, img: img };
+          document.title = 'Demande : ' + p.titre + ' | EGREENCITY\'S PRO QUINCAILLERIE';
+          $('qd-titre').textContent = '✉️ Demande de pack';
+          $('qd-intro').innerHTML = 'Ce pack est commandé pour vous chez le fabricant. Envoyez votre demande : nous confirmons la disponibilité et le délai '
+            + '<strong>sous 24&nbsp;h ouvrées</strong>, puis le règlement — aucune commande ni aucun paiement avant votre accord.';
+          var fin = function (url) {
+            bloc.innerHTML = (url ? '<img src="' + esc(url) + '" alt="" style="width:74px;height:74px;object-fit:contain;background:#fff;border-radius:10px;flex:none;">' : '')
+              + '<div><div class="q-ref">' + esc(p.marque || 'Pack pro') + ' · sur demande</div>'
+              + '<div style="font-weight:700;color:var(--ink);font-size:.92rem;line-height:1.35;">' + esc(p.titre) + '</div>'
+              + '<div style="font-size:.78rem;color:var(--muted);">' + esc((p.contenu || []).join(' · ')) + '</div>'
+              + '<div style="font-size:.86rem;color:var(--ink);margin-top:.2rem;"><strong>' + eur(p.prix) + '</strong> le pack, prix tout compris pour une livraison en Guyane'
+              + (p.delai ? ' · délai ' + esc(p.delai) : '') + '</div></div>';
+          };
+          if (img) fin(img);
+          else {  /* photo d'un pack fait d'un article du catalogue : celle de l'article */
+            fin('');
+            fetch('/assets/data/quincaillerie-catalogue.json').then(function (r) { return r.json(); }).then(function (c) {
+              var a = c.articles.find(function (x) { return art0 && x.ref === art0.ref; });
+              if (a && a.img) fin(a.img);
+            }).catch(function () {});
+          }
+        })
+        .catch(function () {
+          $('qd-produit').innerHTML = '<p style="margin:0;font-size:.86rem;">Chargement impossible — décrivez le pack voulu dans le message.</p>';
+        });
     } else
     /* ---- Article demandé ---- */
     /* réf. HX… (gamme Holex) et MB… (gamme Milwaukee / Bosch) : fichiers à part */

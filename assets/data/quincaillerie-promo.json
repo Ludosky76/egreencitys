@@ -574,6 +574,91 @@
  ],
  "packs_pro": [
   {
+   "id": "kit-m18-fuel-6-percussion",
+   "categorie": "machines",
+   "etiquette": "Sur demande",
+   "sur_demande": true,
+   "titre": "Kit 6 machines M18 FUEL",
+   "marque": "Milwaukee · M18 FUEL",
+   "accroche": "Percer, visser, scier, meuler, éclairer",
+   "sous_titre": "6 machines M18 FUEL sans charbon avec 2 batteries 5 Ah, chargeur et sac de transport : tout le chantier dans le même kit",
+   "contenu": [
+    "Perceuse à percussion M18 FPD3",
+    "Visseuse à chocs M18 FID3",
+    "Scie circulaire 165 mm M18 FCS552",
+    "Scie sabre M18 FSZ",
+    "Meuleuse 125 mm M18 FSAG125X",
+    "Lampe M18 TLED",
+    "2 batteries M18 5 Ah, chargeur rapide et sac de transport"
+   ],
+   "prix": 2279,
+   "colis": "1 colis, environ 18,5 kg",
+   "delai": "environ 3 semaines",
+   "articles": [
+    {
+     "ref": "665AH",
+     "nom": "Kit Milwaukee M18 FPP6G3-502B, 6 machines FUEL, 2 batteries 5 Ah"
+    }
+   ]
+  },
+  {
+   "id": "kit-m18-fuel-6-boulonneuse",
+   "categorie": "machines",
+   "etiquette": "Sur demande",
+   "sur_demande": true,
+   "titre": "Kit 6 machines M18 FUEL avec boulonneuse",
+   "marque": "Milwaukee · M18 FUEL",
+   "accroche": "Percer, boulonner, scier, meuler, éclairer",
+   "sous_titre": "6 machines M18 FUEL sans charbon, dont une boulonneuse 1/2 pouce, avec 2 batteries 5 Ah, chargeur et sac de transport",
+   "contenu": [
+    "Perceuse à percussion M18 FPD3",
+    "Boulonneuse 1/2 pouce M18 FIW2F12",
+    "Scie circulaire 165 mm M18 FCS552",
+    "Scie sabre M18 FSZ",
+    "Meuleuse 125 mm M18 FSAG125X",
+    "Lampe M18 TLED",
+    "2 batteries M18 5 Ah, chargeur rapide et sac de transport"
+   ],
+   "prix": 1819,
+   "colis": "1 colis, environ 19 kg",
+   "delai": "environ 3 semaines",
+   "articles": [
+    {
+     "ref": "MB7DA747151",
+     "nom": "Kit Milwaukee M18 FPP6H3-502B, 6 machines FUEL, 2 batteries 5 Ah",
+     "img": "/assets/img/mb/4d691f8cc100c5.webp"
+    }
+   ]
+  },
+  {
+   "id": "kit-m18-coupe-5",
+   "categorie": "machines",
+   "etiquette": "Sur demande",
+   "sur_demande": true,
+   "titre": "Kit 5 machines M18 coupe et vissage",
+   "marque": "Milwaukee · M18",
+   "accroche": "Percer, visser et couper le bois avec le même kit",
+   "sous_titre": "Perceuse-visseuse et visseuse à chocs sans charbon, scie circulaire, scie sauteuse et outil multifonction, avec 2 batteries 5 Ah",
+   "contenu": [
+    "Perceuse-visseuse compacte M18 BLDDRC",
+    "Visseuse à chocs M18 BLIDRC",
+    "Scie circulaire 165 mm M18 FCS552",
+    "Scie sauteuse M18 FBJS",
+    "Outil multifonction M18",
+    "2 batteries M18 5 Ah, chargeur rapide et sac de transport"
+   ],
+   "prix": 2159,
+   "colis": "1 colis, environ 16 kg",
+   "delai": "environ 3 semaines",
+   "articles": [
+    {
+     "ref": "MB1ED295FF6",
+     "nom": "Kit Milwaukee M18 BLCPP5A-502B, 5 machines, 2 batteries 5 Ah",
+     "img": "/assets/img/mb/e839492fcf7bb8.webp"
+    }
+   ]
+  },
+  {
    "id": "duo-m18-fuel-pro",
    "etiquette": "Nouveau pack",
    "titre": "Duo M18 FUEL Pro",

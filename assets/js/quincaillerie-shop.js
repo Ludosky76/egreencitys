@@ -1113,13 +1113,15 @@
     var p = pp.pack;
     return '<article class="q-pack q-pack-l q-pack-pro">'
       + '<div class="q-pack-info"><span class="q-promo-et">' + esc(p.marque || 'Pack pro') + '</span><h2>' + esc(p.titre) + '</h2>'
-      + '<p class="q-pack-liste">' + esc(p.accroche ? p.accroche + ' — ' : '') + pp.L.length + ' articles · ' + esc(p.colis || '1 colis') + '</p></div>'
-      + vignettes(pp.L, pp.sup)
+      + '<p class="q-pack-liste">' + esc(p.accroche ? p.accroche + ' — ' : '') + (p.sur_demande ? 'sur demande' : pp.L.length + ' articles') + ' · ' + esc(p.colis || '1 colis') + '</p></div>'
+      + vignettes(pp.L, pp.sup || p.sur_demande)
       + '<div class="q-pack-pied"><div><div class="q-promo-prix">' + eur(p.prix) + '</div>'
       + '<div class="q-promo-inclus">' + esc(p.prix_txt || 'le pack complet') + (HORS_GUYANE ? ', livré ' + enDest() : ', livré, octroi de mer compris')
       + (p.delai ? ' · délai ' + esc(p.delai) + ', confirmé sous 24 h ouvrées' : '')
       + ' · <a href="/packs-pro/' + (pp.sup ? '#cat=superpacks' : p.categorie === 'accessoires' ? '#cat=accessoires' : '') + '">détails</a></div></div>'
-      + '<button type="button" class="q-promo-btn" data-pro="' + j + '"' + (pp.indispo ? ' disabled>' + TXT_INDISPO : '>' + TXT_AJOUT) + '</button></div>'
+      + (p.sur_demande  /* pack « sur demande » : formulaire de demande, jamais de panier ni de paiement par carte */
+        ? '<a class="q-promo-btn" href="/pages/demande-produit.html?pack=' + encodeURIComponent(p.id) + '">📩 Demander ce pack</a></div>'
+        : '<button type="button" class="q-promo-btn" data-pro="' + j + '"' + (pp.indispo ? ' disabled>' + TXT_INDISPO : '>' + TXT_AJOUT) + '</button></div>')
       + '</article>';
   }
   /* Défilement vertical automatique, une carte à la fois (copie de la 1re carte en fin de piste pour boucler sans retour visible). */
