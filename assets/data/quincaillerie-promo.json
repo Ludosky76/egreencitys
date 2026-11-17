@@ -427,6 +427,68 @@
      "nom": "Cordeau à tracer 30 m"
     }
    ]
+  },
+  {
+   "etiquette": "Pack électricien",
+   "titre": "Pack dépannage électrique",
+   "sous_titre": "Détecteur de tension, testeur de prise, multimètre, pince à sertir et 200 cosses",
+   "articles": [
+    {
+     "ref": "535YM",
+     "nom": "Détecteur de tension sans contact 1 000 V"
+    },
+    {
+     "ref": "225YM",
+     "nom": "Testeur de prise 16 A 230 V"
+    },
+    {
+     "ref": "793RT",
+     "nom": "Multimètre numérique 600 V rétroéclairé"
+    },
+    {
+     "ref": "467YM",
+     "nom": "Pince à sertir et dénuder 1,5 à 6 mm²"
+    },
+    {
+     "ref": "43108",
+     "nom": "100 cosses à anneau isolées 5 mm"
+    },
+    {
+     "ref": "95786",
+     "nom": "100 cosses mâles isolées 6,3 mm"
+    }
+   ]
+  },
+  {
+   "etiquette": "Pack bois",
+   "titre": "Pack charpente & carbet",
+   "sous_titre": "Mesurer, aligner, couper, caler et clouer : 6 outils à main pour le bois",
+   "articles": [
+    {
+     "ref": "730GE",
+     "nom": "Cordeau 30 m"
+    },
+    {
+     "ref": "8951K",
+     "nom": "Mètre ruban 8 m à blocage"
+    },
+    {
+     "ref": "559KY",
+     "nom": "Niveau à bulle 600 mm"
+    },
+    {
+     "ref": "529CN",
+     "nom": "Scie japonaise 240 mm double denture"
+    },
+    {
+     "ref": "2683V",
+     "nom": "Serre-joint 600 mm"
+    },
+    {
+     "ref": "754XH",
+     "nom": "Marteau arrache-clou 16 oz"
+    }
+   ]
   }
  ],
  "brouillons": [],
