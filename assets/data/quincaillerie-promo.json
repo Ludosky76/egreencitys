@@ -489,6 +489,122 @@
      "nom": "Marteau arrache-clou 16 oz"
     }
    ]
+  },
+  {
+   "etiquette": "Pack plomberie",
+   "titre": "Pack vannes anti-fuite",
+   "sous_titre": "3 vannes 3/4\" (20/27), clé Stillson 51 mm, pince multiprise et clé de purge en croix",
+   "articles": [
+    {
+     "ref": "236HX",
+     "nom": "Vanne à sphère papillon MF 3/4\""
+    },
+    {
+     "ref": "323PH",
+     "nom": "Vanne à sphère manette plate MM 3/4\""
+    },
+    {
+     "ref": "101PG",
+     "nom": "Vanne à sphère NF à purge MF 3/4\""
+    },
+    {
+     "ref": "39865",
+     "nom": "Pince multiprise 254 mm, ouverture 45 mm"
+    },
+    {
+     "ref": "680EE",
+     "nom": "Clé Stillson 355 mm, ouverture 51 mm"
+    },
+    {
+     "ref": "84379",
+     "nom": "Clé utilitaire et radiateur en croix"
+    }
+   ]
+  },
+  {
+   "etiquette": "Pack eau",
+   "titre": "Pack cuve eau de pluie",
+   "sous_titre": "Vannes 1\" et 1 1/4\", clé serre-tube 420 mm, pince multiprise 305 mm et seau",
+   "articles": [
+    {
+     "ref": "751KY",
+     "nom": "Vanne à sphère manette plate FF 1\""
+    },
+    {
+     "ref": "750PH",
+     "nom": "Vanne à sphère NF manette plate MM 1\""
+    },
+    {
+     "ref": "586PJ",
+     "nom": "Vanne à sphère manette plate MF 1 1/4\""
+    },
+    {
+     "ref": "439VL",
+     "nom": "Clé serre-tube suédoise 90° 420 mm"
+    },
+    {
+     "ref": "3684V",
+     "nom": "Pince multiprise 305 mm, ouverture 40 mm"
+    },
+    {
+     "ref": "64253",
+     "nom": "Seau de maçon 14 L"
+    }
+   ]
+  },
+  {
+   "etiquette": "Pack finition",
+   "titre": "Pack outils enduit & finition",
+   "sous_titre": "Couteaux à enduire, platoir, cale à poncer et abrasifs grain 180 et 240",
+   "articles": [
+    {
+     "ref": "998VW",
+     "nom": "Couteau à enduire 240 mm"
+    },
+    {
+     "ref": "750VW",
+     "nom": "Couteau à enduire 60 mm"
+    },
+    {
+     "ref": "732VW",
+     "nom": "Platoir courbé de finition 280 x 120 mm"
+    },
+    {
+     "ref": "461VW",
+     "nom": "Cale à poncer 200 x 200 mm"
+    },
+    {
+     "ref": "132JG",
+     "nom": "10 papiers abrasifs 280 x 230 mm grain 180"
+    },
+    {
+     "ref": "983JG",
+     "nom": "10 papiers abrasifs 280 x 230 mm grain 240"
+    }
+   ]
+  },
+  {
+   "etiquette": "Pack maison",
+   "titre": "Pack sécurité maison",
+   "sous_titre": "Détecteur de fumée, testeur de tension sans contact et réserve de piles AA/AAA",
+   "articles": [
+    {
+     "ref": "669AH",
+     "nom": "Détecteur de fumée autonome 10 ans"
+    },
+    {
+     "ref": "111VR",
+     "nom": "Testeur de tension sans contact"
+    },
+    {
+     "ref": "616HF",
+     "nom": "Lot de 12 piles AA longue durée"
+    },
+    {
+     "ref": "816HF",
+     "nom": "Lot de 12 piles AAA longue durée"
+    }
+   ]
   }
  ],
  "brouillons": [],
