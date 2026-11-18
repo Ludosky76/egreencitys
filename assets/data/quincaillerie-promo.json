@@ -605,6 +605,91 @@
      "nom": "Lot de 12 piles AAA longue durée"
     }
    ]
+  },
+  {
+   "etiquette": "Pack électricité",
+   "titre": "Pack branchement atelier",
+   "sous_titre": "Enrouleur 25 m, multiprise rotative 6 prises, multiprise étanche, prise et prolongateur 16 A",
+   "articles": [
+    {
+     "ref": "123TK",
+     "nom": "Enrouleur 25 m, 4 prises"
+    },
+    {
+     "ref": "539KM",
+     "nom": "Bloc multiprise rotatif 6 prises avec interrupteur"
+    },
+    {
+     "ref": "452VH",
+     "nom": "Rallonge multiprise étanche 3 prises"
+    },
+    {
+     "ref": "935KM",
+     "nom": "Prise caoutchouc verrouillable 2P+T 16 A"
+    },
+    {
+     "ref": "390KM",
+     "nom": "Prolongateur 2P+T 16 A avec anneau"
+    }
+   ]
+  },
+  {
+   "etiquette": "Pack carrelage",
+   "titre": "Pack carreleur",
+   "sous_titre": "Coupe, pose, nivellement et contrôle dans un même colis",
+   "articles": [
+    {
+     "ref": "554PT",
+     "nom": "Coupe-carreaux 630 mm à main"
+    },
+    {
+     "ref": "609PG",
+     "nom": "Kit de nivellement de carreaux, 201 pièces"
+    },
+    {
+     "ref": "41488",
+     "nom": "1 000 croisillons de 3 mm"
+    },
+    {
+     "ref": "790RY",
+     "nom": "Truelle langue de chat 160 mm"
+    },
+    {
+     "ref": "448RY",
+     "nom": "Auge en caoutchouc 13 L"
+    },
+    {
+     "ref": "868FG",
+     "nom": "Jeu de 4 niveaux à bulle"
+    }
+   ]
+  },
+  {
+   "etiquette": "Pack énergie",
+   "titre": "Pack piles & recharge",
+   "sous_titre": "Piles 4R25, D, AA, AAA et chargeur avec 4 piles rechargeables (lampe non fournie)",
+   "articles": [
+    {
+     "ref": "159FN",
+     "nom": "Pile 4R25 6 V"
+    },
+    {
+     "ref": "869YW",
+     "nom": "4 piles alcalines D"
+    },
+    {
+     "ref": "339YW",
+     "nom": "24 piles alcalines AA"
+    },
+    {
+     "ref": "720YW",
+     "nom": "24 piles alcalines AAA"
+    },
+    {
+     "ref": "614FN",
+     "nom": "Chargeur avec 4 piles rechargeables AA"
+    }
+   ]
   }
  ],
  "brouillons": [],
