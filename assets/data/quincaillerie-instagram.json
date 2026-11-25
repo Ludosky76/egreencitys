@@ -1,6 +1,21 @@
 {
- "genere_le": "2026-11-24T20:59:36",
+ "genere_le": "2026-11-25T20:59:00",
  "produits": [
+  {
+   "ref": "371EN",
+   "date": "2026-11-25",
+   "lien": "https://www.instagram.com/p/DgLVacRC06y/"
+  },
+  {
+   "ref": "463YM",
+   "date": "2026-11-25",
+   "lien": "https://www.instagram.com/p/DgK59AmCsBP/"
+  },
+  {
+   "ref": "271LF",
+   "date": "2026-11-25",
+   "lien": "https://www.instagram.com/p/DgKefK9i39L/"
+  },
   {
    "ref": "161CN",
    "date": "2026-11-24",
@@ -45,21 +60,6 @@
    "ref": "648XJ",
    "date": "2026-11-16",
    "lien": "https://www.instagram.com/p/Df0KVAOCjDr/"
-  },
-  {
-   "ref": "483JL",
-   "date": "2026-11-16",
-   "lien": "https://www.instagram.com/p/Dfz8mZXCO-V/"
-  },
-  {
-   "ref": "6629F",
-   "date": "2026-11-16",
-   "lien": "https://www.instagram.com/p/DfzMgtOiDJI/"
-  },
-  {
-   "ref": "702VL",
-   "date": "2026-11-16",
-   "lien": "https://www.instagram.com/p/Dfy-wfoiWeZ/"
   }
  ]
 }
